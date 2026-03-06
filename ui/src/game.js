@@ -9,6 +9,7 @@ export function createGame(container) {
       height: container.clientHeight,
       backgroundColor: '#4a7c59',
       pixelArt: true,
+      roundPixels: true,
       scene: [TownScene],
       scale: {
         mode: Phaser.Scale.RESIZE,

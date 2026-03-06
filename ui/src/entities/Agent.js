@@ -50,9 +50,13 @@ export default class Agent {
 
     if (this.hasSprite) {
       this.body = scene.add.image(0, 0, textureKey);
-      // Chunky pixel art sprites — scale to 40px tall (fits isometric tile scale)
-      const targetH = 40;
-      const scale = targetH / this.body.height;
+      // Pixel art: use nearest-neighbor filter, integer scale
+      this.body.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
+      // Scale to 48px tall using nearest integer multiple for crisp pixels
+      const targetH = 48;
+      const rawScale = targetH / this.body.height;
+      // Round to nearest 0.25 step to avoid sub-pixel blur
+      const scale = Math.round(rawScale * 4) / 4 || rawScale;
       this.body.setScale(scale);
       this.body.setOrigin(0.5, 1);
     } else {
