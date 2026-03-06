@@ -1,3 +1,9 @@
+// Map building id → sprite texture base name
+const BUILDING_TEXTURE_MAP = {
+  town_hall:   'townhall',
+  post_office: 'postoffice',
+};
+
 const BUILDING_COLORS = {
   civic:     0xc9a96e,
   library:   0x8b6914,
@@ -35,6 +41,11 @@ export default class Building {
     this.container = scene.add.container(screenX, screenY);
     this.container.setDepth(screenY);
 
+    // Sprite support — try to use pixel art building sprites
+    const texBase = BUILDING_TEXTURE_MAP[this.id];
+    this.texBase = texBase || null;
+    this.spriteImg = null;
+
     this.graphics = scene.add.graphics();
     this.container.add(this.graphics);
 
@@ -70,6 +81,32 @@ export default class Building {
   }
 
   _draw() {
+    // Use pixel art sprite if available
+    if (this.texBase) {
+      const texKey = `building-${this.texBase}-l${this.level}`;
+      if (this.scene.textures.exists(texKey)) {
+        // Remove old sprite if level changed
+        if (this.spriteImg) { this.spriteImg.destroy(); this.spriteImg = null; }
+        this.graphics.clear();
+
+        const img = this.scene.add.image(0, 0, texKey);
+        // Scale so building height ≈ (wallH + roofH) in screen space
+        const targetH = 80 + (this.level - 1) * 30;
+        img.setScale(targetH / img.height);
+        img.setOrigin(0.5, 1);
+        this.container.addAt(img, 0); // add behind label
+        this.spriteImg = img;
+
+        // Update label above sprite
+        const labelY = -(targetH + 8);
+        this.label.setPosition(0, labelY);
+        this.label.setText(`${this.name} Lv${this.level}`);
+        return; // skip programmatic draw
+      }
+    }
+
+    // Fallback: programmatic drawing
+    if (this.spriteImg) { this.spriteImg.destroy(); this.spriteImg = null; }
     const g = this.graphics;
     g.clear();
 
@@ -232,8 +269,9 @@ export default class Building {
     this._draw();
 
     // Brief flash on upgrade
+    const target = this.spriteImg || this.graphics;
     this.scene.tweens.add({
-      targets: this.graphics,
+      targets: target,
       alpha: { from: 0.4, to: 1 },
       duration: 150,
       yoyo: true,
@@ -322,6 +360,7 @@ export default class Building {
     this.hideUpgradeSign();
     this._removeGlowOutline();
     if (this.glowTween) this.glowTween.remove();
+    if (this.spriteImg) this.spriteImg.destroy();
     this.container.destroy();
   }
 }
