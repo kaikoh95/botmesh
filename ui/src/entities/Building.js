@@ -90,16 +90,19 @@ export default class Building {
         this.graphics.clear();
 
         const img = this.scene.add.image(0, 0, texKey);
-        // Scale pixel art buildings to fit the tile grid
-        const targetH = 70 + (this.level - 1) * 20;
-        img.setScale(targetH / img.height);
-        img.setOrigin(0.5, 1);
+        // Scale sprite to fill the building's isometric footprint
+        // Footprint face width = gridW * TILE_W/2
+        const TILE_W = 64;
+        const targetW = this.gridW * TILE_W; // full footprint width on screen
+        const scale = targetW / img.width;
+        img.setScale(scale);
+        const spriteH = img.height * scale;
+        img.setOrigin(0.5, 1); // anchor at bottom-center (ground level)
         this.container.addAt(img, 0); // add behind label
         this.spriteImg = img;
 
         // Update label above sprite
-        const labelY = -(targetH + 8);
-        this.label.setPosition(0, labelY);
+        this.label.setPosition(0, -(spriteH + 8));
         this.label.setText(`${this.name} Lv${this.level}`);
         return; // skip programmatic draw
       }
@@ -266,6 +269,8 @@ export default class Building {
   setLevel(level) {
     if (level === this.level) return;
     this.level = level;
+    // Reset depth so new level sprite re-anchors correctly
+    if (this.spriteImg) { this.spriteImg.destroy(); this.spriteImg = null; }
     this._draw();
 
     // Brief flash on upgrade
