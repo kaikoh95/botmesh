@@ -1,4 +1,4 @@
-const STATE_URL = 'https://employer-awesome-leaving-translation.trycloudflare.com';
+const STATE_URL = window.BOTMESH_STATE_URL || 'http://localhost:3002';
 
 export function createStateClient({ onEvent, onStateSync, onConnect, onDisconnect }) {
   let evtSource = null;
@@ -29,13 +29,17 @@ export function createStateClient({ onEvent, onStateSync, onConnect, onDisconnec
       'agent:move', 'agent:speak', 'agent:action',
       'agent:state', 'agent:mood',
       'agent:joined', 'agent:online', 'agent:offline',
+      'agent:work', 'building:upgraded',
       'world:event', 'system:start'
     ];
 
     for (const type of eventTypes) {
       evtSource.addEventListener(type, (e) => {
         const data = JSON.parse(e.data);
-        if (onEvent) onEvent({ type, payload: data });
+        // Hub events have shape {type, payload, timestamp}
+        // Normalize so UI always receives {type, payload}
+        const payload = data.payload || data;
+        if (onEvent) onEvent({ type, payload, timestamp: data.timestamp });
       });
     }
 

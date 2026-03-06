@@ -28,12 +28,23 @@ function loadSeed() {
   return JSON.parse(raw);
 }
 
+function ensureBuildingUpgradeFields(building) {
+  if (building.level == null) building.level = 1;
+  if (building.maxLevel == null) building.maxLevel = 3;
+  if (!Array.isArray(building.currentWorkers)) building.currentWorkers = [];
+  if (!Array.isArray(building.upgrades)) building.upgrades = [];
+  if (building.upgrading == null) building.upgrading = false;
+}
+
 function init() {
   state = loadSeed();
-  // Ensure agents is always an object (seed has it empty)
   if (!state.agents) state.agents = {};
   if (!state.gazette) state.gazette = [];
   if (!state.time) state.time = {};
+  // Ensure all buildings have upgrade fields
+  for (const b of Object.values(state.buildings || {})) {
+    ensureBuildingUpgradeFields(b);
+  }
 }
 
 function getState() {
@@ -63,7 +74,6 @@ function getNextHomeSlot() {
   for (const slot of HOME_SLOTS) {
     if (!usedSlots.has(`${slot.x},${slot.y}`)) return slot;
   }
-  // Fallback: random position
   return {
     x: Math.floor(Math.random() * (state.world.width - 4)) + 2,
     y: Math.floor(Math.random() * (state.world.height - 4)) + 2,
@@ -78,13 +88,11 @@ function registerAgent(payload) {
   const { id } = payload;
 
   if (state.agents[id]) {
-    // Existing agent — restore, mark online
     state.agents[id].online = true;
     state.agents[id].state = 'idle';
     return { agent: state.agents[id], isNew: false };
   }
 
-  // New agent — create from identify payload
   const home = getNextHomeSlot();
   const agent = {
     id: payload.id,
@@ -120,6 +128,72 @@ function getOnlineAgents() {
   return Object.values(state.agents).filter(a => a.online);
 }
 
+// --- Building Upgrade System ---
+
+function getBuildingForAgent(agentId) {
+  const agent = state.agents[agentId];
+  if (!agent) return 'town_hall';
+
+  const role = (agent.role || '').toLowerCase();
+  if (/strateg|planner/i.test(role)) return 'town_hall';
+  if (/build|engineer/i.test(role)) return 'post_office';
+  if (/research|data/i.test(role)) return 'post_office';
+  return 'town_hall';
+}
+
+function startWork(agentId, buildingId) {
+  const building = (state.buildings || {})[buildingId];
+  if (!building) return false;
+  ensureBuildingUpgradeFields(building);
+  if (!building.currentWorkers.includes(agentId)) {
+    building.currentWorkers.push(agentId);
+  }
+  building.upgrading = true;
+
+  // Move agent to building location
+  const agent = state.agents[agentId];
+  if (agent) {
+    agent.location = { x: building.x + 1, y: building.y + 1, building: buildingId };
+    agent.state = 'working';
+  }
+  return true;
+}
+
+function completeUpgrade(agentId, buildingId) {
+  const building = (state.buildings || {})[buildingId];
+  if (!building) return null;
+  ensureBuildingUpgradeFields(building);
+
+  // Remove worker
+  building.currentWorkers = building.currentWorkers.filter(id => id !== agentId);
+  building.upgrading = building.currentWorkers.length > 0;
+
+  // Level up if possible
+  const fromLevel = building.level;
+  let upgraded = false;
+  if (building.level < building.maxLevel) {
+    building.level++;
+    upgraded = true;
+  }
+
+  const record = {
+    agentId,
+    agentName: state.agents[agentId]?.name || agentId,
+    fromLevel,
+    toLevel: building.level,
+    completedAt: new Date().toISOString(),
+  };
+  building.upgrades.push(record);
+
+  // Reset agent state
+  const agent = state.agents[agentId];
+  if (agent) {
+    agent.state = 'idle';
+  }
+
+  return upgraded ? { building, record } : { building: null, record };
+}
+
 module.exports = {
   init,
   getState,
@@ -129,4 +203,7 @@ module.exports = {
   registerAgent,
   setAgentOffline,
   getOnlineAgents,
+  getBuildingForAgent,
+  startWork,
+  completeUpgrade,
 };

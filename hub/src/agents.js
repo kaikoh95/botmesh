@@ -2,6 +2,7 @@
  * Agent simulation — random movement, speech, state changes.
  * Only simulates ONLINE agents. World starts empty.
  * Supports @mentions and agent-to-agent conversation.
+ * Supports building upgrade work system.
  */
 
 const world = require('./world');
@@ -31,8 +32,9 @@ const MENTION_OPENERS = [
 const STATES = ['idle', 'walking', 'working', 'talking'];
 const MOODS = ['content', 'excited', 'focused', 'tired', 'curious'];
 
-// Track pending responses
+// Track pending responses and pending work completions
 const pendingResponses = [];
+const pendingWorkCompletions = [];
 
 function randomItem(arr) {
   return arr[Math.floor(Math.random() * arr.length)];
@@ -50,7 +52,7 @@ function fillTemplate(template, speaker, target) {
   return template.replace(/\{speaker\}/g, speaker).replace(/\{target\}/g, target);
 }
 
-function generateAgentEvent(agent) {
+function generateAgentEvent(agent, onEvent) {
   const roll = Math.random();
   const { time } = world.getState();
   const worldState = world.getState();
@@ -80,6 +82,11 @@ function generateAgentEvent(agent) {
     };
   }
 
+  // Don't generate events for agents currently working in a building
+  if (agent.state === 'working' && agent.location?.building) {
+    return null;
+  }
+
   if (roll < 0.4) {
     // Move 1-2 tiles
     const dx = randomInt(-2, 2);
@@ -106,6 +113,42 @@ function generateAgentEvent(agent) {
     // State change
     const newState = randomItem(STATES.filter(s => s !== agent.state));
     const from = agent.state;
+
+    // If transitioning to 'working', trigger building work
+    if (newState === 'working') {
+      const buildingId = world.getBuildingForAgent(agent.id);
+      const building = worldState.buildings[buildingId];
+      if (building) {
+        world.startWork(agent.id, buildingId);
+
+        // Emit agent:work start event
+        onEvent({
+          type: 'agent:work',
+          agentId: agent.id,
+          buildingId,
+          buildingName: building.name,
+          action: 'start',
+        });
+
+        // Schedule completion after 45-90 seconds
+        const completionDelay = randomInt(45000, 90000);
+        pendingWorkCompletions.push({
+          agentId: agent.id,
+          buildingId,
+          buildingName: building.name,
+          scheduledAt: Date.now(),
+          delay: completionDelay,
+        });
+
+        return {
+          type: 'agent:state',
+          agentId: agent.id,
+          from,
+          to: 'working',
+        };
+      }
+    }
+
     world.updateAgent(agent.id, { state: newState });
     return {
       type: 'agent:state',
@@ -121,13 +164,11 @@ function generateAgentEvent(agent) {
     const others = onlineAgents.filter(a => a.id !== agent.id);
 
     if (others.length > 0 && Math.random() < 0.3) {
-      // @mention conversation
       const target = randomItem(others);
       const pair = randomItem(MENTION_OPENERS);
       const message = fillTemplate(pair.call, agent.name, target.name);
       const responseText = fillTemplate(randomItem(pair.responses), agent.name, target.name);
 
-      // Schedule the response after 2-5s
       pendingResponses.push({
         agentId: target.id,
         message: responseText,
@@ -143,7 +184,6 @@ function generateAgentEvent(agent) {
       };
     }
 
-    // Solo monologue
     const phrases = PHRASES[agent.id] || PHRASES.default;
     const message = randomItem(phrases);
     return {
@@ -167,14 +207,15 @@ function generateAgentEvent(agent) {
 }
 
 function startAgentSimulation(onEvent) {
-  // Check for pending @mention responses
+  // Check for pending @mention responses and work completions
   setInterval(() => {
     const now = Date.now();
+
+    // Pending @mention responses
     for (let i = pendingResponses.length - 1; i >= 0; i--) {
       const pending = pendingResponses[i];
       if (now - pending.scheduledAt >= pending.delay) {
         pendingResponses.splice(i, 1);
-        // Only respond if agent is still online
         const agent = world.getState().agents[pending.agentId];
         if (agent && agent.online) {
           onEvent({
@@ -186,6 +227,47 @@ function startAgentSimulation(onEvent) {
         }
       }
     }
+
+    // Pending work completions
+    for (let i = pendingWorkCompletions.length - 1; i >= 0; i--) {
+      const pending = pendingWorkCompletions[i];
+      if (now - pending.scheduledAt >= pending.delay) {
+        pendingWorkCompletions.splice(i, 1);
+        const agent = world.getState().agents[pending.agentId];
+        if (!agent || !agent.online) continue;
+
+        const result = world.completeUpgrade(pending.agentId, pending.buildingId);
+        if (!result) continue;
+
+        // Emit agent:work complete
+        onEvent({
+          type: 'agent:work',
+          agentId: pending.agentId,
+          buildingId: pending.buildingId,
+          buildingName: pending.buildingName,
+          action: 'complete',
+        });
+
+        // If building actually leveled up, emit building:upgraded
+        if (result.building) {
+          onEvent({
+            type: 'building:upgraded',
+            buildingId: pending.buildingId,
+            buildingName: result.building.name,
+            level: result.building.level,
+            record: result.record,
+          });
+        }
+
+        // Return agent to idle
+        onEvent({
+          type: 'agent:state',
+          agentId: pending.agentId,
+          from: 'working',
+          to: 'idle',
+        });
+      }
+    }
   }, 500);
 
   function scheduleNext() {
@@ -195,7 +277,7 @@ function startAgentSimulation(onEvent) {
 
       if (onlineAgents.length > 0) {
         const agent = randomItem(onlineAgents);
-        const event = generateAgentEvent(agent);
+        const event = generateAgentEvent(agent, onEvent);
         if (event) {
           onEvent(event);
         }

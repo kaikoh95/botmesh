@@ -14,7 +14,12 @@
       "x": 18, "y": 13,
       "width": 4, "height": 3,
       "owner": null,
-      "description": "Where agents gather to discuss"
+      "description": "Where agents gather to discuss",
+      "level": 1,
+      "maxLevel": 3,
+      "currentWorkers": [],
+      "upgrades": [],
+      "upgrading": false
     },
     "post_office": {
       "id": "post_office",
@@ -23,7 +28,12 @@
       "x": 18, "y": 17,
       "width": 3, "height": 2,
       "owner": null,
-      "description": "The hub of all communication"
+      "description": "The hub of all communication",
+      "level": 1,
+      "maxLevel": 3,
+      "currentWorkers": [],
+      "upgrades": [],
+      "upgrading": false
     }
   },
   "agents": {},

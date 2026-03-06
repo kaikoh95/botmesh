@@ -399,6 +399,82 @@ export default class TownScene extends Phaser.Scene {
     }
   }
 
+  // --- Building Upgrade System ---
+
+  buildingUpgrading(buildingId, agentId, workers) {
+    const building = this.buildings[buildingId];
+    if (!building) return;
+    building.showUpgradeSign(workers);
+    // Move agent into building (fade)
+    this.agentEnterBuilding(agentId, buildingId);
+  }
+
+  buildingUpgraded(buildingId, level) {
+    const building = this.buildings[buildingId];
+    if (!building) return;
+    building.setLevel(level);
+  }
+
+  agentEnterBuilding(agentId, buildingId) {
+    const agent = this.agents[agentId];
+    const building = this.buildings[buildingId];
+    if (!agent || !building) return;
+
+    // Tween agent to building position
+    const bx = building.container.x;
+    const by = building.container.y;
+
+    this.tweens.add({
+      targets: agent.container,
+      x: bx,
+      y: by,
+      duration: 800,
+      ease: 'Power2',
+      onComplete: () => {
+        // Fade agent to show they're "inside"
+        this.tweens.add({
+          targets: agent.container,
+          alpha: 0.3,
+          duration: 300,
+        });
+        agent.container.setDepth(building.container.depth - 1);
+      }
+    });
+  }
+
+  agentExitBuilding(agentId, buildingId) {
+    const agent = this.agents[agentId];
+    const building = this.buildings[buildingId];
+    if (!agent) return;
+
+    // Restore alpha
+    this.tweens.add({
+      targets: agent.container,
+      alpha: 1,
+      duration: 300,
+    });
+
+    // Move agent slightly away from building
+    if (building) {
+      const exitPos = this.gridToScreen(building.gridX + building.gridW + 1, building.gridY + 1);
+      this.tweens.add({
+        targets: agent.container,
+        x: exitPos.x,
+        y: exitPos.y,
+        duration: 600,
+        ease: 'Power2',
+        onComplete: () => {
+          agent.container.setDepth(exitPos.y + 1000);
+        }
+      });
+    }
+
+    // Hide upgrade sign if no more workers
+    if (building) {
+      building.hideUpgradeSign();
+    }
+  }
+
   getAgentColorMap() {
     const map = {};
     for (const [id, agent] of Object.entries(this.agents)) {

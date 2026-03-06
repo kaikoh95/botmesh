@@ -238,6 +238,101 @@ html, body {
   background: rgba(126,200,227,0.1);
 }
 
+/* --- Building panel --- */
+.building-panel {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 240px;
+  background: rgba(22, 33, 62, 0.95);
+  border: 2px solid #0f3460;
+  border-radius: 8px;
+  z-index: 100;
+  color: #e0d8c8;
+  font-size: 12px;
+  overflow: hidden;
+  animation: fadeIn 0.2s ease-in;
+}
+
+.building-panel.hidden {
+  display: none;
+}
+
+.building-panel .panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 12px;
+  background: #0f3460;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 10px;
+  color: #e8d5a3;
+  gap: 8px;
+}
+
+.building-panel .panel-header button {
+  background: none;
+  border: none;
+  color: #888;
+  cursor: pointer;
+  font-size: 14px;
+  padding: 0 4px;
+}
+
+.building-panel .panel-header button:hover {
+  color: #e74c3c;
+}
+
+.building-panel .panel-section {
+  padding: 8px 12px;
+  border-top: 1px solid rgba(255,255,255,0.05);
+}
+
+.building-panel .panel-section h4 {
+  font-size: 9px;
+  font-family: 'Press Start 2P', monospace;
+  color: #7ec8e3;
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.panel-worker {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-right: 8px;
+  margin-bottom: 4px;
+  font-size: 11px;
+}
+
+.panel-empty {
+  color: #555;
+  font-style: italic;
+  font-size: 11px;
+}
+
+.panel-upgrade {
+  font-size: 11px;
+  padding: 2px 0;
+  color: #c8c0b0;
+}
+
+.panel-upgrade .panel-time {
+  color: #666;
+  font-size: 9px;
+  float: right;
+}
+
+/* --- Gazette entry colors for new types --- */
+.gazette-entry[data-type="agent:work"] {
+  border-left-color: #e67e22;
+}
+.gazette-entry[data-type="building:upgraded"] {
+  border-left-color: #f1c40f;
+  background: rgba(241, 196, 15, 0.05);
+}
+
 /* --- Empty state --- */
 .empty-state {
   text-align: center;

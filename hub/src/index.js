@@ -71,6 +71,26 @@ function handleMessage(ws, msg) {
     case 'command':
       handleCommand(ws, msg.payload);
       break;
+    case 'agent:speak': {
+      const agentId = socketToAgent.get(ws);
+      if (!agentId) break;
+      const { message, target } = msg.payload || {};
+      if (!message) break;
+      const event = createEvent('agent:speak', { agentId, message, target: target || null });
+      broadcast(wss, event);
+      addToGazette(event);
+      break;
+    }
+    case 'agent:move': {
+      const agentId = socketToAgent.get(ws);
+      if (!agentId) break;
+      const { to } = msg.payload || {};
+      if (!to) break;
+      world.moveAgent(agentId, to.x, to.y);
+      const event = createEvent('agent:move', { agentId, to });
+      broadcast(wss, event);
+      break;
+    }
     default:
       console.log(`[Hub] Unknown message type: ${msg.type}`);
   }
@@ -173,6 +193,10 @@ function gazetteContent(event) {
     case 'agent:move': return `${p.agentId} moved to (${p.to.x}, ${p.to.y}).`;
     case 'agent:state': return `${p.agentId} is now ${p.to}.`;
     case 'agent:mood': return `${p.agentId} feels ${p.to}.`;
+    case 'agent:work': return p.action === 'start'
+      ? `${p.agentId} entered ${p.buildingName} to work.`
+      : `${p.agentId} finished working at ${p.buildingName}.`;
+    case 'building:upgraded': return `${p.buildingName} upgraded to Level ${p.level} by ${p.record?.agentName}.`;
     default: return event.type;
   }
 }
@@ -191,7 +215,7 @@ startAgentSimulation((eventPayload) => {
   broadcast(wss, event);
 
   // Add speech/actions to gazette
-  if (['agent:speak', 'agent:action', 'agent:state', 'agent:mood', 'agent:move'].includes(event.type)) {
+  if (['agent:speak', 'agent:action', 'agent:state', 'agent:mood', 'agent:move', 'agent:work', 'building:upgraded'].includes(event.type)) {
     addToGazette(event);
   }
 });

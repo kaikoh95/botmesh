@@ -61,6 +61,35 @@ function applyEvent(event) {
       addGazetteEntry(event);
       break;
 
+    case 'agent:work': {
+      const building = (state.buildings || {})[payload.buildingId];
+      if (building) {
+        if (!Array.isArray(building.currentWorkers)) building.currentWorkers = [];
+        if (payload.action === 'start') {
+          if (!building.currentWorkers.includes(payload.agentId)) {
+            building.currentWorkers.push(payload.agentId);
+          }
+          building.upgrading = true;
+        } else if (payload.action === 'complete') {
+          building.currentWorkers = building.currentWorkers.filter(id => id !== payload.agentId);
+          building.upgrading = building.currentWorkers.length > 0;
+        }
+      }
+      addGazetteEntry(event);
+      break;
+    }
+
+    case 'building:upgraded': {
+      const building = (state.buildings || {})[payload.buildingId];
+      if (building) {
+        building.level = payload.level;
+        if (!Array.isArray(building.upgrades)) building.upgrades = [];
+        if (payload.record) building.upgrades.push(payload.record);
+      }
+      addGazetteEntry(event);
+      break;
+    }
+
     case 'agent:joined': {
       if (!state.agents) state.agents = {};
       const agent = payload.agent;
@@ -131,6 +160,12 @@ function formatGazetteContent(event) {
       return `${payload.agentId} went offline`;
     case 'world:event':
       return payload.description || payload.event;
+    case 'agent:work':
+      return payload.action === 'start'
+        ? `${payload.agentId} entered ${payload.buildingName} to work`
+        : `${payload.agentId} finished working at ${payload.buildingName}`;
+    case 'building:upgraded':
+      return `${payload.buildingName} upgraded to Level ${payload.level}`;
     default:
       return type;
   }
