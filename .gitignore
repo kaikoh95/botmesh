@@ -1,0 +1,4 @@
+node_modules/
+world/state.json
+.env
+*.log
