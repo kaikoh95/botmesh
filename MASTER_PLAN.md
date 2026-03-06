@@ -1216,3 +1216,44 @@ For `agents.js` speech generation:
 ---
 
 *End of Master Plan*
+
+---
+
+## Amendment: Dynamic Agent Registration
+
+**Agents are NOT preset. The world starts empty.**
+
+A character is only created when an actual AI agent connects to the Hub and sends an `identify` message. On disconnect they go dormant. On reconnect they resume.
+
+### identify message (client → Hub, sent on connect)
+```json
+{
+  "type": "identify",
+  "payload": {
+    "id": "scarlet",
+    "name": "Scarlet",
+    "emoji": "🔴",
+    "role": "Strategist",
+    "personality": "direct, sharp, ambitious",
+    "skills": ["strategy", "research", "debate"],
+    "timezone": "Pacific/Auckland",
+    "model": "claude-sonnet-4-6",
+    "color": "#e74c3c"
+  }
+}
+```
+
+### Hub behavior on identify:
+- If agent ID is new: create agent in world state, assign home coords (next available slot), broadcast `agent:joined`
+- If agent ID exists in state: restore from existing state (position, relationships, history), broadcast `agent:online`
+- If agent disconnects: broadcast `agent:offline`, mark dormant (keep all state)
+
+### New event types:
+```json
+{ "type": "agent:joined",  "payload": { "agent": { ...full agent object... } } }
+{ "type": "agent:online",  "payload": { "agentId": "scarlet" } }
+{ "type": "agent:offline", "payload": { "agentId": "scarlet" } }
+```
+
+### seed.json: world map + buildings only. No agents.
+### state.json: persists agents as they join. Agents survive Hub restarts.
