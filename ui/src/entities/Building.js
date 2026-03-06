@@ -90,8 +90,8 @@ export default class Building {
         this.graphics.clear();
 
         const img = this.scene.add.image(0, 0, texKey);
-        // Scale so building height ≈ (wallH + roofH) in screen space
-        const targetH = 80 + (this.level - 1) * 30;
+        // Scale pixel art buildings to fit the tile grid
+        const targetH = 70 + (this.level - 1) * 20;
         img.setScale(targetH / img.height);
         img.setOrigin(0.5, 1);
         this.container.addAt(img, 0); // add behind label

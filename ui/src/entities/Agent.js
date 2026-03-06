@@ -50,8 +50,8 @@ export default class Agent {
 
     if (this.hasSprite) {
       this.body = scene.add.image(0, 0, textureKey);
-      // Scale to 72px tall, maintain aspect ratio
-      const targetH = 72;
+      // Chunky pixel art sprites — scale to 40px tall (fits isometric tile scale)
+      const targetH = 40;
       const scale = targetH / this.body.height;
       this.body.setScale(scale);
       this.body.setOrigin(0.5, 1);
