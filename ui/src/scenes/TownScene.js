@@ -18,6 +18,13 @@ export default class TownScene extends Phaser.Scene {
     this.onAgentClick = null; // callback set by main.js
   }
 
+  preload() {
+    const spriteAgents = ['scarlet', 'lumen', 'canvas'];
+    for (const id of spriteAgents) {
+      this.load.image(`agent-${id}`, `assets/sprites/${id}.png`);
+    }
+  }
+
   create() {
     this.cameras.main.setBackgroundColor('#4a7c59');
 

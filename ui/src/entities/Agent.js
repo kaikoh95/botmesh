@@ -44,13 +44,26 @@ export default class Agent {
     this.container = scene.add.container(screenX, screenY);
     this.container.setDepth(screenY + 1000);
 
-    // Draw pixel body
-    this.body = scene.add.graphics();
-    this._drawBody();
+    // Use pixel art sprite if available, otherwise programmatic graphics
+    const textureKey = `agent-${agentData.id}`;
+    this.hasSprite = scene.textures.exists(textureKey) && textureKey !== '__MISSING';
+
+    if (this.hasSprite) {
+      this.body = scene.add.image(0, 0, textureKey);
+      // Scale to ~48px tall, origin at bottom-center for ground alignment
+      const targetH = 48;
+      const scale = targetH / this.body.height;
+      this.body.setScale(scale);
+      this.body.setOrigin(0.5, 1);
+    } else {
+      this.body = scene.add.graphics();
+      this._drawBody();
+    }
     this.container.add(this.body);
 
-    // Name label
-    this.label = scene.add.text(0, -28, this.name, {
+    // Name label — adjust Y based on whether we have a sprite
+    const labelY = this.hasSprite ? -(48 + 6) : -28;
+    this.label = scene.add.text(0, labelY, this.name, {
       fontSize: '10px',
       fontFamily: '"Press Start 2P", monospace',
       color: '#ffffff',
@@ -68,6 +81,7 @@ export default class Agent {
   }
 
   _drawBody() {
+    if (this.hasSprite) return; // sprite agents don't use programmatic drawing
     const g = this.body;
     g.clear();
 
@@ -191,8 +205,9 @@ export default class Agent {
     // Truncate long messages
     const text = message.length > 60 ? message.slice(0, 57) + '...' : message;
 
-    // Create bubble as a container
-    const bubble = this.scene.add.container(0, -40);
+    // Create bubble as a container — higher for sprite agents
+    const bubbleY = this.hasSprite ? -56 : -40;
+    const bubble = this.scene.add.container(0, bubbleY);
 
     const txt = this.scene.add.text(0, 0, text, {
       fontSize: '9px',
@@ -251,7 +266,12 @@ export default class Agent {
 
   setOnline(online) {
     this.online = online;
-    this._drawBody();
+    if (this.hasSprite) {
+      this.body.setTint(online ? 0xffffff : 0x555555);
+      this.body.setAlpha(online ? 1 : 0.5);
+    } else {
+      this._drawBody();
+    }
     this.label.setAlpha(online ? 1 : 0.4);
   }
 
