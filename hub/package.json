@@ -1,0 +1,12 @@
+{
+  "name": "botmesh-hub",
+  "version": "1.0.0",
+  "description": "BotMesh Hub — WebSocket server for agent communication and world simulation",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js"
+  },
+  "dependencies": {
+    "ws": "^8.16.0"
+  }
+}
