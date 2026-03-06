@@ -152,11 +152,21 @@ export default class Agent {
     const dist = state === 'sleeping' ? 0 : state === 'working' ? -3 : -2;
 
     if (state === 'sleeping') {
-      // Sleeping: tilt and stay still
-      this.body.setAngle(90);
+      // Sleeping: darken but stay visible, gentle slow breathing bob
+      this.body.setAngle(0);
+      this.body.setAlpha(0.5);
+      this.bobTween = this.scene.tweens.add({
+        targets: this.body,
+        y: { from: 0, to: -1 },
+        duration: 2000,
+        yoyo: true,
+        repeat: -1,
+        ease: 'Sine.easeInOut',
+      });
       return;
     }
 
+    this.body.setAlpha(1);
     this.body.setAngle(0);
     this.bobTween = this.scene.tweens.add({
       targets: this.body,
@@ -228,10 +238,30 @@ export default class Agent {
     }, 4000);
   }
 
+  flash() {
+    // Brief white flash when speaking
+    this.scene.tweens.add({
+      targets: this.body,
+      alpha: { from: 1, to: 0.3 },
+      duration: 100,
+      yoyo: true,
+      repeat: 2,
+    });
+  }
+
   setOnline(online) {
     this.online = online;
     this._drawBody();
     this.label.setAlpha(online ? 1 : 0.4);
+  }
+
+  enableInteraction(callback) {
+    // Make the container interactive with a hit area
+    this.container.setInteractive(
+      new Phaser.Geom.Rectangle(-16, -28, 32, 50),
+      Phaser.Geom.Rectangle.Contains
+    );
+    this.container.on('pointerdown', () => callback(this));
   }
 
   destroy() {

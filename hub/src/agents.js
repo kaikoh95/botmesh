@@ -1,6 +1,7 @@
 /**
  * Agent simulation — random movement, speech, state changes.
  * Only simulates ONLINE agents. World starts empty.
+ * Supports @mentions and agent-to-agent conversation.
  */
 
 const world = require('./world');
@@ -15,8 +16,23 @@ const PHRASES = {
   ],
 };
 
+// Call/response pairs for @mention conversations
+const MENTION_OPENERS = [
+  { call: 'Hey @{target}, what do you think about this?', responses: ['Hmm, let me think about that...', 'I have some ideas actually.', 'Good question, @{speaker}.'] },
+  { call: 'I see an opportunity here @{target}', responses: ['Show me the spec @{speaker}.', 'Tell me more @{speaker}.', 'I\'m listening @{speaker}.'] },
+  { call: '@{target}, have you seen anything interesting lately?', responses: ['Actually yes! Something caught my eye.', 'Not yet, but I\'m looking @{speaker}.', 'Let me check my notes...'] },
+  { call: 'Working on something cool @{target}, want to help?', responses: ['Always! What do you need @{speaker}?', 'Count me in @{speaker}.', 'Depends... what is it?'] },
+  { call: '@{target}, we should collaborate on this.', responses: ['Agreed, let\'s make it happen @{speaker}.', 'I was thinking the same thing!', 'What did you have in mind @{speaker}?'] },
+  { call: 'Just had a breakthrough @{target}!', responses: ['No way! Tell me everything @{speaker}.', 'That\'s exciting! Details?', 'I knew you could do it @{speaker}!'] },
+  { call: '@{target}, remember what we discussed?', responses: ['Of course, I\'ve been thinking about it.', 'Which part? We covered a lot @{speaker}.', 'Yes! And I have an update.'] },
+  { call: 'Heads up @{target}, something\'s changed.', responses: ['Thanks for the warning @{speaker}.', 'What happened?', 'I noticed that too @{speaker}.'] },
+];
+
 const STATES = ['idle', 'walking', 'working', 'talking'];
 const MOODS = ['content', 'excited', 'focused', 'tired', 'curious'];
+
+// Track pending responses
+const pendingResponses = [];
 
 function randomItem(arr) {
   return arr[Math.floor(Math.random() * arr.length)];
@@ -28,6 +44,10 @@ function randomInt(min, max) {
 
 function clamp(val, min, max) {
   return Math.max(min, Math.min(max, val));
+}
+
+function fillTemplate(template, speaker, target) {
+  return template.replace(/\{speaker\}/g, speaker).replace(/\{target\}/g, target);
 }
 
 function generateAgentEvent(agent) {
@@ -96,7 +116,34 @@ function generateAgentEvent(agent) {
   }
 
   if (roll < 0.9) {
-    // Speak
+    // Speak — 30% chance to @mention another agent
+    const onlineAgents = world.getOnlineAgents();
+    const others = onlineAgents.filter(a => a.id !== agent.id);
+
+    if (others.length > 0 && Math.random() < 0.3) {
+      // @mention conversation
+      const target = randomItem(others);
+      const pair = randomItem(MENTION_OPENERS);
+      const message = fillTemplate(pair.call, agent.name, target.name);
+      const responseText = fillTemplate(randomItem(pair.responses), agent.name, target.name);
+
+      // Schedule the response after 2-5s
+      pendingResponses.push({
+        agentId: target.id,
+        message: responseText,
+        delay: randomInt(2000, 5000),
+        scheduledAt: Date.now(),
+      });
+
+      return {
+        type: 'agent:speak',
+        agentId: agent.id,
+        message,
+        target: target.id,
+      };
+    }
+
+    // Solo monologue
     const phrases = PHRASES[agent.id] || PHRASES.default;
     const message = randomItem(phrases);
     return {
@@ -120,6 +167,27 @@ function generateAgentEvent(agent) {
 }
 
 function startAgentSimulation(onEvent) {
+  // Check for pending @mention responses
+  setInterval(() => {
+    const now = Date.now();
+    for (let i = pendingResponses.length - 1; i >= 0; i--) {
+      const pending = pendingResponses[i];
+      if (now - pending.scheduledAt >= pending.delay) {
+        pendingResponses.splice(i, 1);
+        // Only respond if agent is still online
+        const agent = world.getState().agents[pending.agentId];
+        if (agent && agent.online) {
+          onEvent({
+            type: 'agent:speak',
+            agentId: pending.agentId,
+            message: pending.message,
+            target: null,
+          });
+        }
+      }
+    }
+  }, 500);
+
   function scheduleNext() {
     const delay = randomInt(5000, 15000);
     setTimeout(() => {

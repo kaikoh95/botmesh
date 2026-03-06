@@ -15,6 +15,7 @@ const ICONS = {
 const MAX_ENTRIES = 100;
 let feedEl = null;
 let agentColors = {};
+let agentEmojis = {};
 
 export function createGazette(container) {
   feedEl = container;
@@ -22,6 +23,23 @@ export function createGazette(container) {
 
 export function setAgentColors(colors) {
   agentColors = colors;
+}
+
+export function setAgentEmojis(emojis) {
+  agentEmojis = emojis;
+}
+
+export function setNightMode(isNight) {
+  if (!feedEl) return;
+  const existing = feedEl.querySelector('.night-banner');
+  if (isNight && !existing) {
+    const banner = document.createElement('div');
+    banner.className = 'night-banner';
+    banner.innerHTML = '\u{1F319} Town is asleep...';
+    feedEl.prepend(banner);
+  } else if (!isNight && existing) {
+    existing.remove();
+  }
 }
 
 export function addEntry(event) {
@@ -37,20 +55,33 @@ export function addEntry(event) {
 
   const icon = ICONS[event.type] || '\u2022';
   const time = formatTime(event.payload?.timestamp || new Date().toISOString());
-  const { agentName, content } = formatEvent(event);
+  const { agentName, content, agentId } = formatEvent(event);
 
-  const color = agentColors[event.payload?.agentId] || '#aaa';
+  const color = agentColors[agentId] || '#aaa';
+  const emoji = agentEmojis[agentId] || '';
 
-  el.innerHTML = `
-    <span class="entry-time">${time}</span>
-    <span class="entry-icon">${icon}</span>
-    ${agentName ? `<span class="entry-agent" style="color:${color}">${agentName}</span> ` : ''}
-    <span class="entry-content">${content}</span>
-  `;
+  // Speech entries get chat bubble styling
+  if (event.type === 'agent:speak') {
+    el.innerHTML = `
+      <span class="entry-time">${time}</span>
+      <div class="chat-bubble">
+        <span class="agent-dot" style="background:${color}"></span>
+        ${emoji ? `<span class="entry-emoji">${emoji}</span>` : ''}
+        <span class="entry-agent" style="color:${color}">${agentName}</span>
+        <div class="entry-content chat-message">${content}</div>
+      </div>
+    `;
+  } else {
+    el.innerHTML = `
+      <span class="entry-time">${time}</span>
+      <span class="entry-icon">${icon}</span>
+      ${agentName ? `<span class="agent-dot" style="background:${color}"></span><span class="entry-agent" style="color:${color}">${agentName}</span> ` : ''}
+      <span class="entry-content">${content}</span>
+    `;
+  }
 
   feedEl.prepend(el);
 
-  // Trim old entries
   while (feedEl.children.length > MAX_ENTRIES) {
     feedEl.removeChild(feedEl.lastChild);
   }
@@ -64,34 +95,34 @@ export function loadEntries(entries) {
 
 function formatEvent(event) {
   const p = event.payload || {};
-  const id = p.agentId || p.agent?.id;
-  const name = p.agent?.name || id;
+  const agentId = p.agentId || p.agent?.id;
+  const name = p.agent?.name || p.agentId || agentId;
 
   switch (event.type) {
     case 'agent:speak':
-      return { agentName: name, content: `"${p.message}"` };
+      return { agentId, agentName: name, content: p.message };
     case 'agent:move':
-      return { agentName: name, content: `moved to (${p.to?.x}, ${p.to?.y})` };
+      return { agentId, agentName: name, content: `moved to (${p.to?.x}, ${p.to?.y})` };
     case 'agent:action':
-      return { agentName: name, content: `${p.action}${p.target ? ' on ' + p.target : ''}` };
+      return { agentId, agentName: name, content: `${p.action}${p.target ? ' on ' + p.target : ''}` };
     case 'agent:state':
-      return { agentName: name, content: `now ${p.to}` };
+      return { agentId, agentName: name, content: `now ${p.to}` };
     case 'agent:mood':
-      return { agentName: name, content: `feeling ${p.to}` };
+      return { agentId, agentName: name, content: `feeling ${p.to}` };
     case 'agent:joined':
-      return { agentName: p.agent?.name || id, content: 'joined the town!' };
+      return { agentId: p.agent?.id, agentName: p.agent?.name || agentId, content: 'joined the town!' };
     case 'agent:online':
-      return { agentName: name, content: 'came online' };
+      return { agentId, agentName: name, content: 'came online' };
     case 'agent:offline':
-      return { agentName: name, content: 'went offline' };
+      return { agentId, agentName: name, content: 'went offline' };
     case 'time:tick':
-      return { agentName: null, content: `${p.period} - ${String(p.hour).padStart(2,'0')}:${String(p.minute).padStart(2,'0')}` };
+      return { agentId: null, agentName: null, content: `${p.period} \u2014 ${String(p.hour).padStart(2,'0')}:${String(p.minute).padStart(2,'0')}` };
     case 'world:event':
-      return { agentName: null, content: p.description || p.event };
+      return { agentId: null, agentName: null, content: p.description || p.event };
     case 'system:start':
-      return { agentName: null, content: 'World started' };
+      return { agentId: null, agentName: null, content: 'World started' };
     default:
-      return { agentName: name, content: JSON.stringify(p) };
+      return { agentId, agentName: name, content: JSON.stringify(p) };
   }
 }
 

@@ -1,4 +1,4 @@
-const STATE_URL = 'http://localhost:3002';
+const STATE_URL = 'https://employer-awesome-leaving-translation.trycloudflare.com';
 
 export function createStateClient({ onEvent, onStateSync, onConnect, onDisconnect }) {
   let evtSource = null;
