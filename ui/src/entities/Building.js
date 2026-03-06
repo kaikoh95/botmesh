@@ -99,12 +99,15 @@ export default class Building {
         const scale = Math.round(rawScale * 4) / 4 || rawScale;
         img.setScale(scale);
         const spriteH = img.height * scale;
-        img.setOrigin(0.5, 1); // anchor at bottom-center (ground level)
+        // Anchor at 50% x, 85% y — places the isometric ground base correctly
+        img.setOrigin(0.5, 0.85);
+        // Shift up slightly so base sits on the ground plane
+        img.setY(-(spriteH * 0.15));
         this.container.addAt(img, 0); // add behind label
         this.spriteImg = img;
 
         // Update label above sprite
-        this.label.setPosition(0, -(spriteH + 8));
+        this.label.setPosition(0, -(spriteH * 0.85 + 8));
         this.label.setText(`${this.name} Lv${this.level}`);
         return; // skip programmatic draw
       }
