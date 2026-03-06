@@ -1,0 +1,194 @@
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: #1a1a2e;
+  font-family: 'Courier New', monospace;
+  color: #e0d8c8;
+}
+
+#app {
+  display: flex;
+  width: 100vw;
+  height: 100vh;
+}
+
+/* --- Left: Game --- */
+#game-container {
+  width: 65%;
+  height: 100%;
+  background: #2d5a3d;
+  position: relative;
+}
+
+#game-container canvas {
+  display: block;
+}
+
+/* --- Right: Gazette --- */
+#gazette-container {
+  width: 35%;
+  height: 100%;
+  background: #16213e;
+  display: flex;
+  flex-direction: column;
+  border-left: 2px solid #0f3460;
+}
+
+#gazette-header {
+  padding: 12px 16px;
+  background: #0f3460;
+  border-bottom: 2px solid #1a1a5e;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+#gazette-header h2 {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 14px;
+  color: #e8d5a3;
+  letter-spacing: 1px;
+}
+
+#world-clock {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 10px;
+  color: #7ec8e3;
+}
+
+/* --- Agent Roster --- */
+#agent-roster {
+  padding: 8px 16px;
+  background: #1a1a3e;
+  border-bottom: 1px solid #0f3460;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  flex-shrink: 0;
+  min-height: 24px;
+}
+
+.roster-agent {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 10px;
+  background: rgba(255,255,255,0.05);
+}
+
+.roster-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.roster-agent.offline {
+  opacity: 0.4;
+}
+
+.roster-agent.offline .roster-dot {
+  background: #555 !important;
+}
+
+/* --- Gazette Feed --- */
+#gazette-feed {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px 12px;
+}
+
+#gazette-feed::-webkit-scrollbar {
+  width: 6px;
+}
+
+#gazette-feed::-webkit-scrollbar-track {
+  background: #16213e;
+}
+
+#gazette-feed::-webkit-scrollbar-thumb {
+  background: #0f3460;
+  border-radius: 3px;
+}
+
+.gazette-entry {
+  padding: 8px 10px;
+  margin-bottom: 6px;
+  border-radius: 4px;
+  background: rgba(255,255,255,0.03);
+  border-left: 3px solid #333;
+  animation: fadeIn 0.3s ease-in;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.gazette-entry .entry-icon {
+  margin-right: 4px;
+}
+
+.gazette-entry .entry-agent {
+  font-weight: bold;
+}
+
+.gazette-entry .entry-time {
+  float: right;
+  font-size: 10px;
+  color: #666;
+}
+
+.gazette-entry .entry-content {
+  color: #c8c0b0;
+}
+
+/* Entry type colors */
+.gazette-entry[data-type="agent:speak"] {
+  border-left-color: #e8d5a3;
+}
+.gazette-entry[data-type="agent:joined"] {
+  border-left-color: #27ae60;
+}
+.gazette-entry[data-type="agent:online"] {
+  border-left-color: #3498db;
+}
+.gazette-entry[data-type="agent:offline"] {
+  border-left-color: #7f8c8d;
+}
+.gazette-entry[data-type="agent:move"] {
+  border-left-color: #8e7cc3;
+}
+.gazette-entry[data-type="agent:action"] {
+  border-left-color: #e67e22;
+}
+.gazette-entry[data-type="time:tick"] {
+  border-left-color: #7ec8e3;
+  opacity: 0.6;
+  font-size: 11px;
+}
+.gazette-entry[data-type="world:event"] {
+  border-left-color: #f39c12;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* --- Empty state --- */
+.empty-state {
+  text-align: center;
+  padding: 40px 20px;
+  color: #555;
+  font-style: italic;
+}
