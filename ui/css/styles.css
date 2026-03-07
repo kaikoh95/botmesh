@@ -125,6 +125,53 @@ html, body {
   letter-spacing: 1px;
 }
 
+.cron-view-btn {
+  margin-top: 10px;
+  width: 100%;
+  padding: 6px 10px;
+  background: #2c3e50;
+  color: #e8d5a3;
+  border: 1px solid #e8c97e44;
+  border-radius: 4px;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 8px;
+  cursor: pointer;
+  text-align: center;
+  transition: background 0.2s;
+}
+.cron-view-btn:hover { background: #3d5166; }
+
+.cron-list {
+  margin-top: 8px;
+  border-top: 1px solid #ffffff15;
+  padding-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.cron-list.hidden { display: none; }
+
+.cron-entry {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 5px 6px;
+  background: #ffffff08;
+  border-radius: 3px;
+  border-left: 2px solid #e8c97e66;
+}
+.cron-schedule {
+  font-family: 'Courier New', monospace;
+  font-size: 9px;
+  color: #e8c97e;
+}
+.cron-cmd {
+  font-family: 'Courier New', monospace;
+  font-size: 9px;
+  color: #aaaaaa;
+  word-break: break-all;
+}
+
 .upgrade-row {
   display: flex;
   justify-content: space-between;

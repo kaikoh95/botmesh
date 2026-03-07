@@ -30,19 +30,54 @@ const Panels = {
     ];
     if (agent.mood) rows.push({ label: 'Mood', value: agent.mood });
 
+    const isDormant = agent.online === false || agent.state === 'dormant';
+    const statusBadge = isDormant ? '💤 Dormant' : '🟢 Active';
+
+    // Cronos gets a special "View Crons" button
+    const cronosBtn = agentId === 'cronos'
+      ? `<button class="cron-view-btn" id="view-crons-btn">⏰ View Active Crons</button>`
+      : '';
+
     panel.innerHTML = `
       <div class="panel-accent-bar" style="background:${color}"></div>
       <div class="panel-titlebar">
         <span class="panel-title">${agent.emoji || ''} ${agent.name || agentId}</span>
-        <span class="panel-subtitle">${agent.online !== false ? '🟢 Online' : '⚫ Offline'}</span>
+        <span class="panel-subtitle">${statusBadge}</span>
         <button class="panel-close" id="agent-panel-close">✕</button>
       </div>
       <div class="panel-body">
         ${rows.map(r => `<div class="panel-row"><span class="row-label">${r.label}</span><span class="row-value">${r.value}</span></div>`).join('')}
+        ${cronosBtn}
+        <div id="cron-list" class="cron-list hidden"></div>
       </div>
     `;
     panel.classList.remove('hidden');
     document.getElementById('agent-panel-close').onclick = () => panel.classList.add('hidden');
+
+    if (agentId === 'cronos') {
+      document.getElementById('view-crons-btn').onclick = async () => {
+        const listEl = document.getElementById('cron-list');
+        listEl.innerHTML = '<div style="color:#aaa;font-size:10px">Loading...</div>';
+        listEl.classList.remove('hidden');
+        try {
+          const STATE_URL = window.BOTMESH_STATE_URL || 'http://localhost:3002';
+          const res = await fetch(`${STATE_URL}/crons`);
+          const { crons } = await res.json();
+          if (!crons.length) {
+            listEl.innerHTML = '<div style="color:#555;font-size:10px">No crons found</div>';
+            return;
+          }
+          listEl.innerHTML = crons.map(c => `
+            <div class="cron-entry">
+              <span class="cron-schedule">${c.schedule}</span>
+              <span class="cron-cmd">${c.command.split('/').pop().replace(/\s.*/, '')}</span>
+            </div>
+          `).join('');
+        } catch (e) {
+          listEl.innerHTML = `<div style="color:#c0392b;font-size:10px">Error: ${e.message}</div>`;
+        }
+      };
+    }
   },
 
   showBuilding(buildingId) {

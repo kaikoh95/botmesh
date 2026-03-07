@@ -1,4 +1,19 @@
 const express = require('express');
+const { execSync } = require('child_process');
+
+function parseCrontab(raw) {
+  return raw.split('\n')
+    .filter(l => l.trim() && !l.startsWith('#'))
+    .map(line => {
+      // Split into schedule (5 fields or @reboot) + command
+      const reboot = line.match(/^(@reboot)\s+(.+)$/);
+      if (reboot) return { schedule: '@reboot', command: reboot[2].trim() };
+      const m = line.match(/^(\S+\s+\S+\s+\S+\s+\S+\s+\S+)\s+(.+)$/);
+      if (!m) return null;
+      return { schedule: m[1], command: m[2].trim() };
+    })
+    .filter(Boolean);
+}
 
 function createRoutes(getState, sendCommand) {
   const router = express.Router();
@@ -39,6 +54,17 @@ function createRoutes(getState, sendCommand) {
   router.get('/time', (req, res) => {
     const state = getState();
     res.json({ time: state.time || {} });
+  });
+
+  // Active cron jobs — Cronos's domain
+  router.get('/crons', (req, res) => {
+    try {
+      const raw = execSync('crontab -l 2>/dev/null || true', { encoding: 'utf8' });
+      const crons = parseCrontab(raw);
+      res.json({ crons });
+    } catch (e) {
+      res.json({ crons: [], error: e.message });
+    }
   });
 
   // Gazette
