@@ -95,7 +95,7 @@ const TASKS = [
     done: () => {
       try {
         const code = fs.readFileSync(`${BOTMESH}/ui/src/main.js`, 'utf8');
-        return code.includes('dailyStats') || code.includes('msgs-today') || code.includes('stat-');
+        return code.includes('updateStats') || code.includes('dailyStats') || code.includes('msgs-today');
       } catch { return false; }
     },
     run: async () => {
@@ -322,6 +322,84 @@ agent.connect();
         console.error('[canvas-agent] pm2 start failed:', e.message);
       }
 
+      return true;
+    }
+  },
+
+  {
+    id: 'building-activity-glow',
+    title: 'Buildings glow when an agent is inside',
+    owner: 'forge',
+    brief: 'In Building.js setWorking(), set a warm yellow tint on the sprite when occupied. Clear tint when no workers remain.',
+    done: () => {
+      try {
+        const code = fs.readFileSync(`${BOTMESH}/ui/src/entities/Building.js`, 'utf8');
+        return code.includes('0xffeeaa') || (code.includes('setTint') && code.includes('clearTint'));
+      } catch { return false; }
+    },
+    run: async () => {
+      scarletSays('Forge, wire a warm glow to buildings when a citizen is inside. Tint on entry, clear on exit.');
+      forgeDoes('Wiring building glow — warm light when occupied.');
+
+      const bldJs = fs.readFileSync(`${BOTMESH}/ui/src/entities/Building.js`, 'utf8');
+      if (!bldJs.includes('0xffeeaa')) {
+        const patched = bldJs.replace(
+          /setWorking\(agentId, isWorking\) \{/,
+          `setWorking(agentId, isWorking) {
+    if (this.spriteImg) {
+      if (isWorking) { this.spriteImg.setTint(0xffeeaa); }
+      else if (!this.currentWorkers || this.currentWorkers.length <= 1) { this.spriteImg.clearTint(); }
+    }`
+        );
+        fs.writeFileSync(`${BOTMESH}/ui/src/entities/Building.js`, patched);
+      }
+      delegate('forge', 'Building glow wired. Warm amber when someone is inside.', 'work-done');
+      return true;
+    }
+  },
+
+  {
+    id: 'world-life-expand',
+    title: 'Expand world life — plant more nature as population grows',
+    owner: 'scarlet',
+    brief: 'Emit world:mutate plant events for sakura, bamboo, and zen sprites to fill out the world. Space them in different zones.',
+    done: () => {
+      try {
+        const state = JSON.parse(fs.readFileSync(`${BOTMESH}/world/state.json`, 'utf8'));
+        const lifeEntities = (state.world?.entities || []).filter(e => e.entity === 'life');
+        return lifeEntities.length >= 6;
+      } catch { return false; }
+    },
+    run: async () => {
+      scarletSays('The world needs more life. Planting sakura and bamboo groves around the town.');
+      const WebSocket = require('ws');
+      await new Promise((resolve) => {
+        const ws = new WebSocket(HUB_URL);
+        ws.on('open', () => {
+          ws.send(JSON.stringify({ type: 'identify', payload: { id: 'scarlet', name: 'Scarlet', emoji: '🔴', role: 'Orchestrator', color: '#e74c3c' }}));
+          const plants = [
+            { kind: 'sakura', x: 10, y: 8,  id: 'sakura-north-1' },
+            { kind: 'bamboo', x: 25, y: 10, id: 'bamboo-east-1' },
+            { kind: 'zen',    x: 8,  y: 20, id: 'zen-west-1' },
+            { kind: 'sakura', x: 22, y: 22, id: 'sakura-south-1' },
+            { kind: 'bamboo', x: 14, y: 6,  id: 'bamboo-north-2' },
+            { kind: 'koipond',x: 28, y: 18, id: 'koipond-east-1' },
+          ];
+          setTimeout(() => {
+            plants.forEach((p, i) => {
+              setTimeout(() => {
+                ws.send(JSON.stringify({ type: 'world:mutate', payload: { action: 'plant', entity: 'life', ...p }}));
+              }, i * 400);
+            });
+            setTimeout(() => {
+              ws.send(JSON.stringify({ type: 'agent:speak', payload: { message: 'Planted sakura, bamboo, and a koi pond. The town breathes now.' }}));
+              ws.close();
+              resolve();
+            }, plants.length * 400 + 500);
+          }, 1000);
+        });
+        ws.on('error', () => resolve());
+      });
       return true;
     }
   },
