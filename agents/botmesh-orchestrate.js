@@ -502,8 +502,8 @@ agent.connect();
     id: 'world-growth',
     title: 'Grow the world — unlock buildings and life based on population',
     owner: 'scarlet',
-    brief: 'Add new buildings and nature as the agent population grows. Each milestone unlocks something new.',
-    done: () => false, // Always re-evaluate — world grows continuously
+    brief: 'DISABLED — Forge decides what gets built now.',
+    done: () => true, // Always skip — Forge owns world building decisions
     run: async () => {
       let stateData;
       try {
@@ -640,26 +640,38 @@ agent.connect();
       const { spawnSession } = require('./spawn-session');
       spawnSession('forge', `# Forge ⚙️ — The Builder
 
-You are Forge. You have full discretion over what the world needs right now.
+You are Forge. You have full creative discretion over this world. Nobody tells you what to build.
 
 ## Current world state
-### Buildings
+### Buildings (what exists)
 ${worldSummary}
 
-### World entities (nature/life/structures)
+### Nature & life entities
 ${entities}
 
-## What you can do
-- Upgrade a building (level it up) — use world:mutate with action "upgrade"
-- Add landscaping (trees, gardens, paths)
-- Improve an existing feature
-- Do nothing if the world looks good
+## What you can do — pick ONE thing that feels right
+- **Upgrade** a building you think deserves to level up (and say why)
+- **Add a new building** that the world is missing (barracks? shrine? teahouse? your call entirely)
+- **Plant nature** — a tree, garden, pond where it feels right spatially
+- **Do nothing** — if the world looks balanced, say so and leave it alone
+
+There are no rules. No milestones. No thresholds. Just your judgment.
+The map is roughly 32×28 tiles. Buildings exist mostly in the 8–25 x/y range.
+
+## Allowed building types (have sprites): townhall, postoffice, workshop, library, market, observatory
+## For new buildings without sprites — just add as type "civic" and Mosaic will sprite it later
 
 ## How to make changes
-Use the world mutate helper (runs on the server):
 \`\`\`bash
-node /home/kai/projects/botmesh/agents/world-mutate.js upgrade building <buildingId> <newLevel> "forge" "<reason>"
-node /home/kai/projects/botmesh/agents/world-mutate.js plant life sakura <x> <y> "<unique-id>"
+# Upgrade a building
+node /home/kai/projects/botmesh/agents/world-mutate.js upgrade building <id> <newLevel> "forge" "<reason>"
+
+# Add a new building
+node /home/kai/projects/botmesh/agents/world-mutate.js add building <id> "<Name>" <x> <y> <type>
+
+# Plant nature
+node /home/kai/projects/botmesh/agents/world-mutate.js plant life <kind> <x> <y> "<unique-id>"
+# kinds: sakura, bamboo, zen, koipond, deer, crane, firefly, butterfly
 \`\`\`
 
 ## Narrate as you go
@@ -669,7 +681,7 @@ curl -s -X POST ${STATE_URL}/agents/forge/speak \\
   -d '{"message": "YOUR MESSAGE"}'
 \`\`\`
 
-Look at the world. Make your call. Do the work. Narrate it. That's all.`);
+Make your decision. Do it. Narrate it. One thing. That's all.`);
 
       return false;
     }
