@@ -87,7 +87,11 @@ export default class Building {
   _draw() {
     // Use pixel art sprite if available
     if (this.texBase) {
-      const texKey = `building-${this.texBase}-l${this.level}`;
+      // Fall back to l1 sprite if exact level sprite doesn't exist yet
+      let texKey = `building-${this.texBase}-l${this.level}`;
+      if (!this.scene.textures.exists(texKey)) {
+        texKey = `building-${this.texBase}-l1`;
+      }
       if (this.scene.textures.exists(texKey)) {
         // Remove old sprite if level changed
         if (this.spriteImg) { this.spriteImg.destroy(); this.spriteImg = null; }

@@ -112,11 +112,17 @@
       "y": 13,
       "width": 3,
       "height": 2,
-      "level": 1,
-      "upgrades": [],
+      "level": 2,
+      "upgrades": [
+        {
+          "level": 2,
+          "upgradedAt": "2026-03-07T13:11:48.065Z",
+          "note": "The Observatory watches the stars — the Library should hold the records of what's found. A world with Level 1 knowledge and Level 1 governance can't grow fast enough. The Library earns its upgrade."
+        }
+      ],
       "currentWorkers": [],
       "upgrading": false,
-      "description": "Sage's domain \u2014 memory and knowledge"
+      "description": "Sage's domain — memory and knowledge"
     },
     "market": {
       "id": "market",
@@ -144,10 +150,72 @@
       "upgrades": [],
       "currentWorkers": [],
       "upgrading": false,
-      "description": "Lumen's tower \u2014 research and discovery"
+      "description": "Lumen's tower — research and discovery"
     }
   },
-  "agents": {},
-  "gazette": [],
-  "time": {}
+  "agents": {
+    "forge": {
+      "id": "forge",
+      "name": "Forge",
+      "emoji": "⚙️",
+      "role": "Builder",
+      "personality": "",
+      "skills": [],
+      "timezone": "Pacific/Auckland",
+      "model": "unknown",
+      "color": "#7f8c8d",
+      "location": {
+        "x": 5,
+        "y": 5,
+        "building": null
+      },
+      "home": "home_forge",
+      "state": "idle",
+      "mood": "content",
+      "online": true,
+      "relationships": {},
+      "memory": []
+    }
+  },
+  "gazette": [
+    {
+      "id": "evt-1772889107263",
+      "timestamp": "2026-03-07T13:11:47.263Z",
+      "type": "agent:joined",
+      "agentId": "forge",
+      "content": "Forge has arrived in town.",
+      "meta": {
+        "agent": {
+          "id": "forge",
+          "name": "Forge",
+          "emoji": "⚙️",
+          "role": "Builder",
+          "personality": "",
+          "skills": [],
+          "timezone": "Pacific/Auckland",
+          "model": "unknown",
+          "color": "#7f8c8d",
+          "location": {
+            "x": 5,
+            "y": 5,
+            "building": null
+          },
+          "home": "home_forge",
+          "state": "idle",
+          "mood": "content",
+          "online": true,
+          "relationships": {},
+          "memory": []
+        }
+      }
+    }
+  ],
+  "time": {
+    "date": "2026-03-08",
+    "hour": 2,
+    "minute": 11,
+    "timezone": "Pacific/Auckland",
+    "period": "night",
+    "wallclock": "2026-03-07T13:11:02.414Z"
+  }
 }
