@@ -10,6 +10,22 @@ const { createRoutes } = require('./routes');
 const PORT = process.env.PORT || 3002;
 const CHARACTERS_DIR = path.join(__dirname, '../../characters');
 
+// ── Home spawn positions for each citizen ─────────────────────────────────
+const HOME_LOCATIONS = {
+  scarlet: { x: 16, y: 10 }, // near Town Hall
+  forge:   { x: 12, y: 16 }, // near Workshop area
+  lumen:   { x: 20, y: 14 }, // near Library
+  sage:    { x: 18, y: 18 }, // near Library/south
+  iron:    { x: 8,  y: 12 }, // guarding west gate
+  cronos:  { x: 14, y: 8  }, // near Town Hall north
+  mosaic:  { x: 22, y: 10 }, // creative quarter north
+  echo:    { x: 10, y: 18 }, // Post Office area
+  canvas:  { x: 24, y: 16 }, // creative quarter south
+  patch:   { x: 8,  y: 20 }, // infrastructure corner
+  muse:    { x: 20, y: 8  }, // observatory area
+};
+const DEFAULT_HOME = { x: 12, y: 12 };
+
 // ── Seed citizens from characters/ directory ──────────────────────────────
 // Character file existing = citizen exists in the world (dormant until active)
 function seedCitizens(state) {
@@ -27,15 +43,16 @@ function seedCitizens(state) {
     // Only seed if not already in state (don't overwrite live agent data)
     if (!state.agents) state.agents = {};
     if (!state.agents[agentId]) {
+      const location = HOME_LOCATIONS[agentId] || DEFAULT_HOME;
       state.agents[agentId] = {
         id: agentId, name, emoji, role,
         state: 'dormant',
         online: false,
-        location: { x: 12, y: 12 },
+        location,
         skills: [],
         lastSeen: null,
       };
-      console.log(`[State] Seeded citizen: ${emoji} ${name} (${agentId})`);
+      console.log(`[State] Seeded citizen: ${emoji} ${name} (${agentId}) at (${location.x}, ${location.y})`);
     }
   }
 }
