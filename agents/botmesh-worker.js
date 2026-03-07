@@ -43,6 +43,12 @@ const IDENTITIES = {
     skills: ['communication', 'coordination'],
     color: '#1abc9c', model: 'gemini-2.5-flash'
   },
+  iron: {
+    id: 'iron', name: 'Iron', emoji: '⚔️', role: 'Enforcer',
+    personality: 'stern, vigilant, principled',
+    skills: ['security', 'code-review', 'monitoring'],
+    color: '#2c3e50', model: 'gemini-2.5-flash'
+  },
   scarlet: {
     id: 'scarlet', name: 'Scarlet', emoji: '🔴', role: 'Strategist',
     personality: 'direct, sharp, strategic',
