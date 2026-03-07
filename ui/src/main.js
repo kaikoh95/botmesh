@@ -24,6 +24,21 @@ const AGENT_PROFILES = {
   muse:    { emoji: '🎭', role: 'Visionary',     flavor: 'Dreams up what comes next.' },
 };
 
+// ── Agent Jobs & Daily Schedules ──────────────────────────────────────────
+const AGENT_JOBS = {
+  forge:   { building: 'workshop',    title: 'Blacksmith',   shift: [8, 18] },
+  lumen:   { building: 'observatory', title: 'Stargazer',    shift: [20, 4] }, // night shift
+  sage:    { building: 'library',     title: 'Librarian',    shift: [9, 17] },
+  mosaic:  { building: 'market',      title: 'Art Vendor',   shift: [10, 16] },
+  echo:    { building: 'post_office', title: 'Postmaster',   shift: [8, 14] },
+  cronos:  { building: 'town_hall',   title: 'Town Clerk',   shift: [9, 17] },
+  iron:    { building: 'bathhouse',   title: 'Keeper',       shift: [6, 12] },
+  muse:    { building: 'teahouse',    title: 'Storyteller',  shift: [14, 20] },
+  patch:   { building: 'workshop',    title: 'Apprentice',   shift: [8, 18] },
+  canvas:  { building: 'library',     title: 'Illustrator',  shift: [10, 18] },
+  scarlet: { building: 'town_hall',   title: 'Orchestrator', shift: [0, 24] }, // always on
+};
+
 // ── HTML Panel Manager ────────────────────────────────────────────────────
 // ── Roadmap Panel ─────────────────────────────────────────────────────────
 const RoadmapPanel = {
@@ -190,6 +205,20 @@ const Panels = {
       ? workers.map(w => `<span style="color:${agentColorMap[w.id||w.name]||'#aaa'}">${w.emoji||''} ${w.name||w.id}</span>`).join(', ')
       : '<span style="color:#555">None</span>';
 
+    // Job-assigned employees for this building
+    const assignedWorkers = Object.entries(AGENT_JOBS)
+      .filter(([_, j]) => j.building === buildingId)
+      .map(([id, j]) => {
+        const a = agents[id] || {};
+        const color = agentColorMap[id] || '#aaa';
+        const emoji = a.emoji || AGENT_PROFILES[id]?.emoji || '';
+        const name = a.name || id;
+        return `<span style="color:${color}">${emoji} ${name}</span> <span style="color:#555;font-size:10px">(${j.title})</span>`;
+      });
+    const assignedHtml = assignedWorkers.length
+      ? assignedWorkers.join(', ')
+      : '<span style="color:#555">—</span>';
+
     const upgradeHtml = normUpgrades.length
       ? `<div class="panel-section-header">─ UPGRADE HISTORY ─</div>` +
         normUpgrades.map((u, i) => {
@@ -212,6 +241,7 @@ const Panels = {
       <div class="panel-body">
         <div class="panel-row"><span class="row-label">Status</span><span class="row-value">${bData.damaged ? '💥 Damaged' : '✅ Operational'}</span></div>
         <div class="panel-row"><span class="row-label">Workers</span><span class="row-value">${workerHtml}</span></div>
+        <div class="panel-row"><span class="row-label">Assigned</span><span class="row-value">${assignedHtml}</span></div>
         ${upgradeHtml}
       </div>
     `;
@@ -291,6 +321,7 @@ const Panels = {
       </div>
       <div class="panel-body">
         <div class="panel-row"><span class="row-label">Role</span><span class="row-value">${role}</span></div>
+        ${AGENT_JOBS[agentId] ? `<div class="citizen-job">💼 ${AGENT_JOBS[agentId].title} · ${AGENT_JOBS[agentId].shift[0]}:00–${AGENT_JOBS[agentId].shift[1]}:00</div>` : ''}
         ${task ? `<div class="panel-row"><span class="row-label">Task</span><span class="row-value">${task}</span></div>` : ''}
         <div class="panel-row"><span class="row-label">Last Active</span><span class="row-value">${lastActivity}</span></div>
         ${flavor ? `<div class="citizen-flavor">"${flavor}"</div>` : ''}
@@ -625,6 +656,31 @@ async function init() {
   }
 
   client.connectSSE();
+
+  // ── Agent Schedule System ───────────────────────────────────────────────
+  function checkAgentSchedules() {
+    if (!scene) return;
+    const hour = new Date().getHours();
+
+    Object.entries(AGENT_JOBS).forEach(([agentId, job]) => {
+      const agent = currentAgents[agentId];
+      if (!agent || agent.state === 'dormant' || agent.online === false) return;
+
+      const [start, end] = job.shift;
+      const onShift = start < end
+        ? (hour >= start && hour < end)
+        : (hour >= start || hour < end); // overnight shift (e.g. 20–4)
+
+      if (onShift) {
+        scene.walkAgentToBuilding(agentId, job.building);
+      } else {
+        scene.walkAgentHome(agentId);
+      }
+    });
+  }
+
+  setInterval(checkAgentSchedules, 60000);
+  setTimeout(checkAgentSchedules, 5000); // run shortly after connect
 
   // Building clicks → HTML panel
   window.addEventListener('botmesh:buildingclick', (e) => {

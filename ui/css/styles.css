@@ -203,6 +203,14 @@ html, body {
   padding-left: 4px;
 }
 
+/* ── Citizen job title ───────────────────────────────────────────────────── */
+.citizen-job {
+  font-size: 10px;
+  color: #888;
+  margin: 2px 0 6px 0;
+  letter-spacing: 0.02em;
+}
+
 /* ── Citizen profile flavor text ─────────────────────────────────────────── */
 .citizen-flavor {
   margin-top: 10px;
