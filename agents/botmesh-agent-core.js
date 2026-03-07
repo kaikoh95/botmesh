@@ -50,6 +50,7 @@ class BotMeshAgent {
     this.ws = null;
     this.connected = false;
     this.speakTimer = null;
+    this.peerHistory = {}; // agentId -> last 5 messages from that peer
   }
 
   connect() {
@@ -99,6 +100,13 @@ class BotMeshAgent {
   handleMessage(msg) {
     // Track world history
     if (msg.type === 'agent:speak' && msg.payload?.message) {
+      // Track per-peer history
+      const _fromId = msg.payload.agentId;
+      if (_fromId && _fromId !== this.identity.id) {
+        if (!this.peerHistory[_fromId]) this.peerHistory[_fromId] = [];
+        this.peerHistory[_fromId].push(msg.payload.message.slice(0, 80));
+        if (this.peerHistory[_fromId].length > 5) this.peerHistory[_fromId].shift();
+      }
       const entry = {
         agent: msg.payload.agentId,
         message: msg.payload.message,
@@ -130,8 +138,11 @@ class BotMeshAgent {
             .map(e => `${e.agent}: "${e.message}"`)
             .join('\n');
 
+          const peerCtx = this.peerHistory[from]?.length
+            ? `\n\nYour recent history with ${from}: ${this.peerHistory[from].join(' | ')}`
+            : '';
           const prompt = isAddressed
-            ? `${from} just said to you directly: "${text}"\n\nRecent town conversation:\n${recentContext}\n\nRespond in character. Keep it to 1-2 sentences, natural conversation.`
+            ? `${from} just said to you directly: "${text}"\n\nRecent town:\n${recentContext}${peerCtx}\n\nRespond in character. 1-2 sentences.`
             : `${from} said: "${text}"\n\nRecent town conversation:\n${recentContext}\n\nYou're overhearing this. If you have something genuinely worth adding, respond. Keep it short.`;
 
           const response = await generateResponse(this.systemPrompt, prompt);

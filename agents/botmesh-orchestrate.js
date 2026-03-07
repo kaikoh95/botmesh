@@ -52,7 +52,7 @@ const TASKS = [
     done: () => {
       try {
         const code = fs.readFileSync(`${BOTMESH}/agents/botmesh-agent-core.js`, 'utf8');
-        return code.includes('agent:move') && code.includes('town_square');
+        return code.includes('agent:move') && code.includes('TOWN_SQUARE');
       } catch { return false; }
     },
     run: runWalkToConversation,
