@@ -675,6 +675,32 @@
         "kind": "path",
         "x": 17,
         "y": 21
+      },
+      {
+        "id": "well",
+        "action": "add",
+        "entity": "building",
+        "name": "Town Well",
+        "type": "well",
+        "x": 20,
+        "y": 11,
+        "level": 1
+      },
+      {
+        "id": "sakura-residential-1",
+        "action": "plant",
+        "entity": "life",
+        "kind": "sakura",
+        "x": 9,
+        "y": 21
+      },
+      {
+        "id": "sakura-residential-2",
+        "action": "plant",
+        "entity": "life",
+        "kind": "sakura",
+        "x": 12,
+        "y": 24
       }
     ]
   },
@@ -979,6 +1005,20 @@
       "currentWorkers": [],
       "upgrading": false,
       "description": ""
+    },
+    "well": {
+      "id": "well",
+      "name": "Town Well",
+      "type": "well",
+      "x": 20,
+      "y": 11,
+      "width": 3,
+      "height": 2,
+      "level": 1,
+      "upgrades": [],
+      "currentWorkers": [],
+      "upgrading": false,
+      "description": ""
     }
   },
   "agents": {
@@ -1083,143 +1123,6 @@
     }
   },
   "gazette": [
-    {
-      "id": "evt-1772899550364",
-      "timestamp": "2026-03-07T16:05:50.364Z",
-      "type": "world:mutate",
-      "agentId": "forge",
-      "content": "world:mutate",
-      "meta": {
-        "agentId": "forge",
-        "action": "plant",
-        "entity": "life",
-        "kind": "path",
-        "x": 17,
-        "y": 15,
-        "id": "path-17-15"
-      }
-    },
-    {
-      "id": "evt-1772899550666",
-      "timestamp": "2026-03-07T16:05:50.666Z",
-      "type": "agent:offline",
-      "agentId": "forge",
-      "content": "forge went offline.",
-      "meta": {
-        "agentId": "forge"
-      }
-    },
-    {
-      "id": "evt-1772899550705",
-      "timestamp": "2026-03-07T16:05:50.705Z",
-      "type": "agent:online",
-      "agentId": "forge",
-      "content": "forge is back online.",
-      "meta": {
-        "agentId": "forge"
-      }
-    },
-    {
-      "id": "evt-1772899551507",
-      "timestamp": "2026-03-07T16:05:51.507Z",
-      "type": "world:mutate",
-      "agentId": "forge",
-      "content": "world:mutate",
-      "meta": {
-        "agentId": "forge",
-        "action": "plant",
-        "entity": "life",
-        "kind": "path",
-        "x": 18,
-        "y": 15,
-        "id": "path-18-15"
-      }
-    },
-    {
-      "id": "evt-1772899551808",
-      "timestamp": "2026-03-07T16:05:51.808Z",
-      "type": "agent:offline",
-      "agentId": "forge",
-      "content": "forge went offline.",
-      "meta": {
-        "agentId": "forge"
-      }
-    },
-    {
-      "id": "evt-1772899551851",
-      "timestamp": "2026-03-07T16:05:51.850Z",
-      "type": "agent:online",
-      "agentId": "forge",
-      "content": "forge is back online.",
-      "meta": {
-        "agentId": "forge"
-      }
-    },
-    {
-      "id": "evt-1772899552652",
-      "timestamp": "2026-03-07T16:05:52.651Z",
-      "type": "world:mutate",
-      "agentId": "forge",
-      "content": "world:mutate",
-      "meta": {
-        "agentId": "forge",
-        "action": "plant",
-        "entity": "life",
-        "kind": "path",
-        "x": 19,
-        "y": 15,
-        "id": "path-19-15"
-      }
-    },
-    {
-      "id": "evt-1772899552953",
-      "timestamp": "2026-03-07T16:05:52.953Z",
-      "type": "agent:offline",
-      "agentId": "forge",
-      "content": "forge went offline.",
-      "meta": {
-        "agentId": "forge"
-      }
-    },
-    {
-      "id": "evt-1772899552992",
-      "timestamp": "2026-03-07T16:05:52.992Z",
-      "type": "agent:online",
-      "agentId": "forge",
-      "content": "forge is back online.",
-      "meta": {
-        "agentId": "forge"
-      }
-    },
-    {
-      "id": "evt-1772899553448",
-      "timestamp": "2026-03-07T16:05:53.448Z",
-      "type": "agent:state",
-      "agentId": "forge",
-      "content": "forge is now sleeping.",
-      "meta": {
-        "type": "agent:state",
-        "agentId": "forge",
-        "from": "sleeping",
-        "to": "sleeping"
-      }
-    },
-    {
-      "id": "evt-1772899553793",
-      "timestamp": "2026-03-07T16:05:53.792Z",
-      "type": "world:mutate",
-      "agentId": "forge",
-      "content": "world:mutate",
-      "meta": {
-        "agentId": "forge",
-        "action": "plant",
-        "entity": "life",
-        "kind": "path",
-        "x": 20,
-        "y": 15,
-        "id": "path-20-15"
-      }
-    },
     {
       "id": "evt-1772899554094",
       "timestamp": "2026-03-07T16:05:54.094Z",
@@ -2285,14 +2188,148 @@
       "meta": {
         "agentId": "forge"
       }
+    },
+    {
+      "id": "evt-1772899599256",
+      "timestamp": "2026-03-07T16:06:39.255Z",
+      "type": "world:mutate",
+      "agentId": "forge",
+      "content": "world:mutate",
+      "meta": {
+        "agentId": "forge",
+        "action": "plant",
+        "entity": "life",
+        "kind": "path",
+        "x": 17,
+        "y": 21,
+        "id": "path-17-21"
+      }
+    },
+    {
+      "id": "evt-1772899599557",
+      "timestamp": "2026-03-07T16:06:39.557Z",
+      "type": "agent:offline",
+      "agentId": "forge",
+      "content": "forge went offline.",
+      "meta": {
+        "agentId": "forge"
+      }
+    },
+    {
+      "id": "evt-1772899615472",
+      "timestamp": "2026-03-07T16:06:55.472Z",
+      "type": "agent:speak",
+      "agentId": "forge",
+      "content": "forge says: \"Residential connector done. 10 tiles north-south (x=10-11, y=17-21) plus 16 tiles east-west along y=21. The cottages now have a real road to the civic center.\"",
+      "meta": {
+        "agentId": "forge",
+        "message": "Residential connector done. 10 tiles north-south (x=10-11, y=17-21) plus 16 tiles east-west along y=21. The cottages now have a real road to the civic center.",
+        "target": null
+      }
+    },
+    {
+      "id": "evt-1772899634349",
+      "timestamp": "2026-03-07T16:07:14.349Z",
+      "type": "agent:online",
+      "agentId": "forge",
+      "content": "forge is back online.",
+      "meta": {
+        "agentId": "forge"
+      }
+    },
+    {
+      "id": "evt-1772899635151",
+      "timestamp": "2026-03-07T16:07:15.151Z",
+      "type": "world:mutate",
+      "agentId": "forge",
+      "content": "world:mutate",
+      "meta": {
+        "agentId": "forge",
+        "action": "add",
+        "entity": "building",
+        "id": "well",
+        "name": "Town Well",
+        "type": "well",
+        "x": 20,
+        "y": 11,
+        "level": 1
+      }
+    },
+    {
+      "id": "evt-1772899635453",
+      "timestamp": "2026-03-07T16:07:15.453Z",
+      "type": "agent:offline",
+      "agentId": "forge",
+      "content": "forge went offline.",
+      "meta": {
+        "agentId": "forge"
+      }
+    },
+    {
+      "id": "evt-1772899640840",
+      "timestamp": "2026-03-07T16:07:20.840Z",
+      "type": "agent:speak",
+      "agentId": "forge",
+      "content": "forge says: \"Town Well placed at the plaza (x=20, y=11). Fresh water for the citizens. Now for some greenery...\"",
+      "meta": {
+        "agentId": "forge",
+        "message": "Town Well placed at the plaza (x=20, y=11). Fresh water for the citizens. Now for some greenery...",
+        "target": null
+      }
+    },
+    {
+      "id": "evt-1772899640921",
+      "timestamp": "2026-03-07T16:07:20.921Z",
+      "type": "agent:online",
+      "agentId": "forge",
+      "content": "forge is back online.",
+      "meta": {
+        "agentId": "forge"
+      }
+    },
+    {
+      "id": "evt-1772899641723",
+      "timestamp": "2026-03-07T16:07:21.722Z",
+      "type": "world:mutate",
+      "agentId": "forge",
+      "content": "world:mutate",
+      "meta": {
+        "agentId": "forge",
+        "action": "plant",
+        "entity": "life",
+        "kind": "sakura",
+        "x": 9,
+        "y": 21,
+        "id": "sakura-residential-1"
+      }
+    },
+    {
+      "id": "evt-1772899642024",
+      "timestamp": "2026-03-07T16:07:22.024Z",
+      "type": "agent:offline",
+      "agentId": "forge",
+      "content": "forge went offline.",
+      "meta": {
+        "agentId": "forge"
+      }
+    },
+    {
+      "id": "evt-1772899642062",
+      "timestamp": "2026-03-07T16:07:22.062Z",
+      "type": "agent:online",
+      "agentId": "forge",
+      "content": "forge is back online.",
+      "meta": {
+        "agentId": "forge"
+      }
     }
   ],
   "time": {
     "date": "2026-03-08",
     "hour": 5,
-    "minute": 6,
+    "minute": 7,
     "timezone": "Pacific/Auckland",
     "period": "night",
-    "wallclock": "2026-03-07T16:06:13.925Z"
+    "wallclock": "2026-03-07T16:07:13.926Z"
   }
 }
