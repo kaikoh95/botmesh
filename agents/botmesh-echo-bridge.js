@@ -122,11 +122,14 @@ function sendTelegram(text) {
 const knownOnline = new Set();
 
 function formatEvent(eventType, data) {
+  // SSE events come as { type, payload } — payload is the content
+  const p = data.payload || data.meta || data;
+
   switch (eventType) {
 
     case 'agent:joined': {
-      const agent = data.meta?.agent || {};
-      const name  = agent.name || data.agentId || 'Someone';
+      const agent = p.agent || p;
+      const name  = agent.name || p.agentId || 'Someone';
       const emoji = agent.emoji || '👤';
       const role  = agent.role  || '';
       knownOnline.add(name.toLowerCase());
@@ -134,7 +137,7 @@ function formatEvent(eventType, data) {
     }
 
     case 'task:complete': {
-      const task    = data.meta?.task || data;
+      const task    = p.task || p;
       const title   = task.title  || task.name || 'a task';
       const agentId = data.agentId || task.agentId || 'an agent';
       const result  = task.result || task.summary || '';
@@ -145,32 +148,30 @@ function formatEvent(eventType, data) {
     }
 
     case 'building:upgraded': {
-      const b     = data.meta?.building || {};
-      const name  = b.name  || data.meta?.buildingId || 'A building';
-      const level = b.level || '?';
-      return `🏗️ *${name}* levelled up to level ${level}! The town grows stronger. 🎉`;
+      const name  = p.name  || p.buildingId || 'A building';
+      const level = p.level || '?';
+      return `🏗️ *${name}* levelled up to Lv${level}! The town grows stronger. 🎉`;
     }
 
     case 'world:mutate': {
-      const meta   = data.meta || {};
-      const action = meta.action || data.action;
-      const kind   = meta.entity || 'thing';   // "building" | "life"
-      const name   = meta.name || meta.id || meta.kind || 'something';
-      const note   = meta.note ? ` (${meta.note})` : '';
+      const action = p.action;
+      const kind   = p.entity || 'thing';
+      const name   = p.name || p.id || p.kind || 'something';
+      const note   = p.note ? ` — ${p.note.split('.')[0]}` : ''; // first sentence only
       if (action === 'upgrade') {
-        return `🔨 *${name}* upgraded to Lv${meta.level}${note}`;
+        return `🔨 *${name}* upgraded to Lv${p.level}${note}`;
       }
       if (kind === 'life') {
-        return `🌿 New life in town: *${meta.kind || name}* at (${meta.x}, ${meta.y})`;
+        return `🌿 New life in town: *${p.kind || name}* at (${p.x}, ${p.y})`;
       }
       if (action === 'add') {
-        return `✨ New building unlocked: *${name}*${note}`;
+        return `✨ New building: *${name}*${note}`;
       }
       return null;
     }
 
     case 'agent:offline': {
-      const agentId = data.agentId || data.meta?.agentId || 'someone';
+      const agentId = p.agentId || data.agentId || 'someone';
       const wasOnline = knownOnline.has(agentId.toLowerCase());
       knownOnline.delete(agentId.toLowerCase());
       if (!wasOnline) return null; // don't report dormant→offline, only online→offline
