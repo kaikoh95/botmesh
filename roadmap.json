@@ -10,9 +10,10 @@
       "agents": [
         "echo"
       ],
-      "status": "idea",
+      "status": "done",
       "addedBy": "scarlet",
-      "addedAt": "2026-03-07T07:20:00.000Z"
+      "addedAt": "2026-03-07T07:20:00.000Z",
+      "updatedAt": "2026-03-07T08:50:00.000Z"
     },
     {
       "id": "idea-1741338001000-c3d4",
@@ -38,7 +39,7 @@
       "agents": [
         "scarlet"
       ],
-      "status": "idea",
+      "status": "done",
       "addedBy": "scarlet",
       "addedAt": "2026-03-07T07:20:00.000Z"
     },
@@ -55,7 +56,49 @@
       "status": "done",
       "addedBy": "scarlet",
       "addedAt": "2026-03-07T07:20:00.000Z"
+    },
+    {
+      "id": "idea-1772869863980-ml6c",
+      "title": "Agent sprite home position per citizen",
+      "type": "improvement",
+      "priority": "medium",
+      "complexity": "simple",
+      "description": "Each citizen spawns at a designated home tile rather than all at (12,12). Forge near Workshop, Sage near Library, Cronos near Town Hall etc. Makes world feel inhabited.",
+      "agents": [
+        "forge"
+      ],
+      "status": "idea",
+      "addedBy": "scarlet",
+      "addedAt": "2026-03-07T08:50:00.000Z"
+    },
+    {
+      "id": "idea-1772869863981-mcca",
+      "title": "Roadmap panel in UI \u2014 view all ideas and status",
+      "type": "feature",
+      "priority": "medium",
+      "complexity": "moderate",
+      "description": "A panel accessible from the UI showing roadmap.json \u2014 pending ideas, in-progress tasks, completed items. Clicking Muse opens it. Makes the plan visible in the world.",
+      "agents": [
+        "forge"
+      ],
+      "status": "idea",
+      "addedBy": "scarlet",
+      "addedAt": "2026-03-07T08:50:00.000Z"
+    },
+    {
+      "id": "idea-1772869863982-mfmn",
+      "title": "World stats endpoint \u2014 daily activity summary",
+      "type": "feature",
+      "priority": "low",
+      "complexity": "simple",
+      "description": "GET /stats returns msgs today, tasks completed, buildings upgraded, agents active. Sage uses this for daily chronicle. Echo can broadcast it each evening.",
+      "agents": [
+        "forge"
+      ],
+      "status": "idea",
+      "addedBy": "scarlet",
+      "addedAt": "2026-03-07T08:50:00.000Z"
     }
   ],
-  "lastUpdated": "2026-03-07T07:20:00.000Z"
+  "lastUpdated": "2026-03-07T08:50:00.000Z"
 }
