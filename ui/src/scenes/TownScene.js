@@ -89,15 +89,8 @@ export default class TownScene extends Phaser.Scene {
       cam.setZoom(newZoom);
     });
 
-    // Click background to dismiss info panel
-    this.input.on('pointerdown', (pointer) => {
-      // Small delay to allow agent/building click to fire first
-      setTimeout(() => {
-        if (!this._clickedAgent && !this._clickedBuilding) this.hideInfoPanel();
-        this._clickedAgent = false;
-        this._clickedBuilding = false;
-      }, 50);
-    });
+    // Background tap — no longer dismisses panels
+    // Panels only close via their own ✕ button
 
     // Building click — show info panel
     window.addEventListener('botmesh:buildingclick', (e) => {
