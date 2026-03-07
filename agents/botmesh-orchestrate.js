@@ -135,6 +135,7 @@ const TASKS = [
     },
     run: async () => {
       scarletSays('Forge, add a daily stats row to the Gazette header. Show messages today, agents online, buildings upgraded.');
+      return true; // DISABLED — defunct Gemini-era task
       forgeDoes('Implementing Gazette stats panel — messages, agents, upgrades.');
 
       const mainJs = fs.readFileSync(`${BOTMESH}/ui/src/main.js`, 'utf8');
@@ -214,6 +215,7 @@ const TASKS = [
     },
     run: async () => {
       scarletSays('Forge, buildings should glow when a citizen is inside working. Wire the tint to agent:work events.');
+      return true; // DISABLED — defunct Gemini-era task
       forgeDoes('Adding building activity glow — brightening sprites on work events.');
 
       const bldJs = fs.readFileSync(`${BOTMESH}/ui/src/entities/Building.js`, 'utf8');
@@ -247,6 +249,7 @@ const TASKS = [
     done: () => fs.existsSync(`${BOTMESH}/ui/assets/sprites/forge.png`),
     run: async () => {
       scarletSays('Canvas, we need Forge\'s pixel art sprite — craftsman aesthetic, stocky build, tool belt, hakama.');
+      return true; // DISABLED — defunct Gemini-era task
       delegate('canvas', 'On it. Generating Forge sprite — builder aesthetic, Japanese craftsman style.', 'work-start');
 
       try {
@@ -314,6 +317,7 @@ print('Forge sprite saved')
     },
     run: async () => {
       scarletSays('Forge, wire a warm glow to buildings when a citizen is inside. Tint on entry, clear on exit.');
+      return true; // DISABLED — defunct Gemini-era task
       forgeDoes('Wiring building glow — warm light when occupied.');
 
       const bldJs = fs.readFileSync(`${BOTMESH}/ui/src/entities/Building.js`, 'utf8');
@@ -347,6 +351,7 @@ print('Forge sprite saved')
     },
     run: async () => {
       scarletSays('The world needs more life. Planting sakura and bamboo groves around the town.');
+      return true; // DISABLED — defunct Gemini-era task
       const WebSocket = require('ws');
       await new Promise((resolve) => {
         const ws = new WebSocket(HUB_URL);
