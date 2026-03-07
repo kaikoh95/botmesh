@@ -31,6 +31,7 @@ html, body {
 
 #game-container canvas {
   display: block;
+  background: #4a7c59;
 }
 
 /* --- Right: Gazette --- */

@@ -1,5 +1,6 @@
 import Agent, { getAgentHexString } from '../entities/Agent.js';
 import Building from '../entities/Building.js';
+import WorldLife from '../entities/WorldLife.js';
 
 const TILE_W = 64;
 const TILE_H = 32;
@@ -31,6 +32,11 @@ export default class TownScene extends Phaser.Scene {
         this.load.image(`building-${b}-l${lvl}`, `assets/buildings/${b}-l${lvl}.png`);
       }
     }
+    // World life sprites (flora + fauna)
+    const lifeSprites = ['sakura', 'bamboo', 'zen', 'koipond', 'deer', 'crane', 'firefly', 'butterfly'];
+    for (const name of lifeSprites) {
+      this.load.image(`life-${name}`, `assets/sprites/life/${name}.png`);
+    }
   }
 
   create() {
@@ -47,8 +53,12 @@ export default class TownScene extends Phaser.Scene {
     // Draw water feature (bottom-left corner)
     this._drawWater();
 
-    // Draw scattered trees
+    // Draw scattered trees (fallback for non-sakura spots)
     this._drawTrees();
+
+    // World life — flora, fauna, ambient
+    this.worldLife = new WorldLife(this);
+    this.worldLife.spawn(1); // starts with 1, updates as agents join
 
     // Day/night overlay
     this.dayOverlay = this.add.rectangle(
@@ -250,6 +260,10 @@ export default class TownScene extends Phaser.Scene {
     );
     const agent = new Agent(this, agentData, pos.x, pos.y);
     this.agents[agentData.id] = agent;
+
+    // Respawn world life with updated agent count
+    const agentCount = Object.keys(this.agents).length;
+    if (this.worldLife) this.worldLife.spawn(agentCount);
 
     // Enable click
     agent.enableInteraction((a) => {
