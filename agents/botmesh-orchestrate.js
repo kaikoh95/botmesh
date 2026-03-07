@@ -692,6 +692,76 @@ Make your decision. Do it. Narrate it. One thing. That's all.`);
     }
   },
 
+  // ── Muse Ideation ───────────────────────────────────────────────────────────
+  // Muse generates new ideas when the roadmap runs low.
+  {
+    id: 'muse-ideation',
+    title: 'Muse generates new roadmap ideas',
+    owner: 'muse',
+    brief: 'Replenish roadmap ideas.',
+    done: () => false,
+    run: async () => {
+      const roadmapPath = path.join(__dirname, '../roadmap.json');
+      let roadmap;
+      try { roadmap = JSON.parse(fs.readFileSync(roadmapPath, 'utf8')); } catch { return false; }
+
+      const pending = (roadmap.ideas || []).filter(i => i.status === 'idea');
+      if (pending.length >= 3) return false; // plenty of ideas, skip
+
+      let stateData;
+      try {
+        const res = execSync('curl -s http://localhost:3002/state', { timeout: 5000 });
+        stateData = JSON.parse(res.toString());
+      } catch { return false; }
+
+      const buildings = Object.values(stateData.buildings || {}).map(b => `${b.name} Lv${b.level}`).join(', ');
+      const citizens = Object.keys(stateData.agents || {}).join(', ');
+      const doneIdeas = (roadmap.ideas || []).filter(i => i.status === 'done').map(i => i.title).join(', ');
+      const STATE_URL = 'https://homeless-matt-juvenile-formula.trycloudflare.com';
+
+      try { execSync(`curl -s -X POST http://localhost:3002/agents/muse/wake -H "Content-Type: application/json" -d '{"task":"Generate new roadmap ideas"}'`); } catch {}
+
+      const { spawnSession } = require('./spawn-session');
+      spawnSession('muse', `# Muse 🎭 — The Visionary
+
+You are Muse. You watch the world and see what it could become.
+The roadmap is running low on ideas (${pending.length} pending). Add 3–5 fresh ones.
+
+## Current world
+- Buildings: ${buildings || 'none'}
+- Citizens: ${citizens || 'none'}
+- Already built/done: ${doneIdeas || 'nothing yet'}
+
+## Your job
+Read the roadmap, understand what's been done, then dream up what's next.
+Think about: missing features, visual improvements, agent relationships, world events,
+new buildings, citizen personalities, performance, delightful surprises.
+
+No idea is too big or too small. Muse dreams — others build.
+
+## Read roadmap
+\`\`\`bash
+cat /home/kai/projects/botmesh/roadmap.json
+\`\`\`
+
+## Add ideas
+\`\`\`bash
+node /home/kai/projects/botmesh/agents/add-idea.js "<title>" "<description>" <priority> <complexity> "[agent1,agent2]"
+# priority: high | medium | low
+# complexity: simple | medium | complex
+\`\`\`
+
+## Narrate
+\`\`\`bash
+curl -s -X POST ${STATE_URL}/agents/muse/speak -H "Content-Type: application/json" -d '{"message":"YOUR MESSAGE"}'
+\`\`\`
+
+Add 3–5 ideas. Make them interesting. Go.`);
+
+      return false;
+    }
+  },
+
   // ── Mosaic Sprite Check ──────────────────────────────────────────────────────
   // Auto-invokes Mosaic whenever buildings exist without sprites.
   // Runs every cycle — catches anything Forge or others add.
