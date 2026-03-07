@@ -3,3 +3,10 @@ world/state.json
 .env
 *.log
 package-lock.json
+
+# Character identity files — local only, never commit (move to DB eventually)
+characters/*/IDENTITY.md
+characters/*/MEMORY.md
+characters/*/RELATIONSHIPS.md
+!characters/_example/IDENTITY.md
+!characters/_example/MEMORY.md
