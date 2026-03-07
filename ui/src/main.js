@@ -94,9 +94,9 @@ async function init() {
       if (header) header.appendChild(el);
     }
     el.innerHTML =
-      \`<span class="stat">💬 \${msgsToday} msgs</span>\` +
-      \`<span class="stat">🟢 \${online} online</span>\` +
-      \`<span class="stat">🏛️ \${maxed} maxed</span>\`;
+      `<span class="stat">💬 ${msgsToday} msgs</span>` +
+      `<span class="stat">🟢 ${online} online</span>` +
+      `<span class="stat">🏛️ ${maxed} maxed</span>`;
   }
 
   const client = createStateClient({
