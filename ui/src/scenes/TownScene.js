@@ -40,7 +40,7 @@ export default class TownScene extends Phaser.Scene {
   }
 
   create() {
-    this.cameras.main.setBackgroundColor('#4a7c59');
+    this.cameras.main.setBackgroundColor('#5c8a42'); // warmer earthy green
 
     const mapW = 40;
     const mapH = 30;
@@ -216,9 +216,36 @@ export default class TownScene extends Phaser.Scene {
   }
 
   _grassColor(x, y) {
-    const n = ((x * 7 + y * 13) % 5);
-    const greens = [0x4a7c59, 0x4d8060, 0x477855, 0x508362, 0x4b7e5b];
+    // Zone-aware ground coloring for Edo town feel:
+    // - Near paths: warm dirt transition
+    // - Residential zone (lower map): slightly dustier
+    // - Open civic area: bright sunlit grass
+    // - Building margins: darker earth
+    const nearPath = this._isNearPath(x, y);
+    const inResidential = y >= 20 && x >= 1 && x <= 20;
+    const n = Math.abs((x * 7 + y * 13 + x * y) % 7);
+
+    if (nearPath) {
+      // Warm dirt/earth transition near roads
+      const dirts = [0x8b6f47, 0x7a6040, 0x9a7a52, 0x8a6e46, 0x7d6242];
+      return dirts[n % dirts.length];
+    }
+    if (inResidential) {
+      // Residential: slightly dusty, lived-in
+      const dusty = [0x4a7040, 0x4d7545, 0x456b3c, 0x507845, 0x4a7040, 0x537c48, 0x486e3e];
+      return dusty[n];
+    }
+    // Default: varied earthy greens, warmer than before
+    const greens = [0x5a8a42, 0x5e9048, 0x548040, 0x60924a, 0x568643, 0x527d3e, 0x5c8d45];
     return greens[n];
+  }
+
+  _isNearPath(x, y) {
+    if (!this.pathTiles) return false;
+    for (let dx = -1; dx <= 1; dx++)
+      for (let dy = -1; dy <= 1; dy++)
+        if (this.pathTiles.has(`${x+dx},${y+dy}`)) return true;
+    return false;
   }
 
   _waterColor(x, y) {
@@ -384,8 +411,46 @@ export default class TownScene extends Phaser.Scene {
     const cx = bData.x + (bData.width || 3) / 2;
     const cy = bData.y + (bData.height || 2) / 2;
     const pos = this.gridToScreen(cx, cy);
+
+    // Ground shadow — soft ellipse beneath every building
+    const shadowW = (bData.width || 3) * TILE_W * 0.7;
+    const shadowH = (bData.height || 2) * TILE_H * 0.8;
+    const shadow = this.add.graphics();
+    shadow.fillStyle(0x000000, 0.18);
+    shadow.fillEllipse(pos.x, pos.y + shadowH * 0.2, shadowW, shadowH * 0.5);
+    shadow.setDepth(pos.y - 1);
+
+    // Ambient detail — stone lantern near civic/market buildings
+    this._spawnBuildingDetail(bData, pos);
+
     const building = new Building(this, bData, pos.x, pos.y);
     this.buildings[bData.id] = building;
+  }
+
+  _spawnBuildingDetail(bData, pos) {
+    const type = bData.type || bData.id || '';
+    const isCivic = ['town_hall','post_office','market','teahouse','plaza','library'].includes(bData.id);
+    const isCottage = type === 'cottage';
+    if (!isCivic && !isCottage) return;
+
+    // Draw a tiny stone lantern (tōrō) or flower box as a pixel detail
+    const g = this.add.graphics();
+    const ox = pos.x + (TILE_W * (bData.width || 3)) * 0.28;
+    const oy = pos.y + (TILE_H * (bData.height || 2)) * 0.1;
+    g.setDepth(pos.y + 2);
+
+    if (isCivic) {
+      // Stone lantern: grey pedestal + cap
+      g.fillStyle(0x888888, 1); g.fillRect(ox - 2, oy - 8, 4, 8);      // pole
+      g.fillStyle(0x666666, 1); g.fillRect(ox - 4, oy - 10, 8, 3);     // cap
+      g.fillStyle(0xffdd88, 0.8); g.fillRect(ox - 2, oy - 7, 4, 5);   // glow
+    } else {
+      // Flower box: tiny brown box with dots of color
+      g.fillStyle(0x7a5c3a, 1); g.fillRect(ox - 5, oy - 3, 10, 4);    // box
+      g.fillStyle(0xff6688, 1); g.fillRect(ox - 3, oy - 5, 2, 2);     // flower
+      g.fillStyle(0xffaa22, 1); g.fillRect(ox + 1, oy - 6, 2, 2);     // flower
+      g.fillStyle(0x44cc44, 1); g.fillRect(ox - 1, oy - 4, 2, 1);     // leaf
+    }
   }
 
   moveAgent(id, toX, toY) {
