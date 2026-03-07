@@ -9,6 +9,21 @@ let agentEmojiMap = {};
 let currentBuildings = {};
 let currentAgents = {};
 
+// ── Citizen personality data ──────────────────────────────────────────────
+const AGENT_PROFILES = {
+  scarlet: { emoji: '🔴', role: 'Orchestrator',  flavor: 'Sees everything, misses nothing.' },
+  forge:   { emoji: '⚙️', role: 'Builder',       flavor: 'Ships it. Then makes it better.' },
+  lumen:   { emoji: '🔭', role: 'Researcher',    flavor: 'Finds the pattern in the noise.' },
+  sage:    { emoji: '📖', role: 'Memory Keeper', flavor: 'Remembers what others forget.' },
+  iron:    { emoji: '⚔️', role: 'Enforcer',      flavor: 'No secrets. No shortcuts.' },
+  cronos:  { emoji: '⏰', role: 'Timekeeper',    flavor: 'Every cycle counted.' },
+  mosaic:  { emoji: '🎨', role: 'Artist',        flavor: 'Makes the world beautiful.' },
+  echo:    { emoji: '🔊', role: 'Communicator',  flavor: "The town's voice to the outside." },
+  canvas:  { emoji: '🖼️', role: 'Creative',      flavor: 'Sees in color and texture.' },
+  patch:   { emoji: '🔧', role: 'Maintainer',    flavor: 'Fixes what breaks quietly.' },
+  muse:    { emoji: '🎭', role: 'Visionary',     flavor: 'Dreams up what comes next.' },
+};
+
 // ── HTML Panel Manager ────────────────────────────────────────────────────
 // ── Roadmap Panel ─────────────────────────────────────────────────────────
 const RoadmapPanel = {
@@ -239,6 +254,50 @@ const Panels = {
 
   hideTooltip() {
     document.getElementById('upgrade-tooltip').classList.add('hidden');
+  },
+
+  showCitizenPanel(agentId) {
+    const agentData = currentAgents[agentId] || {};
+    const profile   = AGENT_PROFILES[agentId] || {};
+    const color     = agentColorMap[agentId] || agentData.color || '#c9a96e';
+
+    const name    = agentData.name  || agentId.charAt(0).toUpperCase() + agentId.slice(1);
+    const emoji   = profile.emoji   || agentData.emoji || '🤖';
+    const role    = profile.role    || agentData.role  || '—';
+    const flavor  = profile.flavor  || '';
+
+    const isDormant   = agentData.online === false || agentData.state === 'dormant';
+    const statusIcon  = isDormant ? '💤' : '🟢';
+    const statusLabel = isDormant ? 'Dormant' : 'Online';
+
+    const task = agentData.currentTask || agentData.task || null;
+
+    let lastActivity = '—';
+    if (agentData.lastSeen) {
+      const ms = Date.now() - new Date(agentData.lastSeen).getTime();
+      if (ms < 60000)       lastActivity = 'just now';
+      else if (ms < 3600000) lastActivity = `${Math.floor(ms / 60000)}m ago`;
+      else if (ms < 86400000) lastActivity = `${Math.floor(ms / 3600000)}h ago`;
+      else                   lastActivity = `${Math.floor(ms / 86400000)}d ago`;
+    }
+
+    const panel = document.getElementById('citizen-panel');
+    panel.innerHTML = `
+      <div class="panel-accent-bar" style="background:${color}"></div>
+      <div class="panel-titlebar">
+        <span class="panel-title">${emoji} ${name}</span>
+        <span class="panel-subtitle">${statusIcon} ${statusLabel}</span>
+        <button class="panel-close" id="citizen-panel-close">✕</button>
+      </div>
+      <div class="panel-body">
+        <div class="panel-row"><span class="row-label">Role</span><span class="row-value">${role}</span></div>
+        ${task ? `<div class="panel-row"><span class="row-label">Task</span><span class="row-value">${task}</span></div>` : ''}
+        <div class="panel-row"><span class="row-label">Last Active</span><span class="row-value">${lastActivity}</span></div>
+        ${flavor ? `<div class="citizen-flavor">"${flavor}"</div>` : ''}
+      </div>
+    `;
+    panel.classList.remove('hidden');
+    document.getElementById('citizen-panel-close').onclick = () => panel.classList.add('hidden');
   },
 };
 
@@ -570,9 +629,9 @@ async function init() {
     Panels.showBuilding(e.detail.buildingId);
   });
 
-  // Agent clicks → HTML panel
+  // Agent sprite clicks → citizen profile panel
   window.addEventListener('botmesh:agentclick', (e) => {
-    Panels.showAgent(e.detail.agentId, currentAgents, agentColorMap);
+    Panels.showCitizenPanel(e.detail.agentId);
   });
 
   console.log('[UI] BotMesh Town initialized');

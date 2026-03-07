@@ -203,6 +203,19 @@ html, body {
   padding-left: 4px;
 }
 
+/* ── Citizen profile flavor text ─────────────────────────────────────────── */
+.citizen-flavor {
+  margin-top: 10px;
+  padding: 8px 10px;
+  border-left: 2px solid #c9a96e;
+  font-size: 11px;
+  color: #c9a96e;
+  font-style: italic;
+  line-height: 1.4;
+  background: rgba(201, 169, 110, 0.07);
+  border-radius: 0 4px 4px 0;
+}
+
 /* ── Upgrade tooltip ─────────────────────────────────────────────────────── */
 .upgrade-tooltip {
   position: absolute;
