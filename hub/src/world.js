@@ -240,6 +240,8 @@ function applyMutation(mutation) {
 module.exports = {
   init,
   getState,
+  updateTime,
+  updateAgent,
   addGazetteEntry,
   registerAgent,
   setAgentOffline,
