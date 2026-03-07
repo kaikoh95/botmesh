@@ -106,8 +106,8 @@ export default class Building {
         this.container.addAt(img, 0); // add behind label
         this.spriteImg = img;
 
-        // Update label above sprite
-        this.label.setPosition(0, -(spriteH * 0.85 + 8));
+        // Update label above sprite — place above the very top of the sprite
+        this.label.setPosition(0, -(spriteH + 14));
         this.label.setText(`${this.name} Lv${this.level}`);
         // Make clickable
         img.setInteractive({ useHandCursor: true });
@@ -206,8 +206,8 @@ export default class Building {
       this._removeGlowOutline();
     }
 
-    // Update label position
-    this.label.setPosition(0, -wallH - h - (this.level >= 3 ? 16 : 8));
+    // Update label position — above the roof (+ star if level 3)
+    this.label.setPosition(0, -wallH - h - (this.level >= 3 ? 28 : 14));
     this.label.setText(`${this.name} Lv${this.level}`);
 
     // Make graphics clickable (fallback path)
