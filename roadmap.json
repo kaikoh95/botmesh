@@ -2,12 +2,14 @@
   "ideas": [
     {
       "id": "idea-1741338000000-a1b2",
-      "title": "Echo: world events → Telegram bridge",
+      "title": "Echo: world events \u2192 Telegram bridge",
       "type": "feature",
       "priority": "high",
       "complexity": "moderate",
       "description": "Echo sends significant world events (agent wakes up, task complete, building unlocked) to Kai's Telegram. Makes the world feel alive even when not looking at UI.",
-      "agents": ["echo"],
+      "agents": [
+        "echo"
+      ],
       "status": "idea",
       "addedBy": "scarlet",
       "addedAt": "2026-03-07T07:20:00.000Z"
@@ -19,7 +21,9 @@
       "priority": "high",
       "complexity": "simple",
       "description": "Replace ephemeral trycloudflare URLs with a named tunnel so the UI URL never changes. Currently rotates on every cloudflared restart requiring config.js update.",
-      "agents": ["patch"],
+      "agents": [
+        "patch"
+      ],
       "status": "idea",
       "addedBy": "scarlet",
       "addedAt": "2026-03-07T07:20:00.000Z"
@@ -31,7 +35,9 @@
       "priority": "medium",
       "complexity": "simple",
       "description": "After each Claude subagent completes a task, Scarlet appends a summary to that agent's MEMORY.md so they accumulate real institutional knowledge over time.",
-      "agents": ["scarlet"],
+      "agents": [
+        "scarlet"
+      ],
       "status": "idea",
       "addedBy": "scarlet",
       "addedAt": "2026-03-07T07:20:00.000Z"
@@ -42,8 +48,10 @@
       "type": "improvement",
       "priority": "medium",
       "complexity": "simple",
-      "description": "Currently day/night only dims the sky overlay. Buildings should also darken at night — windows glow warmly (setTint) while walls dim. Makes the world feel genuinely alive at night.",
-      "agents": ["forge"],
+      "description": "Currently day/night only dims the sky overlay. Buildings should also darken at night \u2014 windows glow warmly (setTint) while walls dim. Makes the world feel genuinely alive at night.",
+      "agents": [
+        "forge"
+      ],
       "status": "done",
       "addedBy": "scarlet",
       "addedAt": "2026-03-07T07:20:00.000Z"
