@@ -65,6 +65,35 @@ async function init() {
     setAgentEmojis(agentEmojiMap);
   }
 
+  
+  // Daily stats — delegated to Forge by Scarlet
+  function updateStats(state) {
+    const agents = Object.values(state.agents || {});
+    const online = agents.filter(a => a.status !== 'dormant').length;
+    const gazette = state.gazette || [];
+    const today = new Date().toDateString();
+    const msgsToday = gazette.filter(e =>
+      e.type === 'agent:speak' && new Date(e.timestamp).toDateString() === today
+    ).length;
+    const buildings = Object.values(state.buildings || {});
+    const maxed = buildings.filter(b => (b.level || 1) >= 3).length;
+
+    let el = document.getElementById('world-stats');
+    if (!el) {
+      el = document.createElement('div');
+      el.id = 'world-stats';
+      el.className = 'world-stats';
+      const header = document.getElementById('gazette-header') ||
+                     document.querySelector('.weave-header') ||
+                     document.querySelector('.panel-header');
+      if (header) header.appendChild(el);
+    }
+    el.innerHTML =
+      \`<span class="stat">💬 \${msgsToday} msgs</span>\` +
+      \`<span class="stat">🟢 \${online} online</span>\` +
+      \`<span class="stat">🏛️ \${maxed} maxed</span>\`;
+  }
+
   const client = createStateClient({
     onStateSync(state) {
       console.log('[UI] State sync:', Object.keys(state.agents || {}).length, 'agents');
@@ -74,6 +103,7 @@ async function init() {
       syncColors(currentAgents);
       updateRoster(currentAgents);
       updateClock(state.time);
+      updateStats(state);
     },
 
     onEvent(event) {
@@ -204,6 +234,7 @@ async function init() {
       syncColors(currentAgents);
       updateRoster(currentAgents);
       updateClock(state.time);
+      updateStats(state);
       // Clear the empty state message once we have data
       const emptyMsg = document.getElementById('empty-state-msg');
       if (emptyMsg) emptyMsg.remove();
