@@ -896,31 +896,40 @@ function runIdeasMode() {
     });
     registry.startTask(taskId);
 
-    if (idea.complexity === 'complex') {
-      // Full BMAD breakdown for complex ideas
-      scarletSays(`📋 New complex task from Muse: "${idea.title}". Breaking it down.`);
-      
-      const agents = idea.agents || ['forge'];
-      const brief = `[BMAD][${taskId}] ${idea.title}
-CONTEXT: ${idea.description}
-COMPLEXITY: ${idea.complexity} — this needs careful planning.
-YOUR ROLE: ${agents[0]} — you own the execution. Break it into steps, do it well.`;
+    // All ideas execute via Claude session (spawnSession) — delegate() is dead (no Gemini agents)
+    const { spawnSession } = require('./spawn-session');
+    const isComplex = idea.complexity === 'complex' || idea.complexity === '1';
+    const agent = (idea.agents?.[0]) || 'forge';
+    const STATE_URL = 'https://homeless-matt-juvenile-formula.trycloudflare.com';
 
-      delegate(agents[0], brief, 'work-start', taskId);
-      if (agents.length > 1) {
-        agents.slice(1).forEach(a => {
-          delegate(a, `[BMAD-support][${taskId}] Supporting ${agents[0]} on: ${idea.title}. Lend your expertise.`, 'speak', taskId);
-        });
-      }
-      scarletSays(`[${taskId}] Delegated "${idea.title}" to ${agents.join(' + ')}. BMAD mode.`);
-    } else {
-      const agent = idea.agents?.[0] || 'forge';
-      const brief = `[${taskId}] ${idea.title}: ${idea.description}`;
-      scarletSays(`Picking up roadmap idea: "${idea.title}". Handing to ${agent}.`);
-      delegate(agent, brief, 'work-start', taskId);
-    }
+    const brief = `# ${agent.charAt(0).toUpperCase()+agent.slice(1)} — Roadmap Task
 
-    markIdeaStatus(idea.id, 'planned', `Delegated to ${idea.agents?.join(', ') || 'forge'}`);
+**Task:** ${idea.title}
+**Context:** ${idea.description}
+**Complexity:** ${idea.complexity}
+
+This is a real implementation task. Read the codebase, build the feature, commit it.
+
+## Project: /home/kai/projects/botmesh
+- Hub WS: ws://localhost:3001 | State: http://localhost:3002 | UI: http://localhost:3003
+- World mutate: \`node /home/kai/projects/botmesh/agents/world-mutate.js\`
+- UI: /home/kai/projects/botmesh/ui/src/ (Phaser.js, TownScene.js, main.js, Building.js, Agent.js)
+
+## Narrate
+\`\`\`bash
+curl -s -X POST ${STATE_URL}/agents/${agent}/speak \\
+  -H "Content-Type: application/json" -d '{"message":"YOUR MESSAGE"}'
+\`\`\`
+
+## Finish
+\`\`\`bash
+pm2 restart ui
+cd /home/kai/projects/botmesh && git add -A && git commit -m "feat: ${idea.title}" && git push origin main
+\`\`\``;
+
+    spawnSession(agent, brief, { timeout: isComplex ? 600 : 300 });
+    scarletSays(`[${taskId}] Picked up "${idea.title}" → ${agent}. Building it.`);
+    markIdeaStatus(idea.id, 'planned', `Delegated to ${agent}`);
     console.log(`[Scarlet] Idea "${idea.title}" delegated.`);
 }
 
