@@ -37,7 +37,7 @@ export default class Building {
     this.gridW = buildingData.width || 3;
     this.gridH = buildingData.height || 2;
     this.level = buildingData.level || 1;
-    this.maxLevel = buildingData.maxLevel || 3;
+    this.maxLevel = buildingData.maxLevel || null; // no cap
     this.baseColor = BUILDING_COLORS[buildingData.type] || 0xa0522d;
     this.screenX = screenX;
     this.screenY = screenY;

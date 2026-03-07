@@ -24,7 +24,7 @@ if (action === 'upgrade' && entity === 'building') {
   payload = { action: 'plant', entity: 'life', kind, x: parseFloat(x), y: parseFloat(y), id: id || `${kind}-${Date.now()}` };
 } else if (action === 'add' && entity === 'building') {
   const [id, name, x, y, type] = args;
-  payload = { action: 'add', entity: 'building', id, name, type: type||id, x: parseFloat(x), y: parseFloat(y), level: 1, maxLevel: 3 };
+  payload = { action: 'add', entity: 'building', id, name, type: type||id, x: parseFloat(x), y: parseFloat(y), level: 1 };
 } else {
   // Pass raw JSON if provided
   try { payload = JSON.parse(args[0]); } catch {}

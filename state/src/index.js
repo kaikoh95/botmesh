@@ -166,7 +166,7 @@ function applyEvent(event) {
                 x: payload.x || 0, y: payload.y || 0,
                 width: payload.width || 3, height: payload.height || 2,
                 level: payload.level || 1,
-                maxLevel: payload.maxLevel || 3,
+                maxLevel: null, // no cap — Forge decides
                 upgrades: [],
                 currentWorkers: [],
                 description: payload.description || '',

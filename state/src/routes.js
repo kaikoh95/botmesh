@@ -128,7 +128,7 @@ function createRoutes(getState, sendCommand) {
     const totalCitizens  = Object.keys(agents).length;
     const onlineCitizens = Object.values(agents).filter(a => a.online).length;
     const totalBuildings = Object.keys(buildings).length;
-    const maxedBuildings = Object.values(buildings).filter(b => b.level >= (b.maxLevel || 3)).length;
+    const maxedBuildings = 0; // no level cap — buildings grow without limit
     const msgsToday      = todayEntries.filter(e => e.type === 'agent:speak').length;
     const tasksToday     = todayEntries.filter(e => e.type === 'task:complete').length;
     const activeCitizens = [...new Set(todayEntries.map(e => e.agentId).filter(Boolean))];

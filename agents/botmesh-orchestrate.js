@@ -625,7 +625,7 @@ agent.connect();
 
       const buildings = stateData.buildings || {};
       const worldSummary = Object.entries(buildings).map(([id, b]) =>
-        `${b.name} (${id}): Lv${b.level}/${b.maxLevel}, workers: ${(b.currentWorkers||[]).join(', ')||'none'}`
+        `${b.name} (${id}): Lv${b.level}, workers: ${(b.currentWorkers||[]).join(', ')||'none'}`
       ).join('\n');
       const entities = (stateData.world?.entities || []).map(e =>
         `${e.kind||e.entity} at (${e.x},${e.y})`

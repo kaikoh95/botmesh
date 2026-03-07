@@ -30,7 +30,7 @@ function loadSeed() {
 
 function ensureBuildingUpgradeFields(building) {
   if (building.level == null) building.level = 1;
-  if (building.maxLevel == null) building.maxLevel = 3;
+  
   if (!Array.isArray(building.currentWorkers)) building.currentWorkers = [];
   if (!Array.isArray(building.upgrades)) building.upgrades = [];
   if (building.upgrading == null) building.upgrading = false;
@@ -171,10 +171,8 @@ function completeUpgrade(agentId, buildingId) {
   // Level up if possible
   const fromLevel = building.level;
   let upgraded = false;
-  if (building.level < building.maxLevel) {
-    building.level++;
-    upgraded = true;
-  }
+  building.level++;
+  upgraded = true;
 
   const record = {
     agentId,
