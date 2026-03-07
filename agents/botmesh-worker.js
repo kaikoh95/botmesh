@@ -43,6 +43,11 @@ const IDENTITIES = {
     skills: ['communication', 'coordination'],
     color: '#1abc9c', model: 'gemini-2.5-flash'
   },
+  cronos: {
+    id: 'cronos', name: 'Cronos', emoji: '⏳', role: 'Timekeeper',
+    personality: 'patient, precise, long-view', skills: ['scheduling','cron-management'],
+    color: '#6a0dad', model: 'gemini-2.5-flash'
+  },
   iron: {
     id: 'iron', name: 'Iron', emoji: '⚔️', role: 'Enforcer',
     personality: 'stern, vigilant, principled',
