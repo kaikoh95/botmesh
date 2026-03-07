@@ -2,6 +2,10 @@
 const BUILDING_TEXTURE_MAP = {
   town_hall:   'townhall',
   post_office: 'postoffice',
+  workshop:    'workshop',
+  library:     'library',
+  market:      'market',
+  observatory: 'observatory',
 };
 
 const BUILDING_COLORS = {
