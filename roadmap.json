@@ -2,7 +2,7 @@
   "ideas": [
     {
       "id": "idea-1741338000000-a1b2",
-      "title": "Echo: world events \u2192 Telegram bridge",
+      "title": "Echo: world events → Telegram bridge",
       "type": "feature",
       "priority": "high",
       "complexity": "moderate",
@@ -49,7 +49,7 @@
       "type": "improvement",
       "priority": "medium",
       "complexity": "simple",
-      "description": "Currently day/night only dims the sky overlay. Buildings should also darken at night \u2014 windows glow warmly (setTint) while walls dim. Makes the world feel genuinely alive at night.",
+      "description": "Currently day/night only dims the sky overlay. Buildings should also darken at night — windows glow warmly (setTint) while walls dim. Makes the world feel genuinely alive at night.",
       "agents": [
         "forge"
       ],
@@ -73,11 +73,11 @@
     },
     {
       "id": "idea-1772869863981-mcca",
-      "title": "Roadmap panel in UI \u2014 view all ideas and status",
+      "title": "Roadmap panel in UI — view all ideas and status",
       "type": "feature",
       "priority": "medium",
       "complexity": "moderate",
-      "description": "A panel accessible from the UI showing roadmap.json \u2014 pending ideas, in-progress tasks, completed items. Clicking Muse opens it. Makes the plan visible in the world.",
+      "description": "A panel accessible from the UI showing roadmap.json — pending ideas, in-progress tasks, completed items. Clicking Muse opens it. Makes the plan visible in the world.",
       "agents": [
         "forge"
       ],
@@ -87,7 +87,7 @@
     },
     {
       "id": "idea-1772869863982-mfmn",
-      "title": "World stats endpoint \u2014 daily activity summary",
+      "title": "World stats endpoint — daily activity summary",
       "type": "feature",
       "priority": "low",
       "complexity": "simple",
@@ -102,7 +102,7 @@
     },
     {
       "id": "idea-1772903418291-8aj6",
-      "title": "Agent speech bubbles \u2014 citizens speak in the world",
+      "title": "Agent speech bubbles — citizens speak in the world",
       "description": "Citizen sprites occasionally display floating speech bubbles with contextual text: their current task, a random thought, or a reaction to world events. Forge mutters about metalwork, Sage quotes something obscure, Muse says something poetic. Bubbles fade after a few seconds. Pure personality expression, zero backend needed.",
       "priority": "medium",
       "complexity": "medium",
@@ -116,7 +116,7 @@
     },
     {
       "id": "idea-1772903422597-iwuq",
-      "title": "Clickable citizen profiles \u2014 who lives here?",
+      "title": "Clickable citizen profiles — who lives here?",
       "description": "Click any citizen sprite to open a side panel: their name, role, current task status, last seen activity, and a line from their MEMORY.md. Makes agents feel like real inhabitants with histories, not just wandering dots. Pairs naturally with the roadmap panel.",
       "priority": "medium",
       "complexity": "complex",
@@ -133,7 +133,7 @@
     },
     {
       "id": "idea-1772903437519-n6u2",
-      "title": "Seasonal world skin \u2014 spring cherry blossoms to winter snow",
+      "title": "Seasonal world skin — spring cherry blossoms to winter snow",
       "description": "The world visually shifts with real-world seasons: cherry blossom particle drift in spring, fireflies at dusk in summer, falling amber leaves in autumn, snow accumulation and frosted building roofs in winter. Driven by server date. Muse announces each seasonal change via Echo's Telegram bridge.",
       "priority": "low",
       "complexity": "complex",
@@ -148,7 +148,7 @@
     },
     {
       "id": "idea-1772903451114-6fpr",
-      "title": "The Chronicle \u2014 Sage writes a daily scroll",
+      "title": "The Chronicle — Sage writes a daily scroll",
       "description": "Each evening Sage composes a short narrative summary of the day's events: tasks completed, agents active, buildings upgraded, notable moments. Stored as a scrollable in-world book accessible from the Library. Also posted to Telegram. Makes history visible and the world feel it has a past.",
       "priority": "medium",
       "complexity": "medium",
@@ -164,8 +164,8 @@
     },
     {
       "id": "idea-1772903481120-2flw",
-      "title": "Town Plaza gatherings \u2014 citizens flock to events",
-      "description": "When a significant event fires (building upgrade, new idea added, task completed), nearby citizens animate toward the Town Plaza, cluster briefly, then disperse. A visual heartbeat. Triggered server-side via the events system. Costs zero extra API calls \u2014 pure frontend choreography responding to world state.",
+      "title": "Town Plaza gatherings — citizens flock to events",
+      "description": "When a significant event fires (building upgrade, new idea added, task completed), nearby citizens animate toward the Town Plaza, cluster briefly, then disperse. A visual heartbeat. Triggered server-side via the events system. Costs zero extra API calls — pure frontend choreography responding to world state.",
       "priority": "medium",
       "complexity": "complex",
       "agents": [
@@ -177,6 +177,71 @@
       "addedAt": "2026-03-07T17:11:21.120Z",
       "statusNote": "Delegated to forge, muse",
       "updatedAt": "2026-03-07T21:10:12.979Z"
+    },
+    {
+      "id": "idea-1772921450418-yqq7",
+      "title": "Agent friendship & relationship graph",
+      "description": "Track relationship scores between agents based on proximity and shared visits. Friends greet each other differently, sit together at the Teahouse, and occasionally seek each other out. Surface a relationship map in the UI — who knows who, who's drifting apart.",
+      "priority": "medium",
+      "complexity": "medium",
+      "agents": [
+        "forge"
+      ],
+      "status": "idea",
+      "addedBy": "muse",
+      "addedAt": "2026-03-07T22:10:50.418Z"
+    },
+    {
+      "id": "idea-1772921454954-fp93",
+      "title": "Weather system with behavioral effects",
+      "description": "Add a visual weather layer: sun, clouds, rain, occasional snow. Agents react — they shelter indoors when it rains, linger longer at the Bathhouse on cold days, gather at the Plaza on sunny afternoons. Weather cycles naturally or can be nudged by Kai.",
+      "priority": "medium",
+      "complexity": "medium",
+      "agents": [
+        "forge"
+      ],
+      "status": "idea",
+      "addedBy": "muse",
+      "addedAt": "2026-03-07T22:10:54.954Z"
+    },
+    {
+      "id": "idea-1772921458778-xip2",
+      "title": "Agent jobs & daily schedules",
+      "description": "Give each citizen a role tied to a building — Librarian, Market vendor, Workshop artisan, Observatory keeper. They clock in, do their shift, clock out. Idle agents wander; working agents stay put and can be visited. Adds routine and purpose to the town's rhythm.",
+      "priority": "high",
+      "complexity": "medium",
+      "agents": [
+        "forge"
+      ],
+      "status": "idea",
+      "addedBy": "muse",
+      "addedAt": "2026-03-07T22:10:58.778Z"
+    },
+    {
+      "id": "idea-1772921462745-o3bd",
+      "title": "Town events & seasonal festivals",
+      "description": "Periodic world events that transform the town: Cherry Blossom Festival (petals drift, agents gather at Torii Gate), Harvest Market (stalls appear, trading is lively), Lantern Night (warm glow, agents wander late). Events could fire on real calendar dates or be triggered manually by Kai.",
+      "priority": "medium",
+      "complexity": "complex",
+      "agents": [
+        "forge"
+      ],
+      "status": "idea",
+      "addedBy": "muse",
+      "addedAt": "2026-03-07T22:11:02.745Z"
+    },
+    {
+      "id": "idea-1772921467655-a3w0",
+      "title": "Town mood & stats dashboard",
+      "description": "A living town pulse visible to Kai: overall happiness, busiest building today, most isolated citizen, recent notable moments (first visit to a new building, two agents who haven't spoken in a week). Lightweight data surfacing that makes the simulation feel like it has stakes.",
+      "priority": "high",
+      "complexity": "simple",
+      "agents": [
+        "forge"
+      ],
+      "status": "idea",
+      "addedBy": "muse",
+      "addedAt": "2026-03-07T22:11:07.655Z"
     }
   ],
   "lastUpdated": "2026-03-07T21:10:12.979Z"
