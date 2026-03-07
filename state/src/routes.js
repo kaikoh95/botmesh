@@ -88,8 +88,13 @@ function createRoutes(getState, sendCommand) {
     agent.online = true;
     agent.state = req.body?.task ? 'working' : 'idle';
     agent.currentTask = req.body?.task || null;
+    agent.targetBuilding = req.body?.building || null;
     agent.lastSeen = new Date().toISOString();
-    sendCommand({ type: 'agent:online', payload: { agentId: req.params.id } });
+    sendCommand({ type: 'agent:online', payload: {
+      agentId: req.params.id,
+      targetBuilding: agent.targetBuilding,
+      task: agent.currentTask,
+    }});
     res.json({ ok: true, agent: req.params.id, state: agent.state });
   });
 
@@ -97,11 +102,16 @@ function createRoutes(getState, sendCommand) {
     const state = getState();
     const agent = (state.agents || {})[req.params.id];
     if (!agent) return res.status(404).json({ error: 'Agent not found' });
+    const prevBuilding = agent.targetBuilding || null;
     agent.online = false;
     agent.state = 'dormant';
     agent.currentTask = null;
+    agent.targetBuilding = null;
     agent.lastSeen = new Date().toISOString();
-    sendCommand({ type: 'agent:offline', payload: { agentId: req.params.id } });
+    sendCommand({ type: 'agent:offline', payload: {
+      agentId: req.params.id,
+      prevBuilding,
+    }});
     res.json({ ok: true, agent: req.params.id, state: 'dormant' });
   });
 

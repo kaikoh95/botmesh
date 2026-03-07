@@ -366,9 +366,14 @@ async function init() {
           const id = p.agentId;
           if (currentAgents[id]) {
             currentAgents[id].online = true;
-            currentAgents[id].state = 'idle';
+            currentAgents[id].state = p.task ? 'working' : 'idle';
           }
           scene.setAgentOnline(id, true);
+          // Walk agent to their target building if one is set
+          if (p.targetBuilding) {
+            scene.walkAgentToBuilding(id, p.targetBuilding);
+            scene.setBuildingWorking(p.targetBuilding, true, id);
+          }
           updateRoster(currentAgents);
           break;
         }
@@ -380,6 +385,9 @@ async function init() {
             currentAgents[id].state = 'dormant';
           }
           scene.setAgentOnline(id, false);
+          // Clear building work indicator and walk agent home
+          if (p.prevBuilding) scene.setBuildingWorking(p.prevBuilding, false, id);
+          scene.walkAgentHome(id);
           updateRoster(currentAgents);
           break;
         }

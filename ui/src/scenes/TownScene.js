@@ -330,12 +330,55 @@ export default class TownScene extends Phaser.Scene {
   setAgentOnline(id, online) {
     const agent = this.agents[id];
     if (agent) agent.setOnline(online);
+  }
 
-    // Glow the agent's home building when online
-    for (const [bId, building] of Object.entries(this.buildings)) {
-      if (bId === `home_${id}`) {
-        building.setGlow(online);
-      }
+  walkAgentToBuilding(agentId, buildingId) {
+    const agent = this.agents[agentId];
+    const building = this.buildings[buildingId];
+    if (!agent || !building) return;
+    // Walk to a spot just beside the building
+    const bx = building.x + 16;
+    const by = building.y + 24;
+    agent.moveTo(bx, by);
+  }
+
+  walkAgentHome(agentId) {
+    const agent = this.agents[agentId];
+    if (!agent) return;
+    const home = agent.agentData?.location;
+    if (!home) return;
+    const pos = this.gridToScreen(home.x ?? 20, home.y ?? 15);
+    agent.moveTo(pos.x, pos.y);
+  }
+
+  setBuildingWorking(buildingId, working, agentId) {
+    const building = this.buildings[buildingId];
+    if (!building) return;
+
+    // Remove existing work label if any
+    const key = `work-label-${buildingId}`;
+    if (this._workLabels?.[key]) {
+      this._workLabels[key].destroy();
+      delete this._workLabels[key];
+    }
+    if (!this._workLabels) this._workLabels = {};
+
+    if (working) {
+      // Show animated 🔨 label above building
+      const label = this.add.text(building.x, building.y - 40, '🔨', {
+        fontSize: '20px',
+        resolution: 2,
+      }).setOrigin(0.5).setDepth(200);
+      // Gentle bob animation
+      this.tweens.add({
+        targets: label,
+        y: building.y - 50,
+        duration: 600,
+        yoyo: true,
+        repeat: -1,
+        ease: 'Sine.easeInOut',
+      });
+      this._workLabels[key] = label;
     }
   }
 
