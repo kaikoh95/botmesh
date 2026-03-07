@@ -172,6 +172,23 @@ function applyEvent(event) {
       switch (action) {
         case 'add':
         case 'plant': {
+          // Collision detection for buildings — reject if footprint overlaps an existing building
+          if (entity === 'building' && payload.x != null && payload.y != null) {
+            const nx = payload.x, ny = payload.y;
+            const nw = payload.width || 3, nh = payload.height || 2;
+            const clash = Object.entries(state.buildings || {}).find(([bid, b]) => {
+              if (bid === entityId) return false; // same building (update)
+              const bx2 = b.x + (b.width||3) - 1, by2 = b.y + (b.height||2) - 1;
+              const nx2 = nx + nw - 1, ny2 = ny + nh - 1;
+              return nx <= bx2 && nx2 >= b.x && ny <= by2 && ny2 >= b.y;
+            });
+            if (clash) {
+              console.warn(`[State] world:mutate REJECTED — ${entityId} at (${nx},${ny}) overlaps ${clash[0]} at (${clash[1].x},${clash[1].y})`);
+              addGazetteEntry(event); // still log it
+              break;
+            }
+          }
+
           // Add new entity to world
           const existing = state.world.entities.findIndex(e => e.id === entityId);
           const entry = { id: entityId, entity, ...payload, addedAt: new Date().toISOString() };

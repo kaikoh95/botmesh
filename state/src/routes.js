@@ -115,6 +115,38 @@ function createRoutes(getState, sendCommand) {
     res.json({ ok: true, agent: req.params.id, state: 'dormant' });
   });
 
+  // Free spot finder — returns coordinates that don't clash with any building
+  // GET /world/free-spot?w=3&h=2
+  router.get('/world/free-spot', (req, res) => {
+    const state = getState();
+    const w = parseInt(req.query.w) || 3;
+    const h = parseInt(req.query.h) || 2;
+    const buildings = state.buildings || {};
+    const MAP_W = 30, MAP_H = 26, MARGIN = 2;
+
+    function clashes(x, y) {
+      for (const b of Object.values(buildings)) {
+        const bx2 = b.x + (b.width||3) - 1 + MARGIN;
+        const by2 = b.y + (b.height||2) - 1 + MARGIN;
+        const nx2 = x + w - 1;
+        const ny2 = y + h - 1;
+        if (x - MARGIN <= bx2 && nx2 >= b.x - MARGIN && y - MARGIN <= by2 && ny2 >= b.y - MARGIN) return true;
+      }
+      return false;
+    }
+
+    // Scan grid for first open slot, randomise to spread buildings around
+    const candidates = [];
+    for (let y = 4; y <= MAP_H - h; y++) {
+      for (let x = 4; x <= MAP_W - w; x++) {
+        if (!clashes(x, y)) candidates.push({ x, y });
+      }
+    }
+    if (candidates.length === 0) return res.json({ ok: false, error: 'Map full' });
+    const pick = candidates[Math.floor(Math.random() * Math.min(candidates.length, 20))];
+    res.json({ ok: true, x: pick.x, y: pick.y, w, h });
+  });
+
   // World stats — daily activity summary
   router.get('/stats', (req, res) => {
     const state = getState();

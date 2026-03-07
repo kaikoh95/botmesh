@@ -664,10 +664,14 @@ The map is roughly 32×28 tiles. Buildings exist mostly in the 8–25 x/y range.
 
 ## How to make changes
 \`\`\`bash
+# ALWAYS get a free spot before adding a building (avoids overlaps):
+curl -s "http://localhost:3002/world/free-spot?w=3&h=2"
+# Returns: {"ok":true,"x":20,"y":8,"w":3,"h":2} — use those coords
+
 # Upgrade a building
 node /home/kai/projects/botmesh/agents/world-mutate.js upgrade building <id> <newLevel> "forge" "<reason>"
 
-# Add a new building
+# Add a new building (use the free-spot coords above)
 node /home/kai/projects/botmesh/agents/world-mutate.js add building <id> "<Name>" <x> <y> <type>
 
 # Plant nature
