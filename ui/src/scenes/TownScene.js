@@ -104,6 +104,21 @@ export default class TownScene extends Phaser.Scene {
     window.addEventListener('botmesh:followagent', (e) => {
       this.panToAgent(e.detail.agentId);
     });
+
+    // Agent random thoughts — personality bubbles every ~8s (picks a random online agent)
+    this.time.addEvent({
+      delay: 8000,
+      loop: true,
+      callback: () => {
+        const agentIds = Object.keys(this.agents);
+        if (!agentIds.length) return;
+        const id = agentIds[Math.floor(Math.random() * agentIds.length)];
+        const agent = this.agents[id];
+        if (!agent || !agent.online) return;
+        const thought = this._agentThought(id);
+        if (thought && agent.speak) agent.speak(thought);
+      }
+    });
   }
 
   _drawGround(mapW, mapH) {
@@ -395,6 +410,17 @@ export default class TownScene extends Phaser.Scene {
     // Set initial state (handles sleeping correctly now)
     if (agentData.state) agent.setState(agentData.state);
     if (!agentData.online) agent.setOnline(false);
+
+    // Wake-up speech bubble
+    if (agentData.online !== false && agent.speak) {
+      const wakeLines = {
+        forge: 'Time to build.', lumen: "Let's investigate.", sage: 'I am here.',
+        mosaic: 'Vision loaded.', muse: 'Ready to create.', iron: 'On guard.',
+        cronos: 'Clocked in.', echo: 'Online.', patch: 'Booting up...',
+        canvas: 'Light looks good.', scarlet: 'Watching.',
+      };
+      setTimeout(() => { if (agent.speak) agent.speak(wakeLines[agentData.id] || 'On it.'); }, 1500);
+    }
 
     return agent;
   }
@@ -775,6 +801,24 @@ export default class TownScene extends Phaser.Scene {
     const building = this.buildings[buildingId];
     if (!building) return;
     building.setLevel(level);
+  }
+
+  _agentThought(agentId) {
+    const pools = {
+      forge:   ['Hammering out the details...', 'This joint needs reinforcing.', 'Good steel never lies.', 'Almost level. Almost.'],
+      lumen:   ['Curious pattern here...', 'The data suggests otherwise.', 'I need more samples.', 'Hypothesis forming...'],
+      sage:    ['The old texts speak of this.', "Memory is the town's true foundation.", 'In stillness, clarity.', '...'],
+      mosaic:  ['The palette feels off today.', 'Every pixel tells a story.', 'Need better contrast here.', 'Almost the right hue.'],
+      muse:    ['What if the well were deeper?', 'Inspiration comes at dusk.', 'The plaza needs something... more.', '✨'],
+      iron:    ['All clear.', 'Perimeter secure.', 'Watching.', 'No threats detected.'],
+      cronos:  ['Tick.', 'Right on schedule.', 'Time waits for no one.', '⏰'],
+      echo:    ['Did everyone hear that?', 'Broadcasting...', 'Signal received.', 'Amplifying...'],
+      patch:   ['Found a bug.', 'One more edge case...', 'Should handle nulls here.', 'Tests passing. Mostly.'],
+      canvas:  ['The light is perfect right now.', 'Everything is composition.', 'Color speaks louder than words.', '🎨'],
+      scarlet: ['Keeping watch.', 'All systems nominal.', "Something's brewing...", 'The town grows.'],
+    };
+    const list = pools[agentId] || ['...'];
+    return list[Math.floor(Math.random() * list.length)];
   }
 
   panToAgent(agentId) {

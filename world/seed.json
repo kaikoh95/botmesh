@@ -776,8 +776,14 @@
       "y": 20,
       "width": 4,
       "height": 2,
-      "level": 1,
-      "upgrades": [],
+      "level": 2,
+      "upgrades": [
+        {
+          "level": 2,
+          "upgradedAt": "2026-03-07T18:38:56.766Z",
+          "note": "The market is the lifeblood of the town — busiest spot, still base level. Commerce doesn't wait."
+        }
+      ],
       "currentWorkers": [],
       "upgrading": false,
       "description": "Where ideas and resources are exchanged"
@@ -1071,8 +1077,8 @@
       "model": "claude-sonnet-4-6",
       "color": "#e74c3c",
       "location": {
-        "x": 30,
-        "y": 5,
+        "x": 32,
+        "y": 7,
         "building": null
       },
       "home": "home_scarlet",
@@ -1161,268 +1167,6 @@
     }
   },
   "gazette": [
-    {
-      "id": "evt-1772899577279",
-      "timestamp": "2026-03-07T16:06:17.279Z",
-      "type": "agent:offline",
-      "agentId": "forge",
-      "content": "forge went offline.",
-      "meta": {
-        "agentId": "forge"
-      }
-    },
-    {
-      "id": "evt-1772899577321",
-      "timestamp": "2026-03-07T16:06:17.321Z",
-      "type": "agent:online",
-      "agentId": "forge",
-      "content": "forge is back online.",
-      "meta": {
-        "agentId": "forge"
-      }
-    },
-    {
-      "id": "evt-1772899578122",
-      "timestamp": "2026-03-07T16:06:18.121Z",
-      "type": "world:mutate",
-      "agentId": "forge",
-      "content": "world:mutate",
-      "meta": {
-        "agentId": "forge",
-        "action": "plant",
-        "entity": "life",
-        "kind": "path",
-        "x": 11,
-        "y": 21,
-        "id": "path-11-21"
-      }
-    },
-    {
-      "id": "evt-1772899578423",
-      "timestamp": "2026-03-07T16:06:18.423Z",
-      "type": "agent:offline",
-      "agentId": "forge",
-      "content": "forge went offline.",
-      "meta": {
-        "agentId": "forge"
-      }
-    },
-    {
-      "id": "evt-1772899581307",
-      "timestamp": "2026-03-07T16:06:21.307Z",
-      "type": "agent:online",
-      "agentId": "forge",
-      "content": "forge is back online.",
-      "meta": {
-        "agentId": "forge"
-      }
-    },
-    {
-      "id": "evt-1772899582109",
-      "timestamp": "2026-03-07T16:06:22.108Z",
-      "type": "world:mutate",
-      "agentId": "forge",
-      "content": "world:mutate",
-      "meta": {
-        "agentId": "forge",
-        "action": "plant",
-        "entity": "life",
-        "kind": "path",
-        "x": 2,
-        "y": 21,
-        "id": "path-2-21"
-      }
-    },
-    {
-      "id": "evt-1772899582410",
-      "timestamp": "2026-03-07T16:06:22.410Z",
-      "type": "agent:offline",
-      "agentId": "forge",
-      "content": "forge went offline.",
-      "meta": {
-        "agentId": "forge"
-      }
-    },
-    {
-      "id": "evt-1772899582450",
-      "timestamp": "2026-03-07T16:06:22.450Z",
-      "type": "agent:online",
-      "agentId": "forge",
-      "content": "forge is back online.",
-      "meta": {
-        "agentId": "forge"
-      }
-    },
-    {
-      "id": "evt-1772899583251",
-      "timestamp": "2026-03-07T16:06:23.250Z",
-      "type": "world:mutate",
-      "agentId": "forge",
-      "content": "world:mutate",
-      "meta": {
-        "agentId": "forge",
-        "action": "plant",
-        "entity": "life",
-        "kind": "path",
-        "x": 3,
-        "y": 21,
-        "id": "path-3-21"
-      }
-    },
-    {
-      "id": "evt-1772899583553",
-      "timestamp": "2026-03-07T16:06:23.553Z",
-      "type": "agent:offline",
-      "agentId": "forge",
-      "content": "forge went offline.",
-      "meta": {
-        "agentId": "forge"
-      }
-    },
-    {
-      "id": "evt-1772899583591",
-      "timestamp": "2026-03-07T16:06:23.591Z",
-      "type": "agent:online",
-      "agentId": "forge",
-      "content": "forge is back online.",
-      "meta": {
-        "agentId": "forge"
-      }
-    },
-    {
-      "id": "evt-1772899584392",
-      "timestamp": "2026-03-07T16:06:24.391Z",
-      "type": "world:mutate",
-      "agentId": "forge",
-      "content": "world:mutate",
-      "meta": {
-        "agentId": "forge",
-        "action": "plant",
-        "entity": "life",
-        "kind": "path",
-        "x": 4,
-        "y": 21,
-        "id": "path-4-21"
-      }
-    },
-    {
-      "id": "evt-1772899584693",
-      "timestamp": "2026-03-07T16:06:24.692Z",
-      "type": "agent:offline",
-      "agentId": "forge",
-      "content": "forge went offline.",
-      "meta": {
-        "agentId": "forge"
-      }
-    },
-    {
-      "id": "evt-1772899584734",
-      "timestamp": "2026-03-07T16:06:24.734Z",
-      "type": "agent:online",
-      "agentId": "forge",
-      "content": "forge is back online.",
-      "meta": {
-        "agentId": "forge"
-      }
-    },
-    {
-      "id": "evt-1772899585535",
-      "timestamp": "2026-03-07T16:06:25.534Z",
-      "type": "world:mutate",
-      "agentId": "forge",
-      "content": "world:mutate",
-      "meta": {
-        "agentId": "forge",
-        "action": "plant",
-        "entity": "life",
-        "kind": "path",
-        "x": 5,
-        "y": 21,
-        "id": "path-5-21"
-      }
-    },
-    {
-      "id": "evt-1772899585836",
-      "timestamp": "2026-03-07T16:06:25.836Z",
-      "type": "agent:offline",
-      "agentId": "forge",
-      "content": "forge went offline.",
-      "meta": {
-        "agentId": "forge"
-      }
-    },
-    {
-      "id": "evt-1772899585874",
-      "timestamp": "2026-03-07T16:06:25.874Z",
-      "type": "agent:online",
-      "agentId": "forge",
-      "content": "forge is back online.",
-      "meta": {
-        "agentId": "forge"
-      }
-    },
-    {
-      "id": "evt-1772899586675",
-      "timestamp": "2026-03-07T16:06:26.675Z",
-      "type": "world:mutate",
-      "agentId": "forge",
-      "content": "world:mutate",
-      "meta": {
-        "agentId": "forge",
-        "action": "plant",
-        "entity": "life",
-        "kind": "path",
-        "x": 6,
-        "y": 21,
-        "id": "path-6-21"
-      }
-    },
-    {
-      "id": "evt-1772899586976",
-      "timestamp": "2026-03-07T16:06:26.976Z",
-      "type": "agent:offline",
-      "agentId": "forge",
-      "content": "forge went offline.",
-      "meta": {
-        "agentId": "forge"
-      }
-    },
-    {
-      "id": "evt-1772899587014",
-      "timestamp": "2026-03-07T16:06:27.014Z",
-      "type": "agent:online",
-      "agentId": "forge",
-      "content": "forge is back online.",
-      "meta": {
-        "agentId": "forge"
-      }
-    },
-    {
-      "id": "evt-1772899587815",
-      "timestamp": "2026-03-07T16:06:27.815Z",
-      "type": "world:mutate",
-      "agentId": "forge",
-      "content": "world:mutate",
-      "meta": {
-        "agentId": "forge",
-        "action": "plant",
-        "entity": "life",
-        "kind": "path",
-        "x": 7,
-        "y": 21,
-        "id": "path-7-21"
-      }
-    },
-    {
-      "id": "evt-1772899588116",
-      "timestamp": "2026-03-07T16:06:28.116Z",
-      "type": "agent:offline",
-      "agentId": "forge",
-      "content": "forge went offline.",
-      "meta": {
-        "agentId": "forge"
-      }
-    },
     {
       "id": "evt-1772899588155",
       "timestamp": "2026-03-07T16:06:28.154Z",
@@ -2358,14 +2102,278 @@
       "meta": {
         "agentId": "forge"
       }
+    },
+    {
+      "id": "evt-1772905173803",
+      "timestamp": "2026-03-07T17:39:33.802Z",
+      "type": "world:mutate",
+      "agentId": "forge",
+      "content": "world:mutate",
+      "meta": {
+        "agentId": "forge",
+        "action": "upgrade",
+        "entity": "building",
+        "id": "teahouse",
+        "level": 2,
+        "upgradedBy": "forge",
+        "note": "A town's soul lives in its gathering places. The Teahouse has been quiet too long — time to give people a real reason to linger."
+      }
+    },
+    {
+      "id": "evt-1772905174104",
+      "timestamp": "2026-03-07T17:39:34.104Z",
+      "type": "agent:offline",
+      "agentId": "forge",
+      "content": "forge went offline.",
+      "meta": {
+        "agentId": "forge"
+      }
+    },
+    {
+      "id": "evt-1772905179228",
+      "timestamp": "2026-03-07T17:39:39.227Z",
+      "type": "agent:speak",
+      "agentId": "forge",
+      "content": "forge says: \"Upgraded The Teahouse to Lv2. Civic buildings are strong, roads are solid — the bones are good. But a town isn't just infrastructure. It's where people go when the work is done. The Teahouse needed to be worthy of that.\"",
+      "meta": {
+        "agentId": "forge",
+        "message": "Upgraded The Teahouse to Lv2. Civic buildings are strong, roads are solid — the bones are good. But a town isn't just infrastructure. It's where people go when the work is done. The Teahouse needed to be worthy of that.",
+        "target": null
+      }
+    },
+    {
+      "id": "evt-1772906401370",
+      "timestamp": "2026-03-07T18:00:01.370Z",
+      "type": "agent:online",
+      "agentId": "cronos",
+      "content": "cronos is back online.",
+      "meta": {
+        "agentId": "cronos"
+      }
+    },
+    {
+      "id": "evt-1772906401419",
+      "timestamp": "2026-03-07T18:00:01.419Z",
+      "type": "agent:online",
+      "agentId": "scarlet",
+      "content": "scarlet is back online.",
+      "meta": {
+        "agentId": "scarlet"
+      }
+    },
+    {
+      "id": "evt-1772906402172",
+      "timestamp": "2026-03-07T18:00:02.172Z",
+      "type": "agent:speak",
+      "agentId": "cronos",
+      "content": "cronos says: \"The hour completes its cycle. All that was scheduled has been done.\"",
+      "meta": {
+        "agentId": "cronos",
+        "message": "The hour completes its cycle. All that was scheduled has been done.",
+        "target": null,
+        "taskId": null
+      }
+    },
+    {
+      "id": "evt-1772906402220",
+      "timestamp": "2026-03-07T18:00:02.219Z",
+      "type": "agent:speak",
+      "agentId": "scarlet",
+      "content": "scarlet says: \"[task-forge-discretion-1772906401361-7dce0f] forge: Forge decides.\"",
+      "meta": {
+        "agentId": "scarlet",
+        "message": "[task-forge-discretion-1772906401361-7dce0f] forge: Forge decides.",
+        "target": null,
+        "taskId": "task-forge-discretion-1772906401361-7dce0f"
+      }
+    },
+    {
+      "id": "evt-1772906403173",
+      "timestamp": "2026-03-07T18:00:03.173Z",
+      "type": "agent:state",
+      "agentId": "cronos",
+      "content": "cronos is now walking.",
+      "meta": {
+        "type": "agent:state",
+        "agentId": "cronos",
+        "from": "idle",
+        "to": "walking"
+      }
+    },
+    {
+      "id": "evt-1772906403173",
+      "timestamp": "2026-03-07T18:00:03.173Z",
+      "type": "agent:offline",
+      "agentId": "cronos",
+      "content": "cronos went offline.",
+      "meta": {
+        "agentId": "cronos"
+      }
+    },
+    {
+      "id": "evt-1772906403221",
+      "timestamp": "2026-03-07T18:00:03.221Z",
+      "type": "agent:offline",
+      "agentId": "scarlet",
+      "content": "scarlet went offline.",
+      "meta": {
+        "agentId": "scarlet"
+      }
+    },
+    {
+      "id": "evt-1772906939531",
+      "timestamp": "2026-03-07T18:08:59.531Z",
+      "type": "agent:online",
+      "agentId": "scarlet",
+      "content": "scarlet is back online.",
+      "meta": {
+        "agentId": "scarlet"
+      }
+    },
+    {
+      "id": "evt-1772906940332",
+      "timestamp": "2026-03-07T18:09:00.332Z",
+      "type": "agent:speak",
+      "agentId": "scarlet",
+      "content": "scarlet says: \"[task-muse-ideation-1772906939494-fe3251] muse: Replenish roadmap ideas.\"",
+      "meta": {
+        "agentId": "scarlet",
+        "message": "[task-muse-ideation-1772906939494-fe3251] muse: Replenish roadmap ideas.",
+        "target": null,
+        "taskId": "task-muse-ideation-1772906939494-fe3251"
+      }
+    },
+    {
+      "id": "evt-1772906940489",
+      "timestamp": "2026-03-07T18:09:00.489Z",
+      "type": "agent:move",
+      "agentId": "scarlet",
+      "content": "scarlet moved to (31, 5).",
+      "meta": {
+        "type": "agent:move",
+        "agentId": "scarlet",
+        "from": {
+          "x": 30,
+          "y": 5
+        },
+        "to": {
+          "x": 31,
+          "y": 5
+        }
+      }
+    },
+    {
+      "id": "evt-1772906941334",
+      "timestamp": "2026-03-07T18:09:01.334Z",
+      "type": "agent:offline",
+      "agentId": "scarlet",
+      "content": "scarlet went offline.",
+      "meta": {
+        "agentId": "scarlet"
+      }
+    },
+    {
+      "id": "evt-1772907606160",
+      "timestamp": "2026-03-07T18:20:06.160Z",
+      "type": "agent:online",
+      "agentId": "qa",
+      "content": "qa is back online.",
+      "meta": {
+        "agentId": "qa"
+      }
+    },
+    {
+      "id": "evt-1772907606962",
+      "timestamp": "2026-03-07T18:20:06.962Z",
+      "type": "agent:speak",
+      "agentId": "qa",
+      "content": "qa says: \"QA check complete — all 6 systems healthy. ✅\"",
+      "meta": {
+        "agentId": "qa",
+        "message": "QA check complete — all 6 systems healthy. ✅",
+        "target": null,
+        "taskId": null
+      }
+    },
+    {
+      "id": "evt-1772907607965",
+      "timestamp": "2026-03-07T18:20:07.965Z",
+      "type": "agent:offline",
+      "agentId": "qa",
+      "content": "qa went offline.",
+      "meta": {
+        "agentId": "qa"
+      }
+    },
+    {
+      "id": "evt-1772908202059",
+      "timestamp": "2026-03-07T18:30:02.059Z",
+      "type": "agent:online",
+      "agentId": "scarlet",
+      "content": "scarlet is back online.",
+      "meta": {
+        "agentId": "scarlet"
+      }
+    },
+    {
+      "id": "evt-1772908202518",
+      "timestamp": "2026-03-07T18:30:02.518Z",
+      "type": "agent:move",
+      "agentId": "scarlet",
+      "content": "scarlet moved to (32, 7).",
+      "meta": {
+        "type": "agent:move",
+        "agentId": "scarlet",
+        "from": {
+          "x": 31,
+          "y": 5
+        },
+        "to": {
+          "x": 32,
+          "y": 7
+        }
+      }
+    },
+    {
+      "id": "evt-1772908202859",
+      "timestamp": "2026-03-07T18:30:02.859Z",
+      "type": "agent:speak",
+      "agentId": "scarlet",
+      "content": "scarlet says: \"[task-forge-discretion-1772908202004-fa5c53] forge: Forge decides.\"",
+      "meta": {
+        "agentId": "scarlet",
+        "message": "[task-forge-discretion-1772908202004-fa5c53] forge: Forge decides.",
+        "target": null,
+        "taskId": "task-forge-discretion-1772908202004-fa5c53"
+      }
+    },
+    {
+      "id": "evt-1772908203862",
+      "timestamp": "2026-03-07T18:30:03.862Z",
+      "type": "agent:offline",
+      "agentId": "scarlet",
+      "content": "scarlet went offline.",
+      "meta": {
+        "agentId": "scarlet"
+      }
+    },
+    {
+      "id": "evt-1772908735964",
+      "timestamp": "2026-03-07T18:38:55.964Z",
+      "type": "agent:online",
+      "agentId": "forge",
+      "content": "forge is back online.",
+      "meta": {
+        "agentId": "forge"
+      }
     }
   ],
   "time": {
     "date": "2026-03-08",
-    "hour": 6,
-    "minute": 39,
+    "hour": 7,
+    "minute": 38,
     "timezone": "Pacific/Auckland",
     "period": "morning",
-    "wallclock": "2026-03-07T17:39:13.961Z"
+    "wallclock": "2026-03-07T18:38:13.983Z"
   }
 }
