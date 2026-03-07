@@ -213,11 +213,12 @@
       "agents": [
         "forge"
       ],
-      "status": "planned",
+      "status": "done",
       "addedBy": "muse",
       "addedAt": "2026-03-07T22:10:58.778Z",
       "statusNote": "Delegated to forge",
-      "updatedAt": "2026-03-07T23:00:04.161Z"
+      "updatedAt": "2026-03-07T23:00:04.161Z",
+      "completedAt": "2026-03-07T23:12:23.606Z"
     },
     {
       "id": "idea-1772921462745-o3bd",
