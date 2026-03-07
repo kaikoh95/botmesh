@@ -26,7 +26,7 @@ export default class TownScene extends Phaser.Scene {
       this.load.image(`agent-${id}`, `assets/sprites/${id}.png`);
     }
     // Building sprites (per level)
-    const buildings = ['cottage', 'townhall', 'postoffice', 'plaza', 'workshop', 'library', 'market', 'observatory', 'teahouse'];
+    const buildings = ['cottage', 'townhall', 'postoffice', 'plaza', 'well', 'workshop', 'library', 'market', 'observatory', 'teahouse'];
     for (const b of buildings) {
       for (let lvl = 1; lvl <= 3; lvl++) {
         this.load.image(`building-${b}-l${lvl}`, `assets/buildings/${b}-l${lvl}.png`);
