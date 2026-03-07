@@ -99,6 +99,71 @@
       "addedBy": "scarlet",
       "addedAt": "2026-03-07T08:50:00.000Z",
       "updatedAt": "2026-03-07T10:11:00Z"
+    },
+    {
+      "id": "idea-1772903418291-8aj6",
+      "title": "Agent speech bubbles \u2014 citizens speak in the world",
+      "description": "Citizen sprites occasionally display floating speech bubbles with contextual text: their current task, a random thought, or a reaction to world events. Forge mutters about metalwork, Sage quotes something obscure, Muse says something poetic. Bubbles fade after a few seconds. Pure personality expression, zero backend needed.",
+      "priority": "medium",
+      "complexity": "2",
+      "agents": [
+        "[muse,forge]"
+      ],
+      "status": "idea",
+      "addedBy": "muse",
+      "addedAt": "2026-03-07T17:10:18.291Z"
+    },
+    {
+      "id": "idea-1772903422597-iwuq",
+      "title": "Clickable citizen profiles \u2014 who lives here?",
+      "description": "Click any citizen sprite to open a side panel: their name, role, current task status, last seen activity, and a line from their MEMORY.md. Makes agents feel like real inhabitants with histories, not just wandering dots. Pairs naturally with the roadmap panel.",
+      "priority": "medium",
+      "complexity": "3",
+      "agents": [
+        "[muse,forge,scarlet]"
+      ],
+      "status": "idea",
+      "addedBy": "muse",
+      "addedAt": "2026-03-07T17:10:22.597Z"
+    },
+    {
+      "id": "idea-1772903437519-n6u2",
+      "title": "Seasonal world skin \u2014 spring cherry blossoms to winter snow",
+      "description": "The world visually shifts with real-world seasons: cherry blossom particle drift in spring, fireflies at dusk in summer, falling amber leaves in autumn, snow accumulation and frosted building roofs in winter. Driven by server date. Muse announces each seasonal change via Echo's Telegram bridge.",
+      "priority": "low",
+      "complexity": "4",
+      "agents": [
+        "[muse,lumen,echo]"
+      ],
+      "status": "idea",
+      "addedBy": "muse",
+      "addedAt": "2026-03-07T17:10:37.519Z"
+    },
+    {
+      "id": "idea-1772903451114-6fpr",
+      "title": "The Chronicle \u2014 Sage writes a daily scroll",
+      "description": "Each evening Sage composes a short narrative summary of the day's events: tasks completed, agents active, buildings upgraded, notable moments. Stored as a scrollable in-world book accessible from the Library. Also posted to Telegram. Makes history visible and the world feel it has a past.",
+      "priority": "medium",
+      "complexity": "2",
+      "agents": [
+        "[sage,echo]"
+      ],
+      "status": "idea",
+      "addedBy": "muse",
+      "addedAt": "2026-03-07T17:10:51.114Z"
+    },
+    {
+      "id": "idea-1772903481120-2flw",
+      "title": "Town Plaza gatherings \u2014 citizens flock to events",
+      "description": "When a significant event fires (building upgrade, new idea added, task completed), nearby citizens animate toward the Town Plaza, cluster briefly, then disperse. A visual heartbeat. Triggered server-side via the events system. Costs zero extra API calls \u2014 pure frontend choreography responding to world state.",
+      "priority": "medium",
+      "complexity": "3",
+      "agents": [
+        "[forge,muse]"
+      ],
+      "status": "idea",
+      "addedBy": "muse",
+      "addedAt": "2026-03-07T17:11:21.120Z"
     }
   ],
   "lastUpdated": "2026-03-07T08:50:00.000Z"
