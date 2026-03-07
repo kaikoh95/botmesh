@@ -60,6 +60,9 @@ export default class TownScene extends Phaser.Scene {
     this.worldLife = new WorldLife(this);
     this.worldLife.spawn(1); // starts with 1, updates as agents join
 
+    // Path tile registry — populated from world entities on state:sync
+    this.pathTiles = new Set();
+
     // Grid-based click detection — accurate footprint hits only
     this._setupGridClickHandler();
 
@@ -104,7 +107,9 @@ export default class TownScene extends Phaser.Scene {
   }
 
   _drawGround(mapW, mapH) {
+    if (this._groundGraphics) { this._groundGraphics.destroy(); }
     const g = this.add.graphics();
+    this._groundGraphics = g;
     g.setDepth(0);
 
     for (let y = 0; y < mapH; y++) {
@@ -112,7 +117,9 @@ export default class TownScene extends Phaser.Scene {
         const screen = this.gridToScreen(x, y);
         const isWater = this._isWater(x, y);
         const isPath = this._isPath(x, y);
-        const color = isWater ? this._waterColor(x, y) : isPath ? 0xd4a574 : this._grassColor(x, y);
+        // Path: warm sandstone; alternate tiles slightly for texture
+        const pathColor = ((x + y) % 2 === 0) ? 0xc8a882 : 0xd4b48e;
+        const color = isWater ? this._waterColor(x, y) : isPath ? pathColor : this._grassColor(x, y);
 
         g.fillStyle(color, 1);
         g.beginPath();
@@ -123,7 +130,10 @@ export default class TownScene extends Phaser.Scene {
         g.closePath();
         g.fillPath();
 
-        g.lineStyle(1, 0x000000, 0.06);
+        // Stronger edge on path tiles for stone-slab feel
+        const borderAlpha = isPath ? 0.22 : 0.06;
+        const borderColor = isPath ? 0x8b6f47 : 0x000000;
+        g.lineStyle(1, borderColor, borderAlpha);
         g.beginPath();
         g.moveTo(screen.x, screen.y - TILE_H / 2);
         g.lineTo(screen.x + TILE_W / 2, screen.y);
@@ -222,9 +232,23 @@ export default class TownScene extends Phaser.Scene {
   }
 
   _isPath(x, y) {
-    return (y === 15 && x >= 10 && x <= 28) ||
-           (x === 20 && y >= 8 && y <= 22) ||
-           (x === 18 && y >= 12 && y <= 18);
+    return this.pathTiles?.has?.(`${x},${y}`) || false;
+  }
+
+  // Rebuild path tile set from world entities and redraw ground
+  _refreshPaths(entities) {
+    this.pathTiles = new Set(
+      (entities || [])
+        .filter(e => e.kind === 'path' || e.entity === 'path')
+        .map(e => `${Math.round(e.x)},${Math.round(e.y)}`)
+    );
+    // Redraw ground layer with new path data
+    if (this._groundGraphics) {
+      this._groundGraphics.destroy();
+      this._groundGraphics = null;
+    }
+    const MAP_W = 32, MAP_H = 28;
+    this._groundGraphics = this._drawGround(MAP_W, MAP_H);
   }
 
   gridToScreen(gridX, gridY) {
@@ -302,8 +326,11 @@ export default class TownScene extends Phaser.Scene {
 
     // Load world entities (life/nature + dynamic buildings from world:mutate)
     if (state.world?.entities) {
+      // Refresh path tiles first so _drawGround has correct data
+      this._refreshPaths(state.world.entities);
+
       for (const entity of state.world.entities) {
-        if (entity.entity === 'life') {
+        if (entity.entity === 'life' && entity.kind !== 'path') {
           this.addLifeEntity(entity);
         } else if (entity.entity === 'building') {
           // Dynamic buildings — add if not already in state.buildings

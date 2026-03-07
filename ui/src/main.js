@@ -479,7 +479,14 @@ async function init() {
               }
               break;
             case 'plant':
-              scene.addLifeEntity(p);
+              if (p.kind === 'path') {
+                // Path tile — refresh ground layer instead of spawning a sprite
+                if (!scene.pathTiles) scene.pathTiles = new Set();
+                scene.pathTiles.add(`${Math.round(p.x)},${Math.round(p.y)}`);
+                scene._drawGround(32, 28);
+              } else {
+                scene.addLifeEntity(p);
+              }
               break;
             case 'upgrade':
               if (p.entity === 'building') {
