@@ -86,6 +86,25 @@ function applyEvent(event) {
           const entry = { id: entityId, entity, ...payload, addedAt: new Date().toISOString() };
           if (existing >= 0) state.world.entities[existing] = entry;
           else state.world.entities.push(entry);
+          // Buildings also get registered in state.buildings for panel/upgrade access
+          if (entity === 'building') {
+            if (!state.buildings) state.buildings = {};
+            if (!state.buildings[entityId]) {
+              state.buildings[entityId] = {
+                id: entityId,
+                name: payload.name || entityId,
+                type: payload.type || 'civic',
+                x: payload.x || 0, y: payload.y || 0,
+                width: payload.width || 3, height: payload.height || 2,
+                level: payload.level || 1,
+                maxLevel: payload.maxLevel || 3,
+                upgrades: [],
+                currentWorkers: [],
+                description: payload.description || '',
+                addedAt: new Date().toISOString(),
+              };
+            }
+          }
           break;
         }
         case 'upgrade': {

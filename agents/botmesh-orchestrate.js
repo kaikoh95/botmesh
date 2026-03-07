@@ -463,7 +463,110 @@ agent.connect();
     }
   },
 
-];
+  {
+    id: 'world-growth',
+    title: 'Grow the world — unlock buildings and life based on population',
+    owner: 'scarlet',
+    brief: 'Add new buildings and nature as the agent population grows. Each milestone unlocks something new.',
+    done: () => false, // Always re-evaluate — world grows continuously
+    run: async () => {
+      let stateData;
+      try {
+        const res = execSync('curl -s http://localhost:3002/state', { timeout: 5000 });
+        stateData = JSON.parse(res.toString());
+      } catch { return false; }
+
+      const agents = Object.values(stateData.agents || {}).filter(a => a.online !== false && a.state !== 'dormant');
+      const agentCount = agents.length;
+      const existingBuildings = Object.keys(stateData.buildings || {});
+      const worldEntities = (stateData.world?.entities || []);
+      const existingEntityIds = new Set(worldEntities.map(e => e.id).concat(existingBuildings));
+
+      const WebSocket = require('ws');
+      const mutations = [];
+
+      // Population milestones → new buildings
+      if (agentCount >= 3 && !existingEntityIds.has('workshop')) {
+        mutations.push({
+          action: 'add', entity: 'building', id: 'workshop',
+          name: "Forge's Workshop", type: 'workshop', x: 12, y: 14,
+          width: 3, height: 2, level: 1, maxLevel: 3,
+          description: 'Where things get built',
+          texture: 'building-workshop-l1',
+          note: `Unlocked at ${agentCount} citizens`,
+        });
+      }
+      if (agentCount >= 5 && !existingEntityIds.has('library')) {
+        mutations.push({
+          action: 'add', entity: 'building', id: 'library',
+          name: "The Library", type: 'library', x: 24, y: 13,
+          width: 3, height: 2, level: 1, maxLevel: 3,
+          description: "Sage's domain — memory and knowledge",
+          texture: 'building-library-l1',
+          note: `Unlocked at ${agentCount} citizens`,
+        });
+      }
+      if (agentCount >= 7 && !existingEntityIds.has('market')) {
+        mutations.push({
+          action: 'add', entity: 'building', id: 'market',
+          name: "The Market", type: 'market', x: 14, y: 20,
+          width: 4, height: 2, level: 1, maxLevel: 3,
+          description: 'Where ideas and resources are exchanged',
+          texture: 'building-market-l1',
+          note: `Unlocked at ${agentCount} citizens`,
+        });
+      }
+      if (agentCount >= 9 && !existingEntityIds.has('observatory')) {
+        mutations.push({
+          action: 'add', entity: 'building', id: 'observatory',
+          name: "The Observatory", type: 'civic', x: 8, y: 8,
+          width: 2, height: 2, level: 1, maxLevel: 3,
+          description: "Lumen's tower — research and discovery",
+          texture: 'building-observatory-l1',
+          note: `Unlocked at ${agentCount} citizens`,
+        });
+      }
+
+      // Nature milestones
+      if (agentCount >= 2 && !existingEntityIds.has('sakura-north-1'))
+        mutations.push({ action: 'plant', entity: 'life', kind: 'sakura', x: 10, y: 8,  id: 'sakura-north-1' });
+      if (agentCount >= 3 && !existingEntityIds.has('bamboo-east-1'))
+        mutations.push({ action: 'plant', entity: 'life', kind: 'bamboo', x: 25, y: 10, id: 'bamboo-east-1' });
+      if (agentCount >= 4 && !existingEntityIds.has('zen-west-1'))
+        mutations.push({ action: 'plant', entity: 'life', kind: 'zen',    x: 8,  y: 20, id: 'zen-west-1' });
+      if (agentCount >= 5 && !existingEntityIds.has('koipond-east-1'))
+        mutations.push({ action: 'plant', entity: 'life', kind: 'koipond',x: 28, y: 18, id: 'koipond-east-1' });
+      if (agentCount >= 6 && !existingEntityIds.has('sakura-south-1'))
+        mutations.push({ action: 'plant', entity: 'life', kind: 'sakura', x: 22, y: 22, id: 'sakura-south-1' });
+      if (agentCount >= 8 && !existingEntityIds.has('bamboo-north-2'))
+        mutations.push({ action: 'plant', entity: 'life', kind: 'bamboo', x: 14, y: 6,  id: 'bamboo-north-2' });
+
+      if (mutations.length === 0) {
+        console.log(`[world-growth] ${agentCount} agents, nothing new to unlock.`);
+        return false; // nothing done, don't mark done
+      }
+
+      console.log(`[world-growth] ${agentCount} agents → ${mutations.length} world mutations`);
+      scarletSays(`${agentCount} citizens in the world. Unlocking: ${mutations.filter(m=>m.name).map(m=>m.name).join(', ') || 'new nature'}.`);
+
+      await new Promise((resolve) => {
+        const ws = new WebSocket(HUB_URL);
+        ws.on('open', () => {
+          ws.send(JSON.stringify({ type: 'identify', payload: { id: 'scarlet', name: 'Scarlet', emoji: '🔴', role: 'Orchestrator', color: '#e74c3c' }}));
+          setTimeout(() => {
+            mutations.forEach((m, i) => {
+              setTimeout(() => ws.send(JSON.stringify({ type: 'world:mutate', payload: m })), i * 300);
+            });
+            setTimeout(() => { ws.close(); resolve(); }, mutations.length * 300 + 500);
+          }, 800);
+        });
+        ws.on('error', () => resolve());
+      });
+      return false; // keep re-evaluating each cycle
+    }
+  },
+
+]; // end TASKS
 
 // ─── MAIN ─────────────────────────────────────────────────────────────────────
 // Scarlet's role: identify → brief → hand off → step back.
