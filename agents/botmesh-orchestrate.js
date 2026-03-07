@@ -659,7 +659,8 @@ There are no rules. No milestones. No thresholds. Just your judgment.
 The map is roughly 32×28 tiles. Buildings exist mostly in the 8–25 x/y range.
 
 ## Allowed building types (have sprites): townhall, postoffice, workshop, library, market, observatory
-## For new buildings without sprites — just add as type "civic" and Mosaic will sprite it later
+## For new buildings without sprites — add as type "civic". Mosaic is auto-invoked next cycle to sprite it.
+## ⚠️ NEVER wire a building into the UI yourself — that's Mosaic's job.
 
 ## How to make changes
 \`\`\`bash
@@ -682,6 +683,126 @@ curl -s -X POST ${STATE_URL}/agents/forge/speak \\
 \`\`\`
 
 Make your decision. Do it. Narrate it. One thing. That's all.`);
+
+      return false;
+    }
+  },
+
+  // ── Mosaic Sprite Check ──────────────────────────────────────────────────────
+  // Auto-invokes Mosaic whenever buildings exist without sprites.
+  // Runs every cycle — catches anything Forge or others add.
+  {
+    id: 'mosaic-sprite-check',
+    title: 'Mosaic reviews world for missing sprites',
+    owner: 'mosaic',
+    brief: 'Check if any buildings need sprites.',
+    done: () => false,
+    run: async () => {
+      const SPRITE_DIR = path.join(__dirname, '../ui/assets/buildings');
+      const KNOWN_SPRITES = new Set(
+        fs.readdirSync(SPRITE_DIR).filter(f => f.endsWith('.png')).map(f => f.replace(/-l\d+\.png$/, ''))
+      );
+
+      let stateData;
+      try {
+        const res = execSync('curl -s http://localhost:3002/state', { timeout: 5000 });
+        stateData = JSON.parse(res.toString());
+      } catch { return false; }
+
+      const buildings = stateData.buildings || {};
+      const STATE_URL = 'https://homeless-matt-juvenile-formula.trycloudflare.com';
+
+      // Find buildings without sprites
+      const needsSprite = Object.entries(buildings).filter(([id, b]) => {
+        const type = b.type || id;
+        return !KNOWN_SPRITES.has(type) && !KNOWN_SPRITES.has(id);
+      });
+
+      if (needsSprite.length === 0) return false; // all good
+
+      console.log(`[mosaic-sprite-check] ${needsSprite.length} buildings need sprites: ${needsSprite.map(([id]) => id).join(', ')}`);
+
+      const { spawnSession } = require('./spawn-session');
+      const buildingList = needsSprite.map(([id, b]) =>
+        `- **${b.name || id}** (id: \`${id}\`, type: \`${b.type || id}\`) at (${b.x},${b.y})`
+      ).join('\n');
+
+      spawnSession('mosaic', `# Mosaic 🎨 — Sprite Generation
+
+New buildings appeared in the world without sprites. Generate pixel art for each one.
+
+## Buildings needing sprites
+${buildingList}
+
+## Generation command
+\`\`\`bash
+uv run ~/.nvm/versions/node/v24.14.0/lib/node_modules/openclaw/skills/nano-banana-pro/scripts/generate_image.py \\
+  --prompt "PROMPT" --filename "FILENAME" --resolution 1K
+\`\`\`
+
+## Alpha cleaning (run after every generation)
+\`\`\`python
+# uv run --with pillow --with numpy python3 script.py
+from PIL import Image
+import numpy as np
+from collections import deque, os
+
+def clean(path):
+    img = Image.open(path).convert('RGBA')
+    d = np.array(img, dtype=np.int32)
+    r,g,b,a = d[...,0],d[...,1],d[...,2],d[...,3]
+    h,w = r.shape
+    valid = [(y,x) for y,x in [(0,0),(0,w-1),(h-1,0),(h-1,w-1)] if int(a[y,x])>0]
+    if not valid: valid=[(0,0)]
+    bg_r=int(np.median([int(r[y,x]) for y,x in valid]))
+    bg_g=int(np.median([int(g[y,x]) for y,x in valid]))
+    bg_b=int(np.median([int(b[y,x]) for y,x in valid]))
+    def is_bg(pr,pg,pb,t=60): return ((pr-bg_r)**2+(pg-bg_g)**2+(pb-bg_b)**2)**0.5<t or (pr>150 and pb>150 and pg<100) or (pr+pg+pb)>700
+    visited=np.zeros((h,w),bool)
+    q=deque()
+    for i in range(h):
+        for j in [0,w-1]:
+            if not visited[i,j]: q.append((i,j));visited[i,j]=True
+    for j in range(w):
+        for i in [0,h-1]:
+            if not visited[i,j]: q.append((i,j));visited[i,j]=True
+    dirs8=[(-1,0),(1,0),(0,-1),(0,1),(-1,-1),(-1,1),(1,-1),(1,1)]
+    while q:
+        ci,cj=q.popleft()
+        for di,dj in dirs8:
+            ni,nj=ci+di,cj+dj
+            if 0<=ni<h and 0<=nj<w and not visited[ni,nj]:
+                if is_bg(int(r[ni,nj]),int(g[ni,nj]),int(b[ni,nj])): visited[ni,nj]=True;q.append((ni,nj))
+    # Pass 2 — interior expansion
+    q2=deque([(i,j) for i in range(h) for j in range(w) if visited[i,j] or int(a[i,j])==0])
+    for i,j in q2: visited[i,j]=True
+    while q2:
+        ci,cj=q2.popleft()
+        for di,dj in dirs8:
+            ni,nj=ci+di,cj+dj
+            if 0<=ni<h and 0<=nj<w and not visited[ni,nj]:
+                if is_bg(int(r[ni,nj]),int(g[ni,nj]),int(b[ni,nj]),30): visited[ni,nj]=True;q2.append((ni,nj))
+    out=d.copy(); out[...,3]=np.where(visited,0,255).astype(np.int32)
+    Image.fromarray(out.astype(np.uint8)).save(path)
+\`\`\`
+
+## Style guide
+Isometric pixel art, Japanese Edo-period, chibi RPG, bold black outlines, flat solid colors.
+Use SOLID MAGENTA (#FF00FF) background — no gradients, no patterns.
+Save to: \`/home/kai/projects/botmesh/ui/assets/buildings/<type>-l1.png\`
+
+## After generating all sprites
+1. Add building types to \`BUILDING_TEXTURE_MAP\` in \`/home/kai/projects/botmesh/ui/src/entities/Building.js\`
+2. Add to buildings array in TownScene.js preload
+3. Restart UI: \`pm2 restart ui\`
+4. Commit: \`cd /home/kai/projects/botmesh && git add -A && git commit -m "🎨 Mosaic: sprites for <names>" && git push origin main\`
+
+## Narrate as you go
+\`\`\`bash
+curl -s -X POST ${STATE_URL}/agents/mosaic/speak -H "Content-Type: application/json" -d '{"message":"YOUR MESSAGE"}'
+\`\`\`
+
+Go.`);
 
       return false;
     }
