@@ -536,6 +536,10 @@ export default class TownScene extends Phaser.Scene {
       this.infoPanelContainer.destroy();
       this.infoPanelContainer = null;
     }
+    if (this._upgradeDetailTooltip) {
+      this._upgradeDetailTooltip.destroy();
+      this._upgradeDetailTooltip = null;
+    }
   }
 
   // --- Building Upgrade System ---
@@ -589,12 +593,29 @@ export default class TownScene extends Phaser.Scene {
       { label: 'Workers', value: workers.length > 0 ? workers.map(w => w.name || w.id).join(', ') : 'None' },
     ];
 
+    // Normalise upgrade entries — two formats exist:
+    //   new: { level, upgradedBy, upgradedAt, note }
+    //   old: { toLevel, agentId, agentName, completedAt }
+    const normUpgrades = upgrades.map(u => ({
+      level:       u.level      ?? u.toLevel,
+      upgradedBy:  u.upgradedBy ?? u.agentName ?? u.agentId ?? '?',
+      upgradedAt:  u.upgradedAt ?? u.completedAt,
+      note:        u.note       ?? null,
+    }));
+
     // Add upgrade history entries
-    if (upgrades.length > 0) {
+    if (normUpgrades.length > 0) {
       rows.push({ label: '─ Upgrade History ─', value: null, header: true });
-      upgrades.forEach((u, i) => {
-        const date = u.upgradedAt ? new Date(u.upgradedAt).toLocaleDateString('en-NZ', { month:'short', day:'numeric' }) : '?';
-        rows.push({ label: `Lv${u.level}`, value: `${u.upgradedBy || '?'} · ${date}` });
+      normUpgrades.forEach((u) => {
+        const date = u.upgradedAt
+          ? new Date(u.upgradedAt).toLocaleDateString('en-NZ', { month:'short', day:'numeric' })
+          : '?';
+        rows.push({
+          label: `→ Lv${u.level ?? '?'}`,
+          value: `${u.upgradedBy} · ${date}`,
+          upgrade: u,   // stash for click detail
+          clickable: true,
+        });
         if (u.note) rows.push({ label: null, value: `"${u.note}"`, note: true });
       });
     } else {
@@ -635,14 +656,34 @@ export default class TownScene extends Phaser.Scene {
         }).setOrigin(0, 0);
         container.add(note);
       } else if (row.label) {
+        const isUpgrade = !!row.clickable;
+        const lblColor  = isUpgrade ? '#e8c97e' : '#888aaa';
+        const valColor  = isUpgrade ? '#c8b8f8' : '#e8e8ff';
+
         const lbl = this.add.text(10, rowY, row.label, {
-          fontSize: '8px', fontFamily: '"Press Start 2P", monospace', color: '#888aaa',
+          fontSize: '8px', fontFamily: '"Press Start 2P", monospace', color: lblColor,
         }).setOrigin(0, 0);
         const val = this.add.text(PANEL_W - 10, rowY, row.value, {
-          fontSize: '8px', fontFamily: '"Press Start 2P", monospace', color: '#e8e8ff',
+          fontSize: '8px', fontFamily: '"Press Start 2P", monospace', color: valColor,
         }).setOrigin(1, 0);
         container.add(lbl);
         container.add(val);
+
+        // Clickable upgrade rows — show detail tooltip
+        if (isUpgrade && row.upgrade) {
+          const hitArea = this.add.rectangle(PANEL_W / 2, rowY + 6, PANEL_W - 12, 16, 0xffffff, 0)
+            .setOrigin(0.5, 0.5).setInteractive({ useHandCursor: true });
+          hitArea.on('pointerover', () => {
+            lbl.setColor('#fff'); val.setColor('#fff');
+            hitArea.setFillStyle(0xffffff, 0.05);
+          });
+          hitArea.on('pointerout', () => {
+            lbl.setColor(lblColor); val.setColor(valColor);
+            hitArea.setFillStyle(0xffffff, 0);
+          });
+          hitArea.on('pointerdown', () => this._showUpgradeDetail(row.upgrade, container, PANEL_W));
+          container.add(hitArea);
+        }
       }
       rowY += lineH;
     });
@@ -657,6 +698,62 @@ export default class TownScene extends Phaser.Scene {
     container.add(closeBtn);
 
     this.infoPanelContainer = container;
+  }
+
+  _showUpgradeDetail(upgrade, parentContainer, parentW) {
+    // Remove any existing detail tooltip
+    if (this._upgradeDetailTooltip) {
+      this._upgradeDetailTooltip.destroy();
+      this._upgradeDetailTooltip = null;
+    }
+
+    const TW = 220;
+    const tx = 12 + parentW + 8;  // right of the main panel
+    const ty = 12;
+    const lines = [
+      `Upgraded to Lv${upgrade.level ?? '?'}`,
+      `By: ${upgrade.upgradedBy || 'unknown'}`,
+      upgrade.upgradedAt ? `Date: ${new Date(upgrade.upgradedAt).toLocaleString('en-NZ', { month:'short', day:'numeric', hour:'2-digit', minute:'2-digit' })}` : null,
+      upgrade.note ? null : null,
+    ].filter(Boolean);
+
+    if (upgrade.note) lines.push('', `"${upgrade.note}"`);
+
+    const lineH = 14;
+    const th = 20 + lines.length * lineH + 12;
+    const tooltip = this.add.container(tx, ty).setScrollFactor(0).setDepth(10002);
+
+    const bg = this.add.graphics();
+    bg.fillStyle(0x0f0f1e, 0.95);
+    bg.fillRoundedRect(0, 0, TW, th, 6);
+    bg.lineStyle(1, 0xe8c97e, 0.6);
+    bg.strokeRoundedRect(0, 0, TW, th, 6);
+    tooltip.add(bg);
+
+    // Close on click anywhere
+    const dismissHit = this.add.rectangle(TW / 2, th / 2, TW, th, 0xffffff, 0)
+      .setInteractive();
+    dismissHit.on('pointerdown', () => {
+      tooltip.destroy();
+      this._upgradeDetailTooltip = null;
+    });
+    tooltip.add(dismissHit);
+
+    let y = 10;
+    lines.forEach((line, i) => {
+      const isNote = line.startsWith('"');
+      const txt = this.add.text(10, y, line, {
+        fontSize: isNote ? '8px' : '8px',
+        fontFamily: isNote ? 'monospace' : '"Press Start 2P", monospace',
+        color: i === 0 ? '#e8c97e' : isNote ? '#aaaacc' : '#c8c8e8',
+        wordWrap: { width: TW - 20 },
+        fontStyle: isNote ? 'italic' : 'normal',
+      }).setOrigin(0, 0);
+      tooltip.add(txt);
+      y += lineH;
+    });
+
+    this._upgradeDetailTooltip = tooltip;
   }
 
   // ─── WORLD MUTATION API ────────────────────────────────────────────────────
