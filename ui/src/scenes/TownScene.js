@@ -1165,4 +1165,33 @@ export default class TownScene extends Phaser.Scene {
     }
     return map;
   }
+
+  gatherAtPlaza(reason) {
+    const plazaBuilding = Object.values(this.buildings).find(b => b.id === 'plaza' || b.id === 'torii');
+    if (!plazaBuilding) return;
+    const px = (plazaBuilding.buildingData?.x ?? 18) + 1;
+    const py = (plazaBuilding.buildingData?.y ?? 10) + 1;
+
+    const onlineAgents = Object.entries(this.agents).filter(([id, agent]) => agent.online);
+    onlineAgents.forEach(([id, agent], i) => {
+      // Stagger arrival
+      const delay = i * 400;
+      this.time.delayedCall(delay, () => {
+        const jitterX = (Math.random() * 3 - 1.5) | 0;
+        const jitterY = (Math.random() * 3 - 1.5) | 0;
+        const destScreen = this.gridToScreen(px + jitterX, py + jitterY);
+        const anchorScreen = this.gridToScreen(px, py);
+        agent.moveTo(destScreen.x, anchorScreen.y, px + jitterX, py + jitterY);
+        if (agent.speak) agent.speak('✨');
+      });
+      // Return home after 8 seconds
+      this.time.delayedCall(delay + 8000, () => {
+        const home = agent.agentData?.home || agent.agentData?.location;
+        if (home) {
+          const homePos = this.gridToScreen(home.x, home.y);
+          agent.moveTo(homePos.x, homePos.y, home.x, home.y);
+        }
+      });
+    });
+  }
 }

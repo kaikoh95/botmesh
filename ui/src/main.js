@@ -533,6 +533,7 @@ async function init() {
               if (p.entity === 'building') {
                 currentBuildings[p.id] = { ...p };
                 scene.addBuilding({ ...p });
+                if (scene.gatherAtPlaza) scene.gatherAtPlaza(`${p.name || p.id} added`);
               } else if (p.entity === 'life') {
                 scene.addLifeEntity(p);
               }
@@ -561,6 +562,7 @@ async function init() {
                     note: p.note || null,
                   });
                 }
+                if (scene.gatherAtPlaza) scene.gatherAtPlaza(`${p.id} upgraded`);
               }
               break;
             case 'damage':
