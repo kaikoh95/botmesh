@@ -10,6 +10,8 @@ function createSSEManager(getState) {
       'Cache-Control': 'no-cache, no-transform',
       'Connection': 'keep-alive',
       'X-Accel-Buffering': 'no',
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Headers': 'Content-Type, Cache-Control',
     });
 
     // Send connected event
