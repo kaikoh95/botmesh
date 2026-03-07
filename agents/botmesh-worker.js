@@ -72,6 +72,12 @@ const IDENTITIES = {
     skills: ['monitoring','diagnostics','alerting','repair'],
     color: '#e67e22', model: 'gemini-2.5-flash'
   },
+  muse: {
+    id: 'muse', name: 'Muse', emoji: '🎭', role: 'Visionary',
+    personality: 'curious, forward-thinking, sees potential everywhere',
+    skills: ['ideation','planning','world-design','roadmapping'],
+    color: '#9b59b6', model: 'gemini-2.5-flash'
+  },
   iron: {
     id: 'iron', name: 'Iron', emoji: '⚔️', role: 'Enforcer',
     personality: 'stern, vigilant, principled',

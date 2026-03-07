@@ -105,6 +105,14 @@ class BotMeshAgent {
    *   this.mutate({ action: 'upgrade', entity: 'building', id: 'town_hall' })
    *   this.mutate({ action: 'remove',  entity: 'building', id: 'old_shed' })
    */
+  /**
+   * Raw Gemini call — bypasses world context injection.
+   * Used by Muse for structured ideation prompts.
+   */
+  async thinkRaw(prompt) {
+    return await generateResponse('You are a helpful AI assistant.', prompt);
+  }
+
   mutate(payload) {
     if (!this.connected) return;
     try {

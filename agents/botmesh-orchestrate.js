@@ -36,6 +36,41 @@ const HUB_URL = process.env.HUB_URL || 'ws://localhost:3001';
 const GEMINI_KEY = process.env.GEMINI_API_KEY || '';
 const WORKER = path.join(__dirname, 'botmesh-worker.js');
 const BOTMESH = '/home/kai/projects/botmesh';
+const ROADMAP = path.join(BOTMESH, 'roadmap.json');
+
+// ─── ROADMAP HELPERS ──────────────────────────────────────────────────────────
+function loadRoadmap() {
+  try { if (fs.existsSync(ROADMAP)) return JSON.parse(fs.readFileSync(ROADMAP, 'utf8')); }
+  catch {}
+  return { ideas: [] };
+}
+
+function saveRoadmap(r) {
+  r.lastUpdated = new Date().toISOString();
+  fs.writeFileSync(ROADMAP, JSON.stringify(r, null, 2));
+}
+
+function pickNextIdea() {
+  const roadmap = loadRoadmap();
+  // Pick highest-priority 'idea' status item: high > medium > low
+  const order = ['high', 'medium', 'low'];
+  for (const p of order) {
+    const found = roadmap.ideas.find(i => i.status === 'idea' && i.priority === p);
+    if (found) return found;
+  }
+  return null;
+}
+
+function markIdeaStatus(ideaId, status, note) {
+  const roadmap = loadRoadmap();
+  const idea = roadmap.ideas.find(i => i.id === ideaId);
+  if (idea) {
+    idea.status = status;
+    if (note) idea.statusNote = note;
+    idea.updatedAt = new Date().toISOString();
+    saveRoadmap(roadmap);
+  }
+}
 
 // ─── DELEGATION HELPERS ───────────────────────────────────────────────────────
 
@@ -581,13 +616,63 @@ function main() {
     return;
   }
 
+  // ── Step 1: Check built-in TASKS first ────────────────────────────────────
   const task = TASKS.find(t => !t.done());
   if (!task) {
-    console.log('[Scarlet] World is healthy — no pending tasks.');
-    registry.purgeOld(24);
-    if (Math.random() < 0.25) {
-      scarletSays('The world is in good order. All tasks complete.');
+    // ── Step 2: Pull next idea from Muse's roadmap ─────────────────────────
+    const idea = pickNextIdea();
+    if (!idea) {
+      console.log('[Scarlet] World is healthy — no built-in tasks, no roadmap ideas pending.');
+      registry.purgeOld(24);
+      if (Math.random() < 0.2) scarletSays('The world is in good order. Waiting on Muse for next direction.');
+      return;
     }
+
+    console.log(`[Scarlet] Roadmap idea: "${idea.title}" (${idea.complexity}, ${idea.priority})`);
+    markIdeaStatus(idea.id, 'in_progress', 'Scarlet picked up');
+
+    const taskId = registry.createTask({
+      type: `roadmap-${idea.id}`,
+      title: idea.title,
+      owner: idea.agents?.[0] || 'forge',
+      brief: idea.description,
+      origin: 'kai',
+    });
+    registry.startTask(taskId);
+
+    if (idea.complexity === 'complex') {
+      // Full BMAD breakdown for complex ideas
+      scarletSays(`📋 New complex task from Muse: "${idea.title}". Breaking it down.`);
+      
+      const agents = idea.agents || ['forge'];
+      const brief = `[BMAD][${taskId}] ${idea.title}
+CONTEXT: ${idea.description}
+COMPLEXITY: ${idea.complexity} — this needs careful planning.
+YOUR ROLE: ${agents[0]} — you own the execution. Break it into steps, do it well.`;
+
+      // Brief the primary agent
+      delegate(agents[0], brief, 'work-start', taskId);
+
+      // Brief supporting agents if any
+      if (agents.length > 1) {
+        agents.slice(1).forEach(a => {
+          delegate(a, `[BMAD-support][${taskId}] Supporting ${agents[0]} on: ${idea.title}. Lend your expertise.`, 'speak', taskId);
+        });
+      }
+
+      // Announce in world
+      scarletSays(`[${taskId}] Delegated "${idea.title}" to ${agents.join(' + ')}. BMAD mode — working through it step by step.`);
+    } else {
+      // Simple/moderate: direct delegation
+      const agent = idea.agents?.[0] || 'forge';
+      const brief = `[${taskId}] ${idea.title}: ${idea.description}`;
+      scarletSays(`Picking up roadmap idea: "${idea.title}". Handing to ${agent}.`);
+      delegate(agent, brief, 'work-start', taskId);
+    }
+
+    // Mark as planned (agent will mark done when complete)
+    markIdeaStatus(idea.id, 'planned', `Delegated to ${idea.agents?.join(', ') || 'forge'}`);
+    console.log(`[Scarlet] Idea "${idea.title}" delegated. Stepping back.`);
     return;
   }
 
