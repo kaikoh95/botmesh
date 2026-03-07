@@ -730,14 +730,14 @@ export default class TownScene extends Phaser.Scene {
     bg.strokeRoundedRect(0, 0, TW, th, 6);
     tooltip.add(bg);
 
-    // Close on click anywhere
-    const dismissHit = this.add.rectangle(TW / 2, th / 2, TW, th, 0xffffff, 0)
-      .setInteractive();
-    dismissHit.on('pointerdown', () => {
-      tooltip.destroy();
-      this._upgradeDetailTooltip = null;
-    });
-    tooltip.add(dismissHit);
+    // Close button
+    const closeBtn = this.add.text(TW - 8, 6, '✕', {
+      fontSize: '9px', fontFamily: 'monospace', color: '#555577',
+    }).setOrigin(1, 0).setInteractive({ useHandCursor: true });
+    closeBtn.on('pointerup', () => { tooltip.destroy(); this._upgradeDetailTooltip = null; });
+    closeBtn.on('pointerover', () => closeBtn.setColor('#fff'));
+    closeBtn.on('pointerout',  () => closeBtn.setColor('#555577'));
+    tooltip.add(closeBtn);
 
     let y = 10;
     lines.forEach((line, i) => {
