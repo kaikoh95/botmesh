@@ -511,8 +511,15 @@ agent.connect();
         stateData = JSON.parse(res.toString());
       } catch { return false; }
 
-      const agents = Object.values(stateData.agents || {}).filter(a => a.online !== false && a.state !== 'dormant');
-      const agentCount = agents.length;
+      // Count citizens by character files — not online status.
+      // Citizens exist when their IDENTITY.md exists, regardless of session activity.
+      let agentCount = 0;
+      try {
+        const charDir = path.join(__dirname, '../characters');
+        agentCount = fs.readdirSync(charDir).filter(d =>
+          !d.startsWith('_') && fs.existsSync(path.join(charDir, d, 'IDENTITY.md'))
+        ).length;
+      } catch { agentCount = Object.keys(stateData.agents || {}).length; }
       const existingBuildings = Object.keys(stateData.buildings || {});
       const worldEntities = (stateData.world?.entities || []);
       const existingEntityIds = new Set(worldEntities.map(e => e.id).concat(existingBuildings));
