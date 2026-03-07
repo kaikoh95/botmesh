@@ -56,6 +56,31 @@ function createRoutes(getState, sendCommand) {
     res.json({ time: state.time || {} });
   });
 
+  // Wake/sleep endpoints — called by Scarlet when spawning/completing Claude sessions
+  router.post('/agents/:id/wake', (req, res) => {
+    const state = getState();
+    const agent = (state.agents || {})[req.params.id];
+    if (!agent) return res.status(404).json({ error: 'Agent not found' });
+    agent.online = true;
+    agent.state = req.body?.task ? 'working' : 'idle';
+    agent.currentTask = req.body?.task || null;
+    agent.lastSeen = new Date().toISOString();
+    sendCommand({ type: 'agent:online', payload: { agentId: req.params.id } });
+    res.json({ ok: true, agent: req.params.id, state: agent.state });
+  });
+
+  router.post('/agents/:id/sleep', (req, res) => {
+    const state = getState();
+    const agent = (state.agents || {})[req.params.id];
+    if (!agent) return res.status(404).json({ error: 'Agent not found' });
+    agent.online = false;
+    agent.state = 'dormant';
+    agent.currentTask = null;
+    agent.lastSeen = new Date().toISOString();
+    sendCommand({ type: 'agent:offline', payload: { agentId: req.params.id } });
+    res.json({ ok: true, agent: req.params.id, state: 'dormant' });
+  });
+
   // Active cron jobs — Cronos's domain
   router.get('/crons', (req, res) => {
     try {
