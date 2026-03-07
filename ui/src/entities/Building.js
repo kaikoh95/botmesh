@@ -30,6 +30,7 @@ function lighten(c, amt) {
 export default class Building {
   constructor(scene, buildingData, screenX, screenY) {
     this.scene = scene;
+    this.buildingData = buildingData; // expose for grid hit testing
     this.id = buildingData.id;
     this.type = buildingData.type;
     this.name = buildingData.name;
@@ -103,10 +104,16 @@ export default class Building {
         img.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
         // Scale to fill the building's isometric footprint width
         const TILE_W = 64;
+        const TILE_H = 32;
         const targetW = this.gridW * TILE_W;
         const rawScale = targetW / img.width;
         const scale = Math.round(rawScale * 4) / 4 || rawScale;
         img.setScale(scale);
+        // Height cap — sprite must not tower more than 4 tile-rows above footprint
+        const maxH = (this.gridH + 4) * TILE_H * 2.5;
+        if (img.displayHeight > maxH) {
+          img.setScale(maxH / img.height);
+        }
         const spriteH = img.height * scale;
         // Anchor at 50% x, 85% y — places the isometric ground base correctly
         img.setOrigin(0.5, 0.85);
@@ -118,9 +125,8 @@ export default class Building {
         // Update label above sprite — place above the very top of the sprite
         this.label.setPosition(0, -(spriteH + 14));
         this.label.setText(`${this.name} Lv${this.level}`);
-        // Make clickable
-        img.setInteractive({ useHandCursor: true });
-        img.on('pointerdown', () => this._onClick());
+        // DO NOT set sprite interactive — grid-based click detection handles it
+        // (sprite bounds would allow clicks on empty sky above the building)
         return; // skip programmatic draw
       }
     }
@@ -219,12 +225,7 @@ export default class Building {
     this.label.setPosition(0, -wallH - h - (this.level >= 3 ? 28 : 14));
     this.label.setText(`${this.name} Lv${this.level}`);
 
-    // Make graphics clickable (fallback path)
-    this.graphics.setInteractive(
-      new Phaser.Geom.Rectangle(-w, -wallH - h, w * 2, wallH + h),
-      Phaser.Geom.Rectangle.Contains
-    );
-    this.graphics.on('pointerdown', () => this._onClick());
+    // DO NOT set graphics interactive — grid-based click detection handles it
     this.graphics.on('pointerover', () => this.scene.input.setDefaultCursor('pointer'));
     this.graphics.on('pointerout',  () => this.scene.input.setDefaultCursor('default'));
   }

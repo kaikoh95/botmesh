@@ -60,6 +60,9 @@ export default class TownScene extends Phaser.Scene {
     this.worldLife = new WorldLife(this);
     this.worldLife.spawn(1); // starts with 1, updates as agents join
 
+    // Grid-based click detection — accurate footprint hits only
+    this._setupGridClickHandler();
+
     // Day/night overlay
     this.dayOverlay = this.add.rectangle(
       this.cameras.main.width / 2,
@@ -228,6 +231,56 @@ export default class TownScene extends Phaser.Scene {
     const screenX = this.originX + (gridX - gridY) * (TILE_W / 2);
     const screenY = this.originY + (gridX + gridY) * (TILE_H / 2);
     return { x: screenX, y: screenY };
+  }
+
+  screenToGrid(screenX, screenY) {
+    // Inverse isometric transform
+    const dx = screenX - this.originX;
+    const dy = screenY - this.originY;
+    const gridX = (dx / (TILE_W / 2) + dy / (TILE_H / 2)) / 2;
+    const gridY = (dy / (TILE_H / 2) - dx / (TILE_W / 2)) / 2;
+    return { x: Math.round(gridX), y: Math.round(gridY) };
+  }
+
+  // Find which building occupies a given grid tile (if any)
+  buildingAtGrid(gx, gy) {
+    for (const [id, building] of Object.entries(this.buildings)) {
+      const bData = building.buildingData || {};
+      const bx = bData.x ?? building.gridX ?? 0;
+      const by = bData.y ?? building.gridY ?? 0;
+      const bw = bData.width ?? building.gridW ?? 3;
+      const bh = bData.height ?? building.gridH ?? 2;
+      if (gx >= bx && gx < bx + bw && gy >= by && gy < by + bh) {
+        return building;
+      }
+    }
+    return null;
+  }
+
+  // Set up global grid-based click detection (replaces per-sprite hit tests)
+  _setupGridClickHandler() {
+    this.input.on('pointerdown', (pointer) => {
+      // Convert pointer world coords to grid
+      const worldX = pointer.worldX;
+      const worldY = pointer.worldY;
+      const { x: gx, y: gy } = this.screenToGrid(worldX, worldY);
+
+      // Check buildings first
+      const building = this.buildingAtGrid(gx, gy);
+      if (building) {
+        building._onClick();
+        return;
+      }
+
+      // Check agents
+      for (const [id, agent] of Object.entries(this.agents)) {
+        const agentGrid = agent.agentData?.location;
+        if (agentGrid && Math.round(agentGrid.x) === gx && Math.round(agentGrid.y) === gy) {
+          window.dispatchEvent(new CustomEvent('botmesh:agentclick', { detail: { agentId: id } }));
+          return;
+        }
+      }
+    });
   }
 
   // --- Public API ---
