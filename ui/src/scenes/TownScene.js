@@ -42,8 +42,10 @@ export default class TownScene extends Phaser.Scene {
   create() {
     this.cameras.main.setBackgroundColor('#5c8a42'); // warmer earthy green
 
-    const mapW = 40;
-    const mapH = 30;
+    this.mapW = 40;
+    this.mapH = 30;
+    const mapW = this.mapW;
+    const mapH = this.mapH;
     this.originX = this.cameras.main.width / 2;
     this.originY = 80;
 
@@ -62,6 +64,49 @@ export default class TownScene extends Phaser.Scene {
 
     // Path tile registry — populated from world entities on state:sync
     this.pathTiles = new Set();
+
+    // ── Zoom ────────────────────────────────────────────────────────────────
+    this._zoom = 1.0;
+    const CAM = this.cameras.main;
+    CAM.setZoom(this._zoom);
+
+    // Mouse wheel zoom
+    this.input.on('wheel', (_ptr, _objs, _dx, deltaY) => {
+      this._zoom = Phaser.Math.Clamp(this._zoom - deltaY * 0.0008, 0.35, 2.5);
+      CAM.setZoom(this._zoom);
+    });
+
+    // Pinch-to-zoom (touch)
+    this.input.addPointer(2);
+    let lastPinchDist = null;
+    this.input.on('pointermove', () => {
+      const ptrs = this.input.manager.pointers.filter(p => p.isDown);
+      if (ptrs.length === 2) {
+        const dx = ptrs[0].x - ptrs[1].x;
+        const dy = ptrs[0].y - ptrs[1].y;
+        const dist = Math.sqrt(dx*dx + dy*dy);
+        if (lastPinchDist !== null) {
+          const delta = dist - lastPinchDist;
+          this._zoom = Phaser.Math.Clamp(this._zoom + delta * 0.003, 0.35, 2.5);
+          CAM.setZoom(this._zoom);
+        }
+        lastPinchDist = dist;
+      } else {
+        lastPinchDist = null;
+      }
+    });
+
+    // Keyboard +/- zoom
+    this.input.keyboard.on('keydown-PLUS',  () => { this._zoom = Phaser.Math.Clamp(this._zoom + 0.15, 0.35, 2.5); CAM.setZoom(this._zoom); });
+    this.input.keyboard.on('keydown-MINUS', () => { this._zoom = Phaser.Math.Clamp(this._zoom - 0.15, 0.35, 2.5); CAM.setZoom(this._zoom); });
+    this.input.keyboard.on('keydown-ZERO',  () => { this._zoom = 1.0; CAM.setZoom(1.0); });
+
+    // Expose to window for UI buttons
+    window.botmeshZoom = (delta) => {
+      this._zoom = Phaser.Math.Clamp(this._zoom + delta, 0.35, 2.5);
+      CAM.setZoom(this._zoom);
+    };
+    window._zoomReset = () => { this._zoom = 1.0; CAM.setZoom(1.0); };
 
     // Grid-based click detection — accurate footprint hits only
     this._setupGridClickHandler();
@@ -336,8 +381,7 @@ export default class TownScene extends Phaser.Scene {
       this._groundGraphics.destroy();
       this._groundGraphics = null;
     }
-    const MAP_W = 32, MAP_H = 28;
-    this._groundGraphics = this._drawGround(MAP_W, MAP_H);
+    this._groundGraphics = this._drawGround(this.mapW || 40, this.mapH || 30);
   }
 
   gridToScreen(gridX, gridY) {

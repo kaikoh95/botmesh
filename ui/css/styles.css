@@ -829,3 +829,29 @@ html, body {
   color: #ffd700;
   font-style: italic;
 }
+
+/* Zoom controls */
+#zoom-controls {
+  position: absolute;
+  bottom: 16px;
+  left: 16px;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+#zoom-controls button {
+  width: 32px;
+  height: 32px;
+  background: rgba(20,20,20,0.82);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 6px;
+  color: #e8d5a3;
+  font-size: 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s;
+}
+#zoom-controls button:hover { background: rgba(40,40,40,0.95); }
