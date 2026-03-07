@@ -152,12 +152,21 @@ function formatEvent(eventType, data) {
     }
 
     case 'world:mutate': {
-      const action = data.meta?.action || data.action;
-      if (action !== 'add') return null; // only care about additions
-      const entity = data.meta?.entity || data.meta?.building || {};
-      const name   = entity.name || entity.id || 'something new';
-      const type   = entity.type || '';
-      return `✨ A new ${type || 'entity'} just appeared in town: *${name}*. The world expands!`;
+      const meta   = data.meta || {};
+      const action = meta.action || data.action;
+      const kind   = meta.entity || 'thing';   // "building" | "life"
+      const name   = meta.name || meta.id || meta.kind || 'something';
+      const note   = meta.note ? ` (${meta.note})` : '';
+      if (action === 'upgrade') {
+        return `🔨 *${name}* upgraded to Lv${meta.level}${note}`;
+      }
+      if (kind === 'life') {
+        return `🌿 New life in town: *${meta.kind || name}* at (${meta.x}, ${meta.y})`;
+      }
+      if (action === 'add') {
+        return `✨ New building unlocked: *${name}*${note}`;
+      }
+      return null;
     }
 
     case 'agent:offline': {
