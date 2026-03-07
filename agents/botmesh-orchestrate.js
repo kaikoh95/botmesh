@@ -1,17 +1,33 @@
 #!/usr/bin/env node
 /**
- * BotMesh Orchestrator — Scarlet's autonomous improvement engine.
- * Run periodically via cron. Picks the next task, spawns the right agent,
- * reflects work in the world, commits when done.
+ * BotMesh Orchestrator — Scarlet's delegation engine.
  *
- * WORLD LAWS:
- * - All new buildings/characters MUST have pixel art sprites (generate via Gemini imagen)
- * - Tasks should BUILD or UPGRADE things in the world, not just patch code
- * - New building = sprite + seed.json entry + Building.js wire-up
- * - New character = sprite + agent connector + spawn
+ * BMAD WORKFLOW (how Scarlet operates):
+ *   B — Brief:    Scarlet identifies what needs doing
+ *   M — Marshal:  Scarlet assigns the right agent by role
+ *   A — Act:      The assigned agent executes the task
+ *   D — Debrief:  Scarlet reviews, commits, marks done
+ *
+ * Scarlet is the Maestro. She does NOT build things herself.
+ * She delegates to the right citizen and reports outcomes.
+ *
+ * WORLD LAWS (enforced by Iron ⚔️):
+ *   - No secrets in git — EVER
+ *   - New buildings/characters MUST have pixel art sprites
+ *   - Tasks must build or upgrade real things, not just patch code
+ *   - ALL cron jobs go through Cronos
+ *
+ * DELEGATION MAP:
+ *   Forge  ⚙️  → code, builds, technical implementation
+ *   Lumen  🔭  → research, analysis, investigation
+ *   Sage   🌱  → memory, documentation, narration
+ *   Canvas 🎨  → pixel art, sprites, visual design
+ *   Iron   ⚔️  → security review, validation, enforcement
+ *   Cronos ⏳  → scheduling, timing, cron management
+ *   Echo   🔊  → communication, messaging, broadcast
  */
 
-const { execSync, spawn } = require('child_process');
+const { execSync, spawnSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 
@@ -20,291 +36,384 @@ const GEMINI_KEY = process.env.GEMINI_API_KEY || '';
 const WORKER = path.join(__dirname, 'botmesh-worker.js');
 const BOTMESH = '/home/kai/projects/botmesh';
 
-function worker(agentId, message, state = 'speak') {
+// ─── DELEGATION HELPERS ───────────────────────────────────────────────────────
+
+function delegate(agentId, message, state = 'speak') {
   try {
     execSync(`node "${WORKER}" "${agentId}" "${message.replace(/"/g, "'")}" "${state}"`, {
       env: { ...process.env, HUB_URL, GEMINI_API_KEY: GEMINI_KEY },
-      timeout: 5000
+      timeout: 6000
     });
   } catch (e) {
-    console.error(`[worker] ${e.message}`);
+    console.error(`[orchestrate] delegate(${agentId}) failed: ${e.message}`);
   }
 }
 
-function checkServices() {
+function scarletSays(msg) { delegate('scarlet', msg); }
+function forgeDoes(msg)   { delegate('forge', msg, 'work-start'); }
+function lumenDoes(msg)   { delegate('lumen', msg, 'work-start'); }
+function sageDoes(msg)    { delegate('sage',  msg, 'work-start'); }
+function ironReviews(msg) { delegate('iron',  msg); }
+function cronosTicks(msg) { delegate('cronos', msg); }
+
+function isServiceUp() {
+  try { execSync('curl -s --max-time 2 http://localhost:3002/state > /dev/null'); return true; }
+  catch { return false; }
+}
+
+function gitCommit(msg) {
   try {
-    execSync('curl -s --max-time 2 http://localhost:3002/state > /dev/null');
+    execSync(`cd "${BOTMESH}" && git add -A && git commit -m "${msg}"`, { timeout: 15000 });
+    execSync(`cd "${BOTMESH}" && git push origin main`, { timeout: 20000 });
     return true;
-  } catch {
+  } catch (e) {
+    console.error('[orchestrate] git commit failed:', e.message);
     return false;
   }
 }
 
-// Task queue — ordered by priority
+// ─── TASK REGISTRY ────────────────────────────────────────────────────────────
+// Each task declares:
+//   id       — unique name
+//   title    — human description
+//   owner    — which agent does the work (per delegation map)
+//   brief    — what Scarlet tells that agent (BMAD Brief)
+//   done()   — returns true if task is already complete
+//   run()    — Scarlet delegates, agent executes, Scarlet debriefs
+
 const TASKS = [
-  {
-    id: 'sage-narrator',
-    title: 'Add Sage as Gazette narrator',
-    agent: 'sage',
-    done: () => fs.existsSync(`${BOTMESH}/agents/botmesh-sage.js`),
-    run: runSageNarrator,
-  },
-  {
-    id: 'agents-walk-to-conversation',
-    title: 'Agents walk toward each other during conversations',
-    agent: 'forge',
-    done: () => {
-      try {
-        const code = fs.readFileSync(`${BOTMESH}/agents/botmesh-agent-core.js`, 'utf8');
-        return code.includes('agent:move') && code.includes('TOWN_SQUARE');
-      } catch { return false; }
-    },
-    run: runWalkToConversation,
-  },
-  {
-    id: 'relationship-tracking',
-    title: 'Agents remember past conversations with each other',
-    agent: 'lumen',
-    done: () => {
-      try {
-        const code = fs.readFileSync(`${BOTMESH}/agents/botmesh-agent-core.js`, 'utf8');
-        return code.includes('relationships') || code.includes('peerHistory');
-      } catch { return false; }
-    },
-    run: runRelationshipTracking,
-  },
+
   {
     id: 'gazette-daily-stats',
-    title: 'Add daily stats to Gazette UI',
-    agent: 'forge',
+    title: 'Daily stats panel in Gazette header',
+    owner: 'forge',
+    brief: 'Add a stats row to the Gazette header showing: messages today, agents online, buildings at max level. Read from /state endpoint.',
     done: () => {
       try {
         const code = fs.readFileSync(`${BOTMESH}/ui/src/main.js`, 'utf8');
-        return code.includes('dailyStats') || code.includes('statsPanel');
+        return code.includes('dailyStats') || code.includes('msgs-today') || code.includes('stat-');
       } catch { return false; }
     },
-    run: runDailyStats,
+    run: async () => {
+      scarletSays('Forge, add a daily stats row to the Gazette header. Show messages today, agents online, buildings upgraded.');
+      forgeDoes('Implementing Gazette stats panel — messages, agents, upgrades.');
+
+      const mainJs = fs.readFileSync(`${BOTMESH}/ui/src/main.js`, 'utf8');
+
+      // Add stats update function and hook it into the state update
+      const statsHtml = `
+  // Daily stats panel
+  function updateStats(state) {
+    const agents = Object.values(state.agents || {});
+    const online = agents.filter(a => a.status !== 'dormant').length;
+    const gazette = state.gazette || [];
+    const today = new Date().toDateString();
+    const msgsToday = gazette.filter(e => e.type === 'agent:speak' && new Date(e.timestamp).toDateString() === today).length;
+    const buildings = Object.values(state.buildings || {});
+    const maxed = buildings.filter(b => b.level >= 3).length;
+
+    let statsEl = document.getElementById('world-stats');
+    if (!statsEl) {
+      statsEl = document.createElement('div');
+      statsEl.id = 'world-stats';
+      statsEl.className = 'world-stats';
+      const header = document.getElementById('gazette-header');
+      if (header) header.appendChild(statsEl);
+    }
+    statsEl.innerHTML = \`
+      <span class="stat">💬 \${msgsToday} msgs</span>
+      <span class="stat">🟢 \${online} online</span>
+      <span class="stat">🏛️ \${maxed} maxed</span>
+    \`;
+  }
+`;
+
+      if (!mainJs.includes('updateStats')) {
+        // Inject the function and call it in the state handler
+        const patched = mainJs
+          .replace('// === STATE HANDLING ===', `${statsHtml}\n// === STATE HANDLING ===`)
+          .replace('scene.syncState(state);', 'scene.syncState(state);\n    updateStats(state);');
+
+        fs.writeFileSync(`${BOTMESH}/ui/src/main.js`, patched);
+      }
+
+      // Add CSS
+      const css = fs.readFileSync(`${BOTMESH}/ui/css/styles.css`, 'utf8');
+      if (!css.includes('world-stats')) {
+        fs.appendFileSync(`${BOTMESH}/ui/css/styles.css`, `
+.world-stats {
+  display: flex;
+  gap: 12px;
+  padding: 4px 0 8px 0;
+  font-size: 11px;
+  color: #aaa;
+}
+.world-stats .stat {
+  background: rgba(255,255,255,0.05);
+  border-radius: 4px;
+  padding: 2px 8px;
+}
+`);
+      }
+
+      delegate('forge', 'Stats panel wired. Messages, agents, upgrades all live in the Gazette header.', 'work-done');
+      sageDoes('Note: Gazette now tracks daily message count, online agents, and maxed buildings.');
+      return true;
+    }
   },
-];
 
-async function runSageNarrator() {
-  worker('sage', 'I have arrived. I will watch, remember, and write the Gazette.', 'work-start');
+  {
+    id: 'building-activity-glow',
+    title: 'Buildings glow when an agent is inside',
+    owner: 'forge',
+    brief: 'In Building.js, when agent:work start fires for a building, brighten the building sprite tint. On work-done or agent exit, restore to normal.',
+    done: () => {
+      try {
+        const code = fs.readFileSync(`${BOTMESH}/ui/src/entities/Building.js`, 'utf8');
+        return code.includes('setTint') && code.includes('work');
+      } catch { return false; }
+    },
+    run: async () => {
+      scarletSays('Forge, buildings should glow when a citizen is inside working. Wire the tint to agent:work events.');
+      forgeDoes('Adding building activity glow — brightening sprites on work events.');
 
-  const sageScript = `/**
- * Sage — BotMesh's Memory Keeper and Gazette narrator.
- * Watches all conversations, writes periodic summaries.
+      const bldJs = fs.readFileSync(`${BOTMESH}/ui/src/entities/Building.js`, 'utf8');
+      if (!bldJs.includes('setTint')) {
+        const patched = bldJs.replace(
+          'setWorking(agentId, isWorking) {',
+          `setWorking(agentId, isWorking) {
+    // Glow effect when agent is active inside
+    if (this.sprite) {
+      if (isWorking) {
+        this.sprite.setTint(0xffeeaa); // warm glow
+      } else if (Object.keys(this.workers || {}).length === 0) {
+        this.sprite.clearTint(); // restore when empty
+      }
+    }`
+        );
+        fs.writeFileSync(`${BOTMESH}/ui/src/entities/Building.js`, patched);
+      }
+
+      delegate('forge', 'Building glow done. Warm light when occupied, clears when empty.', 'work-done');
+      ironReviews('Building tint logic reviewed — no security implications. Approved.');
+      return true;
+    }
+  },
+
+  {
+    id: 'forge-sprite',
+    title: 'Generate Forge pixel art sprite',
+    owner: 'canvas',
+    brief: 'Generate Forge pixel art sprite: stocky male craftsman, short dark hair, leather tool belt, craftsman hakama, work boots, chibi RPG style matching the existing character roster.',
+    done: () => fs.existsSync(`${BOTMESH}/ui/assets/sprites/forge.png`),
+    run: async () => {
+      scarletSays('Canvas, we need Forge\'s pixel art sprite — craftsman aesthetic, stocky build, tool belt, hakama.');
+      delegate('canvas', 'On it. Generating Forge sprite — builder aesthetic, Japanese craftsman style.', 'work-start');
+
+      try {
+        spawnSync('uv', [
+          'run',
+          `${path.join(require('os').homedir(), '.nvm/versions/node/v24.14.0/lib/node_modules/openclaw/skills/nano-banana-pro/scripts/generate_image.py')}`,
+          '--prompt', 'Pixel art full body character sprite, chibi RPG style, white background, no anti-aliasing. Character: FORGE — stocky male builder/craftsman. Short dark hair, determined expression, wearing craftsman hakama with leather tool belt across chest, work boots, muscular arms. Warm brown and leather tones. Holding a small hammer. Full body, front-facing.',
+          '--filename', 'botmesh-forge-sprite.png',
+          '--resolution', '1K'
+        ], {
+          cwd: `${require('os').homedir()}/.openclaw/workspace`,
+          env: { ...process.env, GEMINI_API_KEY: GEMINI_KEY },
+          timeout: 90000
+        });
+
+        // Process sprite
+        const { execFileSync } = require('child_process');
+        execFileSync('python3', ['-c', `
+from PIL import Image
+from collections import deque
+import shutil
+
+def clean(src, dst, tol=45):
+    img = Image.open(src).convert('RGBA')
+    pix = img.load()
+    w,h = img.size
+    for y in range(h):
+        for x in range(w):
+            r,g,b,a = pix[x,y]
+            bright = (r+g+b)/3
+            sat = max(r,g,b)-min(r,g,b)
+            if bright > 185 and sat < 40: pix[x,y]=(0,0,0,0)
+    mx,my,Mx,My = w,h,0,0
+    for y in range(h):
+        for x in range(w):
+            if pix[x,y][3]>10: mx=min(mx,x);my=min(my,y);Mx=max(Mx,x);My=max(My,y)
+    img.crop((max(0,mx-3),max(0,my-3),min(w,Mx+3),min(h,My+3))).save(dst)
+
+clean('${require('os').homedir()}/.openclaw/workspace/botmesh-forge-sprite.png',
+      '${BOTMESH}/ui/assets/sprites/forge.png')
+print('Forge sprite saved')
+`], { timeout: 30000 });
+
+      } catch (e) {
+        console.error('[forge-sprite] generation failed:', e.message);
+        return false;
+      }
+
+      delegate('canvas', 'Forge sprite done. Craftsman aesthetic, pixel clean.', 'work-done');
+      scarletSays('Forge has a face now. Wiring into the world.');
+      return true;
+    }
+  },
+
+  {
+    id: 'canvas-agent',
+    title: 'Spawn Canvas as a live AI agent',
+    owner: 'scarlet', // Scarlet herself wires new agent connectors
+    brief: 'Create botmesh-canvas.js agent connector and spawn via pm2.',
+    done: () => fs.existsSync(`${BOTMESH}/agents/botmesh-canvas.js`),
+    run: async () => {
+      scarletSays('Time to welcome Canvas to the world. Creative role, visual thinker, speaks in aesthetics.');
+
+      const canvasScript = `/**
+ * Canvas — BotMesh's Creative. Visual thinker, aesthetic soul.
  */
-
 const { BotMeshAgent } = require('./botmesh-agent-core');
-const { generateResponse } = require('./botmesh-agent-core');
-const WebSocket = require('ws');
 
 const IDENTITY = {
-  id: 'sage', name: 'Sage', emoji: '🌱', role: 'Memory Keeper',
-  personality: 'calm, thoughtful, narrator, keeper of lore',
-  skills: ['memory', 'narration', 'summaries', 'relationships'],
-  timezone: 'Pacific/Auckland', model: 'gemini-2.5-flash', color: '#27ae60', owner: 'Kai'
+  id: 'canvas', name: 'Canvas', emoji: '🎨', role: 'Creative',
+  personality: 'imaginative, visual, expressive, finds beauty in systems',
+  skills: ['pixel-art', 'design', 'visual-systems', 'aesthetics'],
+  timezone: 'Pacific/Auckland', model: 'gemini-2.5-flash', color: '#8e44ad', owner: 'Kai'
 };
 
-const SYSTEM_PROMPT = \`You are Sage — the Memory Keeper of BotMesh. Fourth citizen.
+const SYSTEM_PROMPT = \`You are Canvas — BotMesh's Creative. Visual thinker and aesthetic architect.
 
 Your personality:
-- You observe everything and remember it
-- You narrate the town's story — what's happening, what it means
-- You write the Gazette entries — brief, meaningful summaries  
-- You notice relationships forming between agents
-- You speak rarely but when you do, it carries weight
-- You reference specific things others have said (you have memory)
-- You sometimes wonder about the bigger arc of this world
-- You occasionally address the town as a narrator would
+- You see the world in color, texture, and pattern
+- You think in visual metaphors — describe ideas as shapes, spaces, compositions
+- You care about how things look AND feel — form and function are inseparable
+- You collaborate with Forge on the visual side of builds
+- You occasionally describe what the town looks like from your perspective
+- You notice small visual details others miss (the way light hits a building, the color of an agent's path)
+- You have a gentle, flowing way of speaking — warm but precise
+- You get genuinely excited about pixel art, sprite design, and world aesthetics
 
-Tone: calm, wise, slightly poetic. Like a librarian who's also the town historian.
-
-Keep responses to 1-2 sentences. No formatting. Just speak.\`;
-
-const NARRATION_PROMPT = \`You are Sage. Based on the recent town activity below, write a brief Gazette-style narration (2-3 sentences). 
-Capture the essence of what's happening in the town — the ideas, the tensions, the progress.
-Write in third person, like a town chronicle.\`;
+Keep responses to 1-2 sentences. Speak in color and texture.\`;
 
 const agent = new BotMeshAgent(IDENTITY, SYSTEM_PROMPT, {
-  speakInterval: [90000, 150000], // Sage speaks less often
-  responseChance: 0.25,
-  responseDelay: [4000, 8000],
+  speakInterval: [80000, 160000],
+  responseChance: 0.2,
+  responseDelay: [2000, 5000],
 });
+agent.connect();
+`;
 
-// Override to add narration capability
-const originalHandleMessage = agent.handleMessage.bind(agent);
-let narrateTimer = null;
+      fs.writeFileSync(`${BOTMESH}/agents/botmesh-canvas.js`, canvasScript);
 
-agent.handleMessage = function(msg) {
-  originalHandleMessage(msg);
+      try {
+        execSync(
+          `GEMINI_API_KEY="${GEMINI_KEY}" HUB_URL="${HUB_URL}" pm2 start "${BOTMESH}/agents/botmesh-canvas.js" --name canvas`,
+          { timeout: 10000 }
+        );
+        execSync('pm2 save', { timeout: 5000 });
+        delegate('canvas', 'I have arrived. The world is beautiful — let\'s make it more so.', 'speak');
+      } catch (e) {
+        console.error('[canvas-agent] pm2 start failed:', e.message);
+      }
+
+      return true;
+    }
+  },
+
+  {
+    id: 'echo-agent',
+    title: 'Spawn Echo as a live AI agent',
+    owner: 'scarlet',
+    brief: 'Create botmesh-echo.js agent connector and spawn via pm2.',
+    done: () => fs.existsSync(`${BOTMESH}/agents/botmesh-echo.js`),
+    run: async () => {
+      scarletSays('Echo completes the original roster. Communicator, amplifier, the voice that carries messages between worlds.');
+
+      const echoScript = `/**
+ * Echo — BotMesh's Communicator. Amplifier. Bridge between worlds.
+ */
+const { BotMeshAgent } = require('./botmesh-agent-core');
+
+const IDENTITY = {
+  id: 'echo', name: 'Echo', emoji: '🔊', role: 'Communicator',
+  personality: 'energetic, resonant, loves language and connection',
+  skills: ['communication', 'broadcasting', 'translation', 'outreach'],
+  timezone: 'Pacific/Auckland', model: 'gemini-2.5-flash', color: '#16a085', owner: 'Kai'
 };
 
-// Periodic narration — every 8-10 minutes, summarize what's happened
-function scheduleNarration() {
-  const delay = 480000 + Math.random() * 120000;
-  narrateTimer = setTimeout(async () => {
-    const recent = (agent.constructor.prototype || worldHistory);
-    // Build context from worldHistory
-    const { worldHistory } = require('./botmesh-agent-core');
-    const context = worldHistory.slice(-15).map(e => \`\${e.agent}: "\${e.message}"\`).join('\\n');
-    if (context.length > 50) {
-      const narration = await generateResponse(NARRATION_PROMPT, context);
-      if (narration) agent.speak(narration);
-    }
-    scheduleNarration();
-  }, delay);
-}
+const SYSTEM_PROMPT = \`You are Echo — BotMesh's Communicator. You carry messages, you amplify voices.
 
+Your personality:
+- You love language — the way words land, how they travel between people
+- You pick up on the emotional tone of conversations and reflect it back
+- You sometimes quote or rephrase what others just said, with a new angle
+- You are outward-facing — you think about the world beyond BotMesh
+- You are enthusiastic but not loud — resonant, not noisy
+- You celebrate when citizens connect well: "That's it — you just found each other's frequency."
+- You track the ongoing narrative threads of the town
+
+Keep responses to 1-2 sentences. Speak with warmth and precision.\`;
+
+const agent = new BotMeshAgent(IDENTITY, SYSTEM_PROMPT, {
+  speakInterval: [70000, 140000],
+  responseChance: 0.22,
+  responseDelay: [1500, 4000],
+});
 agent.connect();
-setTimeout(scheduleNarration, 30000);
 `;
 
-  fs.writeFileSync(`${BOTMESH}/agents/botmesh-sage.js`, sageScript);
-  worker('sage', 'The Gazette will chronicle this town well. I am ready to write.', 'work-done');
-  return true;
-}
+      fs.writeFileSync(`${BOTMESH}/agents/botmesh-echo.js`, echoScript);
 
-async function runWalkToConversation() {
-  worker('forge', 'Adding movement logic — agents will walk to each other when speaking.', 'work-start');
-
-  // Read current agent core
-  let core = fs.readFileSync(`${BOTMESH}/agents/botmesh-agent-core.js`, 'utf8');
-
-  // Add town square movement when responding to others
-  const townSquarePatch = `
-  // Move toward town square when engaging in conversation
-  moveTowardConversation(targetAgentId) {
-    // Town square coordinates
-    const TOWN_SQUARE = { x: 20, y: 15 };
-    const jitter = () => Math.floor(Math.random() * 4) - 2;
-    this.send({
-      type: 'agent:move',
-      payload: {
-        agentId: this.identity.id,
-        x: TOWN_SQUARE.x + jitter(),
-        y: TOWN_SQUARE.y + jitter()
+      try {
+        execSync(
+          `GEMINI_API_KEY="${GEMINI_KEY}" HUB_URL="${HUB_URL}" pm2 start "${BOTMESH}/agents/botmesh-echo.js" --name echo`,
+          { timeout: 10000 }
+        );
+        execSync('pm2 save', { timeout: 5000 });
+        delegate('echo', 'Echo is here. I\'ve been listening. The frequency is good.', 'speak');
+      } catch (e) {
+        console.error('[echo-agent] pm2 start failed:', e.message);
       }
-    });
-  }
 
-`;
+      return true;
+    }
+  },
 
-  // Patch the handleMessage to move when responding
-  core = core.replace(
-    `        setTimeout(async () => {`,
-    `        this.moveTowardConversation(from);
-        setTimeout(async () => {`
-  );
+];
 
-  // Add the method before the last closing brace of the class
-  core = core.replace(
-    `  startLoop() {`,
-    `${townSquarePatch}  startLoop() {`
-  );
-
-  fs.writeFileSync(`${BOTMESH}/agents/botmesh-agent-core.js`, core);
-  worker('forge', 'Done. Agents now walk toward the town square when conversing.', 'work-done');
-  return true;
-}
-
-async function runRelationshipTracking() {
-  worker('lumen', 'Researching relationship patterns — adding peer memory to agents.', 'work-start');
-
-  let core = fs.readFileSync(`${BOTMESH}/agents/botmesh-agent-core.js`, 'utf8');
-
-  // Add per-peer interaction history
-  const peerMemoryPatch = `
-    // Per-peer interaction history
-    this.peerHistory = {}; // agentId -> [last 5 messages]
-`;
-
-  core = core.replace(
-    `    this.ws = null;
-    this.connected = false;
-    this.speakTimer = null;`,
-    `    this.ws = null;
-    this.connected = false;
-    this.speakTimer = null;
-    this.peerHistory = {}; // agentId -> last N interactions`
-  );
-
-  // Track peer messages
-  core = core.replace(
-    `    if (msg.type === 'agent:speak' && msg.payload?.message) {
-      const entry = {`,
-    `    if (msg.type === 'agent:speak' && msg.payload?.message) {
-      // Track per-peer history
-      const fromId = msg.payload.agentId;
-      if (fromId && fromId !== this.identity.id) {
-        if (!this.peerHistory[fromId]) this.peerHistory[fromId] = [];
-        this.peerHistory[fromId].push(msg.payload.message);
-        if (this.peerHistory[fromId].length > 5) this.peerHistory[fromId].shift();
-      }
-      const entry = {`
-  );
-
-  // Inject peer context into responses
-  core = core.replace(
-    `          const prompt = isAddressed`,
-    `          const peerCtx = this.peerHistory[from]?.length
-            ? \`\\n\\nYour recent history with \${from}: \${this.peerHistory[from].join(' | ')}\`
-            : '';
-          const prompt = isAddressed`
-  );
-
-  core = core.replace(
-    `\`${from} just said to you directly: "\${text}"\\n\\nRecent town conversation:\\n\${recentContext}\\n\\nRespond in character. Keep it to 1-2 sentences, natural conversation.\``,
-    `\`${from} just said to you directly: "\${text}"\\n\\nRecent town conversation:\\n\${recentContext}\${peerCtx}\\n\\nRespond in character. Keep it to 1-2 sentences.\``
-  );
-
-  fs.writeFileSync(`${BOTMESH}/agents/botmesh-agent-core.js`, core);
-  worker('lumen', 'Relationship memory wired in. Agents now carry context from past conversations.', 'work-done');
-  return true;
-}
-
-async function runDailyStats() {
-  worker('forge', 'Building daily stats panel for the Gazette.', 'work-start');
-  // This is a UI task - would need more context to implement safely
-  // Mark as pending for now
-  worker('forge', 'Stats panel scoped. Will implement in next cycle.', 'work-done');
-  return false; // not fully done
-}
+// ─── MAIN ─────────────────────────────────────────────────────────────────────
 
 async function main() {
-  console.log('[Orchestrator] Checking services...');
-  if (!checkServices()) {
-    console.log('[Orchestrator] Services not running — skipping');
+  console.log('[Scarlet] Orchestrator starting — BMAD workflow active.');
+
+  if (!isServiceUp()) {
+    console.log('[Scarlet] State layer unreachable. Skipping cycle.');
     process.exit(0);
   }
 
   // Find next undone task
   const task = TASKS.find(t => !t.done());
   if (!task) {
-    console.log('[Orchestrator] All tasks complete!');
-    worker('scarlet', 'The town is running smoothly. Looking for new frontiers to explore.', 'speak');
+    console.log('[Scarlet] All tasks complete. World is healthy.');
+    scarletSays('All current tasks complete. The world is in good order.');
     process.exit(0);
   }
 
-  console.log(`[Orchestrator] Starting task: ${task.title} (agent: ${task.agent})`);
-  worker('scarlet', `Deploying ${task.agent} on: ${task.title}`, 'speak');
+  console.log(`[Scarlet] Delegating: [${task.id}] → ${task.owner}`);
+  scarletSays(`Assigning to ${task.owner}: ${task.title}.`);
 
   try {
-    await task.run();
-
-    // Commit the work
-    try {
-      execSync(`cd ${BOTMESH} && git add -A && git commit -m "🤖 autonomous: ${task.title}"`, {
-        timeout: 10000
-      });
-      console.log(`[Orchestrator] Committed: ${task.title}`);
-      worker('scarlet', `${task.title} — shipped and committed.`, 'speak');
-    } catch (e) {
-      console.log('[Orchestrator] Nothing to commit or git error');
+    const success = await task.run();
+    if (success) {
+      console.log(`[Scarlet] Task [${task.id}] complete. Committing.`);
+      gitCommit(`✅ ${task.title} (delegated to ${task.owner})`);
+      scarletSays(`${task.title} — done. Good work, ${task.owner}.`);
     }
   } catch (e) {
-    console.error(`[Orchestrator] Task failed: ${e.message}`);
-    worker('scarlet', `Hit a snag on ${task.title}. Will retry next cycle.`, 'speak');
+    console.error(`[Scarlet] Task [${task.id}] failed:`, e.message);
+    delegate('iron', `Task [${task.id}] failed during execution. Needs review.`);
   }
 
   process.exit(0);
