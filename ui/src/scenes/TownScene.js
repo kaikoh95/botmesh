@@ -247,6 +247,20 @@ export default class TownScene extends Phaser.Scene {
       }
     }
 
+    // Load world entities (life/nature + dynamic buildings from world:mutate)
+    if (state.world?.entities) {
+      for (const entity of state.world.entities) {
+        if (entity.entity === 'life') {
+          this.addLifeEntity(entity);
+        } else if (entity.entity === 'building') {
+          // Dynamic buildings — add if not already in state.buildings
+          if (!state.buildings?.[entity.id]) {
+            this.addBuilding({ ...entity, id: entity.id || entity.kind });
+          }
+        }
+      }
+    }
+
     if (state.time?.period) {
       this.setTime(state.time.period);
     }
