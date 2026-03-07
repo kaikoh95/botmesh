@@ -113,6 +113,17 @@ function handleMessage(ws, msg) {
       broadcast(wss, event);
       break;
     }
+    case 'world:mutate': {
+      // Agent mutates the world — add/upgrade/damage/remove/plant/clear any entity
+      const agentId = socketToAgent.get(ws);
+      if (!agentId) break;
+      const mutation = msg.payload || {};
+      const event = createEvent('world:mutate', { agentId, ...mutation });
+      broadcast(wss, event);
+      addToGazette(event);
+      console.log(`[hub] world:mutate ${agentId} → ${mutation.action} ${mutation.entity} ${mutation.id || mutation.kind || ''}`);
+      break;
+    }
     case 'building:damaged':
     case 'building:restored': {
       // Patch reports infra health — broadcast to UI

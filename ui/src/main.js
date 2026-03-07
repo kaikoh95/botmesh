@@ -216,11 +216,44 @@ async function init() {
           break;
         }
         case 'building:damaged': {
-          scene.buildingSetDamaged(p.buildingId, true);
+          if (scene) scene.buildingSetDamaged(p.buildingId, true);
           break;
         }
         case 'building:restored': {
-          scene.buildingSetDamaged(p.buildingId, false);
+          if (scene) scene.buildingSetDamaged(p.buildingId, false);
+          break;
+        }
+        case 'world:mutate': {
+          if (!scene) break;
+          switch (p.action) {
+            case 'add':
+              if (p.entity === 'building') {
+                currentBuildings[p.id] = { ...p };
+                scene.addBuilding({ ...p });
+              } else if (p.entity === 'life') {
+                scene.addLifeEntity(p);
+              }
+              break;
+            case 'plant':
+              scene.addLifeEntity(p);
+              break;
+            case 'upgrade':
+              if (p.entity === 'building') {
+                scene.buildingUpgraded(p.id, (currentBuildings[p.id]?.level || 1) + 1);
+                if (currentBuildings[p.id]) currentBuildings[p.id].level = (currentBuildings[p.id].level || 1) + 1;
+              }
+              break;
+            case 'damage':
+              scene.buildingSetDamaged(p.id || p.buildingId, true);
+              break;
+            case 'restore':
+              scene.buildingSetDamaged(p.id || p.buildingId, false);
+              break;
+            case 'remove':
+            case 'clear':
+              scene.removeEntity(p.id || p.kind);
+              break;
+          }
           break;
         }
       }

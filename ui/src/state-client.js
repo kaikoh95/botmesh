@@ -32,7 +32,7 @@ export function createStateClient({ onEvent, onStateSync, onConnect, onDisconnec
       'agent:work', 'building:upgraded',
       'building:damaged', 'building:restored',
       'task:complete', 'infra:down', 'infra:up', 'agent:crashed',
-      'world:event', 'system:start'
+      'world:mutate', 'world:event', 'system:start'
     ];
 
     for (const type of eventTypes) {

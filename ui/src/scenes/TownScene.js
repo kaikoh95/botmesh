@@ -553,6 +553,51 @@ export default class TownScene extends Phaser.Scene {
     building.setDamaged(damaged);
   }
 
+  // ─── WORLD MUTATION API ────────────────────────────────────────────────────
+
+  addLifeEntity({ kind, x, y, id }) {
+    // Dynamically plant a life sprite at grid position
+    const key = `life-${kind}`;
+    if (!this.textures.exists(key)) {
+      console.warn(`[TownScene] life texture missing: ${key}`);
+      return;
+    }
+    const pos = this.gridToScreen(x || 10 + Math.random() * 20, y || 10 + Math.random() * 15);
+    const img = this.add.image(pos.x, pos.y, key);
+    img.setOrigin(0.5, 0.85);
+    img.setDepth(pos.y);
+    const scale = 64 / Math.max(img.width, img.height) * 1.5;
+    img.setScale(scale);
+    // Tween in
+    img.setAlpha(0);
+    this.tweens.add({ targets: img, alpha: 1, duration: 800, ease: 'Power2' });
+    // Track for removal
+    if (!this._dynamicEntities) this._dynamicEntities = {};
+    this._dynamicEntities[id || `${kind}-${Date.now()}`] = img;
+  }
+
+  removeEntity(id) {
+    // Remove a dynamic entity (life, infra, etc.)
+    if (this._dynamicEntities && this._dynamicEntities[id]) {
+      const obj = this._dynamicEntities[id];
+      this.tweens.add({
+        targets: obj, alpha: 0, duration: 600,
+        onComplete: () => obj.destroy()
+      });
+      delete this._dynamicEntities[id];
+      return;
+    }
+    // Also check buildings
+    if (this.buildings && this.buildings[id]) {
+      const b = this.buildings[id];
+      this.tweens.add({
+        targets: b.container, alpha: 0, duration: 600,
+        onComplete: () => b.destroy()
+      });
+      delete this.buildings[id];
+    }
+  }
+
   agentEnterBuilding(agentId, buildingId) {
     const agent = this.agents[agentId];
     const building = this.buildings[buildingId];

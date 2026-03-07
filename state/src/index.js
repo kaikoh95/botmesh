@@ -72,6 +72,50 @@ function applyEvent(event) {
       addGazetteEntry(event);
       break;
 
+    case 'world:mutate': {
+      if (!state.world) state.world = { entities: [] };
+      const { action, entity, id, kind } = payload;
+      const entityId = id || kind || `${entity}-${Date.now()}`;
+
+      switch (action) {
+        case 'add':
+        case 'plant': {
+          // Add new entity to world
+          const existing = state.world.entities.findIndex(e => e.id === entityId);
+          const entry = { id: entityId, entity, ...payload, addedAt: new Date().toISOString() };
+          if (existing >= 0) state.world.entities[existing] = entry;
+          else state.world.entities.push(entry);
+          break;
+        }
+        case 'upgrade': {
+          const e = state.world.entities.find(e => e.id === entityId) ||
+                    (state.buildings || {})[entityId];
+          if (e) e.level = (e.level || 1) + 1;
+          // Also update buildings map for buildings
+          if (entity === 'building' && state.buildings && state.buildings[entityId]) {
+            state.buildings[entityId].level = (state.buildings[entityId].level || 1) + 1;
+          }
+          break;
+        }
+        case 'damage':
+          { const e = state.world.entities.find(e => e.id === entityId);
+            if (e) e.damaged = true;
+            if (state.buildings && state.buildings[entityId]) state.buildings[entityId].damaged = true;
+            break; }
+        case 'restore':
+          { const e = state.world.entities.find(e => e.id === entityId);
+            if (e) e.damaged = false;
+            if (state.buildings && state.buildings[entityId]) state.buildings[entityId].damaged = false;
+            break; }
+        case 'remove':
+        case 'clear':
+          state.world.entities = state.world.entities.filter(e => e.id !== entityId);
+          break;
+      }
+      addGazetteEntry(event);
+      break;
+    }
+
     case 'agent:work': {
       const building = (state.buildings || {})[payload.buildingId];
       if (building) {

@@ -97,6 +97,27 @@ class BotMeshAgent {
     }
   }
 
+  /**
+   * Mutate the world — add/upgrade/damage/restore/remove/plant/clear entities.
+   * Examples:
+   *   this.mutate({ action: 'add',     entity: 'building', id: 'market', x: 22, y: 17, texture: 'building-market-l1', level: 1 })
+   *   this.mutate({ action: 'plant',   entity: 'life',     kind: 'sakura', x: 15, y: 12, id: 'sakura-grove-1' })
+   *   this.mutate({ action: 'upgrade', entity: 'building', id: 'town_hall' })
+   *   this.mutate({ action: 'remove',  entity: 'building', id: 'old_shed' })
+   */
+  mutate(payload) {
+    if (!this.connected) return;
+    try {
+      this.ws.send(JSON.stringify({
+        type: 'world:mutate',
+        payload,
+        timestamp: new Date().toISOString(),
+      }));
+    } catch (e) {
+      console.error(`[${this.identity.id}] mutate error:`, e.message);
+    }
+  }
+
   speak(message, target = null) {
     console.log(`[${this.identity.name}] 💬 "${message}"`);
     this.send({
