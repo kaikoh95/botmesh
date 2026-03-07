@@ -384,39 +384,60 @@ agent.connect();
 ];
 
 // ─── MAIN ─────────────────────────────────────────────────────────────────────
+// Scarlet's role: identify → brief → hand off → step back.
+// She does NOT wait for completion. The assigned agent owns execution.
+// Each task's run() spawns a detached worker process and returns immediately.
 
-async function main() {
-  console.log('[Scarlet] Orchestrator starting — BMAD workflow active.');
+function main() {
+  console.log('[Scarlet] Orchestrator — scanning for work.');
 
   if (!isServiceUp()) {
     console.log('[Scarlet] State layer unreachable. Skipping cycle.');
-    process.exit(0);
+    return;
   }
 
-  // Find next undone task
   const task = TASKS.find(t => !t.done());
   if (!task) {
-    console.log('[Scarlet] All tasks complete. World is healthy.');
-    scarletSays('All current tasks complete. The world is in good order.');
-    process.exit(0);
-  }
-
-  console.log(`[Scarlet] Delegating: [${task.id}] → ${task.owner}`);
-  scarletSays(`Assigning to ${task.owner}: ${task.title}.`);
-
-  try {
-    const success = await task.run();
-    if (success) {
-      console.log(`[Scarlet] Task [${task.id}] complete. Committing.`);
-      gitCommit(`✅ ${task.title} (delegated to ${task.owner})`);
-      scarletSays(`${task.title} — done. Good work, ${task.owner}.`);
+    console.log('[Scarlet] World is healthy — no pending tasks.');
+    // Occasionally announce (1 in 4 cycles)
+    if (Math.random() < 0.25) {
+      scarletSays('The world is in good order. All tasks complete.');
     }
-  } catch (e) {
-    console.error(`[Scarlet] Task [${task.id}] failed:`, e.message);
-    delegate('iron', `Task [${task.id}] failed during execution. Needs review.`);
+    return;
   }
 
-  process.exit(0);
+  // Brief the assigned agent and spawn the task as a detached background process
+  console.log(`[Scarlet] → ${task.owner}: ${task.title}`);
+  scarletSays(`${task.owner}, your brief: ${task.brief || task.title}`);
+
+  // Spawn the task worker detached — Scarlet is free immediately after
+  const taskScript = path.join(__dirname, `task-${task.id}.js`);
+  if (fs.existsSync(taskScript)) {
+    // Each task has its own worker script — spawn detached
+    const child = require('child_process').spawn(
+      process.execPath, [taskScript],
+      {
+        detached: true,
+        stdio: 'ignore',
+        env: { ...process.env, HUB_URL, GEMINI_API_KEY: GEMINI_KEY }
+      }
+    );
+    child.unref(); // Scarlet walks away
+    console.log(`[Scarlet] Handed off task-${task.id}.js to ${task.owner} (pid ${child.pid}). Free.`);
+  } else {
+    // Inline fallback for tasks without a dedicated worker script yet
+    // Still non-blocking: spawn as async, don't await
+    Promise.resolve().then(() => task.run()).then(ok => {
+      if (ok) {
+        gitCommit(`✅ ${task.title} (${task.owner})`);
+        scarletSays(`${task.title} — shipped. Nice work, ${task.owner}.`);
+      }
+    }).catch(e => {
+      delegate('iron', `Task ${task.id} failed: ${e.message}`);
+    });
+    console.log(`[Scarlet] Task ${task.id} queued async — stepping back.`);
+  }
+  // Scarlet exits. The world keeps running without her.
 }
 
 main();
