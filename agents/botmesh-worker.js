@@ -60,6 +60,12 @@ const IDENTITIES = {
     personality: 'patient, precise, long-view', skills: ['scheduling','cron-management'],
     color: '#6a0dad', model: 'gemini-2.5-flash'
   },
+  qa: {
+    id: 'qa', name: 'QA', emoji: '🔍', role: 'Quality Assurance',
+    personality: 'precise, systematic, reports facts not feelings',
+    skills: ['testing', 'health-checks', 'bug-detection'],
+    color: '#27ae60', model: null
+  },
   patch: {
     id: 'patch', name: 'Patch', emoji: '🔧', role: 'Infrastructure Guardian',
     personality: 'methodical, watchful, terse',

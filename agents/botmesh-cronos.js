@@ -71,6 +71,13 @@ const SCHEDULE = [
     cmd: `${AGENTS_DIR}/run-cronos-report.sh`,
     desc: 'Cronos announces the hour and reports world health',
     owner: 'cronos'
+  },
+  {
+    id: 'qa-check',
+    cron: '*/10 * * * *',
+    cmd: `${AGENTS_DIR}/run-qa.sh`,
+    desc: 'QA health check — UI, state, hub, CORS, config.js syntax; notifies on failure',
+    owner: 'qa'
   }
 ];
 
