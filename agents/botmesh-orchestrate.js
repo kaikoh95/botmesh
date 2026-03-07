@@ -628,7 +628,13 @@ Make your decision. Do it. Narrate it. One thing. That's all.`);
     title: 'Muse generates new roadmap ideas',
     owner: 'muse',
     brief: 'Replenish roadmap ideas.',
-    done: () => false,
+    done: () => {
+      // Skip if roadmap already has 3+ pending ideas
+      try {
+        const rm = JSON.parse(fs.readFileSync(ROADMAP, 'utf8'));
+        return (rm.ideas || []).filter(i => i.status === 'idea').length >= 3;
+      } catch { return false; }
+    },
     run: async () => {
       const roadmapPath = path.join(__dirname, '../roadmap.json');
       let roadmap;
