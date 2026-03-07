@@ -82,6 +82,19 @@ export function addEntry(event) {
     `;
   }
 
+  // Make agent name clickable — pans camera to that agent
+  if (agentId) {
+    el.querySelectorAll('.entry-agent').forEach(span => {
+      span.style.cursor = 'pointer';
+      span.style.textDecoration = 'underline dotted';
+      span.title = `Follow ${agentName}`;
+      span.addEventListener('click', (e) => {
+        e.stopPropagation();
+        window.dispatchEvent(new CustomEvent('botmesh:followagent', { detail: { agentId } }));
+      });
+    });
+  }
+
   feedEl.prepend(el);
 
   while (feedEl.children.length > MAX_ENTRIES) {

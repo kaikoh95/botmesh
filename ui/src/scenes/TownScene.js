@@ -93,6 +93,11 @@ export default class TownScene extends Phaser.Scene {
     // Panels only close via their own ✕ button
 
     // Building clicks handled by HTML panel in main.js
+
+    // Agent name click in feed → pan camera to agent
+    window.addEventListener('botmesh:followagent', (e) => {
+      this.panToAgent(e.detail.agentId);
+    });
   }
 
   _drawGround(mapW, mapH) {
@@ -549,6 +554,30 @@ export default class TownScene extends Phaser.Scene {
     const building = this.buildings[buildingId];
     if (!building) return;
     building.setLevel(level);
+  }
+
+  panToAgent(agentId) {
+    const agent = this.agents && this.agents[agentId];
+    if (!agent) return;
+    const cam = this.cameras.main;
+    // Smooth pan to agent's current screen position
+    this.tweens.add({
+      targets: cam,
+      scrollX: agent.x - cam.width / 2,
+      scrollY: agent.y - cam.height / 2,
+      duration: 600,
+      ease: 'Power2',
+    });
+    // Brief highlight ring around the agent
+    const ring = this.add.circle(agent.x, agent.y, 24, 0xffffff, 0)
+      .setStrokeStyle(2, 0xffd700, 1)
+      .setDepth(9998);
+    this.tweens.add({
+      targets: ring,
+      alpha: 0, scaleX: 2, scaleY: 2,
+      duration: 800,
+      onComplete: () => ring.destroy(),
+    });
   }
 
   buildingSetDamaged(buildingId, damaged) {
