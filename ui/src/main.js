@@ -16,11 +16,9 @@ function updateRoster(agents) {
   const entries = Object.entries(agents || {});
   const onlineCount = entries.filter(([, a]) => a.online !== false && a.state !== 'dormant').length;
 
-  // Agent count badge
-  const badge = document.createElement('div');
-  badge.className = 'roster-count';
-  badge.textContent = `${onlineCount}/${entries.length} online`;
-  roster.appendChild(badge);
+  // Update accordion count badge
+  const countBadge = document.getElementById('roster-count-badge');
+  if (countBadge) countBadge.textContent = `${onlineCount}/${entries.length}`;
 
   for (const [id, agent] of entries) {
     const el = document.createElement('div');

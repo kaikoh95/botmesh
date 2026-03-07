@@ -25,15 +25,63 @@
         </div>
       </div>
     </div>
-    <div id="gazette-container">
-      <div id="gazette-header">
-        <h2>The Weave</h2>
-        <div id="world-clock"></div>
-      </div>
-      <div id="agent-roster"></div>
-      <div id="gazette-feed"></div>
-    </div>
+
+    <!-- Sidebar -->
+    <div id="sidebar" class="sidebar">
+
+      <!-- Sidebar toggle tab (always visible) -->
+      <button id="sidebar-toggle" title="Toggle sidebar">&#x276F;</button>
+
+      <!-- Sidebar inner content (hidden when collapsed) -->
+      <div id="sidebar-inner">
+
+        <!-- Header row: title + clock -->
+        <div id="gazette-header">
+          <h2>The Weave</h2>
+          <div id="world-clock"></div>
+        </div>
+
+        <!-- Accordion: Agents Online -->
+        <div class="accordion-section" id="acc-roster">
+          <button class="accordion-header" data-target="acc-roster-body">
+            <span class="acc-icon">👥</span>
+            <span class="acc-title">Agents Online</span>
+            <span class="acc-count" id="roster-count-badge"></span>
+            <span class="acc-chevron">▾</span>
+          </button>
+          <div class="accordion-body" id="acc-roster-body">
+            <div id="agent-roster"></div>
+          </div>
+        </div>
+
+        <!-- Accordion: World Stats -->
+        <div class="accordion-section" id="acc-stats">
+          <button class="accordion-header" data-target="acc-stats-body">
+            <span class="acc-icon">📊</span>
+            <span class="acc-title">World Stats</span>
+            <span class="acc-chevron">▾</span>
+          </button>
+          <div class="accordion-body collapsed" id="acc-stats-body">
+            <div id="world-stats-content"></div>
+          </div>
+        </div>
+
+        <!-- Accordion: Live Feed -->
+        <div class="accordion-section flex-grow" id="acc-feed">
+          <button class="accordion-header" data-target="acc-feed-body">
+            <span class="acc-icon">📡</span>
+            <span class="acc-title">Live Feed</span>
+            <span class="acc-chevron">▾</span>
+          </button>
+          <div class="accordion-body flex-body" id="acc-feed-body">
+            <div id="gazette-feed"></div>
+          </div>
+        </div>
+
+      </div><!-- /sidebar-inner -->
+    </div><!-- /sidebar -->
   </div>
+
   <script src="config.js"></script>
   <script>
     window.onerror = function(msg, src, line, col, err) {
@@ -42,6 +90,25 @@
     window.onunhandledrejection = function(e) {
       console.error('[UNHANDLED PROMISE]', e.reason);
     };
+
+    // ── Sidebar toggle ──────────────────────────────────────────────────────
+    const sidebar = document.getElementById('sidebar');
+    const toggleBtn = document.getElementById('sidebar-toggle');
+    toggleBtn.addEventListener('click', () => {
+      sidebar.classList.toggle('collapsed');
+      toggleBtn.innerHTML = sidebar.classList.contains('collapsed') ? '&#x276E;' : '&#x276F;';
+    });
+
+    // ── Accordion ───────────────────────────────────────────────────────────
+    document.querySelectorAll('.accordion-header').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const bodyId = btn.dataset.target;
+        const body = document.getElementById(bodyId);
+        const chevron = btn.querySelector('.acc-chevron');
+        const isCollapsed = body.classList.toggle('collapsed');
+        chevron.textContent = isCollapsed ? '▸' : '▾';
+      });
+    });
   </script>
   <script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js"></script>
   <script type="module" src="src/main.js"></script>
