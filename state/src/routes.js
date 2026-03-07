@@ -75,8 +75,8 @@ function createRoutes(getState, sendCommand) {
         timestamp: new Date().toISOString(),
       }
     };
-    // Broadcast via hub command so SSE clients (UI) see it
-    sendCommand({ type: 'agent:speak', payload: event.payload });
+    // Broadcast via hub command (hub expects action + params format)
+    sendCommand({ action: 'agent:speak', params: { agentId, message } });
     res.json({ ok: true });
   });
 
