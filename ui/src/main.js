@@ -317,51 +317,8 @@ async function init() {
 
   client.connectSSE();
 
-  // Building panel setup
-  const buildingPanel = document.getElementById('building-panel');
-  const panelCloseBtn = document.getElementById('panel-close-btn');
-  if (panelCloseBtn) {
-    panelCloseBtn.addEventListener('click', () => {
-      buildingPanel.classList.add('hidden');
-    });
-  }
-
-  window.addEventListener('botmesh:buildingclick', (e) => {
-    const { buildingId, workers } = e.detail;
-    const building = currentBuildings[buildingId];
-    if (!building || !buildingPanel) return;
-
-    document.getElementById('panel-building-name').textContent = building.name || buildingId;
-    document.getElementById('panel-building-level').textContent = `Lv ${building.level || 1} / ${building.maxLevel || 3}`;
-
-    // Workers
-    const workersEl = document.getElementById('panel-workers');
-    const workerIds = workers || building.currentWorkers || [];
-    if (workerIds.length === 0) {
-      workersEl.innerHTML = '<span class="panel-empty">No one here</span>';
-    } else {
-      workersEl.innerHTML = workerIds.map(wId => {
-        const a = currentAgents[wId];
-        const color = agentColorMap[wId] || '#aaa';
-        const name = a?.name || wId;
-        return `<span class="panel-worker"><span class="agent-dot" style="background:${color}"></span> ${name}</span>`;
-      }).join('');
-    }
-
-    // Upgrade history
-    const historyEl = document.getElementById('panel-history');
-    const upgrades = building.upgrades || [];
-    if (upgrades.length === 0) {
-      historyEl.innerHTML = '<span class="panel-empty">No upgrades yet</span>';
-    } else {
-      historyEl.innerHTML = upgrades.slice(-5).reverse().map(u => {
-        const time = u.completedAt ? new Date(u.completedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '';
-        return `<div class="panel-upgrade">Lv${u.fromLevel} \u2192 Lv${u.toLevel} by ${u.agentName} <span class="panel-time">${time}</span></div>`;
-      }).join('');
-    }
-
-    buildingPanel.classList.remove('hidden');
-  });
+  // Building panel is handled entirely by TownScene.showBuildingPanel (Phaser canvas)
+  // The old HTML #building-panel is kept in DOM but unused — TownScene owns building clicks
 
   console.log('[UI] BotMesh Town initialized');
 }
