@@ -312,7 +312,7 @@ async function init() {
       e.type === 'agent:speak' && new Date(e.timestamp).toDateString() === today
     ).length;
     const buildings = Object.values(state.buildings || {});
-    const maxed = buildings.filter(b => (b.level || 1) >= 3).length;
+    const avgLevel = buildings.length ? (buildings.reduce((s,b) => s + (b.level||1), 0) / buildings.length).toFixed(1) : 0;
 
     let el = document.getElementById('world-stats');
     if (!el) {
@@ -327,7 +327,7 @@ async function init() {
     el.innerHTML =
       `<span class="stat">💬 ${msgsToday} msgs</span>` +
       `<span class="stat">🟢 ${online} online</span>` +
-      `<span class="stat">🏛️ ${maxed} maxed</span>`;
+      `<span class="stat">🏛️ avg Lv${avgLevel}</span>`;
   }
 
   const client = createStateClient({
