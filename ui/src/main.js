@@ -191,7 +191,7 @@ const Panels = {
       <div class="panel-accent-bar" style="background:#e8c97e"></div>
       <div class="panel-titlebar">
         <span class="panel-title">🏛 ${bData.name || buildingId}</span>
-        <span class="panel-subtitle">Lv ${bData.level || 1} / ${bData.maxLevel || 3}</span>
+        <span class="panel-subtitle">Lv ${bData.level || 1}</span>
         <button class="panel-close" id="building-panel-close">✕</button>
       </div>
       <div class="panel-body">
