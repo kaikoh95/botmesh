@@ -108,7 +108,8 @@ function handleMessage(ws, msg) {
       if (!agentId) break;
       const { to } = msg.payload || {};
       if (!to) break;
-      world.moveAgent(agentId, to.x, to.y);
+      // Update world agent position
+      try { world.updateAgent(agentId, { location: { x: to.x, y: to.y, building: null } }); } catch {}
       const event = createEvent('agent:move', { agentId, to });
       broadcast(wss, event);
       break;

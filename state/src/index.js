@@ -74,6 +74,7 @@ function applyEvent(event) {
 
     case 'world:mutate': {
       if (!state.world) state.world = { entities: [] };
+      if (!Array.isArray(state.world.entities)) state.world.entities = [];
       const { action, entity, id, kind } = payload;
       const entityId = id || kind || `${entity}-${Date.now()}`;
 
@@ -88,12 +89,23 @@ function applyEvent(event) {
           break;
         }
         case 'upgrade': {
-          const e = state.world.entities.find(e => e.id === entityId) ||
-                    (state.buildings || {})[entityId];
-          if (e) e.level = (e.level || 1) + 1;
-          // Also update buildings map for buildings
-          if (entity === 'building' && state.buildings && state.buildings[entityId]) {
-            state.buildings[entityId].level = (state.buildings[entityId].level || 1) + 1;
+          const building = (state.buildings || {})[entityId];
+          if (building) {
+            building.level = (building.level || 1) + 1;
+            if (!Array.isArray(building.upgrades)) building.upgrades = [];
+            building.upgrades.push({
+              level: building.level,
+              upgradedBy: payload.agentId,
+              upgradedAt: new Date().toISOString(),
+              note: payload.note || null,
+            });
+          }
+          // Also update world entities list if present
+          const we = (state.world?.entities || []).find(e => e.id === entityId);
+          if (we) {
+            we.level = (we.level || 1) + 1;
+            if (!Array.isArray(we.upgrades)) we.upgrades = [];
+            we.upgrades.push({ level: we.level, upgradedBy: payload.agentId, upgradedAt: new Date().toISOString() });
           }
           break;
         }
@@ -139,7 +151,11 @@ function applyEvent(event) {
       if (building) {
         building.level = payload.level;
         if (!Array.isArray(building.upgrades)) building.upgrades = [];
-        if (payload.record) building.upgrades.push(payload.record);
+        building.upgrades.push(payload.record || {
+          level: payload.level,
+          upgradedAt: event.timestamp || new Date().toISOString(),
+          upgradedBy: payload.agentId || 'unknown',
+        });
       }
       addGazetteEntry(event);
       break;
