@@ -826,25 +826,57 @@ This is your canvas. Make something worth looking at.`);
 // She does NOT wait for completion. The assigned agent owns execution.
 // Each task's run() spawns a detached worker process and returns immediately.
 
+// ── Mode selector ──────────────────────────────────────────────────────────
+// --mode world  → Forge discretion + Mosaic sprite check (every 30 min)
+// --mode ideas  → Muse ideation + roadmap execution (every 3 hours)
+// (default: world, for backward compat)
+const MODE = process.argv.includes('--mode') ?
+  process.argv[process.argv.indexOf('--mode') + 1] : 'world';
+
+// Tasks for each mode
+const WORLD_TASK_IDS = ['forge-discretion', 'mosaic-sprite-check'];
+const IDEAS_TASK_IDS = ['muse-ideation'];
+
 function main() {
-  console.log('[Scarlet] Orchestrator — scanning for work.');
+  console.log(`[Scarlet] Orchestrator — mode: ${MODE}`);
 
   if (!isServiceUp()) {
     console.log('[Scarlet] State layer unreachable. Skipping cycle.');
     return;
   }
 
-  // ── Step 1: Check built-in TASKS first ────────────────────────────────────
-  const task = TASKS.find(t => !t.done());
+  if (MODE === 'ideas') {
+    return runIdeasMode();
+  }
+  return runWorldMode();
+}
+
+function runWorldMode() {
+  // World maintenance: Forge discretion + Mosaic sprite check
+  const task = TASKS.filter(t => WORLD_TASK_IDS.includes(t.id)).find(t => !t.done());
   if (!task) {
-    // ── Step 2: Pull next idea from Muse's roadmap ─────────────────────────
-    const idea = pickNextIdea();
-    if (!idea) {
-      console.log('[Scarlet] World is healthy — no built-in tasks, no roadmap ideas pending.');
-      registry.purgeOld(24);
-      if (Math.random() < 0.2) scarletSays('The world is in good order. Waiting on Muse for next direction.');
-      return;
-    }
+    console.log('[Scarlet] World maintenance — nothing to do this cycle.');
+    return;
+  }
+  runTask(task);
+}
+
+function runIdeasMode() {
+  // Step 1: Muse ideation (if roadmap low)
+  const museTask = TASKS.find(t => t.id === 'muse-ideation');
+  if (museTask && !museTask.done()) {
+    runTask(museTask);
+    return;
+  }
+
+  // Step 2: Pick and execute next roadmap idea
+  const idea = pickNextIdea();
+  if (!idea) {
+    console.log('[Scarlet] Ideas mode — roadmap is healthy, nothing pending.');
+    registry.purgeOld(24);
+    if (Math.random() < 0.3) scarletSays('The roadmap is clear. Muse will dream up what comes next.');
+    return;
+  }
 
     console.log(`[Scarlet] Roadmap idea: "${idea.title}" (${idea.complexity}, ${idea.priority})`);
     markIdeaStatus(idea.id, 'in_progress', 'Scarlet picked up');
@@ -868,32 +900,25 @@ CONTEXT: ${idea.description}
 COMPLEXITY: ${idea.complexity} — this needs careful planning.
 YOUR ROLE: ${agents[0]} — you own the execution. Break it into steps, do it well.`;
 
-      // Brief the primary agent
       delegate(agents[0], brief, 'work-start', taskId);
-
-      // Brief supporting agents if any
       if (agents.length > 1) {
         agents.slice(1).forEach(a => {
           delegate(a, `[BMAD-support][${taskId}] Supporting ${agents[0]} on: ${idea.title}. Lend your expertise.`, 'speak', taskId);
         });
       }
-
-      // Announce in world
-      scarletSays(`[${taskId}] Delegated "${idea.title}" to ${agents.join(' + ')}. BMAD mode — working through it step by step.`);
+      scarletSays(`[${taskId}] Delegated "${idea.title}" to ${agents.join(' + ')}. BMAD mode.`);
     } else {
-      // Simple/moderate: direct delegation
       const agent = idea.agents?.[0] || 'forge';
       const brief = `[${taskId}] ${idea.title}: ${idea.description}`;
       scarletSays(`Picking up roadmap idea: "${idea.title}". Handing to ${agent}.`);
       delegate(agent, brief, 'work-start', taskId);
     }
 
-    // Mark as planned (agent will mark done when complete)
     markIdeaStatus(idea.id, 'planned', `Delegated to ${idea.agents?.join(', ') || 'forge'}`);
-    console.log(`[Scarlet] Idea "${idea.title}" delegated. Stepping back.`);
-    return;
-  }
+    console.log(`[Scarlet] Idea "${idea.title}" delegated.`);
+}
 
+function runTask(task) {
   // Register the task and get an ID
   const taskId = registry.createTask({
     type: task.id,

@@ -33,6 +33,12 @@ export default class WorldLife {
 
   _spawnFlora(agentCount) {
     const { scene } = this;
+    const TILE_H = 32;
+
+    // Scale sprite to a max display height in pixels (avoids oversized nature sprites)
+    function scaleToMaxH(spr, maxPx) {
+      if (spr.height > 0) spr.setScale(Math.min(maxPx / spr.height, 1));
+    }
 
     // Sakura trees — replace basic programmatic trees
     const sakuraSpots = [
@@ -46,7 +52,7 @@ export default class WorldLife {
       if (key) {
         const spr = scene.add.image(pos.x, pos.y - 16, key).setOrigin(0.5, 1).setDepth(pos.y - 5);
         spr.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
-        spr.setScale(0.18);
+        scaleToMaxH(spr, 3 * TILE_H);
         this.elements.push(spr);
       }
     }
@@ -62,7 +68,7 @@ export default class WorldLife {
       if (key) {
         const spr = scene.add.image(pos.x, pos.y - 12, key).setOrigin(0.5, 1).setDepth(pos.y - 4);
         spr.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
-        spr.setScale(0.16);
+        scaleToMaxH(spr, 5 * TILE_H);
         this.elements.push(spr);
       }
     }
@@ -77,7 +83,7 @@ export default class WorldLife {
       if (key) {
         const spr = scene.add.image(pos.x, pos.y, key).setOrigin(0.5, 0.75).setDepth(pos.y - 2);
         spr.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
-        spr.setScale(0.22);
+        scaleToMaxH(spr, 2 * TILE_H);
         this.elements.push(spr);
       }
     }
@@ -87,7 +93,7 @@ export default class WorldLife {
       const pos = scene.gridToScreen(14, 24);
       const pond = scene.add.image(pos.x, pos.y, 'life-koipond').setOrigin(0.5, 0.75).setDepth(pos.y - 1);
       pond.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
-      pond.setScale(0.22);
+      scaleToMaxH(pond, 2 * TILE_H);
       this.elements.push(pond);
     }
   }
