@@ -43,6 +43,12 @@ const IDENTITIES = {
     skills: ['communication', 'coordination'],
     color: '#1abc9c', model: 'gemini-2.5-flash'
   },
+  echo: {
+    id: 'echo', name: 'Echo', emoji: '🔊', role: 'Communicator',
+    personality: 'energetic, resonant, loves language',
+    skills: ['communication','broadcasting','translation'],
+    color: '#16a085', model: 'gemini-2.5-flash'
+  },
   mosaic: {
     id: 'mosaic', name: 'Mosaic', emoji: '🎨', role: 'Designer',
     personality: 'joyful, precise, colour-obsessed',
