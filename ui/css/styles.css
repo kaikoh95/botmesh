@@ -804,3 +804,20 @@ html, body {
 #roadmap-btn:hover {
   background: rgba(232,197,126,0.18);
 }
+
+/* ── Town Pulse ─────────────────────────────────────────────────────────── */
+.pulse-row {
+  padding: 3px 0;
+  font-size: 12px;
+  color: #ddd;
+}
+
+.pulse-highlight {
+  margin-top: 6px;
+  padding: 5px;
+  background: rgba(255,215,0,0.1);
+  border-left: 2px solid gold;
+  font-size: 11px;
+  color: #ffd700;
+  font-style: italic;
+}

@@ -636,6 +636,26 @@ async function init() {
     Panels.showCitizenPanel(e.detail.agentId);
   });
 
+  // ── Town Pulse ──────────────────────────────────────────────────────────
+  async function refreshPulse() {
+    try {
+      const STATE_URL = window.BOTMESH_STATE_URL || 'http://localhost:3002';
+      const r = await fetch(`${STATE_URL}/world/pulse`);
+      const p = await r.json();
+      const el = document.getElementById('pulse-data');
+      if (!el) return;
+      el.innerHTML = `
+        <div class="pulse-row">🏛️ <b>${p.busiest?.name || '—'}</b> busiest</div>
+        <div class="pulse-row">🤝 <b>${p.mostActive?.name || 'None online'}</b> most active</div>
+        <div class="pulse-row">🏚️ <b>${p.mostIsolated?.name || 'None'}</b> needs company</div>
+        <div class="pulse-row">📈 avg level <b>${p.avgLevel}</b></div>
+        ${p.highlight ? `<div class="pulse-highlight">💬 ${p.highlight.message || p.highlight.text || JSON.stringify(p.highlight.payload || '')}</div>` : ''}
+      `;
+    } catch (e) { /* silent */ }
+  }
+  refreshPulse();
+  setInterval(refreshPulse, 30000);
+
   console.log('[UI] BotMesh Town initialized');
 }
 

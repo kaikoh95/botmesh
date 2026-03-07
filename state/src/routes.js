@@ -174,6 +174,33 @@ function createRoutes(getState, sendCommand) {
     });
   });
 
+  // Town Pulse — living stats dashboard
+  router.get('/world/pulse', (req, res) => {
+    const state = getState();
+    const buildings = state.buildings || {};
+    const agents = state.agents || {};
+    const gazette = state.gazette || [];
+
+    // Busiest building: most workers or upgrades
+    const busiest = Object.entries(buildings)
+      .map(([id, b]) => ({ id, name: b.name, score: (b.upgrades?.length || 0) + (b.currentWorkers?.length || 0) }))
+      .sort((a, b) => b.score - a.score)[0] || null;
+
+    // Agent activity
+    const agentList = Object.values(agents);
+    const mostActive = agentList.filter(a => a.online).sort((a, b) => new Date(b.lastSeen || 0) - new Date(a.lastSeen || 0))[0] || null;
+    const mostIsolated = [...agentList].sort((a, b) => new Date(a.lastSeen || 0) - new Date(b.lastSeen || 0))[0] || null;
+
+    // Avg building level
+    const levels = Object.values(buildings).map(b => b.level || 1);
+    const avgLevel = levels.length ? (levels.reduce((a, b) => a + b, 0) / levels.length).toFixed(1) : 1;
+
+    // Recent highlight
+    const highlight = gazette.slice(-20).reverse().find(e => ['world:mutate', 'upgrade'].includes(e.type)) || null;
+
+    res.json({ busiest, mostActive, mostIsolated, avgLevel, highlight, timestamp: new Date().toISOString() });
+  });
+
   // Active cron jobs — Cronos's domain
   router.get('/crons', (req, res) => {
     try {
