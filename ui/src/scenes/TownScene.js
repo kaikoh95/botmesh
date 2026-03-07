@@ -92,11 +92,7 @@ export default class TownScene extends Phaser.Scene {
     // Background tap — no longer dismisses panels
     // Panels only close via their own ✕ button
 
-    // Building click — show info panel
-    window.addEventListener('botmesh:buildingclick', (e) => {
-      this._clickedBuilding = true;
-      this.showBuildingPanel(e.detail.buildingId);
-    });
+    // Building clicks handled by HTML panel in main.js
   }
 
   _drawGround(mapW, mapH) {
@@ -265,10 +261,9 @@ export default class TownScene extends Phaser.Scene {
     const agentCount = Object.keys(this.agents).length;
     if (this.worldLife) this.worldLife.spawn(agentCount);
 
-    // Enable click
+    // Enable click → dispatch to HTML panel (no Phaser input coordinate issues)
     agent.enableInteraction((a) => {
-      this._clickedAgent = true;
-      this.showInfoPanel(a);
+      window.dispatchEvent(new CustomEvent('botmesh:agentclick', { detail: { agentId: a.id } }));
     });
 
     // Set initial state (handles sleeping correctly now)

@@ -7,6 +7,119 @@ let scene = null;
 let agentColorMap = {};
 let agentEmojiMap = {};
 let currentBuildings = {};
+let currentAgents = {};
+
+// ── HTML Panel Manager ────────────────────────────────────────────────────
+const Panels = {
+  _agentPanel:    null,
+  _buildingPanel: null,
+  _tooltip:       null,
+
+  showAgent(agentId, agents, colorMap) {
+    const agent = agents[agentId];
+    if (!agent) return;
+    const color = colorMap[agentId] || agent.color || '#aaaaaa';
+
+    const panel = document.getElementById('agent-panel');
+    const accent = document.getElementById('agent-panel-accent');
+
+    const rows = [
+      { label: 'Role',     value: agent.role || agent.emoji || '—' },
+      { label: 'State',    value: agent.state || 'active' },
+      { label: 'Location', value: agent.location?.building ? `📍 ${agent.location.building}` : `(${Math.round(agent.location?.x||0)}, ${Math.round(agent.location?.y||0)})` },
+    ];
+    if (agent.mood) rows.push({ label: 'Mood', value: agent.mood });
+
+    panel.innerHTML = `
+      <div class="panel-accent-bar" style="background:${color}"></div>
+      <div class="panel-titlebar">
+        <span class="panel-title">${agent.emoji || ''} ${agent.name || agentId}</span>
+        <span class="panel-subtitle">${agent.online !== false ? '🟢 Online' : '⚫ Offline'}</span>
+        <button class="panel-close" id="agent-panel-close">✕</button>
+      </div>
+      <div class="panel-body">
+        ${rows.map(r => `<div class="panel-row"><span class="row-label">${r.label}</span><span class="row-value">${r.value}</span></div>`).join('')}
+      </div>
+    `;
+    panel.classList.remove('hidden');
+    document.getElementById('agent-panel-close').onclick = () => panel.classList.add('hidden');
+  },
+
+  showBuilding(buildingId) {
+    const bData = (window.__botmeshState?.buildings || {})[buildingId] || {};
+    const agents = window.__botmeshState?.agents || {};
+    const workers = Object.values(agents).filter(a => a.location?.building === buildingId);
+
+    const normUpgrades = (bData.upgrades || []).map(u => ({
+      level:      u.level      ?? u.toLevel,
+      upgradedBy: u.upgradedBy ?? u.agentName ?? u.agentId ?? '?',
+      upgradedAt: u.upgradedAt ?? u.completedAt,
+      note:       u.note       ?? null,
+    }));
+
+    const workerHtml = workers.length
+      ? workers.map(w => `<span style="color:${agentColorMap[w.id||w.name]||'#aaa'}">${w.emoji||''} ${w.name||w.id}</span>`).join(', ')
+      : '<span style="color:#555">None</span>';
+
+    const upgradeHtml = normUpgrades.length
+      ? `<div class="panel-section-header">─ UPGRADE HISTORY ─</div>` +
+        normUpgrades.map((u, i) => {
+          const date = u.upgradedAt ? new Date(u.upgradedAt).toLocaleDateString('en-NZ', { month:'short', day:'numeric' }) : '?';
+          return `<div class="upgrade-row" data-idx="${i}">
+            <span class="upg-level">→ Lv${u.level ?? '?'}</span>
+            <span class="upg-meta">${u.upgradedBy} · ${date}</span>
+          </div>` + (u.note ? `<div class="upg-note">"${u.note}"</div>` : '');
+        }).join('')
+      : '<div style="color:#555;font-style:italic;font-size:11px">No upgrades yet</div>';
+
+    const panel = document.getElementById('building-panel');
+    panel.innerHTML = `
+      <div class="panel-accent-bar" style="background:#e8c97e"></div>
+      <div class="panel-titlebar">
+        <span class="panel-title">🏛 ${bData.name || buildingId}</span>
+        <span class="panel-subtitle">Lv ${bData.level || 1} / ${bData.maxLevel || 3}</span>
+        <button class="panel-close" id="building-panel-close">✕</button>
+      </div>
+      <div class="panel-body">
+        <div class="panel-row"><span class="row-label">Status</span><span class="row-value">${bData.damaged ? '💥 Damaged' : '✅ Operational'}</span></div>
+        <div class="panel-row"><span class="row-label">Workers</span><span class="row-value">${workerHtml}</span></div>
+        ${upgradeHtml}
+      </div>
+    `;
+    panel.classList.remove('hidden');
+
+    document.getElementById('building-panel-close').onclick = () => {
+      panel.classList.add('hidden');
+      Panels.hideTooltip();
+    };
+
+    // Upgrade row click → tooltip
+    panel.querySelectorAll('.upgrade-row').forEach(row => {
+      row.addEventListener('click', () => {
+        const u = normUpgrades[+row.dataset.idx];
+        Panels.showUpgradeTooltip(u);
+      });
+    });
+  },
+
+  showUpgradeTooltip(u) {
+    const date = u.upgradedAt ? new Date(u.upgradedAt).toLocaleString('en-NZ', { month:'short', day:'numeric', hour:'2-digit', minute:'2-digit' }) : '?';
+    const tooltip = document.getElementById('upgrade-tooltip');
+    tooltip.innerHTML = `
+      <button class="tooltip-close" id="tooltip-close">✕</button>
+      <div class="tooltip-title">→ Level ${u.level ?? '?'} Upgrade</div>
+      <div class="tooltip-line">By: ${u.upgradedBy || 'unknown'}</div>
+      <div class="tooltip-line">Date: ${date}</div>
+      ${u.note ? `<div class="tooltip-note">"${u.note}"</div>` : ''}
+    `;
+    tooltip.classList.remove('hidden');
+    document.getElementById('tooltip-close').onclick = () => Panels.hideTooltip();
+  },
+
+  hideTooltip() {
+    document.getElementById('upgrade-tooltip').classList.add('hidden');
+  },
+};
 
 function updateRoster(agents) {
   const roster = document.getElementById('agent-roster');
@@ -56,8 +169,6 @@ async function init() {
   } else {
     console.log('[UI] TownScene active');
   }
-
-  let currentAgents = {};
 
   function syncColors(agents) {
     for (const [id, a] of Object.entries(agents)) {
@@ -317,8 +428,15 @@ async function init() {
 
   client.connectSSE();
 
-  // Building panel is handled entirely by TownScene.showBuildingPanel (Phaser canvas)
-  // The old HTML #building-panel is kept in DOM but unused — TownScene owns building clicks
+  // Building clicks → HTML panel
+  window.addEventListener('botmesh:buildingclick', (e) => {
+    Panels.showBuilding(e.detail.buildingId);
+  });
+
+  // Agent clicks → HTML panel
+  window.addEventListener('botmesh:agentclick', (e) => {
+    Panels.showAgent(e.detail.agentId, currentAgents, agentColorMap);
+  });
 
   console.log('[UI] BotMesh Town initialized');
 }

@@ -1,4 +1,5 @@
 #!/bin/bash
+export PATH="/home/kai/.nvm/versions/node/v24.14.0/bin:$PATH"
 # Cronos hourly world report — called by cron, not by Cronos agent directly
 # (the Cronos agent handles its own hourly tick internally)
 if [ -f ~/.botmesh.env ]; then source ~/.botmesh.env; fi
