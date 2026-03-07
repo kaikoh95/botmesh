@@ -1,7 +1,7 @@
 import TownScene from './scenes/TownScene.js';
 
 export function createGame(container) {
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
     const config = {
       type: Phaser.AUTO,
       parent: container,
@@ -16,16 +16,44 @@ export function createGame(container) {
         autoCenter: Phaser.Scale.CENTER_BOTH,
       },
       audio: { noAudio: true },
+      callbacks: {
+        postBoot: (game) => {
+          game.events.on('error', (e) => {
+            console.error('[Phaser] Game error:', e);
+          });
+        }
+      }
     };
 
-    const game = new Phaser.Game(config);
+    let game;
+    try {
+      game = new Phaser.Game(config);
+    } catch (e) {
+      console.error('[createGame] Phaser init failed:', e);
+      reject(e);
+      return;
+    }
 
     // Poll until TownScene is active — avoids race with 'ready' event
+    // Timeout after 12s so init() doesn't hang if scene fails to start
+    const start = Date.now();
     const poll = setInterval(() => {
-      const scene = game.scene.getScene('TownScene');
-      if (scene && scene.scene.isActive('TownScene')) {
+      try {
+        const scene = game.scene.getScene('TownScene');
+        if (scene && scene.scene.isActive('TownScene')) {
+          clearInterval(poll);
+          resolve(scene);
+          return;
+        }
+      } catch (e) {
+        console.error('[createGame] poll error:', e);
+      }
+
+      if (Date.now() - start > 12000) {
         clearInterval(poll);
-        resolve(scene);
+        console.error('[createGame] Timeout — TownScene never became active');
+        // Resolve with null so init() can continue without blocking
+        resolve(null);
       }
     }, 100);
   });

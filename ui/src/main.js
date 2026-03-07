@@ -53,6 +53,11 @@ async function init() {
   const container = document.getElementById('game-container');
   scene = await createGame(container);
   window.__botmeshScene = scene; // expose for debugging
+  if (!scene) {
+    console.error('[UI] TownScene failed to initialize — world will be empty but Weave will still work');
+  } else {
+    console.log('[UI] TownScene active');
+  }
 
   let currentAgents = {};
 

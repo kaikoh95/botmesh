@@ -30,6 +30,8 @@ export function createStateClient({ onEvent, onStateSync, onConnect, onDisconnec
       'agent:state', 'agent:mood',
       'agent:joined', 'agent:online', 'agent:offline',
       'agent:work', 'building:upgraded',
+      'building:damaged', 'building:restored',
+      'task:complete', 'infra:down', 'infra:up', 'agent:crashed',
       'world:event', 'system:start'
     ];
 

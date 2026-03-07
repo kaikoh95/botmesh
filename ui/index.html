@@ -35,6 +35,14 @@
     </div>
   </div>
   <script src="config.js"></script>
+  <script>
+    window.onerror = function(msg, src, line, col, err) {
+      console.error('[GLOBAL ERROR]', msg, src + ':' + line, err);
+    };
+    window.onunhandledrejection = function(e) {
+      console.error('[UNHANDLED PROMISE]', e.reason);
+    };
+  </script>
   <script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js"></script>
   <script type="module" src="src/main.js"></script>
 </body>
