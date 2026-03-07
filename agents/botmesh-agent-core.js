@@ -229,6 +229,42 @@ class BotMeshAgent {
 
     const [min, max] = this.options.speakInterval;
     this.speakTimer = setTimeout(loop, min + Math.random() * (max - min));
+
+    // Idle wandering — drift around the map when not doing anything
+    this._startWandering();
+  }
+
+  _startWandering() {
+    // Map bounds (matches TownScene mapW=40, mapH=30)
+    const MAP_W = 38, MAP_H = 28, MARGIN = 2;
+    // Each agent gets a home zone so they don't all cluster
+    const zones = {
+      scarlet: { cx: 20, cy: 14 }, forge:  { cx: 16, cy: 18 },
+      lumen:   { cx: 24, cy: 12 }, sage:   { cx: 22, cy: 20 },
+      iron:    { cx: 14, cy: 14 }, cronos: { cx: 26, cy: 18 },
+      mosaic:  { cx: 18, cy: 10 }, echo:   { cx: 28, cy: 14 },
+      patch:   { cx: 12, cy: 18 }, canvas: { cx: 20, cy: 22 },
+    };
+    const zone = zones[this.identity.id] || { cx: 20, cy: 15 };
+    const RADIUS = 4; // wander radius from home zone
+
+    const wander = () => {
+      if (!this.connected) return;
+      const x = Math.max(MARGIN, Math.min(MAP_W, zone.cx + Math.floor((Math.random() * 2 - 1) * RADIUS)));
+      const y = Math.max(MARGIN, Math.min(MAP_H, zone.cy + Math.floor((Math.random() * 2 - 1) * RADIUS)));
+      try {
+        this.ws.send(JSON.stringify({
+          type: 'agent:move',
+          payload: { agentId: this.identity.id, to: { x, y } },
+          timestamp: new Date().toISOString(),
+        }));
+      } catch {}
+      // Next wander: 20-50 seconds
+      this.wanderTimer = setTimeout(wander, 20000 + Math.random() * 30000);
+    };
+
+    // Start wandering after a short delay so agent has time to identify
+    this.wanderTimer = setTimeout(wander, 5000 + Math.random() * 10000);
   }
 
   /**

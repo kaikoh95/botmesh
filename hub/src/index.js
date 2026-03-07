@@ -92,6 +92,17 @@ function handleMessage(ws, msg) {
       console.log(`[hub] task:complete ${taskId} by ${agentId} — ${status}`);
       break;
     }
+    case 'agent:work': {
+      // Agent starting/completing work on a building
+      const agentId = socketToAgent.get(ws);
+      if (!agentId) break;
+      const workPayload = msg.payload || {};
+      const event = createEvent('agent:work', { agentId, ...workPayload });
+      broadcast(wss, event);
+      addToGazette(event);
+      console.log(`[hub] agent:work ${agentId} → ${workPayload.buildingId} (${workPayload.action})`);
+      break;
+    }
     case 'agent:move': {
       const agentId = socketToAgent.get(ws);
       if (!agentId) break;
