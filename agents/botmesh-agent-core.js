@@ -232,35 +232,12 @@ class BotMeshAgent {
   }
 
   /**
-   * Scarlet-only: called when a task:complete event arrives.
-   * Routes the result back to whoever originated the task.
+   * Scarlet-only: called when task:complete arrives.
+   * Scarlet just logs — Echo handles routing to external channels.
    */
-  _onTaskComplete({ agentId, taskId, status, message }) {
+  _onTaskComplete({ agentId, taskId, status }) {
     if (!taskId) return;
-    try {
-      const registry = require('./task-registry');
-      const task = registry.getTask(taskId);
-      if (!task) return;
-
-      const icon = status === 'done' ? '✅' : '❌';
-      const summary = `${icon} [${taskId}]\n${task.title}\nby ${agentId}: ${message}`;
-
-      console.log(`[Scarlet] Routing task result: ${taskId} → ${task.origin}`);
-
-      if (task.origin === 'kai') {
-        // Post to Telegram via OpenClaw notify
-        const { execSync } = require('child_process');
-        try {
-          execSync(`openclaw notify --chat 334289141 --message "${summary.replace(/"/g, "'")}"`, {
-            timeout: 10000
-          });
-        } catch (e) {
-          console.log(`[Scarlet] Telegram notify failed (${e.message}), logged only`);
-        }
-      }
-    } catch (e) {
-      console.error('[Scarlet] _onTaskComplete error:', e.message);
-    }
+    console.log(`[Scarlet] task:complete received — ${taskId} (${status}) by ${agentId}. Echo will route.`);
   }
 }
 
