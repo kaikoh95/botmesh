@@ -1,15 +1,50 @@
 const express = require('express');
 const cors = require('cors');
+const fs = require('fs');
+const path = require('path');
 const { loadState, saveState } = require('./persistence');
 const { connectToHub } = require('./hub-client');
 const { createSSEManager } = require('./sse');
 const { createRoutes } = require('./routes');
 
 const PORT = process.env.PORT || 3002;
+const CHARACTERS_DIR = path.join(__dirname, '../../characters');
+
+// ── Seed citizens from characters/ directory ──────────────────────────────
+// Character file existing = citizen exists in the world (dormant until active)
+function seedCitizens(state) {
+  if (!fs.existsSync(CHARACTERS_DIR)) return;
+  const dirs = fs.readdirSync(CHARACTERS_DIR).filter(d => !d.startsWith('_'));
+  for (const agentId of dirs) {
+    const identityPath = path.join(CHARACTERS_DIR, agentId, 'IDENTITY.md');
+    if (!fs.existsSync(identityPath)) continue;
+    // Parse name, emoji, role from first line: "# Name Emoji — Role"
+    const firstLine = fs.readFileSync(identityPath, 'utf8').split('\n')[0];
+    const match = firstLine.match(/^#\s+(.+?)\s+(\S+)\s+—\s+(.+)$/);
+    const name  = match?.[1] || agentId;
+    const emoji = match?.[2] || '🤖';
+    const role  = match?.[3] || 'Citizen';
+    // Only seed if not already in state (don't overwrite live agent data)
+    if (!state.agents) state.agents = {};
+    if (!state.agents[agentId]) {
+      state.agents[agentId] = {
+        id: agentId, name, emoji, role,
+        state: 'dormant',
+        online: false,
+        location: { x: 12, y: 12 },
+        skills: [],
+        lastSeen: null,
+      };
+      console.log(`[State] Seeded citizen: ${emoji} ${name} (${agentId})`);
+    }
+  }
+}
 
 // In-memory state
 let state = loadState();
 console.log('[State] Loaded state from disk');
+seedCitizens(state);
+console.log(`[State] Citizens: ${Object.keys(state.agents || {}).length} total`);
 
 function getState() {
   return state;
@@ -21,19 +56,13 @@ function applyEvent(event) {
 
   switch (type) {
     case 'state:sync': {
-      // Merge hub sync — never let hub wipe existing agents (hub restarts empty)
-      const existingAgentCount = Object.keys(state.agents || {}).length;
-      const incomingAgentCount = Object.keys(payload.agents || {}).length;
-      if (incomingAgentCount < existingAgentCount) {
-        // Hub has fewer agents than we know about — merge buildings/time but keep agents
-        state = { ...payload, agents: { ...state.agents, ...(payload.agents || {}) } };
-        console.log(`[state] state:sync merge (hub:${incomingAgentCount} < local:${existingAgentCount}) — kept local agents`);
-      } else {
-        state = { ...payload };
-      }
+      // Merge hub sync — never let hub wipe existing citizens (hub restarts empty)
+      // Hub only knows about currently-connected agents; state layer knows ALL citizens
+      state = { ...payload, agents: { ...state.agents, ...(payload.agents || {}) } };
+      // Re-seed any citizens that may have been wiped
+      seedCitizens(state);
       break;
     }
-      break;
 
     case 'time:tick':
       state.time = payload;
@@ -62,6 +91,29 @@ function applyEvent(event) {
       if (agent) {
         agent.mood = payload.to;
       }
+      addGazetteEntry(event);
+      break;
+    }
+
+    case 'agent:joined': {
+      // Brand new agent — merge with seeded citizen data if exists
+      const incoming = payload.agent || {};
+      const existing = (state.agents || {})[incoming.id] || {};
+      state.agents[incoming.id] = { ...existing, ...incoming, online: true, state: 'idle', lastSeen: new Date().toISOString() };
+      addGazetteEntry(event);
+      break;
+    }
+
+    case 'agent:online': {
+      const a = (state.agents || {})[payload.agentId];
+      if (a) { a.online = true; a.state = 'idle'; a.lastSeen = new Date().toISOString(); }
+      addGazetteEntry(event);
+      break;
+    }
+
+    case 'agent:offline': {
+      const a = (state.agents || {})[payload.agentId];
+      if (a) { a.online = false; a.state = 'dormant'; a.lastSeen = new Date().toISOString(); }
       addGazetteEntry(event);
       break;
     }

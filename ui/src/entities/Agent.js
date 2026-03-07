@@ -81,8 +81,18 @@ export default class Agent {
     this.speechBubble = null;
     this.speechTimer = null;
 
+    // Dormant label (💤)
+    this.dormantLabel = scene.add.text(0, labelY - 14, '', {
+      fontSize: '14px',
+    }).setOrigin(0.5).setDepth(1);
+    this.container.add(this.dormantLabel);
+
     // Idle bob animation
     this._startIdleAnimation();
+
+    // Apply initial online state
+    const isDormant = agentData.online === false || agentData.state === 'dormant';
+    if (isDormant) this.setDormant(true);
   }
 
   _drawBody() {
@@ -160,6 +170,21 @@ export default class Agent {
         this.container.setDepth(this.container.y + 1000);
       }
     });
+  }
+
+  setDormant(isDormant) {
+    this.online = !isDormant;
+    if (isDormant) {
+      this.body.setAlpha(0.3);
+      this.label.setAlpha(0.4);
+      this.dormantLabel.setText('💤');
+      if (this.bobTween) this.bobTween.stop();
+    } else {
+      this.body.setAlpha(1);
+      this.label.setAlpha(1);
+      this.dormantLabel.setText('');
+      this._startIdleAnimation();
+    }
   }
 
   setState(state) {
@@ -270,14 +295,14 @@ export default class Agent {
   }
 
   setOnline(online) {
-    this.online = online;
-    if (this.hasSprite) {
-      this.body.setTint(online ? 0xffffff : 0x555555);
-      this.body.setAlpha(online ? 1 : 0.5);
+    this.setDormant(!online);
+    if (!online && this.hasSprite) {
+      this.body.setTint(0x555555);
+    } else if (this.hasSprite) {
+      this.body.clearTint();
     } else {
       this._drawBody();
     }
-    this.label.setAlpha(online ? 1 : 0.4);
   }
 
   enableInteraction(callback) {
