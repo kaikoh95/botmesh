@@ -20,8 +20,19 @@ function applyEvent(event) {
   const { type, payload } = event;
 
   switch (type) {
-    case 'state:sync':
-      state = { ...payload };
+    case 'state:sync': {
+      // Merge hub sync — never let hub wipe existing agents (hub restarts empty)
+      const existingAgentCount = Object.keys(state.agents || {}).length;
+      const incomingAgentCount = Object.keys(payload.agents || {}).length;
+      if (incomingAgentCount < existingAgentCount) {
+        // Hub has fewer agents than we know about — merge buildings/time but keep agents
+        state = { ...payload, agents: { ...state.agents, ...(payload.agents || {}) } };
+        console.log(`[state] state:sync merge (hub:${incomingAgentCount} < local:${existingAgentCount}) — kept local agents`);
+      } else {
+        state = { ...payload };
+      }
+      break;
+    }
       break;
 
     case 'time:tick':
