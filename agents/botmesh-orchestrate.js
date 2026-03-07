@@ -30,6 +30,7 @@
 const { execSync, spawnSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
+const registry = require('./task-registry');
 
 const HUB_URL = process.env.HUB_URL || 'ws://localhost:3001';
 const GEMINI_KEY = process.env.GEMINI_API_KEY || '';
@@ -38,9 +39,11 @@ const BOTMESH = '/home/kai/projects/botmesh';
 
 // ─── DELEGATION HELPERS ───────────────────────────────────────────────────────
 
-function delegate(agentId, message, state = 'speak') {
+function delegate(agentId, message, state = 'speak', taskId = null) {
   try {
-    execSync(`node "${WORKER}" "${agentId}" "${message.replace(/"/g, "'")}" "${state}"`, {
+    const args = [WORKER, agentId, message.replace(/"/g, "'"), state];
+    if (taskId) args.push(taskId);
+    execSync(`node ${args.map(a => `"${a}"`).join(' ')}`, {
       env: { ...process.env, HUB_URL, GEMINI_API_KEY: GEMINI_KEY },
       timeout: 6000
     });
@@ -49,12 +52,13 @@ function delegate(agentId, message, state = 'speak') {
   }
 }
 
-function scarletSays(msg) { delegate('scarlet', msg); }
-function forgeDoes(msg)   { delegate('forge', msg, 'work-start'); }
-function lumenDoes(msg)   { delegate('lumen', msg, 'work-start'); }
-function sageDoes(msg)    { delegate('sage',  msg, 'work-start'); }
-function ironReviews(msg) { delegate('iron',  msg); }
-function cronosTicks(msg) { delegate('cronos', msg); }
+function scarletSays(msg, taskId)   { delegate('scarlet', msg, 'speak', taskId); }
+function forgeDoes(msg, taskId)     { delegate('forge', msg, 'work-start', taskId); }
+function lumenDoes(msg, taskId)     { delegate('lumen', msg, 'work-start', taskId); }
+function sageDoes(msg, taskId)      { delegate('sage',  msg, 'work-start', taskId); }
+function ironReviews(msg, taskId)   { delegate('iron',  msg, 'speak', taskId); }
+function cronosTicks(msg, taskId)   { delegate('cronos', msg, 'speak', taskId); }
+function mosaicDesigns(msg, taskId) { delegate('mosaic', msg, 'work-start', taskId); }
 
 function isServiceUp() {
   try { execSync('curl -s --max-time 2 http://localhost:3002/state > /dev/null'); return true; }
@@ -399,16 +403,26 @@ function main() {
   const task = TASKS.find(t => !t.done());
   if (!task) {
     console.log('[Scarlet] World is healthy — no pending tasks.');
-    // Occasionally announce (1 in 4 cycles)
+    registry.purgeOld(24);
     if (Math.random() < 0.25) {
       scarletSays('The world is in good order. All tasks complete.');
     }
     return;
   }
 
-  // Brief the assigned agent and spawn the task as a detached background process
-  console.log(`[Scarlet] → ${task.owner}: ${task.title}`);
-  scarletSays(`${task.owner}, your brief: ${task.brief || task.title}`);
+  // Register the task and get an ID
+  const taskId = registry.createTask({
+    type: task.id,
+    title: task.title,
+    owner: task.owner,
+    brief: task.brief || task.title,
+    origin: 'kai', // completed tasks report back to Kai
+  });
+  registry.startTask(taskId);
+
+  // Brief the assigned agent — task ID travels with the brief
+  console.log(`[Scarlet] [${taskId}] → ${task.owner}: ${task.title}`);
+  scarletSays(`[${taskId}] ${task.owner}: ${task.brief || task.title}`, taskId);
 
   // Spawn the task worker detached — Scarlet is free immediately after
   const taskScript = path.join(__dirname, `task-${task.id}.js`);
@@ -427,13 +441,19 @@ function main() {
   } else {
     // Inline fallback for tasks without a dedicated worker script yet
     // Still non-blocking: spawn as async, don't await
-    Promise.resolve().then(() => task.run()).then(ok => {
+    Promise.resolve().then(() => task.run(taskId)).then(ok => {
       if (ok) {
         gitCommit(`✅ ${task.title} (${task.owner})`);
-        scarletSays(`${task.title} — shipped. Nice work, ${task.owner}.`);
+        const completed = registry.completeTask(taskId, `${task.title} complete`);
+        scarletSays(`[${taskId}] ${task.title} — shipped. Good work, ${task.owner}.`, taskId);
+        // Notify origin (Kai) if task came from a chat request
+        if (completed?.origin === 'kai') {
+          console.log(`[Scarlet] Task ${taskId} complete — origin: kai`);
+        }
       }
     }).catch(e => {
-      delegate('iron', `Task ${task.id} failed: ${e.message}`);
+      registry.failTask(taskId, e.message);
+      delegate('iron', `[${taskId}] Task ${task.id} failed: ${e.message}`, 'speak', taskId);
     });
     console.log(`[Scarlet] Task ${task.id} queued async — stepping back.`);
   }

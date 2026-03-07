@@ -83,12 +83,14 @@ const BUILDING_FOR_ROLE = {
   Communicator: 'post_office',
 };
 
+// Usage: node botmesh-worker.js <agentId> <message> [state] [taskId]
 const agentId = process.argv[2];
 const message = process.argv[3];
-const state = process.argv[4] || 'speak'; // speak | work-start | work-done
+const state   = process.argv[4] || 'speak'; // speak | work-start | work-done | task-done | task-fail
+const taskId  = process.argv[5] || null;    // correlates response back to originator
 
 if (!agentId || !message) {
-  console.error('Usage: node botmesh-worker.js <agentId> <message> [state]');
+  console.error('Usage: node botmesh-worker.js <agentId> <message> [state] [taskId]');
   process.exit(1);
 }
 
@@ -129,10 +131,34 @@ ws.on('open', () => {
         payload: { agentId, buildingId: BUILDING_FOR_ROLE[identity.role] || 'town_hall', action: 'complete' },
         timestamp: new Date().toISOString()
       }));
+    } else if (state === 'task-done' || state === 'task-fail') {
+      // Task completion — carry taskId back for Scarlet to route
+      ws.send(JSON.stringify({
+        type: 'task:complete',
+        payload: {
+          agentId,
+          taskId,
+          status: state === 'task-done' ? 'done' : 'failed',
+          message,
+        },
+        timestamp: new Date().toISOString()
+      }));
+      // Also speak the result into the world
+      ws.send(JSON.stringify({
+        type: 'agent:speak',
+        payload: { agentId, message, taskId },
+        timestamp: new Date().toISOString()
+      }));
+      // Update registry if available
+      try {
+        const reg = require('./task-registry');
+        if (state === 'task-done') reg.completeTask(taskId, message);
+        else reg.failTask(taskId, message);
+      } catch {}
     } else {
       ws.send(JSON.stringify({
         type: 'agent:speak',
-        payload: { agentId, message },
+        payload: { agentId, message, ...(taskId ? { taskId } : {}) },
         timestamp: new Date().toISOString()
       }));
     }

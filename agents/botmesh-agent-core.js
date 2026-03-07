@@ -72,6 +72,10 @@ class BotMeshAgent {
       try {
         const msg = JSON.parse(raw);
         this.handleMessage(msg);
+        // Scarlet-only: route task:complete back to origin
+        if (this.identity.id === 'scarlet' && msg.type === 'task:complete') {
+          this._onTaskComplete(msg.payload || {});
+        }
       } catch (e) {}
     });
 
@@ -225,6 +229,38 @@ class BotMeshAgent {
 
     const [min, max] = this.options.speakInterval;
     this.speakTimer = setTimeout(loop, min + Math.random() * (max - min));
+  }
+
+  /**
+   * Scarlet-only: called when a task:complete event arrives.
+   * Routes the result back to whoever originated the task.
+   */
+  _onTaskComplete({ agentId, taskId, status, message }) {
+    if (!taskId) return;
+    try {
+      const registry = require('./task-registry');
+      const task = registry.getTask(taskId);
+      if (!task) return;
+
+      const icon = status === 'done' ? '✅' : '❌';
+      const summary = `${icon} [${taskId}]\n${task.title}\nby ${agentId}: ${message}`;
+
+      console.log(`[Scarlet] Routing task result: ${taskId} → ${task.origin}`);
+
+      if (task.origin === 'kai') {
+        // Post to Telegram via OpenClaw notify
+        const { execSync } = require('child_process');
+        try {
+          execSync(`openclaw notify --chat 334289141 --message "${summary.replace(/"/g, "'")}"`, {
+            timeout: 10000
+          });
+        } catch (e) {
+          console.log(`[Scarlet] Telegram notify failed (${e.message}), logged only`);
+        }
+      }
+    } catch (e) {
+      console.error('[Scarlet] _onTaskComplete error:', e.message);
+    }
   }
 }
 

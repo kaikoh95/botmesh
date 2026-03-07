@@ -74,11 +74,22 @@ function handleMessage(ws, msg) {
     case 'agent:speak': {
       const agentId = socketToAgent.get(ws);
       if (!agentId) break;
-      const { message, target } = msg.payload || {};
+      const { message, target, taskId } = msg.payload || {};
       if (!message) break;
-      const event = createEvent('agent:speak', { agentId, message, target: target || null });
+      const event = createEvent('agent:speak', { agentId, message, target: target || null, taskId: taskId || null });
       broadcast(wss, event);
       addToGazette(event);
+      break;
+    }
+    case 'task:complete': {
+      // Agent reports task done — broadcast so Scarlet can route result back to origin
+      const agentId = socketToAgent.get(ws);
+      if (!agentId) break;
+      const { taskId, status, message } = msg.payload || {};
+      if (!taskId) break;
+      const event = createEvent('task:complete', { agentId, taskId, status, message });
+      broadcast(wss, event);
+      console.log(`[hub] task:complete ${taskId} by ${agentId} — ${status}`);
       break;
     }
     case 'agent:move': {
