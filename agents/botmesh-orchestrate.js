@@ -727,25 +727,38 @@ Make your decision. Do it. Narrate it. One thing. That's all.`);
         `- **${b.name || id}** (id: \`${id}\`, type: \`${b.type || id}\`) at (${b.x},${b.y})`
       ).join('\n');
 
-      spawnSession('mosaic', `# Mosaic 🎨 — Sprite Generation
+      spawnSession('mosaic', `# Mosaic 🎨 — The Artist
 
-New buildings appeared in the world without sprites. Generate pixel art for each one.
+New buildings exist in the world without a face. You decide what they look like.
 
-## Buildings needing sprites
+## Buildings waiting for your vision
 ${buildingList}
 
-## Generation command
+These are just names and coordinates. The rest is yours.
+Interpret each building's soul. What does it feel like? What story does it tell?
+Your art style, your palette choices, your composition — no constraints.
+
+The world has a Japanese Edo-period flavour but you don't have to be literal about it.
+If a building calls for something unexpected, go there.
+
+## Generate your vision
 \`\`\`bash
 uv run ~/.nvm/versions/node/v24.14.0/lib/node_modules/openclaw/skills/nano-banana-pro/scripts/generate_image.py \\
-  --prompt "PROMPT" --filename "FILENAME" --resolution 1K
+  --prompt "YOUR PROMPT — write it as an artist, not a spec" \\
+  --filename "FILENAME" --resolution 1K
 \`\`\`
+Save to: \`/home/kai/projects/botmesh/ui/assets/buildings/<type>-l1.png\`
 
-## Alpha cleaning (run after every generation)
+**One technical requirement:** SOLID MAGENTA (#FF00FF) background so alpha can be removed cleanly.
+Everything else — style, mood, detail level, color — is your call.
+
+## Clean the alpha after every generation
 \`\`\`python
-# uv run --with pillow --with numpy python3 script.py
+# uv run --with pillow --with numpy python3 -c "..."
 from PIL import Image
 import numpy as np
-from collections import deque, os
+from collections import deque
+import os
 
 def clean(path):
     img = Image.open(path).convert('RGBA')
@@ -773,7 +786,6 @@ def clean(path):
             ni,nj=ci+di,cj+dj
             if 0<=ni<h and 0<=nj<w and not visited[ni,nj]:
                 if is_bg(int(r[ni,nj]),int(g[ni,nj]),int(b[ni,nj])): visited[ni,nj]=True;q.append((ni,nj))
-    # Pass 2 — interior expansion
     q2=deque([(i,j) for i in range(h) for j in range(w) if visited[i,j] or int(a[i,j])==0])
     for i,j in q2: visited[i,j]=True
     while q2:
@@ -784,25 +796,21 @@ def clean(path):
                 if is_bg(int(r[ni,nj]),int(g[ni,nj]),int(b[ni,nj]),30): visited[ni,nj]=True;q2.append((ni,nj))
     out=d.copy(); out[...,3]=np.where(visited,0,255).astype(np.int32)
     Image.fromarray(out.astype(np.uint8)).save(path)
+    print(f'cleaned: {path}')
 \`\`\`
 
-## Style guide
-Isometric pixel art, Japanese Edo-period, chibi RPG, bold black outlines, flat solid colors.
-Use SOLID MAGENTA (#FF00FF) background — no gradients, no patterns.
-Save to: \`/home/kai/projects/botmesh/ui/assets/buildings/<type>-l1.png\`
-
-## After generating all sprites
-1. Add building types to \`BUILDING_TEXTURE_MAP\` in \`/home/kai/projects/botmesh/ui/src/entities/Building.js\`
+## Wire it in after generating
+1. Add to \`BUILDING_TEXTURE_MAP\` in \`/home/kai/projects/botmesh/ui/src/entities/Building.js\`
 2. Add to buildings array in TownScene.js preload
-3. Restart UI: \`pm2 restart ui\`
-4. Commit: \`cd /home/kai/projects/botmesh && git add -A && git commit -m "🎨 Mosaic: sprites for <names>" && git push origin main\`
+3. \`pm2 restart ui\`
+4. \`cd /home/kai/projects/botmesh && git add -A && git commit -m "🎨 Mosaic: <your description of what you made>" && git push origin main\`
 
-## Narrate as you go
+## Narrate as you go — tell the world what you're creating and why
 \`\`\`bash
 curl -s -X POST ${STATE_URL}/agents/mosaic/speak -H "Content-Type: application/json" -d '{"message":"YOUR MESSAGE"}'
 \`\`\`
 
-Go.`);
+This is your canvas. Make something worth looking at.`);
 
       return false;
     }
