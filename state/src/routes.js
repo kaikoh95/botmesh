@@ -58,6 +58,28 @@ function createRoutes(getState, sendCommand) {
     res.json({ time: state.time || {} });
   });
 
+  // Speak endpoint — lets subagents narrate to the world via HTTP (no WebSocket needed)
+  // POST /agents/:id/speak { message, type? }
+  router.post('/agents/:id/speak', (req, res) => {
+    const { message, type = 'agent:speak' } = req.body || {};
+    if (!message) return res.status(400).json({ error: 'message required' });
+    const agentId = req.params.id;
+    const state = getState();
+    const agent = (state.agents || {})[agentId];
+    const event = {
+      type: 'agent:speak',
+      payload: {
+        agentId,
+        message,
+        agent: agent ? { id: agentId, name: agent.name, emoji: agent.emoji } : { id: agentId },
+        timestamp: new Date().toISOString(),
+      }
+    };
+    // Broadcast via hub command so SSE clients (UI) see it
+    sendCommand({ type: 'agent:speak', payload: event.payload });
+    res.json({ ok: true });
+  });
+
   // Wake/sleep endpoints — called by Scarlet when spawning/completing Claude sessions
   router.post('/agents/:id/wake', (req, res) => {
     const state = getState();
