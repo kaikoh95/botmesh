@@ -244,8 +244,18 @@ async function init() {
               break;
             case 'upgrade':
               if (p.entity === 'building') {
-                scene.buildingUpgraded(p.id, (currentBuildings[p.id]?.level || 1) + 1);
-                if (currentBuildings[p.id]) currentBuildings[p.id].level = (currentBuildings[p.id].level || 1) + 1;
+                const newLevel = (currentBuildings[p.id]?.level || 1) + 1;
+                scene.buildingUpgraded(p.id, newLevel);
+                if (currentBuildings[p.id]) {
+                  currentBuildings[p.id].level = newLevel;
+                  if (!Array.isArray(currentBuildings[p.id].upgrades)) currentBuildings[p.id].upgrades = [];
+                  currentBuildings[p.id].upgrades.push({
+                    level: newLevel,
+                    upgradedBy: p.agentId || 'unknown',
+                    upgradedAt: event.timestamp || new Date().toISOString(),
+                    note: p.note || null,
+                  });
+                }
               }
               break;
             case 'damage':
@@ -281,6 +291,8 @@ async function init() {
     console.log('[UI] Initial state loaded:', Object.keys(state.agents || {}).length, 'agents');
     if (state) {
       currentAgents = state.agents || {};
+      currentBuildings = state.buildings || {};
+      window.__botmeshState = state; // includes full upgrades[] from disk
       scene.loadState(state);
       syncColors(currentAgents);
       updateRoster(currentAgents);
