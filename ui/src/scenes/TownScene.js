@@ -352,73 +352,176 @@ export default class TownScene extends Phaser.Scene {
   showInfoPanel(agent) {
     this.hideInfoPanel();
 
+    const agentData = this.worldData?.agents?.[agent.id] || {};
+    const pw = 240;
+    const px = 12;
+    const py = 12;
+
+    // --- build content rows first to know height ---
+    const rows = [];
+
+    // Role
+    const role = agentData.role || agent.role || 'Citizen';
+    rows.push({ type: 'role', text: role });
+
+    // Online / state
+    const isOnline = agentData.status !== 'dormant';
+    const state = agentData.state || 'idle';
+    rows.push({ type: 'status', online: isOnline, state });
+
+    // Current activity
+    const activity = this._getAgentActivity(agentData);
+    if (activity) rows.push({ type: 'activity', text: activity });
+
+    // Location
+    const loc = agentData.location;
+    if (loc) rows.push({ type: 'location', x: loc.x, y: loc.y });
+
+    // Skills
+    const skills = agentData.skills || [];
+    if (skills.length) rows.push({ type: 'skills', skills });
+
+    // Last message
+    const lastMsg = this._getLastMessage(agent.id);
+    if (lastMsg) rows.push({ type: 'message', text: lastMsg });
+
+    // Recent interactions
+    const peers = this._getRecentPeers(agent.id);
+    if (peers.length) rows.push({ type: 'peers', peers });
+
+    // --- layout ---
+    const headerH = 52;
+    const rowH = 18;
+    const pad = 12;
+    const ph = headerH + rows.length * rowH + pad * 2 + 8;
+
     const panel = this.add.container(0, 0);
     panel.setDepth(10001);
     panel.setScrollFactor(0);
 
-    const pw = 220;
-    const ph = 180;
-    const px = this.cameras.main.width - pw - 16;
-    const py = 16;
-
     // Background
     const bg = this.add.graphics();
-    bg.fillStyle(0x16213e, 0.95);
-    bg.fillRoundedRect(px, py, pw, ph, 8);
-    bg.lineStyle(2, 0x0f3460, 1);
-    bg.strokeRoundedRect(px, py, pw, ph, 8);
+    bg.fillStyle(0x0d1b2a, 0.97);
+    bg.fillRoundedRect(px, py, pw, ph, 10);
+    bg.lineStyle(1, Phaser.Display.Color.HexStringToColor(agent.colorHex || '#ffffff').color, 0.6);
+    bg.strokeRoundedRect(px, py, pw, ph, 10);
     panel.add(bg);
 
-    // Color bar at top
+    // Color accent bar
     const bar = this.add.graphics();
-    bar.fillStyle(agent.color, 1);
-    bar.fillRect(px, py, pw, 4);
+    const hexCol = Phaser.Display.Color.HexStringToColor(agent.colorHex || '#888888').color;
+    bar.fillStyle(hexCol, 1);
+    bar.fillRoundedRect(px, py, pw, 4, { tl: 10, tr: 10, bl: 0, br: 0 });
     panel.add(bar);
 
-    const textX = px + 12;
-    let textY = py + 14;
-    const style = { fontSize: '11px', fontFamily: '"Press Start 2P", monospace', color: '#e8d5a3', stroke: '#000', strokeThickness: 1 };
-    const smallStyle = { fontSize: '9px', fontFamily: 'Courier New, monospace', color: '#c8c0b0' };
+    // Close button
+    const closeBtn = this.add.text(px + pw - 18, py + 8, '✕',
+      { fontSize: '10px', fontFamily: 'monospace', color: '#666' })
+      .setInteractive({ useHandCursor: true })
+      .on('pointerup', () => this.hideInfoPanel())
+      .on('pointerover', function() { this.setColor('#fff'); })
+      .on('pointerout', function() { this.setColor('#666'); });
+    panel.add(closeBtn);
 
-    // Name + emoji
-    const nameText = this.add.text(textX, textY, `${agent.name}`, style);
-    panel.add(nameText);
-    textY += 20;
+    // Name row
+    const emoji = agentData.emoji || '●';
+    const nameStyle = { fontSize: '12px', fontFamily: '"Press Start 2P", monospace', color: '#ffffff', wordWrap: { width: pw - 32 } };
+    panel.add(this.add.text(px + pad, py + 12, `${emoji} ${agentData.name || agent.name}`, nameStyle));
 
-    // Role (from worldData)
-    const agentData = this.worldData?.agents?.[agent.id];
-    if (agentData?.role) {
-      panel.add(this.add.text(textX, textY, agentData.role, { ...smallStyle, color: '#7ec8e3' }));
-      textY += 16;
-    }
+    // Role subtitle
+    panel.add(this.add.text(px + pad, py + 32, role.toUpperCase(),
+      { fontSize: '8px', fontFamily: 'monospace', color: agent.colorHex || '#aaa', letterSpacing: 2 }));
 
-    // State + Mood
-    const state = agentData?.state || agent.agentState || '?';
-    const mood = agentData?.mood || '?';
-    panel.add(this.add.text(textX, textY, `State: ${state}`, smallStyle));
-    textY += 14;
-    panel.add(this.add.text(textX, textY, `Mood: ${mood}`, smallStyle));
-    textY += 14;
+    // Divider
+    const div = this.add.graphics();
+    div.lineStyle(1, 0x1e3a5f, 1);
+    div.lineBetween(px + pad, py + headerH, px + pw - pad, py + headerH);
+    panel.add(div);
 
-    // Online status
-    const online = agentData?.online !== false;
-    const statusColor = online ? '#27ae60' : '#e74c3c';
-    panel.add(this.add.text(textX, textY, `Status: ${online ? 'Online' : 'Offline'}`, { ...smallStyle, color: statusColor }));
-    textY += 18;
+    // Rows
+    let rowY = py + headerH + pad;
+    const labelStyle = { fontSize: '9px', fontFamily: 'monospace', color: '#5a8a9f' };
+    const valStyle   = { fontSize: '9px', fontFamily: 'monospace', color: '#d0c8b0', wordWrap: { width: pw - pad * 2 - 4 } };
 
-    // Relationships
-    if (agentData?.relationships && Object.keys(agentData.relationships).length > 0) {
-      panel.add(this.add.text(textX, textY, 'Relationships:', { ...smallStyle, color: '#e8d5a3' }));
-      textY += 14;
-      for (const [rid, rel] of Object.entries(agentData.relationships)) {
-        const trust = rel.trust ?? '?';
-        panel.add(this.add.text(textX + 8, textY, `${rid}: trust ${trust}`, smallStyle));
-        textY += 12;
-        if (textY > py + ph - 10) break;
+    for (const row of rows) {
+      switch (row.type) {
+        case 'role': break; // already shown in header
+
+        case 'status': {
+          const dot = row.online ? '🟢' : '⚫';
+          const stateLabel = row.state === 'working' ? '⚙️ working' :
+                             row.state === 'walking'  ? '🚶 walking' :
+                             row.state === 'speaking' ? '💬 speaking' : '💤 idle';
+          panel.add(this.add.text(px + pad, rowY, `${dot} ${stateLabel}`, valStyle));
+          rowY += rowH;
+          break;
+        }
+
+        case 'activity': {
+          panel.add(this.add.text(px + pad, rowY, `📍 ${row.text}`, valStyle));
+          rowY += rowH;
+          break;
+        }
+
+        case 'location': {
+          panel.add(this.add.text(px + pad, rowY, `🗺  (${row.x}, ${row.y})`, { ...valStyle, color: '#888' }));
+          rowY += rowH;
+          break;
+        }
+
+        case 'skills': {
+          panel.add(this.add.text(px + pad, rowY, '⚡ ' + row.skills.slice(0, 3).join(' · '), { ...valStyle, color: '#7ec8e3' }));
+          rowY += rowH;
+          break;
+        }
+
+        case 'message': {
+          panel.add(this.add.text(px + pad, rowY, `"${row.text}"`,
+            { ...valStyle, color: '#b0cca0', wordWrap: { width: pw - pad * 2 } }));
+          rowY += rowH;
+          break;
+        }
+
+        case 'peers': {
+          panel.add(this.add.text(px + pad, rowY, '↔ ' + row.peers.join(', '), { ...valStyle, color: '#c8a0d0' }));
+          rowY += rowH;
+          break;
+        }
       }
     }
 
     this.infoPanelContainer = panel;
+  }
+
+  _getAgentActivity(agentData) {
+    if (!agentData) return null;
+    if (agentData.state === 'working' && agentData.currentBuilding) {
+      const bld = this.worldData?.buildings?.[agentData.currentBuilding];
+      return `working at ${bld?.name || agentData.currentBuilding}`;
+    }
+    if (agentData.state === 'walking') return 'on the move';
+    return null;
+  }
+
+  _getLastMessage(agentId) {
+    const gazette = this.worldData?.gazette || [];
+    const msg = [...gazette].reverse().find(e =>
+      e.type === 'agent:speak' && (e.agentId === agentId || e.meta?.agentId === agentId)
+    );
+    if (!msg) return null;
+    const text = msg.meta?.message || msg.content || '';
+    return text.length > 60 ? text.slice(0, 57) + '…' : text;
+  }
+
+  _getRecentPeers(agentId) {
+    const gazette = this.worldData?.gazette || [];
+    const recent = gazette.slice(-30);
+    const peers = new Set();
+    recent.forEach(e => {
+      if (e.meta?.target && e.meta.agentId === agentId) peers.add(e.meta.target);
+      if (e.meta?.agentId && e.meta.target === agentId) peers.add(e.meta.agentId);
+    });
+    return [...peers].slice(0, 3);
   }
 
   hideInfoPanel() {

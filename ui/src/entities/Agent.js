@@ -37,6 +37,7 @@ export default class Agent {
     this.agentState = agentData.state || 'idle';
     this.online = true;
     this.color = getAgentColor(agentData);
+    this.colorHex = agentData.color || '#888888'; // original hex for UI panels
     this.gridX = agentData.location?.x ?? 0;
     this.gridY = agentData.location?.y ?? 0;
 

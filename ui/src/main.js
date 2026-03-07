@@ -52,6 +52,7 @@ async function init() {
 
   const container = document.getElementById('game-container');
   scene = await createGame(container);
+  window.__botmeshScene = scene; // expose for debugging
 
   let currentAgents = {};
 

@@ -1,2 +1,2 @@
-// Auto-updated by startup script — do not edit manually
-window.BOTMESH_STATE_URL = 'https://terminal-oldest-alt-mining.trycloudflare.com';
+// State layer URL — update if using a remote tunnel
+window.BOTMESH_STATE_URL = 'http://localhost:3002';
