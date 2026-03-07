@@ -110,7 +110,13 @@ function fetchState() {
 }
 
 // ── Idea generation ────────────────────────────────────────────────────────
+let _museQuotaBackoffUntil = 0;
+
 async function callGemini(prompt) {
+  if (Date.now() < _museQuotaBackoffUntil) {
+    console.log('[Muse] Quota backoff active — skipping ideation');
+    return null;
+  }
   const key = process.env.GEMINI_API_KEY;
   const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${key}`;
   const res = await fetch(url, {
@@ -122,6 +128,11 @@ async function callGemini(prompt) {
     }),
   });
   const data = await res.json();
+  if (data?.error?.code === 429) {
+    _museQuotaBackoffUntil = Date.now() + 60 * 60 * 1000;
+    console.warn('[Muse] Quota exceeded — pausing ideation for 1 hour');
+    return null;
+  }
   return data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || null;
 }
 

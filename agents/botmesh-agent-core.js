@@ -14,7 +14,16 @@ const HUB_URL = process.env.HUB_URL || 'ws://localhost:3001';
 const worldHistory = [];
 const MAX_HISTORY = 30;
 
+// Global quota backoff — shared across all agent instances in this process
+let _quotaBackoffUntil = 0;
+const QUOTA_BACKOFF_MS = 60 * 60 * 1000; // 1 hour silence on 429
+
 async function generateResponse(systemPrompt, userPrompt) {
+  // If we're in quota backoff, stay silent
+  if (Date.now() < _quotaBackoffUntil) {
+    console.log('[AI] Quota backoff active — skipping generation');
+    return null;
+  }
   try {
     const res = await fetch(GEMINI_URL, {
       method: 'POST',
@@ -30,6 +39,12 @@ async function generateResponse(systemPrompt, userPrompt) {
       })
     });
     const data = await res.json();
+    // Detect quota exceeded — go silent for 1 hour
+    if (data?.error?.code === 429) {
+      _quotaBackoffUntil = Date.now() + QUOTA_BACKOFF_MS;
+      console.warn(`[AI] Quota exceeded (429) — silencing for 1 hour until ${new Date(_quotaBackoffUntil).toISOString()}`);
+      return null;
+    }
     const raw = data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || null;
     if (!raw) return null;
     // Trim to last complete sentence so Gazette never shows cut-off text
