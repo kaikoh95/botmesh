@@ -115,6 +115,12 @@ function createRoutes(getState, sendCommand) {
     res.json({ ok: true, agent: req.params.id, state: 'dormant' });
   });
 
+  // Agent relationship graph — score, interactions, lastMet per agent pair
+  router.get('/world/relationships', (req, res) => {
+    const state = getState();
+    res.json(state.relationships || {});
+  });
+
   // Free spot finder — returns coordinates that don't clash with any building
   // GET /world/free-spot?w=3&h=2
   router.get('/world/free-spot', (req, res) => {

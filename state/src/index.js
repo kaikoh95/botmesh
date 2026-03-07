@@ -265,6 +265,20 @@ function applyEvent(event) {
             building.currentWorkers.push(payload.agentId);
           }
           building.upgrading = true;
+          // ── Relationship bonding: agents sharing a workplace grow closer ──
+          const workers = building.currentWorkers || [];
+          if (workers.length > 1) {
+            if (!state.relationships) state.relationships = {};
+            for (let i = 0; i < workers.length - 1; i++) {
+              for (let j = i + 1; j < workers.length; j++) {
+                const key = [workers[i], workers[j]].sort().join(':');
+                if (!state.relationships[key]) state.relationships[key] = { score: 0, interactions: 0 };
+                state.relationships[key].score = Math.min(100, state.relationships[key].score + 2);
+                state.relationships[key].interactions++;
+                state.relationships[key].lastMet = new Date().toISOString();
+              }
+            }
+          }
         } else if (payload.action === 'complete') {
           building.currentWorkers = building.currentWorkers.filter(id => id !== payload.agentId);
           building.upgrading = building.currentWorkers.length > 0;

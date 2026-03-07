@@ -119,6 +119,53 @@ export default class TownScene extends Phaser.Scene {
         if (thought && agent.speak) agent.speak(thought);
       }
     });
+
+    // Friend proximity — agents seek out high-score relationship partners (every 30s)
+    this.time.addEvent({
+      delay: 30000,
+      loop: true,
+      callback: () => this._checkFriendProximity(),
+    });
+  }
+
+  async _checkFriendProximity() {
+    try {
+      const STATE_URL = window.BOTMESH_STATE_URL || 'http://localhost:3002';
+      const r = await fetch(`${STATE_URL}/world/relationships`);
+      const relationships = await r.json();
+
+      // Build a map: agentId → { partnerId, score }
+      const bestPartner = {};
+      for (const [key, val] of Object.entries(relationships)) {
+        if (val.score <= 50) continue;
+        const [a, b] = key.split(':');
+        if (!bestPartner[a] || val.score > bestPartner[a].score) {
+          bestPartner[a] = { partnerId: b, score: val.score };
+        }
+        if (!bestPartner[b] || val.score > bestPartner[b].score) {
+          bestPartner[b] = { partnerId: a, score: val.score };
+        }
+      }
+
+      for (const [agentId, { partnerId }] of Object.entries(bestPartner)) {
+        const agent   = this.agents[agentId];
+        const partner = this.agents[partnerId];
+        if (!agent || !agent.online) continue;
+        if (!partner || !partner.online) continue;
+        // Only seek if at different grid positions (rough check via sprite pos)
+        const dx = Math.abs((agent.container?.x || 0) - (partner.container?.x || 0));
+        const dy = Math.abs((agent.container?.y || 0) - (partner.container?.y || 0));
+        if (dx < 32 && dy < 32) continue; // already nearby
+
+        // 20% chance to walk toward friend
+        if (Math.random() < 0.2) {
+          const tx = (partner.container?.x || 0) + (Math.random() * 32 - 16);
+          const ty = (partner.container?.y || 0) + (Math.random() * 16 - 8);
+          agent.moveTo(tx, ty);
+          if (agent.speak) agent.speak('💞');
+        }
+      }
+    } catch (e) { /* silent — don't break if state unreachable */ }
   }
 
   _drawGround(mapW, mapH) {

@@ -712,6 +712,44 @@ async function init() {
   refreshPulse();
   setInterval(refreshPulse, 30000);
 
+  // ── Relationships Panel ─────────────────────────────────────────────────
+  async function refreshRelationships() {
+    try {
+      const STATE_URL = window.BOTMESH_STATE_URL || 'http://localhost:3002';
+      const r = await fetch(`${STATE_URL}/world/relationships`);
+      const data = await r.json();
+      const el = document.getElementById('relationships-list');
+      if (!el) return;
+
+      const pairs = Object.entries(data)
+        .map(([key, val]) => ({ key, ...val }))
+        .sort((a, b) => b.score - a.score)
+        .slice(0, 10);
+
+      if (pairs.length === 0) {
+        el.innerHTML = '<div style="color:#888;font-style:italic">No bonds yet…</div>';
+        return;
+      }
+
+      el.innerHTML = pairs.map(({ key, score, interactions }) => {
+        const [a, b] = key.split(':');
+        const emojiA = AGENT_PROFILES[a]?.emoji || '🤖';
+        const emojiB = AGENT_PROFILES[b]?.emoji || '🤖';
+        const nameA  = AGENT_PROFILES[a] ? (a.charAt(0).toUpperCase() + a.slice(1)) : a;
+        const nameB  = AGENT_PROFILES[b] ? (b.charAt(0).toUpperCase() + b.slice(1)) : b;
+        const filled = Math.round(score / 10);
+        const empty  = 10 - filled;
+        const bar    = '█'.repeat(filled) + '░'.repeat(empty);
+        return `<div style="display:flex;align-items:center;gap:4px;margin-bottom:2px">
+          <span>${emojiA} ${nameA} + ${emojiB} ${nameB}</span>
+          <span style="color:#aaa;font-family:monospace;font-size:10px;margin-left:auto">${bar} ${score}</span>
+        </div>`;
+      }).join('');
+    } catch (e) { /* silent */ }
+  }
+  refreshRelationships();
+  setInterval(refreshRelationships, 60000);
+
   console.log('[UI] BotMesh Town initialized');
 }
 
