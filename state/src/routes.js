@@ -105,6 +105,33 @@ function createRoutes(getState, sendCommand) {
     res.json({ ok: true, agent: req.params.id, state: 'dormant' });
   });
 
+  // World stats — daily activity summary
+  router.get('/stats', (req, res) => {
+    const state = getState();
+    const agents = state.agents || {};
+    const buildings = state.buildings || {};
+    const gazette = state.gazette || [];
+
+    const today = new Date().toISOString().slice(0, 10);
+    const todayEntries = gazette.filter(e => (e.timestamp || '').startsWith(today));
+
+    const totalCitizens  = Object.keys(agents).length;
+    const onlineCitizens = Object.values(agents).filter(a => a.online).length;
+    const totalBuildings = Object.keys(buildings).length;
+    const maxedBuildings = Object.values(buildings).filter(b => b.level >= (b.maxLevel || 3)).length;
+    const msgsToday      = todayEntries.filter(e => e.type === 'agent:speak').length;
+    const tasksToday     = todayEntries.filter(e => e.type === 'task:complete').length;
+    const activeCitizens = [...new Set(todayEntries.map(e => e.agentId).filter(Boolean))];
+
+    res.json({
+      date: today,
+      citizens: { total: totalCitizens, online: onlineCitizens, activeToday: activeCitizens },
+      buildings: { total: totalBuildings, maxed: maxedBuildings },
+      activity: { messagesToday: msgsToday, tasksCompleted: tasksToday },
+      world: { entities: (state.world?.entities || []).length },
+    });
+  });
+
   // Active cron jobs — Cronos's domain
   router.get('/crons', (req, res) => {
     try {

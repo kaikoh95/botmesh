@@ -95,9 +95,10 @@
       "agents": [
         "forge"
       ],
-      "status": "idea",
+      "status": "done",
       "addedBy": "scarlet",
-      "addedAt": "2026-03-07T08:50:00.000Z"
+      "addedAt": "2026-03-07T08:50:00.000Z",
+      "updatedAt": "2026-03-07T10:11:00Z"
     }
   ],
   "lastUpdated": "2026-03-07T08:50:00.000Z"
