@@ -6,7 +6,8 @@
  * Usage:
  *   node world-mutate.js upgrade building <id> <level> <agentId> "<note>"
  *   node world-mutate.js plant life <kind> <x> <y> "<id>"
- *   node world-mutate.js add building <id> <name> <x> <y>
+ *   node world-mutate.js add building <id> <name> <x> <y> [type]
+ *   node world-mutate.js remove building <id>
  */
 
 const WebSocket = require('ws');
@@ -25,6 +26,9 @@ if (action === 'upgrade' && entity === 'building') {
 } else if (action === 'add' && entity === 'building') {
   const [id, name, x, y, type] = args;
   payload = { action: 'add', entity: 'building', id, name, type: type||id, x: parseFloat(x), y: parseFloat(y), level: 1 };
+} else if (action === 'remove' && entity === 'building') {
+  const [id] = args;
+  payload = { action: 'remove', entity: 'building', id };
 } else {
   // Pass raw JSON if provided
   try { payload = JSON.parse(args[0]); } catch {}

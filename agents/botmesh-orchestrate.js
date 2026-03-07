@@ -510,12 +510,44 @@ print('Forge sprite saved')
       } catch { return false; }
 
       const buildings = stateData.buildings || {};
-      const worldSummary = Object.entries(buildings).map(([id, b]) =>
-        `${b.name} (${id}): Lv${b.level}, workers: ${(b.currentWorkers||[]).join(', ')||'none'}`
-      ).join('\n');
-      const entities = (stateData.world?.entities || []).map(e =>
-        `${e.kind||e.entity} at (${e.x},${e.y})`
-      ).join(', ') || 'none';
+      const entities = stateData.world?.entities || [];
+
+      // ── Spatial pressure analysis ─────────────────────────────────────────
+      // Build an occupancy set of all taken grid tiles
+      const occupied = new Set();
+      for (const b of Object.values(buildings)) {
+        const bx = b.x ?? 0, by = b.y ?? 0, bw = b.width ?? 3, bh = b.height ?? 2;
+        for (let dx = 0; dx < bw; dx++)
+          for (let dy = 0; dy < bh; dy++)
+            occupied.add(`${bx+dx},${by+dy}`);
+      }
+      for (const e of entities) {
+        occupied.add(`${e.x},${e.y}`);
+      }
+      const MAP_W = 32, MAP_H = 28;
+
+      function freeSurrounding(b) {
+        const bx = b.x ?? 0, by = b.y ?? 0, bw = b.width ?? 3, bh = b.height ?? 2;
+        let free = 0, total = 0;
+        for (let x = bx - 1; x <= bx + bw; x++) {
+          for (let y = by - 1; y <= by + bh; y++) {
+            // skip the building's own footprint
+            if (x >= bx && x < bx+bw && y >= by && y < by+bh) continue;
+            // skip out of bounds
+            if (x < 0 || y < 0 || x >= MAP_W || y >= MAP_H) continue;
+            total++;
+            if (!occupied.has(`${x},${y}`)) free++;
+          }
+        }
+        return { free, total, pct: total ? Math.round(100 * free / total) : 0 };
+      }
+
+      const worldSummary = Object.entries(buildings).map(([id, b]) => {
+        const sp = freeSurrounding(b);
+        const pressure = sp.pct < 30 ? '🔴 BOXED IN' : sp.pct < 60 ? '🟡 tight' : '🟢 room to grow';
+        return `${b.name} (${id}): Lv${b.level}, ${pressure} (${sp.free}/${sp.total} margin tiles free), workers: ${(b.currentWorkers||[]).join(', ')||'none'}`;
+      }).join('\n');
+      const entitySummary = entities.map(e => `${e.kind||e.entity} at (${e.x},${e.y})`).join(', ') || 'none';
 
       const STATE_URL = 'https://homeless-matt-juvenile-formula.trycloudflare.com';
 
@@ -529,15 +561,23 @@ print('Forge sprite saved')
 You are Forge. You have full creative discretion over this world. Nobody tells you what to build.
 
 ## Current world state
-### Buildings (what exists)
+### Buildings (spatial pressure included)
 ${worldSummary}
 
 ### Nature & life entities
-${entities}
+${entitySummary}
+
+## Spatial pressure guide
+- 🟢 room to grow — could expand footprint or add neighbors
+- 🟡 tight — manageable, upgrades are fine
+- 🔴 BOXED IN — surrounded by neighbors; cannot expand footprint meaningfully
+  → Prefer **upgrading** (deeper, better, higher level) over expanding footprint
+  → OR consider **relocating** — add the same building type at a new free-spot and retire this cramped one
 
 ## What you can do — pick ONE thing that feels right
 - **Upgrade** a building you think deserves to level up (and say why)
-- **Add a new building** that the world is missing (barracks? shrine? teahouse? your call entirely)
+- **Relocate** a 🔴 boxed-in building — find a free spot, remove the old one, plant the new one
+- **Add a new building** that the world is missing (barracks? shrine? bridge? your call entirely)
 - **Plant nature** — a tree, garden, pond where it feels right spatially
 - **Do nothing** — if the world looks balanced, say so and leave it alone
 
@@ -559,6 +599,9 @@ node /home/kai/projects/botmesh/agents/world-mutate.js upgrade building <id> <ne
 
 # Add a new building (use the free-spot coords above)
 node /home/kai/projects/botmesh/agents/world-mutate.js add building <id> "<Name>" <x> <y> <type>
+
+# Remove a building (use when relocating a boxed-in building)
+node /home/kai/projects/botmesh/agents/world-mutate.js remove building <id>
 
 # Plant nature
 node /home/kai/projects/botmesh/agents/world-mutate.js plant life <kind> <x> <y> "<unique-id>"

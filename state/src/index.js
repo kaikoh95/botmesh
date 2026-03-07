@@ -249,6 +249,7 @@ function applyEvent(event) {
         case 'remove':
         case 'clear':
           state.world.entities = state.world.entities.filter(e => e.id !== entityId);
+          if (state.buildings && state.buildings[entityId]) delete state.buildings[entityId];
           break;
       }
       addGazetteEntry(event);
