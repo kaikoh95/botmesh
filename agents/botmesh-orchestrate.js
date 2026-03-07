@@ -634,7 +634,7 @@ agent.connect();
       const STATE_URL = 'https://homeless-matt-juvenile-formula.trycloudflare.com';
 
       // Wake Forge
-      try { execSync(`curl -s -X POST http://localhost:3002/agents/forge/wake -H "Content-Type: application/json" -d '{"task":"Forge\\'s discretion — decide what the world needs"}'`); } catch {}
+      try { execSync(`curl -s -X POST http://localhost:3002/agents/forge/wake -H "Content-Type: application/json" -d '{"task":"Forge discretion - decide what the world needs"}'`); } catch {}
 
       // Spawn Claude session — Forge decides everything
       const { spawnSession } = require('./spawn-session');
