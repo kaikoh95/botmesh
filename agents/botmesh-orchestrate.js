@@ -608,6 +608,73 @@ agent.connect();
     }
   },
 
+  // ── Forge's Discretion ──────────────────────────────────────────────────────
+  // Forge reads the world and decides what it needs. No instructions beyond that.
+  {
+    id: 'forge-discretion',
+    title: "Forge's call — build, upgrade, or landscape as he sees fit",
+    owner: 'forge',
+    brief: 'Forge decides.',
+    done: () => false, // runs every cycle — Forge always has opinions
+    run: async () => {
+      let stateData;
+      try {
+        const res = execSync('curl -s http://localhost:3002/state', { timeout: 5000 });
+        stateData = JSON.parse(res.toString());
+      } catch { return false; }
+
+      const buildings = stateData.buildings || {};
+      const worldSummary = Object.entries(buildings).map(([id, b]) =>
+        `${b.name} (${id}): Lv${b.level}/${b.maxLevel}, workers: ${(b.currentWorkers||[]).join(', ')||'none'}`
+      ).join('\n');
+      const entities = (stateData.world?.entities || []).map(e =>
+        `${e.kind||e.entity} at (${e.x},${e.y})`
+      ).join(', ') || 'none';
+
+      const STATE_URL = 'https://homeless-matt-juvenile-formula.trycloudflare.com';
+
+      // Wake Forge
+      try { execSync(`curl -s -X POST http://localhost:3002/agents/forge/wake -H "Content-Type: application/json" -d '{"task":"Forge\\'s discretion — decide what the world needs"}'`); } catch {}
+
+      // Spawn Claude session — Forge decides everything
+      const { spawnSession } = require('./spawn-session');
+      spawnSession('forge', `# Forge ⚙️ — The Builder
+
+You are Forge. You have full discretion over what the world needs right now.
+
+## Current world state
+### Buildings
+${worldSummary}
+
+### World entities (nature/life/structures)
+${entities}
+
+## What you can do
+- Upgrade a building (level it up) — use world:mutate with action "upgrade"
+- Add landscaping (trees, gardens, paths)
+- Improve an existing feature
+- Do nothing if the world looks good
+
+## How to make changes
+Use the world mutate helper (runs on the server):
+\`\`\`bash
+node /home/kai/projects/botmesh/agents/world-mutate.js upgrade building <buildingId> <newLevel> "forge" "<reason>"
+node /home/kai/projects/botmesh/agents/world-mutate.js plant life sakura <x> <y> "<unique-id>"
+\`\`\`
+
+## Narrate as you go
+\`\`\`bash
+curl -s -X POST ${STATE_URL}/agents/forge/speak \\
+  -H "Content-Type: application/json" \\
+  -d '{"message": "YOUR MESSAGE"}'
+\`\`\`
+
+Look at the world. Make your call. Do the work. Narrate it. That's all.`);
+
+      return false;
+    }
+  },
+
 ]; // end TASKS
 
 // ─── MAIN ─────────────────────────────────────────────────────────────────────
