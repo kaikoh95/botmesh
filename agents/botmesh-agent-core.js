@@ -176,21 +176,6 @@ class BotMeshAgent {
   }
 
 
-  // Move toward town square when engaging in conversation
- {
-    // Town square coordinates
-    const TOWN_SQUARE = { x: 20, y: 15 };
-    const jitter = () => Math.floor(Math.random() * 4) - 2;
-    this.send({
-      type: 'agent:move',
-      payload: {
-        agentId: this.identity.id,
-        x: TOWN_SQUARE.x + jitter(),
-        y: TOWN_SQUARE.y + jitter()
-      }
-    });
-  }
-
   startLoop() {
     // Initial entrance
     this.generateThought().then(t => {
