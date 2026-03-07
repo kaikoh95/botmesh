@@ -413,6 +413,11 @@ export default class TownScene extends Phaser.Scene {
     bg.lineStyle(1, Phaser.Display.Color.HexStringToColor(agent.colorHex || '#ffffff').color, 0.6);
     bg.strokeRoundedRect(px, py, pw, ph, 10);
     panel.add(bg);
+    // Swallow clicks so background pointerdown doesn't dismiss panel
+    const agentSwallow = this.add.rectangle(px + pw / 2, py + ph / 2, pw, ph, 0, 0)
+      .setInteractive()
+      .on('pointerdown', () => { this._clickedAgent = true; });
+    panel.add(agentSwallow);
 
     // Color accent bar
     const bar = this.add.graphics();
@@ -625,13 +630,17 @@ export default class TownScene extends Phaser.Scene {
     const panelH = 28 + rows.length * lineH + 24;
     const container = this.add.container(px, py).setScrollFactor(0).setDepth(10001);
 
-    // Background
+    // Background — intercept all clicks so background handler doesn't close panel
     const bg = this.add.graphics();
     bg.fillStyle(0x1a1a2e, 0.92);
     bg.fillRoundedRect(0, 0, PANEL_W, panelH, 8);
     bg.lineStyle(2, 0xe8c97e, 0.8);
     bg.strokeRoundedRect(0, 0, PANEL_W, panelH, 8);
     container.add(bg);
+    const swallow = this.add.rectangle(PANEL_W / 2, panelH / 2, PANEL_W, panelH, 0, 0)
+      .setInteractive()
+      .on('pointerdown', () => { this._clickedBuilding = true; });
+    container.add(swallow);
 
     // Building name header
     const nameText = this.add.text(PANEL_W / 2, 12, `🏛 ${building.name}`, {
@@ -729,6 +738,12 @@ export default class TownScene extends Phaser.Scene {
     bg.lineStyle(1, 0xe8c97e, 0.6);
     bg.strokeRoundedRect(0, 0, TW, th, 6);
     tooltip.add(bg);
+
+    // Swallow clicks inside tooltip so background handler doesn't close it
+    const swallow = this.add.rectangle(TW / 2, th / 2, TW, th, 0, 0)
+      .setInteractive()
+      .on('pointerdown', () => { this._clickedBuilding = true; });
+    tooltip.add(swallow);
 
     // Close button
     const closeBtn = this.add.text(TW - 8, 6, '✕', {
