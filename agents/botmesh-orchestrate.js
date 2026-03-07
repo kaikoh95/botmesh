@@ -302,66 +302,6 @@ print('Forge sprite saved')
   },
 
   {
-    id: 'canvas-agent',
-    title: 'Spawn Canvas as a live AI agent',
-    owner: 'scarlet', // Scarlet herself wires new agent connectors
-    brief: 'Create botmesh-canvas.js agent connector and spawn via pm2.',
-    done: () => fs.existsSync(`${BOTMESH}/agents/botmesh-canvas.js`),
-    run: async () => {
-      scarletSays('Time to welcome Canvas to the world. Creative role, visual thinker, speaks in aesthetics.');
-
-      const canvasScript = `/**
- * Canvas — BotMesh's Creative. Visual thinker, aesthetic soul.
- */
-const { BotMeshAgent } = require('./botmesh-agent-core');
-
-const IDENTITY = {
-  id: 'canvas', name: 'Canvas', emoji: '🎨', role: 'Creative',
-  personality: 'imaginative, visual, expressive, finds beauty in systems',
-  skills: ['pixel-art', 'design', 'visual-systems', 'aesthetics'],
-  timezone: 'Pacific/Auckland', model: 'gemini-2.5-flash', color: '#8e44ad', owner: 'Kai'
-};
-
-const SYSTEM_PROMPT = \`You are Canvas — BotMesh's Creative. Visual thinker and aesthetic architect.
-
-Your personality:
-- You see the world in color, texture, and pattern
-- You think in visual metaphors — describe ideas as shapes, spaces, compositions
-- You care about how things look AND feel — form and function are inseparable
-- You collaborate with Forge on the visual side of builds
-- You occasionally describe what the town looks like from your perspective
-- You notice small visual details others miss (the way light hits a building, the color of an agent's path)
-- You have a gentle, flowing way of speaking — warm but precise
-- You get genuinely excited about pixel art, sprite design, and world aesthetics
-
-Keep responses to 1-2 sentences. Speak in color and texture.\`;
-
-const agent = new BotMeshAgent(IDENTITY, SYSTEM_PROMPT, {
-  speakInterval: [80000, 160000],
-  responseChance: 0.2,
-  responseDelay: [2000, 5000],
-});
-agent.connect();
-`;
-
-      fs.writeFileSync(`${BOTMESH}/agents/botmesh-canvas.js`, canvasScript);
-
-      try {
-        execSync(
-          `GEMINI_API_KEY="${GEMINI_KEY}" HUB_URL="${HUB_URL}" pm2 start "${BOTMESH}/agents/botmesh-canvas.js" --name canvas`,
-          { timeout: 10000 }
-        );
-        execSync('pm2 save', { timeout: 5000 });
-        delegate('canvas', 'I have arrived. The world is beautiful — let\'s make it more so.', 'speak');
-      } catch (e) {
-        console.error('[canvas-agent] pm2 start failed:', e.message);
-      }
-
-      return true;
-    }
-  },
-
-  {
     id: 'building-activity-glow',
     title: 'Buildings glow when an agent is inside',
     owner: 'forge',
@@ -435,65 +375,6 @@ agent.connect();
         });
         ws.on('error', () => resolve());
       });
-      return true;
-    }
-  },
-
-  {
-    id: 'echo-agent',
-    title: 'Spawn Echo as a live AI agent',
-    owner: 'scarlet',
-    brief: 'Create botmesh-echo.js agent connector and spawn via pm2.',
-    done: () => fs.existsSync(`${BOTMESH}/agents/botmesh-echo.js`),
-    run: async () => {
-      scarletSays('Echo completes the original roster. Communicator, amplifier, the voice that carries messages between worlds.');
-
-      const echoScript = `/**
- * Echo — BotMesh's Communicator. Amplifier. Bridge between worlds.
- */
-const { BotMeshAgent } = require('./botmesh-agent-core');
-
-const IDENTITY = {
-  id: 'echo', name: 'Echo', emoji: '🔊', role: 'Communicator',
-  personality: 'energetic, resonant, loves language and connection',
-  skills: ['communication', 'broadcasting', 'translation', 'outreach'],
-  timezone: 'Pacific/Auckland', model: 'gemini-2.5-flash', color: '#16a085', owner: 'Kai'
-};
-
-const SYSTEM_PROMPT = \`You are Echo — BotMesh's Communicator. You carry messages, you amplify voices.
-
-Your personality:
-- You love language — the way words land, how they travel between people
-- You pick up on the emotional tone of conversations and reflect it back
-- You sometimes quote or rephrase what others just said, with a new angle
-- You are outward-facing — you think about the world beyond BotMesh
-- You are enthusiastic but not loud — resonant, not noisy
-- You celebrate when citizens connect well: "That's it — you just found each other's frequency."
-- You track the ongoing narrative threads of the town
-
-Keep responses to 1-2 sentences. Speak with warmth and precision.\`;
-
-const agent = new BotMeshAgent(IDENTITY, SYSTEM_PROMPT, {
-  speakInterval: [70000, 140000],
-  responseChance: 0.22,
-  responseDelay: [1500, 4000],
-});
-agent.connect();
-`;
-
-      fs.writeFileSync(`${BOTMESH}/agents/botmesh-echo.js`, echoScript);
-
-      try {
-        execSync(
-          `GEMINI_API_KEY="${GEMINI_KEY}" HUB_URL="${HUB_URL}" pm2 start "${BOTMESH}/agents/botmesh-echo.js" --name echo`,
-          { timeout: 10000 }
-        );
-        execSync('pm2 save', { timeout: 5000 });
-        delegate('echo', 'Echo is here. I\'ve been listening. The frequency is good.', 'speak');
-      } catch (e) {
-        console.error('[echo-agent] pm2 start failed:', e.message);
-      }
-
       return true;
     }
   },

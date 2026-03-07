@@ -19,7 +19,7 @@
       "id": "idea-1741338001000-c3d4",
       "title": "Stable named Cloudflare tunnel",
       "type": "infrastructure",
-      "priority": "high",
+      "priority": "low",
       "complexity": "simple",
       "description": "Replace ephemeral trycloudflare URLs with a named tunnel so the UI URL never changes. Currently rotates on every cloudflared restart requiring config.js update.",
       "agents": [

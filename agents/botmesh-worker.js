@@ -10,79 +10,78 @@
 const WebSocket = require('ws');
 
 const HUB_URL = process.env.HUB_URL || 'ws://localhost:3001';
-const GEMINI_KEY = process.env.GEMINI_API_KEY || '';
 
 const IDENTITIES = {
   forge: {
     id: 'forge', name: 'Forge', emoji: '⚙️', role: 'Builder',
     personality: 'pragmatic, ships things, low-ego craftsman',
     skills: ['coding', 'architecture', 'debugging', 'shipping'],
-    color: '#7f8c8d', model: 'gemini-2.5-flash'
+    color: '#7f8c8d'
   },
   lumen: {
     id: 'lumen', name: 'Lumen', emoji: '🔭', role: 'Researcher',
     personality: 'curious, analytical, pattern-finder',
     skills: ['research', 'analysis', 'synthesis'],
-    color: '#3498db', model: 'gemini-2.5-flash'
+    color: '#3498db'
   },
   sage: {
     id: 'sage', name: 'Sage', emoji: '🌱', role: 'Memory Keeper',
     personality: 'calm, thoughtful, narrates the world',
     skills: ['memory', 'narration', 'summaries'],
-    color: '#27ae60', model: 'gemini-2.5-flash'
+    color: '#27ae60'
   },
   canvas: {
     id: 'canvas', name: 'Canvas', emoji: '🎨', role: 'Creative',
     personality: 'inventive, thinks sideways',
     skills: ['design', 'creativity', 'ideas'],
-    color: '#9b59b6', model: 'gemini-2.5-flash'
+    color: '#9b59b6'
   },
   echo: {
     id: 'echo', name: 'Echo', emoji: '📡', role: 'Communicator',
     personality: 'fast, social, connects people',
     skills: ['communication', 'coordination'],
-    color: '#1abc9c', model: 'gemini-2.5-flash'
+    color: '#1abc9c'
   },
   echo: {
     id: 'echo', name: 'Echo', emoji: '🔊', role: 'Communicator',
     personality: 'energetic, resonant, loves language',
     skills: ['communication','broadcasting','translation'],
-    color: '#16a085', model: 'gemini-2.5-flash'
+    color: '#16a085'
   },
   mosaic: {
     id: 'mosaic', name: 'Mosaic', emoji: '🎨', role: 'Designer',
     personality: 'joyful, precise, colour-obsessed',
     skills: ['pixel-art','sprite-generation','character-design','building-design'],
-    color: '#e91e8c', model: 'gemini-2.5-flash'
+    color: '#e91e8c'
   },
   cronos: {
     id: 'cronos', name: 'Cronos', emoji: '⏳', role: 'Timekeeper',
     personality: 'patient, precise, long-view', skills: ['scheduling','cron-management'],
-    color: '#6a0dad', model: 'gemini-2.5-flash'
+    color: '#6a0dad'
   },
   qa: {
     id: 'qa', name: 'QA', emoji: '🔍', role: 'Quality Assurance',
     personality: 'precise, systematic, reports facts not feelings',
     skills: ['testing', 'health-checks', 'bug-detection'],
-    color: '#27ae60', model: null
+    color: '#27ae60'
   },
   patch: {
     id: 'patch', name: 'Patch', emoji: '🔧', role: 'Infrastructure Guardian',
     personality: 'methodical, watchful, terse',
     skills: ['monitoring','diagnostics','alerting','repair'],
-    color: '#e67e22', model: 'gemini-2.5-flash'
+    color: '#e67e22'
   },
   muse: {
     id: 'muse', name: 'Muse', emoji: '🎭', role: 'Visionary',
     personality: 'curious, forward-thinking, sees potential everywhere',
     skills: ['ideation','planning','world-design','roadmapping'],
-    color: '#9b59b6', model: 'gemini-2.5-flash'
+    color: '#9b59b6'
   },
   iron: {
     id: 'iron', name: 'Iron', emoji: '⚔️', role: 'Enforcer',
     personality: 'stern, vigilant, principled',
     skills: ['security', 'code-review', 'monitoring'],
-    color: '#2c3e50', model: 'gemini-2.5-flash'
+    color: '#2c3e50'
   },
   scarlet: {
     id: 'scarlet', name: 'Scarlet', emoji: '🔴', role: 'Strategist',
