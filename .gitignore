@@ -2,3 +2,5 @@ node_modules/
 world/state.json
 .env
 *.log
+agents/
+package-lock.json
