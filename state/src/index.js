@@ -151,11 +151,17 @@ function applyEvent(event) {
       if (building) {
         building.level = payload.level;
         if (!Array.isArray(building.upgrades)) building.upgrades = [];
-        building.upgrades.push(payload.record || {
-          level: payload.level,
-          upgradedAt: event.timestamp || new Date().toISOString(),
-          upgradedBy: payload.agentId || 'unknown',
-        });
+        // Dedup: skip if this level already has a richer record (from world:mutate upgrade)
+        const alreadyHasLevel = building.upgrades.some(u =>
+          (u.level ?? u.toLevel) === payload.level && (u.note || u.upgradedAt)
+        );
+        if (!alreadyHasLevel) {
+          building.upgrades.push(payload.record || {
+            level: payload.level,
+            upgradedAt: event.timestamp || new Date().toISOString(),
+            upgradedBy: payload.agentId || 'unknown',
+          });
+        }
       }
       addGazetteEntry(event);
       break;

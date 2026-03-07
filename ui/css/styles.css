@@ -183,6 +183,13 @@ html, body {
   color: #9999cc;
   margin-bottom: 3px;
 }
+.upgrade-tooltip .tooltip-work-label {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 7px;
+  color: #7ec8e3;
+  margin-top: 8px;
+  margin-bottom: 3px;
+}
 .upgrade-tooltip .tooltip-note {
   font-size: 10px;
   color: #aaaacc;

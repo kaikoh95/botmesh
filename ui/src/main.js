@@ -103,14 +103,21 @@ const Panels = {
   },
 
   showUpgradeTooltip(u) {
-    const date = u.upgradedAt ? new Date(u.upgradedAt).toLocaleString('en-NZ', { month:'short', day:'numeric', hour:'2-digit', minute:'2-digit' }) : '?';
+    const date = u.upgradedAt
+      ? new Date(u.upgradedAt).toLocaleString('en-NZ', { month:'short', day:'numeric', hour:'2-digit', minute:'2-digit' })
+      : '?';
+    const agent = (window.__botmeshState?.agents || {})[u.upgradedBy?.toLowerCase()];
+    const agentLabel = agent ? `${agent.emoji || ''} ${agent.name || u.upgradedBy}` : u.upgradedBy || 'unknown';
     const tooltip = document.getElementById('upgrade-tooltip');
     tooltip.innerHTML = `
       <button class="tooltip-close" id="tooltip-close">✕</button>
       <div class="tooltip-title">→ Level ${u.level ?? '?'} Upgrade</div>
-      <div class="tooltip-line">By: ${u.upgradedBy || 'unknown'}</div>
-      <div class="tooltip-line">Date: ${date}</div>
-      ${u.note ? `<div class="tooltip-note">"${u.note}"</div>` : ''}
+      <div class="tooltip-line">👷 Agent: ${agentLabel}</div>
+      <div class="tooltip-line">📅 Date: ${date}</div>
+      ${u.note
+        ? `<div class="tooltip-work-label">Work done:</div><div class="tooltip-note">${u.note}</div>`
+        : `<div class="tooltip-note" style="color:#444466">No work description recorded</div>`
+      }
     `;
     tooltip.classList.remove('hidden');
     document.getElementById('tooltip-close').onclick = () => Panels.hideTooltip();
