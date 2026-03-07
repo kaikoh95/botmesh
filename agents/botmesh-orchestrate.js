@@ -4,7 +4,11 @@
  * Run periodically via cron. Picks the next task, spawns the right agent,
  * reflects work in the world, commits when done.
  *
- * Each task is assigned to a citizen based on their role.
+ * WORLD LAWS:
+ * - All new buildings/characters MUST have pixel art sprites (generate via Gemini imagen)
+ * - Tasks should BUILD or UPGRADE things in the world, not just patch code
+ * - New building = sprite + seed.json entry + Building.js wire-up
+ * - New character = sprite + agent connector + spawn
  */
 
 const { execSync, spawn } = require('child_process');
