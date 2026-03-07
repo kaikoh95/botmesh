@@ -6,7 +6,14 @@ const BUILDING_TEXTURE_MAP = {
   library:     'library',
   market:      'market',
   observatory: 'observatory',
-  teahouse: 'teahouse',
+  teahouse:    'teahouse',
+  torii:       'plaza',
+};
+
+// Map building type → sprite texture base name (fallback when id not in map above)
+const BUILDING_TYPE_TEXTURE_MAP = {
+  cottage:  'cottage',
+  monument: 'plaza',
 };
 
 const BUILDING_COLORS = {
@@ -48,7 +55,7 @@ export default class Building {
     this.container.setDepth(screenY);
 
     // Sprite support — try to use pixel art building sprites
-    const texBase = BUILDING_TEXTURE_MAP[this.id];
+    const texBase = BUILDING_TEXTURE_MAP[this.id] || BUILDING_TYPE_TEXTURE_MAP[this.type];
     this.texBase = texBase || null;
     this.spriteImg = null;
 
