@@ -109,6 +109,9 @@ export default class Building {
         // Update label above sprite
         this.label.setPosition(0, -(spriteH * 0.85 + 8));
         this.label.setText(`${this.name} Lv${this.level}`);
+        // Make clickable
+        img.setInteractive({ useHandCursor: true });
+        img.on('pointerdown', () => this._onClick());
         return; // skip programmatic draw
       }
     }
@@ -206,6 +209,21 @@ export default class Building {
     // Update label position
     this.label.setPosition(0, -wallH - h - (this.level >= 3 ? 16 : 8));
     this.label.setText(`${this.name} Lv${this.level}`);
+
+    // Make graphics clickable (fallback path)
+    this.graphics.setInteractive(
+      new Phaser.Geom.Rectangle(-w, -wallH - h, w * 2, wallH + h),
+      Phaser.Geom.Rectangle.Contains
+    );
+    this.graphics.on('pointerdown', () => this._onClick());
+    this.graphics.on('pointerover', () => this.scene.input.setDefaultCursor('pointer'));
+    this.graphics.on('pointerout',  () => this.scene.input.setDefaultCursor('default'));
+  }
+
+  _onClick() {
+    window.dispatchEvent(new CustomEvent('botmesh:buildingclick', {
+      detail: { buildingId: this.id }
+    }));
   }
 
   _drawStar(g, cx, cy, size, color) {

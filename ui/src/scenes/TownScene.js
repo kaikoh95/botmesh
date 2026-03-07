@@ -91,11 +91,18 @@ export default class TownScene extends Phaser.Scene {
 
     // Click background to dismiss info panel
     this.input.on('pointerdown', (pointer) => {
-      // Small delay to allow agent click to fire first
+      // Small delay to allow agent/building click to fire first
       setTimeout(() => {
-        if (!this._clickedAgent) this.hideInfoPanel();
+        if (!this._clickedAgent && !this._clickedBuilding) this.hideInfoPanel();
         this._clickedAgent = false;
+        this._clickedBuilding = false;
       }, 50);
+    });
+
+    // Building click — show info panel
+    window.addEventListener('botmesh:buildingclick', (e) => {
+      this._clickedBuilding = true;
+      this.showBuildingPanel(e.detail.buildingId);
     });
   }
 
@@ -551,6 +558,105 @@ export default class TownScene extends Phaser.Scene {
     const building = this.buildings[buildingId];
     if (!building) return;
     building.setDamaged(damaged);
+  }
+
+  showBuildingPanel(buildingId) {
+    this.hideInfoPanel();
+
+    // Pull live data from state client
+    const stateData = window.__botmeshState || {};
+    const bData = (stateData.buildings || {})[buildingId] || {};
+    const building = this.buildings[buildingId];
+    if (!building) return;
+
+    const PANEL_W = 260;
+    const px = 12, py = 12;
+    const lineH = 18;
+
+    // Count workers currently inside
+    const workers = Object.values(stateData.agents || {}).filter(a =>
+      a.location && a.location.building === buildingId
+    );
+
+    // Upgrade history
+    const upgrades = Array.isArray(bData.upgrades) ? bData.upgrades : [];
+
+    const rows = [
+      { label: null, value: null }, // name row
+      { label: 'Level',   value: `${bData.level || building.level || 1} / ${building.maxLevel || 3}` },
+      { label: 'Type',    value: building.type || 'civic' },
+      { label: 'Status',  value: bData.damaged ? '💥 Damaged' : '✅ Operational' },
+      { label: 'Workers', value: workers.length > 0 ? workers.map(w => w.name || w.id).join(', ') : 'None' },
+    ];
+
+    // Add upgrade history entries
+    if (upgrades.length > 0) {
+      rows.push({ label: '─ Upgrade History ─', value: null, header: true });
+      upgrades.forEach((u, i) => {
+        const date = u.upgradedAt ? new Date(u.upgradedAt).toLocaleDateString('en-NZ', { month:'short', day:'numeric' }) : '?';
+        rows.push({ label: `Lv${u.level}`, value: `${u.upgradedBy || '?'} · ${date}` });
+        if (u.note) rows.push({ label: null, value: `"${u.note}"`, note: true });
+      });
+    } else {
+      rows.push({ label: 'History', value: 'No upgrades yet' });
+    }
+
+    const panelH = 28 + rows.length * lineH + 24;
+    const container = this.add.container(px, py).setScrollFactor(0).setDepth(10001);
+
+    // Background
+    const bg = this.add.graphics();
+    bg.fillStyle(0x1a1a2e, 0.92);
+    bg.fillRoundedRect(0, 0, PANEL_W, panelH, 8);
+    bg.lineStyle(2, 0xe8c97e, 0.8);
+    bg.strokeRoundedRect(0, 0, PANEL_W, panelH, 8);
+    container.add(bg);
+
+    // Building name header
+    const nameText = this.add.text(PANEL_W / 2, 12, `🏛 ${building.name}`, {
+      fontSize: '10px', fontFamily: '"Press Start 2P", monospace',
+      color: '#e8c97e', align: 'center',
+    }).setOrigin(0.5, 0);
+    container.add(nameText);
+
+    let rowY = 30;
+    rows.forEach(row => {
+      if (row.header) {
+        const sep = this.add.text(PANEL_W / 2, rowY, row.label, {
+          fontSize: '7px', fontFamily: '"Press Start 2P", monospace',
+          color: '#666688', align: 'center',
+        }).setOrigin(0.5, 0);
+        container.add(sep);
+      } else if (row.note) {
+        const note = this.add.text(12, rowY, row.value, {
+          fontSize: '7px', fontFamily: 'monospace',
+          color: '#9999bb', wordWrap: { width: PANEL_W - 24 },
+          fontStyle: 'italic',
+        }).setOrigin(0, 0);
+        container.add(note);
+      } else if (row.label) {
+        const lbl = this.add.text(10, rowY, row.label, {
+          fontSize: '8px', fontFamily: '"Press Start 2P", monospace', color: '#888aaa',
+        }).setOrigin(0, 0);
+        const val = this.add.text(PANEL_W - 10, rowY, row.value, {
+          fontSize: '8px', fontFamily: '"Press Start 2P", monospace', color: '#e8e8ff',
+        }).setOrigin(1, 0);
+        container.add(lbl);
+        container.add(val);
+      }
+      rowY += lineH;
+    });
+
+    // Close button
+    const closeBtn = this.add.text(PANEL_W - 10, 8, '✕', {
+      fontSize: '10px', fontFamily: 'monospace', color: '#666688',
+    }).setOrigin(1, 0).setInteractive({ useHandCursor: true });
+    closeBtn.on('pointerup', () => this.hideInfoPanel());
+    closeBtn.on('pointerover', () => closeBtn.setColor('#fff'));
+    closeBtn.on('pointerout',  () => closeBtn.setColor('#666688'));
+    container.add(closeBtn);
+
+    this.infoPanelContainer = container;
   }
 
   // ─── WORLD MUTATION API ────────────────────────────────────────────────────

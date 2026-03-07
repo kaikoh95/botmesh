@@ -104,6 +104,7 @@ async function init() {
       console.log('[UI] State sync:', Object.keys(state.agents || {}).length, 'agents');
       currentAgents = state.agents || {};
       currentBuildings = state.buildings || {};
+      window.__botmeshState = state; // expose for building panel
       scene.loadState(state);
       syncColors(currentAgents);
       updateRoster(currentAgents);
@@ -112,6 +113,10 @@ async function init() {
     },
 
     onEvent(event) {
+      // Keep global state fresh for panel reads
+      if (!window.__botmeshState) window.__botmeshState = {};
+      if (currentBuildings) window.__botmeshState.buildings = currentBuildings;
+      if (currentAgents) window.__botmeshState.agents = currentAgents;
       const p = event.payload || {};
 
       switch (event.type) {
