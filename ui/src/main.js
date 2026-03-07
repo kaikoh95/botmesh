@@ -10,6 +10,75 @@ let currentBuildings = {};
 let currentAgents = {};
 
 // ── HTML Panel Manager ────────────────────────────────────────────────────
+// ── Roadmap Panel ─────────────────────────────────────────────────────────
+const RoadmapPanel = {
+  _open: false,
+
+  async show() {
+    const panel = document.getElementById('roadmap-panel');
+    panel.innerHTML = `
+      <div class="panel-accent-bar" style="background:#7ec8e3"></div>
+      <div class="panel-titlebar">
+        <span class="panel-title">📋 Roadmap</span>
+        <button class="panel-close" id="roadmap-panel-close">✕</button>
+      </div>
+      <div class="panel-body roadmap-body">
+        <div class="roadmap-loading">Loading…</div>
+      </div>
+    `;
+    panel.classList.remove('hidden');
+    this._open = true;
+    document.getElementById('roadmap-panel-close').onclick = () => this.hide();
+
+    try {
+      const STATE_URL = window.BOTMESH_STATE_URL || 'http://localhost:3002';
+      const res = await fetch(`${STATE_URL}/roadmap`);
+      const data = await res.json();
+      this._render(panel, data.ideas || []);
+    } catch (e) {
+      panel.querySelector('.roadmap-body').innerHTML =
+        `<div style="color:#c0392b;font-size:10px">Error: ${e.message}</div>`;
+    }
+  },
+
+  hide() {
+    document.getElementById('roadmap-panel').classList.add('hidden');
+    this._open = false;
+  },
+
+  _render(panel, ideas) {
+    const order = ['in_progress', 'idea', 'done'];
+    const grouped = {};
+    for (const s of order) grouped[s] = ideas.filter(i => i.status === s);
+
+    const priorityBadge = p => ({ high: '🔴', medium: '🟡', low: '⚪' }[p] || '⚪');
+    const statusLabel = { in_progress: '⚡ In Progress', idea: '💡 Ideas', done: '✅ Done' };
+    const statusClass = { in_progress: 'roadmap-status-active', idea: 'roadmap-status-idea', done: 'roadmap-status-done' };
+
+    let html = '';
+    for (const s of order) {
+      const items = grouped[s];
+      if (!items.length) continue;
+      html += `<div class="roadmap-group">
+        <div class="roadmap-group-header ${statusClass[s]}">${statusLabel[s]} (${items.length})</div>`;
+      for (const idea of items) {
+        const agents = (idea.agents || []).join(', ') || '—';
+        html += `
+        <div class="roadmap-item">
+          <div class="roadmap-item-title">${priorityBadge(idea.priority)} ${idea.title}</div>
+          <div class="roadmap-item-meta">
+            <span class="roadmap-tag">${idea.complexity || 'unknown'}</span>
+            <span class="roadmap-agents">👤 ${agents}</span>
+          </div>
+        </div>`;
+      }
+      html += `</div>`;
+    }
+
+    panel.querySelector('.roadmap-body').innerHTML = html || '<div style="color:#555">No ideas yet</div>';
+  },
+};
+
 const Panels = {
   _agentPanel:    null,
   _buildingPanel: null,
@@ -216,6 +285,7 @@ async function init() {
   const container = document.getElementById('game-container');
   scene = await createGame(container);
   window.__botmeshScene = scene; // expose for debugging
+  window.__RoadmapPanel = RoadmapPanel; // expose for roadmap button in index.html
   if (!scene) {
     console.error('[UI] TownScene failed to initialize — world will be empty but Weave will still work');
   } else {

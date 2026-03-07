@@ -1,5 +1,7 @@
 const express = require('express');
 const { execSync } = require('child_process');
+const fs = require('fs');
+const path = require('path');
 
 function parseCrontab(raw) {
   return raw.split('\n')
@@ -106,6 +108,17 @@ function createRoutes(getState, sendCommand) {
     entries = entries.slice(-limit);
 
     res.json({ entries });
+  });
+
+  // Roadmap — reads roadmap.json from repo root
+  router.get('/roadmap', (req, res) => {
+    try {
+      const roadmapPath = path.resolve(__dirname, '../../roadmap.json');
+      const raw = fs.readFileSync(roadmapPath, 'utf8');
+      res.json(JSON.parse(raw));
+    } catch (e) {
+      res.status(500).json({ error: 'Failed to read roadmap', detail: e.message });
+    }
   });
 
   // Forward command to Hub

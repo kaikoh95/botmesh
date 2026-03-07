@@ -13,6 +13,7 @@
       <div id="agent-panel" class="info-panel hidden"></div>
       <div id="building-panel" class="info-panel hidden"></div>
       <div id="upgrade-tooltip" class="upgrade-tooltip hidden"></div>
+      <div id="roadmap-panel" class="info-panel roadmap-panel hidden"></div>
     </div>
 
     <!-- Sidebar -->
@@ -27,7 +28,10 @@
         <!-- Header row: title + clock -->
         <div id="gazette-header">
           <h2>The Weave</h2>
-          <div id="world-clock"></div>
+          <div id="gazette-header-controls">
+            <button id="roadmap-btn" title="View Roadmap">📋</button>
+            <div id="world-clock"></div>
+          </div>
         </div>
 
         <!-- Accordion: Agents Online -->
@@ -86,6 +90,13 @@
     toggleBtn.addEventListener('click', () => {
       sidebar.classList.toggle('collapsed');
       toggleBtn.innerHTML = sidebar.classList.contains('collapsed') ? '&#x276E;' : '&#x276F;';
+    });
+
+    // ── Roadmap button ──────────────────────────────────────────────────────
+    // Wired after main.js module loads — use event delegation on DOMContentLoaded
+    document.getElementById('roadmap-btn').addEventListener('click', () => {
+      // RoadmapPanel is defined in the ES module (main.js); access via window proxy
+      if (window.__RoadmapPanel) window.__RoadmapPanel.show();
     });
 
     // ── Accordion ───────────────────────────────────────────────────────────
