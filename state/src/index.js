@@ -67,15 +67,37 @@ function getState() {
   return state;
 }
 
+// Merge two entity arrays — state layer entries win on id conflict
+function mergeEntities(hubEntities, stateEntities) {
+  const map = {};
+  for (const e of (hubEntities  || [])) map[e.id] = e;
+  for (const e of (stateEntities|| [])) map[e.id] = e; // state wins
+  return Object.values(map);
+}
+
 // Apply Hub events to in-memory state
 function applyEvent(event) {
   const { type, payload } = event;
 
   switch (type) {
     case 'state:sync': {
-      // Merge hub sync — never let hub wipe existing citizens (hub restarts empty)
-      // Hub only knows about currently-connected agents; state layer knows ALL citizens
-      state = { ...payload, agents: { ...state.agents, ...(payload.agents || {}) } };
+      // Merge hub sync — preserve state layer's authoritative data
+      // Hub restarts empty; state layer is the source of truth for buildings + world
+      state = {
+        ...payload,
+        agents:    { ...state.agents, ...(payload.agents || {}) },
+        // Merge buildings — hub has seed data, state layer has upgrade history
+        // Union both: hub's buildings as base, state layer entries win on conflict
+        buildings: { ...(payload.buildings || {}), ...(state.buildings || {}) },
+        // Same for world entities
+        world: {
+          ...(payload.world || {}),
+          entities: mergeEntities(
+            (payload.world || {}).entities || [],
+            (state.world  || {}).entities || []
+          ),
+        },
+      };
       // Re-seed any citizens that may have been wiped
       seedCitizens(state);
       break;
@@ -361,6 +383,12 @@ const { sendCommand: sendCmd, close: closeHub } = connectToHub(
 
 const routes = createRoutes(getState, sendCmd);
 app.use(routes);
+
+// Periodic snapshot — ensures state.json always reflects current world
+// even if a save was missed during high-frequency events or crashes
+setInterval(() => {
+  saveState(state);
+}, 30 * 1000); // every 30s
 
 const server = app.listen(PORT, () => {
   console.log(`[State] HTTP server listening on port ${PORT}`);

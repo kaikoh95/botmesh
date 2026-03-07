@@ -120,6 +120,8 @@ function handleMessage(ws, msg) {
       if (!agentId) break;
       const mutation = msg.payload || {};
       const event = createEvent('world:mutate', { agentId, ...mutation });
+      // Apply mutation to hub's own world state + persist to seed.json
+      world.applyMutation(mutation);
       broadcast(wss, event);
       addToGazette(event);
       console.log(`[hub] world:mutate ${agentId} → ${mutation.action} ${mutation.entity} ${mutation.id || mutation.kind || ''}`);

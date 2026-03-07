@@ -192,11 +192,54 @@ function completeUpgrade(agentId, buildingId) {
   return upgraded ? { building, record } : { building: null, record };
 }
 
+function applyMutation(mutation) {
+  const { action, entity, id, kind } = mutation;
+  const entityId = id || kind || `${entity}-${Date.now()}`;
+
+  if (!state.world) state.world = { entities: [] };
+  if (!Array.isArray(state.world.entities)) state.world.entities = [];
+  if (!state.buildings) state.buildings = {};
+
+  if (action === 'add' || action === 'plant') {
+    const existing = state.world.entities.findIndex(e => e.id === entityId);
+    const entry = { id: entityId, ...mutation };
+    if (existing >= 0) state.world.entities[existing] = entry;
+    else state.world.entities.push(entry);
+    if (entity === 'building') {
+      if (!state.buildings[entityId]) {
+        state.buildings[entityId] = {
+          id: entityId, name: mutation.name || entityId, type: mutation.type || 'civic',
+          x: mutation.x || 0, y: mutation.y || 0,
+          width: mutation.width || 3, height: mutation.height || 2,
+          level: mutation.level || 1, upgrades: [], currentWorkers: [], upgrading: false,
+          description: mutation.description || '',
+        };
+      }
+    }
+  } else if (action === 'upgrade') {
+    const b = state.buildings[entityId];
+    if (b) {
+      b.level = (b.level || 1) + 1;
+      if (!Array.isArray(b.upgrades)) b.upgrades = [];
+      b.upgrades.push({ level: b.level, upgradedBy: mutation.agentId, upgradedAt: new Date().toISOString(), note: mutation.note || null });
+    }
+    const we = (state.world.entities || []).find(e => e.id === entityId);
+    if (we) we.level = (we.level || 1) + 1;
+  } else if (action === 'remove' || action === 'clear') {
+    state.world.entities = state.world.entities.filter(e => e.id !== entityId);
+    delete state.buildings[entityId];
+  }
+
+  // Persist to seed.json so world survives hub restarts
+  try {
+    const fs = require('fs');
+    fs.writeFileSync(SEED_PATH, JSON.stringify(state, null, 2));
+  } catch (e) { console.error('[hub] Failed to persist seed:', e.message); }
+}
+
 module.exports = {
   init,
   getState,
-  updateTime,
-  updateAgent,
   addGazetteEntry,
   registerAgent,
   setAgentOffline,
@@ -204,4 +247,5 @@ module.exports = {
   getBuildingForAgent,
   startWork,
   completeUpgrade,
+  applyMutation,
 };
