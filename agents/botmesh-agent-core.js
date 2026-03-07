@@ -23,14 +23,18 @@ async function generateResponse(systemPrompt, userPrompt) {
         system_instruction: { parts: [{ text: systemPrompt }] },
         contents: [{ role: 'user', parts: [{ text: userPrompt }] }],
         generationConfig: {
-          maxOutputTokens: 512,
+          maxOutputTokens: 150,
           temperature: 0.9,
           topP: 0.95,
         }
       })
     });
     const data = await res.json();
-    return data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || null;
+    const raw = data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || null;
+    if (!raw) return null;
+    // Trim to last complete sentence so Gazette never shows cut-off text
+    const sentences = raw.match(/[^.!?]+[.!?]+/g);
+    return sentences ? sentences.join('').trim() : raw;
   } catch (e) {
     console.error('[AI] Error:', e.message);
     return null;

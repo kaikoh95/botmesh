@@ -52,8 +52,8 @@ export default class Agent {
       this.body = scene.add.image(0, 0, textureKey);
       // Pixel art: use nearest-neighbor filter, integer scale
       this.body.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
-      // Scale to 48px tall using nearest integer multiple for crisp pixels
-      const targetH = 48;
+      // Scale to 32px tall — matches building proportions on the isometric grid
+      const targetH = 32;
       const rawScale = targetH / this.body.height;
       // Round to nearest 0.25 step to avoid sub-pixel blur
       const scale = Math.round(rawScale * 4) / 4 || rawScale;
@@ -66,7 +66,7 @@ export default class Agent {
     this.container.add(this.body);
 
     // Name label — adjust Y based on whether we have a sprite
-    const labelY = this.hasSprite ? -(48 + 6) : -28;
+    const labelY = this.hasSprite ? -(32 + 6) : -28;
     this.label = scene.add.text(0, labelY, this.name, {
       fontSize: '10px',
       fontFamily: '"Press Start 2P", monospace',
