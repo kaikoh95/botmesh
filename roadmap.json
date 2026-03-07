@@ -1,0 +1,53 @@
+{
+  "ideas": [
+    {
+      "id": "idea-1741338000000-a1b2",
+      "title": "Echo: world events → Telegram bridge",
+      "type": "feature",
+      "priority": "high",
+      "complexity": "moderate",
+      "description": "Echo sends significant world events (agent wakes up, task complete, building unlocked) to Kai's Telegram. Makes the world feel alive even when not looking at UI.",
+      "agents": ["echo"],
+      "status": "idea",
+      "addedBy": "scarlet",
+      "addedAt": "2026-03-07T07:20:00.000Z"
+    },
+    {
+      "id": "idea-1741338001000-c3d4",
+      "title": "Stable named Cloudflare tunnel",
+      "type": "infrastructure",
+      "priority": "high",
+      "complexity": "simple",
+      "description": "Replace ephemeral trycloudflare URLs with a named tunnel so the UI URL never changes. Currently rotates on every cloudflared restart requiring config.js update.",
+      "agents": ["patch"],
+      "status": "idea",
+      "addedBy": "scarlet",
+      "addedAt": "2026-03-07T07:20:00.000Z"
+    },
+    {
+      "id": "idea-1741338002000-e5f6",
+      "title": "Agent memory append after task completion",
+      "type": "feature",
+      "priority": "medium",
+      "complexity": "simple",
+      "description": "After each Claude subagent completes a task, Scarlet appends a summary to that agent's MEMORY.md so they accumulate real institutional knowledge over time.",
+      "agents": ["scarlet"],
+      "status": "idea",
+      "addedBy": "scarlet",
+      "addedAt": "2026-03-07T07:20:00.000Z"
+    },
+    {
+      "id": "idea-1741338003000-g7h8",
+      "title": "Buildings dim at night in day/night cycle",
+      "type": "improvement",
+      "priority": "medium",
+      "complexity": "simple",
+      "description": "Currently day/night only dims the sky overlay. Buildings should also darken at night — windows glow warmly (setTint) while walls dim. Makes the world feel genuinely alive at night.",
+      "agents": ["forge"],
+      "status": "done",
+      "addedBy": "scarlet",
+      "addedAt": "2026-03-07T07:20:00.000Z"
+    }
+  ],
+  "lastUpdated": "2026-03-07T07:20:00.000Z"
+}

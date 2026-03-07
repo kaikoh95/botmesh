@@ -336,8 +336,15 @@ export default class TownScene extends Phaser.Scene {
       night:     { color: 0x141432, alpha: 0.45 },
     };
 
-    const o = overlays[period] || overlays.morning;
+    // Building tints per period — walls dim, sprites get cool/warm cast
+    const buildingTints = {
+      morning:   0xffffff,
+      afternoon: 0xfff5e0,
+      evening:   0xffcc88,
+      night:     0x6688cc,
+    };
 
+    const o = overlays[period] || overlays.morning;
     this.tweens.add({
       targets: this.dayOverlay,
       alpha: o.alpha,
@@ -345,6 +352,18 @@ export default class TownScene extends Phaser.Scene {
       ease: 'Power2',
     });
     this.dayOverlay.setFillStyle(o.color, o.alpha);
+
+    // Apply tint to all buildings
+    const tint = buildingTints[period] || 0xffffff;
+    Object.values(this.buildings || {}).forEach(b => {
+      const target = b.spriteImg || b.graphics;
+      if (!target) return;
+      if (tint === 0xffffff) {
+        target.clearTint?.();
+      } else {
+        target.setTint?.(tint);
+      }
+    });
   }
 
   // --- Info Panel (Improvement 4) ---
