@@ -210,6 +210,14 @@ async function init() {
           scene.buildingUpgraded(p.buildingId, p.level);
           break;
         }
+        case 'building:damaged': {
+          scene.buildingSetDamaged(p.buildingId, true);
+          break;
+        }
+        case 'building:restored': {
+          scene.buildingSetDamaged(p.buildingId, false);
+          break;
+        }
       }
 
       addEntry(event);

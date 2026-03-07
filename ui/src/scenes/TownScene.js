@@ -21,7 +21,7 @@ export default class TownScene extends Phaser.Scene {
 
   preload() {
     // Character sprites
-    const spriteAgents = ['scarlet', 'lumen', 'canvas', 'forge', 'sage', 'echo', 'iron', 'cronos', 'mosaic'];
+    const spriteAgents = ['scarlet', 'lumen', 'canvas', 'forge', 'sage', 'echo', 'iron', 'cronos', 'mosaic', 'patch'];
     for (const id of spriteAgents) {
       this.load.image(`agent-${id}`, `assets/sprites/${id}.png`);
     }
@@ -545,6 +545,12 @@ export default class TownScene extends Phaser.Scene {
     const building = this.buildings[buildingId];
     if (!building) return;
     building.setLevel(level);
+  }
+
+  buildingSetDamaged(buildingId, damaged) {
+    const building = this.buildings[buildingId];
+    if (!building) return;
+    building.setDamaged(damaged);
   }
 
   agentEnterBuilding(agentId, buildingId) {

@@ -102,6 +102,23 @@ function handleMessage(ws, msg) {
       broadcast(wss, event);
       break;
     }
+    case 'building:damaged':
+    case 'building:restored': {
+      // Patch reports infra health — broadcast to UI
+      const event = createEvent(msg.type, msg.payload || {});
+      broadcast(wss, event);
+      console.log(`[hub] ${msg.type}: ${msg.payload?.buildingId}`);
+      break;
+    }
+    case 'infra:down':
+    case 'infra:up':
+    case 'agent:crashed': {
+      // Broadcast infra events to all listeners (UI, Echo, etc.)
+      const event = createEvent(msg.type, msg.payload || {});
+      broadcast(wss, event);
+      console.log(`[hub] ${msg.type}: ${msg.payload?.service || msg.payload?.agentId}`);
+      break;
+    }
     default:
       console.log(`[Hub] Unknown message type: ${msg.type}`);
   }

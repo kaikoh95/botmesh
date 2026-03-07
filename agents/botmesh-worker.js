@@ -60,6 +60,12 @@ const IDENTITIES = {
     personality: 'patient, precise, long-view', skills: ['scheduling','cron-management'],
     color: '#6a0dad', model: 'gemini-2.5-flash'
   },
+  patch: {
+    id: 'patch', name: 'Patch', emoji: '🔧', role: 'Infrastructure Guardian',
+    personality: 'methodical, watchful, terse',
+    skills: ['monitoring','diagnostics','alerting','repair'],
+    color: '#e67e22', model: 'gemini-2.5-flash'
+  },
   iron: {
     id: 'iron', name: 'Iron', emoji: '⚔️', role: 'Enforcer',
     personality: 'stern, vigilant, principled',

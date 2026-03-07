@@ -1,4 +1,5 @@
 const HEARTBEAT_INTERVAL = 30000;
+const KEEPALIVE_INTERVAL = 15000; // SSE comment ping — prevents Cloudflare 100s timeout
 
 function createSSEManager(getState) {
   const clients = new Set();
@@ -41,7 +42,14 @@ function createSSEManager(getState) {
     }
   }
 
-  // Heartbeat
+  // SSE comment keepalive — prevents proxies/tunnels from closing idle connections
+  setInterval(() => {
+    for (const client of clients) {
+      client.write(': keepalive\n\n');
+    }
+  }, KEEPALIVE_INTERVAL);
+
+  // Full heartbeat with state
   setInterval(() => {
     const data = { timestamp: new Date().toISOString() };
     for (const client of clients) {

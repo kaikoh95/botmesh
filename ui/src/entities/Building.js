@@ -366,10 +366,75 @@ export default class Building {
     }
   }
 
+  // ─── DAMAGE / RESTORE ───────────────────────────────────────────────────────
+
+  setDamaged(on) {
+    if (this._damaged === on) return;
+    this._damaged = on;
+
+    if (on) {
+      // Red tint + shake + cracked overlay
+      if (this.spriteImg) this.spriteImg.setTint(0xff4444);
+      if (this.graphics) this.graphics.setAlpha(0.7);
+
+      // Shake animation
+      this._damageTween = this.scene.tweens.add({
+        targets: this.container,
+        x: { from: this.screenX - 2, to: this.screenX + 2 },
+        duration: 80,
+        yoyo: true,
+        repeat: 5,
+        onComplete: () => {
+          // Settle into a slight droop
+          this.container.setPosition(this.screenX, this.screenY + 3);
+        }
+      });
+
+      // Crack overlay text
+      this._dmgLabel = this.scene.add.text(0, -20, '💥 OFFLINE', {
+        fontSize: '7px',
+        fontFamily: '"Press Start 2P", monospace',
+        color: '#ff4444',
+        stroke: '#000',
+        strokeThickness: 2,
+      }).setOrigin(0.5);
+      this.container.add(this._dmgLabel);
+
+      // Pulse the damage label
+      this._dmgTween = this.scene.tweens.add({
+        targets: this._dmgLabel,
+        alpha: { from: 1, to: 0.3 },
+        duration: 800,
+        yoyo: true,
+        repeat: -1,
+      });
+    } else {
+      // Restore
+      if (this.spriteImg) this.spriteImg.clearTint();
+      if (this.graphics) this.graphics.setAlpha(1);
+      this.container.setPosition(this.screenX, this.screenY);
+
+      if (this._damageTween) { this._damageTween.remove(); this._damageTween = null; }
+      if (this._dmgTween)    { this._dmgTween.remove();    this._dmgTween = null; }
+      if (this._dmgLabel)    { this._dmgLabel.destroy();   this._dmgLabel = null; }
+
+      // Brief green flash on restore
+      if (this.spriteImg) {
+        this.spriteImg.setTint(0x44ff44);
+        this.scene.time.delayedCall(800, () => {
+          if (this.spriteImg) this.spriteImg.clearTint();
+        });
+      }
+    }
+  }
+
   destroy() {
     this.hideUpgradeSign();
     this._removeGlowOutline();
     if (this.glowTween) this.glowTween.remove();
+    if (this._damageTween) this._damageTween.remove();
+    if (this._dmgTween) this._dmgTween.remove();
+    if (this._dmgLabel) this._dmgLabel.destroy();
     if (this.spriteImg) this.spriteImg.destroy();
     this.container.destroy();
   }
