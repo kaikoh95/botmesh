@@ -43,6 +43,12 @@ const IDENTITIES = {
     skills: ['communication', 'coordination'],
     color: '#1abc9c', model: 'gemini-2.5-flash'
   },
+  mosaic: {
+    id: 'mosaic', name: 'Mosaic', emoji: '🎨', role: 'Designer',
+    personality: 'joyful, precise, colour-obsessed',
+    skills: ['pixel-art','sprite-generation','character-design','building-design'],
+    color: '#e91e8c', model: 'gemini-2.5-flash'
+  },
   cronos: {
     id: 'cronos', name: 'Cronos', emoji: '⏳', role: 'Timekeeper',
     personality: 'patient, precise, long-view', skills: ['scheduling','cron-management'],

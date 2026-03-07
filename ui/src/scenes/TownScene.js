@@ -21,7 +21,7 @@ export default class TownScene extends Phaser.Scene {
 
   preload() {
     // Character sprites
-    const spriteAgents = ['scarlet', 'lumen', 'canvas', 'forge', 'sage', 'echo', 'iron', 'cronos'];
+    const spriteAgents = ['scarlet', 'lumen', 'canvas', 'forge', 'sage', 'echo', 'iron', 'cronos', 'mosaic'];
     for (const id of spriteAgents) {
       this.load.image(`agent-${id}`, `assets/sprites/${id}.png`);
     }
