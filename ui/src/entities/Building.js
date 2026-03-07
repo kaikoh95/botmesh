@@ -6,6 +6,7 @@ const BUILDING_TEXTURE_MAP = {
   library:     'library',
   market:      'market',
   observatory: 'observatory',
+  teahouse: 'teahouse',
 };
 
 const BUILDING_COLORS = {
