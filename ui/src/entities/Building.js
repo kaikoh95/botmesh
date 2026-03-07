@@ -10,6 +10,7 @@ const BUILDING_TEXTURE_MAP = {
   torii:       'plaza',
   plaza:       'plaza',
   well:        'well',
+  bathhouse:   'bathhouse',
 };
 
 // Map building type → sprite texture base name (fallback when id not in map above)

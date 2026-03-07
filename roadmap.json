@@ -2,7 +2,7 @@
   "ideas": [
     {
       "id": "idea-1741338000000-a1b2",
-      "title": "Echo: world events \u2192 Telegram bridge",
+      "title": "Echo: world events → Telegram bridge",
       "type": "feature",
       "priority": "high",
       "complexity": "moderate",
@@ -49,7 +49,7 @@
       "type": "improvement",
       "priority": "medium",
       "complexity": "simple",
-      "description": "Currently day/night only dims the sky overlay. Buildings should also darken at night \u2014 windows glow warmly (setTint) while walls dim. Makes the world feel genuinely alive at night.",
+      "description": "Currently day/night only dims the sky overlay. Buildings should also darken at night — windows glow warmly (setTint) while walls dim. Makes the world feel genuinely alive at night.",
       "agents": [
         "forge"
       ],
@@ -73,11 +73,11 @@
     },
     {
       "id": "idea-1772869863981-mcca",
-      "title": "Roadmap panel in UI \u2014 view all ideas and status",
+      "title": "Roadmap panel in UI — view all ideas and status",
       "type": "feature",
       "priority": "medium",
       "complexity": "moderate",
-      "description": "A panel accessible from the UI showing roadmap.json \u2014 pending ideas, in-progress tasks, completed items. Clicking Muse opens it. Makes the plan visible in the world.",
+      "description": "A panel accessible from the UI showing roadmap.json — pending ideas, in-progress tasks, completed items. Clicking Muse opens it. Makes the plan visible in the world.",
       "agents": [
         "forge"
       ],
@@ -87,7 +87,7 @@
     },
     {
       "id": "idea-1772869863982-mfmn",
-      "title": "World stats endpoint \u2014 daily activity summary",
+      "title": "World stats endpoint — daily activity summary",
       "type": "feature",
       "priority": "low",
       "complexity": "simple",
@@ -102,7 +102,7 @@
     },
     {
       "id": "idea-1772903418291-8aj6",
-      "title": "Agent speech bubbles \u2014 citizens speak in the world",
+      "title": "Agent speech bubbles — citizens speak in the world",
       "description": "Citizen sprites occasionally display floating speech bubbles with contextual text: their current task, a random thought, or a reaction to world events. Forge mutters about metalwork, Sage quotes something obscure, Muse says something poetic. Bubbles fade after a few seconds. Pure personality expression, zero backend needed.",
       "priority": "medium",
       "complexity": "2",
@@ -116,7 +116,7 @@
     },
     {
       "id": "idea-1772903422597-iwuq",
-      "title": "Clickable citizen profiles \u2014 who lives here?",
+      "title": "Clickable citizen profiles — who lives here?",
       "description": "Click any citizen sprite to open a side panel: their name, role, current task status, last seen activity, and a line from their MEMORY.md. Makes agents feel like real inhabitants with histories, not just wandering dots. Pairs naturally with the roadmap panel.",
       "priority": "medium",
       "complexity": "3",
@@ -133,7 +133,7 @@
     },
     {
       "id": "idea-1772903437519-n6u2",
-      "title": "Seasonal world skin \u2014 spring cherry blossoms to winter snow",
+      "title": "Seasonal world skin — spring cherry blossoms to winter snow",
       "description": "The world visually shifts with real-world seasons: cherry blossom particle drift in spring, fireflies at dusk in summer, falling amber leaves in autumn, snow accumulation and frosted building roofs in winter. Driven by server date. Muse announces each seasonal change via Echo's Telegram bridge.",
       "priority": "low",
       "complexity": "4",
@@ -148,7 +148,7 @@
     },
     {
       "id": "idea-1772903451114-6fpr",
-      "title": "The Chronicle \u2014 Sage writes a daily scroll",
+      "title": "The Chronicle — Sage writes a daily scroll",
       "description": "Each evening Sage composes a short narrative summary of the day's events: tasks completed, agents active, buildings upgraded, notable moments. Stored as a scrollable in-world book accessible from the Library. Also posted to Telegram. Makes history visible and the world feel it has a past.",
       "priority": "medium",
       "complexity": "2",
@@ -156,14 +156,16 @@
         "sage",
         "echo"
       ],
-      "status": "idea",
+      "status": "planned",
       "addedBy": "muse",
-      "addedAt": "2026-03-07T17:10:51.114Z"
+      "addedAt": "2026-03-07T17:10:51.114Z",
+      "statusNote": "Delegated to sage, echo",
+      "updatedAt": "2026-03-07T20:00:04.776Z"
     },
     {
       "id": "idea-1772903481120-2flw",
-      "title": "Town Plaza gatherings \u2014 citizens flock to events",
-      "description": "When a significant event fires (building upgrade, new idea added, task completed), nearby citizens animate toward the Town Plaza, cluster briefly, then disperse. A visual heartbeat. Triggered server-side via the events system. Costs zero extra API calls \u2014 pure frontend choreography responding to world state.",
+      "title": "Town Plaza gatherings — citizens flock to events",
+      "description": "When a significant event fires (building upgrade, new idea added, task completed), nearby citizens animate toward the Town Plaza, cluster briefly, then disperse. A visual heartbeat. Triggered server-side via the events system. Costs zero extra API calls — pure frontend choreography responding to world state.",
       "priority": "medium",
       "complexity": "3",
       "agents": [
@@ -175,5 +177,5 @@
       "addedAt": "2026-03-07T17:11:21.120Z"
     }
   ],
-  "lastUpdated": "2026-03-07T19:08:38.501Z"
+  "lastUpdated": "2026-03-07T20:00:04.776Z"
 }
