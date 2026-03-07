@@ -107,7 +107,8 @@
       "priority": "medium",
       "complexity": "2",
       "agents": [
-        "[muse,forge]"
+        "muse",
+        "forge"
       ],
       "status": "done",
       "addedBy": "muse",
@@ -120,11 +121,15 @@
       "priority": "medium",
       "complexity": "3",
       "agents": [
-        "[muse,forge,scarlet]"
+        "muse",
+        "forge",
+        "scarlet"
       ],
-      "status": "idea",
+      "status": "planned",
       "addedBy": "muse",
-      "addedAt": "2026-03-07T17:10:22.597Z"
+      "addedAt": "2026-03-07T17:10:22.597Z",
+      "statusNote": "Delegated to [muse,forge,scarlet]",
+      "updatedAt": "2026-03-07T19:08:38.501Z"
     },
     {
       "id": "idea-1772903437519-n6u2",
@@ -133,7 +138,9 @@
       "priority": "low",
       "complexity": "4",
       "agents": [
-        "[muse,lumen,echo]"
+        "muse",
+        "lumen",
+        "echo"
       ],
       "status": "idea",
       "addedBy": "muse",
@@ -146,7 +153,8 @@
       "priority": "medium",
       "complexity": "2",
       "agents": [
-        "[sage,echo]"
+        "sage",
+        "echo"
       ],
       "status": "idea",
       "addedBy": "muse",
@@ -159,12 +167,13 @@
       "priority": "medium",
       "complexity": "3",
       "agents": [
-        "[forge,muse]"
+        "forge",
+        "muse"
       ],
       "status": "idea",
       "addedBy": "muse",
       "addedAt": "2026-03-07T17:11:21.120Z"
     }
   ],
-  "lastUpdated": "2026-03-07T08:50:00.000Z"
+  "lastUpdated": "2026-03-07T19:08:38.501Z"
 }
