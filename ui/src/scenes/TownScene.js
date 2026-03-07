@@ -43,11 +43,12 @@ export default class TownScene extends Phaser.Scene {
     this.cameras.main.setBackgroundColor('#5c8a42'); // warmer earthy green
 
     this.mapW = 40;
-    this.mapH = 30;
+    this.mapH = 32;
     const mapW = this.mapW;
     const mapH = this.mapH;
-    this.originX = this.cameras.main.width / 2;
-    this.originY = 80;
+    // Origin: shift right + up so more of the northern map is visible
+    this.originX = this.cameras.main.width * 0.55;
+    this.originY = -60;
 
     // Draw ground tiles
     this._drawGround(mapW, mapH);
@@ -64,6 +65,26 @@ export default class TownScene extends Phaser.Scene {
 
     // Path tile registry — populated from world entities on state:sync
     this.pathTiles = new Set();
+
+    // ── Camera pan (drag to scroll) ─────────────────────────────────────────
+    this.input.on('pointermove', (ptr) => {
+      if (ptr.isDown && ptr.button === 0 && !this._dragging) return;
+    });
+    let _dragStart = null;
+    let _camStart = null;
+    this.input.on('pointerdown', (ptr) => {
+      if (ptr.button === 0) { _dragStart = { x: ptr.x, y: ptr.y }; _camStart = { x: CAM.scrollX, y: CAM.scrollY }; this._dragging = false; }
+    });
+    this.input.on('pointermove', (ptr) => {
+      if (ptr.isDown && _dragStart && ptr.button === 0) {
+        const dx = ptr.x - _dragStart.x; const dy = ptr.y - _dragStart.y;
+        if (Math.abs(dx) > 4 || Math.abs(dy) > 4) {
+          this._dragging = true;
+          CAM.setScroll(_camStart.x - dx / this._zoom, _camStart.y - dy / this._zoom);
+        }
+      }
+    });
+    this.input.on('pointerup', () => { _dragStart = null; _camStart = null; setTimeout(() => { this._dragging = false; }, 50); });
 
     // ── Zoom ────────────────────────────────────────────────────────────────
     this._zoom = 1.0;
@@ -107,6 +128,14 @@ export default class TownScene extends Phaser.Scene {
       CAM.setZoom(this._zoom);
     };
     window._zoomReset = () => { this._zoom = 1.0; CAM.setZoom(1.0); };
+
+    // ── Grid toggle ────────────────────────────────────────────────────────
+    this._gridVisible = true;
+    window.botmeshToggleGrid = () => {
+      this._gridVisible = !this._gridVisible;
+      if (this._groundGraphics) this._groundGraphics.setVisible(this._gridVisible);
+      return this._gridVisible;
+    };
 
     // Grid-based click detection — accurate footprint hits only
     this._setupGridClickHandler();
@@ -329,7 +358,7 @@ export default class TownScene extends Phaser.Scene {
     // - Open civic area: bright sunlit grass
     // - Building margins: darker earth
     const nearPath = this._isNearPath(x, y);
-    const inResidential = y >= 20 && x >= 1 && x <= 20;
+    const inResidential = y >= 22;
     const n = Math.abs((x * 7 + y * 13 + x * y) % 7);
 
     if (nearPath) {
@@ -361,8 +390,8 @@ export default class TownScene extends Phaser.Scene {
     return blues[n];
   }
 
-  _isWater(x, y) {
-    return x < 5 && y > 24;
+  _isWater(_x, _y) {
+    return false; // water zone removed — residential district now occupies south
   }
 
   _isPath(x, y) {

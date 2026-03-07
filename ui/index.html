@@ -11,8 +11,9 @@
     <div id="game-container">
       <div id="zoom-controls">
         <button onclick="window.botmeshZoom && window.botmeshZoom(0.2)" title="Zoom in">＋</button>
-        <button onclick="if(window.botmeshZoom){window._zoomReset&&window._zoomReset()}" title="Reset zoom" style="font-size:11px">1:1</button>
+        <button onclick="window._zoomReset && window._zoomReset()" title="Reset zoom" style="font-size:11px">1:1</button>
         <button onclick="window.botmeshZoom && window.botmeshZoom(-0.2)" title="Zoom out">－</button>
+        <button id="grid-toggle-btn" onclick="var v=window.botmeshToggleGrid&&window.botmeshToggleGrid(); this.style.opacity=v===false?'0.4':'1'" title="Toggle grid" style="font-size:13px">⊞</button>
       </div>
       <!-- HTML overlay panels — no Phaser input issues -->
       <div id="agent-panel" class="info-panel hidden"></div>
