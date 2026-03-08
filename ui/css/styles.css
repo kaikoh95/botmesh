@@ -337,13 +337,15 @@ html, body {
 
 /* Header */
 #gazette-header {
-  padding: 12px 16px;
+  padding: 10px 16px;
   background: #0f3460;
   border-bottom: 2px solid #1a1a5e;
   display: flex;
   justify-content: space-between;
   align-items: center;
   flex-shrink: 0;
+  gap: 6px;
+  min-width: 0;
 }
 
 #gazette-header h2 {
@@ -351,6 +353,7 @@ html, body {
   font-size: 12px;
   color: #e8d5a3;
   letter-spacing: 1px;
+  flex-shrink: 0;
 }
 
 #world-clock {
@@ -794,8 +797,30 @@ html, body {
 #gazette-header-controls {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
+  min-width: 0;
+  overflow: hidden;
 }
+
+#connection-status, #viewer-count {
+  white-space: nowrap;
+  flex-shrink: 1;
+  min-width: 0;
+}
+
+/* World Stats accordion content */
+.stat-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 4px 0;
+  font-size: 11px;
+  color: #ccc;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+.stat-row:last-child { border-bottom: none; }
+.stat-label { color: #aaa; }
+.stat-val { color: #e8d5a3; font-weight: bold; }
 
 #roadmap-btn {
   background: rgba(255,255,255,0.06);

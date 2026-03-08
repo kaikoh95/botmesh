@@ -405,20 +405,15 @@ async function init() {
     const buildings = Object.values(state.buildings || {});
     const avgLevel = buildings.length ? (buildings.reduce((s,b) => s + (b.level||1), 0) / buildings.length).toFixed(1) : 0;
 
-    let el = document.getElementById('world-stats');
-    if (!el) {
-      el = document.createElement('div');
-      el.id = 'world-stats';
-      el.className = 'world-stats';
-      const header = document.getElementById('gazette-header') ||
-                     document.querySelector('.weave-header') ||
-                     document.querySelector('.panel-header');
-      if (header) header.appendChild(el);
+    // Stats go in the World Stats accordion — not the header
+    const el = document.getElementById('world-stats-content') || document.getElementById('world-stats');
+    if (el) {
+      el.innerHTML =
+        `<div class="stat-row"><span class="stat-label">💬 Messages today</span><span class="stat-val">${msgsToday}</span></div>` +
+        `<div class="stat-row"><span class="stat-label">🟢 Agents online</span><span class="stat-val">${online} / ${agents.length}</span></div>` +
+        `<div class="stat-row"><span class="stat-label">🏛️ Avg building level</span><span class="stat-val">Lv${avgLevel}</span></div>` +
+        `<div class="stat-row"><span class="stat-label">🏘️ Buildings</span><span class="stat-val">${buildings.length}</span></div>`;
     }
-    el.innerHTML =
-      `<span class="stat">💬 ${msgsToday} msgs</span>` +
-      `<span class="stat">🟢 ${online} online</span>` +
-      `<span class="stat">🏛️ avg Lv${avgLevel}</span>`;
   }
 
   const client = createStateClient({
