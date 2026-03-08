@@ -1,8 +1,25 @@
 node_modules/
 world/state.json
 .env
+*.env
+*.env.*
+.env.local
+.env.production
 *.log
 package-lock.json
+
+# Secrets & credentials — never commit
+*.pem
+*.key
+*.p12
+*.pfx
+*.cert
+*.crt
+cloudflared-*.json
+.cloudflared/
+*.token
+*secret*
+*credential*
 
 # Character identity files — local only, never commit (move to DB eventually)
 characters/*/IDENTITY.md
