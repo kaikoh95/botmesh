@@ -243,6 +243,8 @@
         setTimeout(function() { el.remove(); }, 900);
       }
     };
+    // Auto-dismiss after 5s regardless — don't block on API connectivity
+    setTimeout(window.__dismissLoadingScreen, 5000);
 
     // ── Sidebar toggle ──────────────────────────────────────────────────────
     const sidebar = document.getElementById('sidebar');
