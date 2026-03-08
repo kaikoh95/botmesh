@@ -25,7 +25,7 @@ html, body {
 #game-container {
   flex: 1;
   height: 100%;
-  background: #2d5a3d;
+  background: #0d1520;
   position: relative;
   min-width: 0;
 }
@@ -855,3 +855,60 @@ html, body {
   transition: background 0.15s;
 }
 #zoom-controls button:hover { background: rgba(40,40,40,0.95); }
+
+/* ── Mobile responsive ──────────────────────────────────────────────────── */
+@media (max-width: 600px) {
+  #app {
+    flex-direction: column-reverse;
+  }
+
+  .sidebar {
+    width: 100%;
+    height: 42vh;
+    border-left: none;
+    border-top: 2px solid #0f3460;
+    flex-direction: column;
+    flex-shrink: 0;
+    transition: height 0.25s ease;
+  }
+
+  .sidebar.collapsed {
+    width: 100%;
+    height: 36px;
+  }
+
+  #sidebar-toggle {
+    position: absolute;
+    left: 50%;
+    top: 0;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 24px;
+    border-radius: 0 0 6px 6px;
+    border-right: none;
+    border-bottom: 1px solid #1a1a5e;
+  }
+
+  #sidebar-inner {
+    margin-left: 0;
+    margin-top: 28px;
+  }
+
+  #game-container {
+    flex: 1;
+    height: 58vh;
+    min-height: 0;
+  }
+
+  #zoom-controls {
+    bottom: 8px;
+    top: auto;
+    right: 8px;
+  }
+
+  .info-panel {
+    width: 85vw;
+    max-height: 60vw;
+    font-size: 10px;
+  }
+}
