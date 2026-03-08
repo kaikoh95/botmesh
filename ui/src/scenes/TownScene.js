@@ -651,8 +651,10 @@ export default class TownScene extends Phaser.Scene {
 
   addBuilding(bData) {
     if (this.buildings[bData.id]) return;
-    const cx = bData.x + (bData.width || 3) / 2;
-    const cy = bData.y + (bData.height || 2) / 2;
+    // Position at south (front-bottom) corner of the isometric footprint diamond.
+    // This is grid point (x+width, y+height), which maps to the lowest visible corner.
+    const cx = bData.x + (bData.width || 2);
+    const cy = bData.y + (bData.height || 2);
     const pos = this.gridToScreen(cx, cy);
 
     // Ground shadow — soft ellipse beneath every building
@@ -669,18 +671,7 @@ export default class TownScene extends Phaser.Scene {
     const building = new Building(this, bData, pos.x, pos.y);
     this.buildings[bData.id] = building;
 
-    // Scarlet Sanctum — heartbeat alpha pulse
-    if (bData.id === 'scarlet_sanctum' && building.spriteImg) {
-      this.tweens.add({
-        targets: building.spriteImg,
-        alpha: { from: 1, to: 0.65 },
-        duration: 1800,
-        yoyo: true,
-        repeat: -1,
-        ease: 'Sine.easeInOut'
-      });
-      // (single heartbeat tween above is sufficient)
-    }
+    // Scarlet Sanctum — no flash/pulse; static sprite
   }
 
   _spawnBuildingDetail(bData, pos) {
