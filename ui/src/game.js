@@ -7,7 +7,7 @@ export function createGame(container) {
       parent: container,
       width: container.clientWidth,
       height: container.clientHeight,
-      backgroundColor: '#1e3320',
+      backgroundColor: '#0d1520',
       pixelArt: true,
       roundPixels: true,
       scene: [TownScene],

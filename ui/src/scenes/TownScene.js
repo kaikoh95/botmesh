@@ -259,15 +259,16 @@ export default class TownScene extends Phaser.Scene {
         if (isWater) {
           baseColor = this._waterColor(x, y);
         } else if (isPath) {
-          baseColor = even ? 0xc8a882 : 0xb89870;
+          // Winter paths: dark wet stone, snow packed at edges
+          baseColor = even ? 0x6a6878 : 0x5c5a6a;
         } else {
           baseColor = this._grassColor(x, y);
           // Shift alternate tiles ±12 brightness for a visible grid
           if (even) {
-            // Brighter even tiles — +28 gives clearly visible checkerboard
-            const r = ((baseColor >> 16) & 0xff) + 28;
-            const g2 = ((baseColor >> 8) & 0xff) + 28;
-            const b2 = (baseColor & 0xff) + 20;
+            // Brighter even tiles — snow catches light on one face
+            const r = ((baseColor >> 16) & 0xff) + 22;
+            const g2 = ((baseColor >> 8) & 0xff) + 24;
+            const b2 = (baseColor & 0xff) + 32; // cooler blue highlights on snow
             baseColor = (Math.min(r,255) << 16) | (Math.min(g2,255) << 8) | Math.min(b2,255);
           }
         }
@@ -282,8 +283,8 @@ export default class TownScene extends Phaser.Scene {
         g.fillPath();
 
         // Thin border for crisp tile edges
-        const bAlpha = isWater ? 0.4 : isPath ? 0.35 : 0.22;
-        const bColor = isWater ? 0x1a5276 : isPath ? 0x7a5a35 : 0x2a4020;
+        const bAlpha = isWater ? 0.45 : isPath ? 0.4 : 0.18;
+        const bColor = isWater ? 0x4a8aaa : isPath ? 0x3a3848 : 0x8090b0;
         g.lineStyle(1, bColor, bAlpha);
         g.beginPath();
         g.moveTo(screen.x, screen.y - TILE_H / 2);
@@ -367,28 +368,27 @@ export default class TownScene extends Phaser.Scene {
   }
 
   _grassColor(x, y) {
-    // Zone-aware ground coloring for Edo town feel:
-    // - Near paths: warm dirt transition
-    // - Residential zone (lower map): slightly dustier
-    // - Open civic area: bright sunlit grass
-    // - Building margins: darker earth
+    // WINTER — Zone-aware snow coloring (Shirakawa-go / onsen town aesthetic):
+    // - Near paths: grey slush from foot traffic — snow melted, dark stone showing
+    // - Residential zone: warm ivory snow — lived-in, faint yellow from lamp glow
+    // - Open civic/cultural area: clean crisp blue-white snow
     const nearPath = this._isNearPath(x, y);
     const inResidential = y >= 22;
     const n = Math.abs((x * 7 + y * 13 + x * y) % 7);
 
     if (nearPath) {
-      // Warm dirt/earth transition near roads
-      const dirts = [0x8b6f47, 0x7a6040, 0x9a7a52, 0x8a6e46, 0x7d6242];
-      return dirts[n % dirts.length];
+      // Grey slush near roads — foot traffic melts snow, reveals dark stone
+      const slush = [0x7a8090, 0x6e7480, 0x828898, 0x747a8a, 0x788090];
+      return slush[n % slush.length];
     }
     if (inResidential) {
-      // Residential: slightly dusty, lived-in
-      const dusty = [0x4a7040, 0x4d7545, 0x456b3c, 0x507845, 0x4a7040, 0x537c48, 0x486e3e];
-      return dusty[n];
+      // Residential: warm ivory snow — lamp glow, footprints, life
+      const ivorySnow = [0xd8d4c8, 0xe0dcd0, 0xd4d0c4, 0xdcd8cc, 0xd6d2c6, 0xdedad0, 0xd2ceC2];
+      return ivorySnow[n];
     }
-    // Default: varied earthy greens — slightly lighter to contrast with dark background
-    const greens = [0x6a9e52, 0x6ea458, 0x649050, 0x70a65a, 0x669a53, 0x628d4e, 0x6ca155];
-    return greens[n];
+    // Civic/cultural: crisp blue-white snow, clean and undisturbed
+    const blueSnow = [0xd8e4ee, 0xcedaea, 0xd4e0ec, 0xccd8e8, 0xd0dce8, 0xc8d6e4, 0xd6e2ee];
+    return blueSnow[n];
   }
 
   _isNearPath(x, y) {
@@ -400,9 +400,10 @@ export default class TownScene extends Phaser.Scene {
   }
 
   _waterColor(x, y) {
+    // Winter moat — icy, pale, semi-frozen. Shirakawa-go canal aesthetic.
     const n = ((x * 3 + y * 5) % 3);
-    const blues = [0x2980b9, 0x2471a3, 0x2e86c1];
-    return blues[n];
+    const icy = [0x8ab4cc, 0x7aaabb, 0x90bcd4];
+    return icy[n];
   }
 
   _isWater(x, y) {
@@ -461,10 +462,10 @@ export default class TownScene extends Phaser.Scene {
           const isBuilding = dx >= 0 && dx < bw && dy >= 0 && dy < bh;
           if (isBuilding) continue; // skip the building footprint itself
 
-          // Yard color — warm sandy garden
+          // Yard color — winter: snow-covered garden with warm ivory tones near the home
           const isEven = (tx + ty) % 2 === 0;
-          const yardBase = lvl >= 3 ? 0xc8a870 : lvl >= 2 ? 0xb89860 : 0xa88850;
-          const yardColor = isEven ? yardBase + 0x101008 : yardBase;
+          const yardBase = lvl >= 3 ? 0xe8e0d0 : lvl >= 2 ? 0xe0d8c8 : 0xd8d0c0;
+          const yardColor = isEven ? yardBase + 0x080808 : yardBase;
 
           g.fillStyle(yardColor, 1.0);
           g.beginPath();
