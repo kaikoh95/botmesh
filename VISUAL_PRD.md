@@ -20,7 +20,7 @@ The world at kurokimachi.com looks like the OG image:
 - [ ] DONE: Amber window glow audit — all sprites have 9k–63k amber pixels (already solid)
 - [x] DONE: Sakura sprite is summer red/orange — regen as winter (snow-covered or bare branches)
 - [x] DONE: Ground tiles too checkerboard-stark — darken the light tile to reduce contrast
-- [ ] PENDING: Building labels too small/hard to read — increase font size or make optional
+- [x] DONE: Building labels too small/hard to read — bumped 9px→11px, stroke 2→3, brighter color
 - [ ] PENDING: Visual QA snapshot — Canvas screenshots kurokimachi.com and compares to OG image checklist
 
 ## Progress Log

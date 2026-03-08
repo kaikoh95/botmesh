@@ -72,11 +72,11 @@ export default class Building {
 
     // Name + level label
     this.label = scene.add.text(0, 0, '', {
-      fontSize: '9px',
+      fontSize: '11px',
       fontFamily: '"Press Start 2P", monospace',
-      color: '#e8d5a3',
+      color: '#f5e6c0',
       stroke: '#000000',
-      strokeThickness: 2,
+      strokeThickness: 3,
     }).setOrigin(0.5);
     this.container.add(this.label);
 
