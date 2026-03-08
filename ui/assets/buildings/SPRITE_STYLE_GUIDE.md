@@ -53,22 +53,7 @@ All levels share the same 512×512 canvas. Lv3 simply fills more of it.
 
 ## Non-Compliant Sprites (needs regen)
 
-| File | Issue |
-|------|-------|
-| townhall-l1.png | 1408×768 landscape, guide lines, baked ground plane |
-| townhall-l2.png | 1408×768 landscape, artifacts |
-| cottage-l1.png | 1408×768 landscape, baked stone path ground element |
-| cottage-l2.png | 1408×768 landscape |
-| cottage-l3.png | 1408×768 landscape |
-| brewery-l1.png | 1408×768 landscape |
-| shrine-l1.png | 1408×768 landscape |
-| smithy-l1.png | 1408×768 landscape |
-| teahouse-l1.png | 1408×768 landscape |
-| workshop-l1.png | 1408×768 landscape |
-| observatory-l1.png | 601×718 non-standard |
-| plaza-l1.png | 585×602 non-standard |
-| postoffice-l1.png | 1260×956 non-standard |
-| well-l1.png | 529×758 non-standard |
+All previously non-compliant sprites have been regenerated as of 2026-03-09. ✅
 
 ## Compliant Sprites (keep)
 
