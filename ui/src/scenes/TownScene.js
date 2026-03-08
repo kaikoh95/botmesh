@@ -40,7 +40,7 @@ export default class TownScene extends Phaser.Scene {
 
     // Building sprites — exact manifest of what exists on disk (no speculative loads)
     const buildingFiles = [
-      'bathhouse-l1',
+      'bathhouse-l1','bathhouse-l2',
       'cottage-l1','cottage-l2','cottage-l3',
       'keep-l1',
       'library-l1','library-l2',
