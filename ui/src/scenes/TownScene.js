@@ -1,3 +1,12 @@
+/**
+ * RENDER STANDARD
+ * - Grid: TILE_W=64, TILE_H=32, origin offset = camera.width*0.55, -60
+ * - Screen pos: screenX = originX + (gx-gy)*(TILE_W/2), screenY = originY + (gx+gy)*(TILE_H/2)
+ * - Sprite anchor: buildings=(0.5, 1.0), agents=(0.5, 1.0), life=(0.5, 1.0)
+ * - Depth: screenY (buildings/life) or screenY+1 (agents — same tile priority)
+ * - All sprites have 30px transparent padding — no adjustment needed for origin
+ * - Day/night: tint only, no overlay rectangles
+ */
 import Agent, { getAgentHexString } from '../entities/Agent.js';
 import Building from '../entities/Building.js';
 import WorldLife from '../entities/WorldLife.js';
@@ -159,16 +168,8 @@ export default class TownScene extends Phaser.Scene {
     // Grid-based click detection — accurate footprint hits only
     this._setupGridClickHandler();
 
-    // Day/night overlay
-    this.dayOverlay = this.add.rectangle(
-      this.cameras.main.width / 2,
-      this.cameras.main.height / 2,
-      this.cameras.main.width * 2,
-      this.cameras.main.height * 2,
-      0x000000, 0
-    );
-    this.dayOverlay.setDepth(9999);
-    this.dayOverlay.setScrollFactor(0);
+    // Day/night — tint-only, no overlay rectangles (see RENDER STANDARD above)
+    this.dayOverlay = null; // removed; use setTime() tints instead
 
     // Info panel layer (above overlay)
     this.infoPanelContainer = null;
