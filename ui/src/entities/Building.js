@@ -117,31 +117,30 @@ export default class Building {
         const img = this.scene.add.image(0, 0, texKey);
         // Pixel art: nearest-neighbor filter for crisp rendering
         img.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
-        // Scale sprites to be visually impressive — 2.5x the footprint width.
-        // Isometric buildings should tower above their ground footprint (like the OG image).
+        // Uniform scale: all sprites are 512×512 per style guide.
+        // Scale so 1 grid cell = TILE_W screen pixels wide.
+        // The building base diamond spans ~60% of canvas width (≈307px of 512px),
+        // so target display width = gridW * TILE_W / 0.6 to fit footprint correctly.
         const TILE_W = 64;
-        const TILE_H = 32;
-        const targetW = this.gridW * TILE_W * 2.5;
-        const rawScale = targetW / img.width;
-        const scale = rawScale || 0.25;
+        const SPRITE_CANVAS = 512; // expected canvas size per style guide
+        const FOOTPRINT_RATIO = 0.60; // building base = 60% of canvas width
+        const targetW = (this.gridW * TILE_W) / FOOTPRINT_RATIO;
+        // Non-compliant sprites (1024, 1408-wide etc.) scale proportionally from same formula
+        const scale = targetW / img.width;
         img.setScale(scale);
-        // Absolute height cap — prevent runaway large sprites
-        const maxH = (this.gridH + 8) * TILE_H * 4;
-        if (img.displayHeight > maxH) {
-          img.setScale(maxH / img.height);
-        }
-        const spriteH = img.height * scale;
-        // Anchor at bottom-center — sprite base sits exactly on the isometric ground plane.
-        // All sprites have 30px transparent padding; origin(0.5, 1.0) accounts for that.
+        const spriteH = img.displayHeight;
+        // Anchor at bottom-center of canvas. The building base sits at ~80% down
+        // the canvas (y=400 of 512), so we offset up by 20% of display height to
+        // put the base on the ground plane rather than the canvas bottom edge.
         img.setOrigin(0.5, 1.0);
-        // Sprites have 30px transparent padding on all sides.
-        // Shift up 30px so the actual pixel base sits on the ground plane.
-        img.setY(-30 * scale);
+        const baseOffsetFraction = (img.height - img.height * 0.80) / img.height; // top 20%
+        img.setY(-baseOffsetFraction * spriteH);
         this.container.addAt(img, 0); // add behind label
         this.spriteImg = img;
 
-        // Update label above sprite — place above the very top of the sprite
-        this.label.setPosition(0, -(spriteH - 30 * scale + 8));
+        // Label: place above the visible top of the sprite
+        const visibleTop = spriteH * (1 - baseOffsetFraction);
+        this.label.setPosition(0, -(visibleTop + 6));
         this.label.setText(`${this.name} Lv${this.level}`);
         // DO NOT set sprite interactive — grid-based click detection handles it
         // (sprite bounds would allow clicks on empty sky above the building)

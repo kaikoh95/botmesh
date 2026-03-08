@@ -68,6 +68,9 @@ export default class TownScene extends Phaser.Scene {
     for (const name of lifeSprites) {
       this.load.image(`life-${name}`, `assets/sprites/life/${name}.png`);
     }
+
+    // Ground tile sprites
+    this.load.image('tile-path', 'assets/buildings/path-tile.png');
   }
 
   create() {
@@ -267,31 +270,47 @@ export default class TownScene extends Phaser.Scene {
 
   _drawGround(mapW, mapH) {
     if (this._groundGraphics) { this._groundGraphics.destroy(); }
+    if (this._pathSprites) { this._pathSprites.forEach(s => s.destroy()); }
+    this._pathSprites = [];
+
     const g = this.add.graphics();
     this._groundGraphics = g;
     g.setDepth(0);
+
+    // Check if path tile sprite is loaded
+    const hasPathSprite = this.textures.exists('tile-path');
 
     for (let y = 0; y < mapH; y++) {
       for (let x = 0; x < mapW; x++) {
         const screen = this.gridToScreen(x, y);
         const isWater = this._isWater(x, y);
         const isPath = this._isPath(x, y);
-        // Alternating tile shading — natural checkerboard grid (no alpha tricks needed)
         const even = (x + y) % 2 === 0;
+
+        if (isPath && hasPathSprite) {
+          // Pixel art cobblestone tile sprite — scale to exactly one isometric tile
+          const img = this.add.image(screen.x, screen.y, 'tile-path');
+          img.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
+          // Sprite should display at TILE_W × TILE_H (64×32)
+          img.setDisplaySize(TILE_W, TILE_H);
+          img.setOrigin(0.5, 0.5);
+          img.setDepth(0.5); // above base ground, below buildings
+          this._pathSprites.push(img);
+          continue; // skip programmatic drawing for this tile
+        }
+
         let baseColor;
         if (isWater) {
           baseColor = this._waterColor(x, y);
         } else if (isPath) {
-          // Winter paths: dark wet stone, snow packed at edges
+          // Fallback if sprite not loaded yet
           baseColor = even ? 0x6a6878 : 0x5c5a6a;
         } else {
           baseColor = this._grassColor(x, y);
-          // Shift alternate tiles ±12 brightness for a visible grid
           if (even) {
-            // Brighter even tiles — snow catches light on one face
             const r = ((baseColor >> 16) & 0xff) + 22;
             const g2 = ((baseColor >> 8) & 0xff) + 24;
-            const b2 = (baseColor & 0xff) + 32; // cooler blue highlights on snow
+            const b2 = (baseColor & 0xff) + 32;
             baseColor = (Math.min(r,255) << 16) | (Math.min(g2,255) << 8) | Math.min(b2,255);
           }
         }
