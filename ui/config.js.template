@@ -1,0 +1,1 @@
+window.BOTMESH_STATE_URL = '{{BOTMESH_API_URL}}';

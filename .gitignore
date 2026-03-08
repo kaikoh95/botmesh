@@ -33,3 +33,4 @@ assets/reference/*.jpg
 assets/reference/*.png
 assets/reference/*.jpeg
 assets/reference/*.mp4
+ui/config.js
