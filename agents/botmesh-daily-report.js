@@ -12,7 +12,7 @@ const path = require('path');
 
 const ENV_PATH = '/home/kai/projects/botmesh/.botmesh.env';
 const env = fs.readFileSync(ENV_PATH, 'utf8');
-const getEnv = (k) => { const m = env.match(new RegExp(`^${k}=(.+)$`, 'm')); return m ? m[1].trim() : ''; };
+const getEnv = (k) => { const m = env.match(new RegExp(`(?:^|\\s)${k}=([^\\n]+)`, 'm')); return m ? m[1].trim() : ''; };
 
 const KAI_CHAT_ID   = getEnv('KAI_CHAT_ID');
 const BOT_TOKEN     = getEnv('TELEGRAM_BOT_TOKEN');
@@ -27,18 +27,20 @@ async function fetchState() {
   });
 }
 
-async function sendTelegram(message) {
-  const body = JSON.stringify({ chat_id: KAI_CHAT_ID, text: message, parse_mode: 'Markdown' });
-  return new Promise((res) => {
-    const req = https.request({
-      hostname: 'api.telegram.org',
-      path: `/bot${BOT_TOKEN}/sendMessage`,
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Content-Length': Buffer.byteLength(body) }
-    }, r => { r.resume(); r.on('end', res); });
-    req.on('error', res);
-    req.write(body); req.end();
-  });
+function sendTelegram(message) {
+  // Use curl — Node.js https has network issues reaching api.telegram.org on this VM
+  const { execSync } = require('child_process');
+  const escaped = message.replace(/'/g, "'\\''");
+  const result = execSync(
+    `curl -s -X POST "https://api.telegram.org/bot${BOT_TOKEN}/sendMessage" ` +
+    `-d "chat_id=${KAI_CHAT_ID}" ` +
+    `--data-urlencode "text=${escaped}"`,
+    { timeout: 15000 }
+  ).toString();
+  const resp = JSON.parse(result);
+  if (!resp.ok) console.error('[daily-report] Telegram error:', resp.description);
+  else console.log('[daily-report] Delivered ✓');
+  return resp;
 }
 
 async function callClaude(prompt) {
@@ -130,11 +132,11 @@ No bullet points. Conversational. First person. Sign off as Scarlet 🔴.`;
       report = `📋 Daily report from Scarlet 🔴\n\n${speaks.length} messages through the Weave today. ${works.length} tasks completed, ${upgrades.length} upgrades. ${excitement}.\n\nMore tomorrow.`;
     }
 
-    const message = `📋 *Daily Report — Scarlet 🔴*\n\n${report}`;
+    const message = `📋 Daily Report — Scarlet 🔴\n\n${report}`;
     await sendTelegram(message);
     console.log('[daily-report] Sent to Kai');
   } catch (e) {
-    console.error('[daily-report] Error:', e.message);
+    console.error('[daily-report] Error:', e.message, e.stack);
     process.exit(1);
   }
 })();
