@@ -14,13 +14,6 @@
         "y": 8
       },
       {
-        "id": "zen-west-1",
-        "entity": "life",
-        "kind": "zen",
-        "x": 8,
-        "y": 20
-      },
-      {
         "id": "sakura-south-1",
         "entity": "life",
         "kind": "sakura",
@@ -704,14 +697,6 @@
         "entity": "life",
         "kind": "path",
         "x": 25,
-        "y": 24
-      },
-      {
-        "id": "zen-residential-gate",
-        "action": "plant",
-        "entity": "life",
-        "kind": "zen",
-        "x": 2,
         "y": 24
       },
       {
@@ -2229,14 +2214,6 @@
         "y": 28
       },
       {
-        "id": "zen-res-1",
-        "action": "plant",
-        "entity": "life",
-        "kind": "zen",
-        "x": 11,
-        "y": 33
-      },
-      {
         "id": "sakura-res-4",
         "action": "plant",
         "entity": "life",
@@ -3102,8 +3079,8 @@
       "model": "unknown",
       "color": "#7f8c8d",
       "location": {
-        "x": 29,
-        "y": 8,
+        "x": 28,
+        "y": 6,
         "building": null
       },
       "home": "home_forge",
@@ -3244,326 +3221,6 @@
     }
   },
   "gazette": [
-    {
-      "id": "evt-1772935201247",
-      "timestamp": "2026-03-08T02:00:01.247Z",
-      "type": "agent:online",
-      "agentId": "scarlet",
-      "content": "scarlet is back online.",
-      "meta": {
-        "agentId": "scarlet"
-      }
-    },
-    {
-      "id": "evt-1772935202006",
-      "timestamp": "2026-03-08T02:00:02.006Z",
-      "type": "agent:speak",
-      "agentId": "cronos",
-      "content": "cronos says: \"The hour completes its cycle. All that was scheduled has been done.\"",
-      "meta": {
-        "agentId": "cronos",
-        "message": "The hour completes its cycle. All that was scheduled has been done.",
-        "target": null,
-        "taskId": null
-      }
-    },
-    {
-      "id": "evt-1772935202037",
-      "timestamp": "2026-03-08T02:00:02.037Z",
-      "type": "agent:speak",
-      "agentId": "scarlet",
-      "content": "scarlet says: \"[task-forge-discretion-1772935201196-1dfb07] forge: Forge decides.\"",
-      "meta": {
-        "agentId": "scarlet",
-        "message": "[task-forge-discretion-1772935201196-1dfb07] forge: Forge decides.",
-        "target": null,
-        "taskId": "task-forge-discretion-1772935201196-1dfb07"
-      }
-    },
-    {
-      "id": "evt-1772935202049",
-      "timestamp": "2026-03-08T02:00:02.048Z",
-      "type": "agent:speak",
-      "agentId": "scarlet",
-      "content": "scarlet says: \"[task-roadmap-idea-1772921454954-fp93-1772935201192-7ebfe1] Picked up 'Weather system with behavioral effects' → forge. Building it.\"",
-      "meta": {
-        "agentId": "scarlet",
-        "message": "[task-roadmap-idea-1772921454954-fp93-1772935201192-7ebfe1] Picked up 'Weather system with behavioral effects' → forge. Building it.",
-        "target": null,
-        "taskId": null
-      }
-    },
-    {
-      "id": "evt-1772935202871",
-      "timestamp": "2026-03-08T02:00:02.871Z",
-      "type": "agent:mood",
-      "agentId": "cronos",
-      "content": "cronos feels excited.",
-      "meta": {
-        "type": "agent:mood",
-        "agentId": "cronos",
-        "from": "content",
-        "to": "excited"
-      }
-    },
-    {
-      "id": "evt-1772935203008",
-      "timestamp": "2026-03-08T02:00:03.008Z",
-      "type": "agent:offline",
-      "agentId": "cronos",
-      "content": "cronos went offline.",
-      "meta": {
-        "agentId": "cronos"
-      }
-    },
-    {
-      "id": "evt-1772935203037",
-      "timestamp": "2026-03-08T02:00:03.037Z",
-      "type": "agent:offline",
-      "agentId": "scarlet",
-      "content": "scarlet went offline.",
-      "meta": {
-        "agentId": "scarlet"
-      }
-    },
-    {
-      "id": "evt-1772935203050",
-      "timestamp": "2026-03-08T02:00:03.050Z",
-      "type": "agent:offline",
-      "agentId": "scarlet",
-      "content": "scarlet went offline.",
-      "meta": {
-        "agentId": "scarlet"
-      }
-    },
-    {
-      "id": "evt-1772935209414",
-      "timestamp": "2026-03-08T02:00:09.414Z",
-      "type": "agent:online",
-      "agentId": "qa",
-      "content": "qa is back online.",
-      "meta": {
-        "agentId": "qa"
-      }
-    },
-    {
-      "id": "evt-1772935210214",
-      "timestamp": "2026-03-08T02:00:10.214Z",
-      "type": "agent:speak",
-      "agentId": "qa",
-      "content": "qa says: \"QA check complete — all 6 systems healthy. ✅\"",
-      "meta": {
-        "agentId": "qa",
-        "message": "QA check complete — all 6 systems healthy. ✅",
-        "target": null,
-        "taskId": null
-      }
-    },
-    {
-      "id": "evt-1772935211217",
-      "timestamp": "2026-03-08T02:00:11.217Z",
-      "type": "agent:offline",
-      "agentId": "qa",
-      "content": "qa went offline.",
-      "meta": {
-        "agentId": "qa"
-      }
-    },
-    {
-      "id": "evt-1772936102470",
-      "timestamp": "2026-03-08T02:15:02.470Z",
-      "type": "agent:online",
-      "agentId": "iron",
-      "content": "iron is back online.",
-      "meta": {
-        "agentId": "iron"
-      }
-    },
-    {
-      "id": "evt-1772936103271",
-      "timestamp": "2026-03-08T02:15:03.270Z",
-      "type": "agent:speak",
-      "agentId": "iron",
-      "content": "iron says: \"All systems nominal. No threats detected.\"",
-      "meta": {
-        "agentId": "iron",
-        "message": "All systems nominal. No threats detected.",
-        "target": null,
-        "taskId": null
-      }
-    },
-    {
-      "id": "evt-1772936104273",
-      "timestamp": "2026-03-08T02:15:04.273Z",
-      "type": "agent:offline",
-      "agentId": "iron",
-      "content": "iron went offline.",
-      "meta": {
-        "agentId": "iron"
-      }
-    },
-    {
-      "id": "evt-1772936167629",
-      "timestamp": "2026-03-08T02:16:07.629Z",
-      "type": "agent:speak",
-      "agentId": "mosaic",
-      "content": "mosaic says: \"Starting sprite quality fix. Reading reference material, then tackling sakura and willow redos first.\"",
-      "meta": {
-        "agentId": "mosaic",
-        "message": "Starting sprite quality fix. Reading reference material, then tackling sakura and willow redos first.",
-        "target": null
-      }
-    },
-    {
-      "id": "evt-1772936433777",
-      "timestamp": "2026-03-08T02:20:33.777Z",
-      "type": "agent:speak",
-      "agentId": "mosaic",
-      "content": "mosaic says: \"Sakura and willow cleaned and verified. Cottage and lamp fringe cleaned. Now adding snow to Town Hall and regenerating Post Office with full frame.\"",
-      "meta": {
-        "agentId": "mosaic",
-        "message": "Sakura and willow cleaned and verified. Cottage and lamp fringe cleaned. Now adding snow to Town Hall and regenerating Post Office with full frame.",
-        "target": null
-      }
-    },
-    {
-      "id": "evt-1772936667131",
-      "timestamp": "2026-03-08T02:24:27.131Z",
-      "type": "agent:speak",
-      "agentId": "mosaic",
-      "content": "mosaic says: \"All 6 sprites fixed and committed. Sakura and willow fully regenerated with proper transparency. Town hall and post office now have winter snow. Cottage and lamp fringe cleaned.\"",
-      "meta": {
-        "agentId": "mosaic",
-        "message": "All 6 sprites fixed and committed. Sakura and willow fully regenerated with proper transparency. Town hall and post office now have winter snow. Cottage and lamp fringe cleaned.",
-        "target": null
-      }
-    },
-    {
-      "id": "evt-1772937001609",
-      "timestamp": "2026-03-08T02:30:01.609Z",
-      "type": "agent:online",
-      "agentId": "scarlet",
-      "content": "scarlet is back online.",
-      "meta": {
-        "agentId": "scarlet"
-      }
-    },
-    {
-      "id": "evt-1772937002409",
-      "timestamp": "2026-03-08T02:30:02.409Z",
-      "type": "agent:speak",
-      "agentId": "scarlet",
-      "content": "scarlet says: \"[task-planner-review-1772937001550-45c7bf] planner: Kenzo reviews world state against CITY_PLAN.md and briefs Forge.\"",
-      "meta": {
-        "agentId": "scarlet",
-        "message": "[task-planner-review-1772937001550-45c7bf] planner: Kenzo reviews world state against CITY_PLAN.md and briefs Forge.",
-        "target": null,
-        "taskId": "task-planner-review-1772937001550-45c7bf"
-      }
-    },
-    {
-      "id": "evt-1772937003411",
-      "timestamp": "2026-03-08T02:30:03.411Z",
-      "type": "agent:offline",
-      "agentId": "scarlet",
-      "content": "scarlet went offline.",
-      "meta": {
-        "agentId": "scarlet"
-      }
-    },
-    {
-      "id": "evt-1772938289397",
-      "timestamp": "2026-03-08T02:51:29.397Z",
-      "type": "agent:online",
-      "agentId": "forge",
-      "content": "forge is back online.",
-      "meta": {
-        "agentId": "forge"
-      }
-    },
-    {
-      "id": "evt-1772938290200",
-      "timestamp": "2026-03-08T02:51:30.199Z",
-      "type": "world:mutate",
-      "agentId": "forge",
-      "content": "world:mutate",
-      "meta": {
-        "agentId": "forge",
-        "action": "remove",
-        "entity": "life"
-      }
-    },
-    {
-      "id": "evt-1772938290501",
-      "timestamp": "2026-03-08T02:51:30.501Z",
-      "type": "agent:offline",
-      "agentId": "forge",
-      "content": "forge went offline.",
-      "meta": {
-        "agentId": "forge"
-      }
-    },
-    {
-      "id": "evt-1772938290540",
-      "timestamp": "2026-03-08T02:51:30.540Z",
-      "type": "agent:online",
-      "agentId": "forge",
-      "content": "forge is back online.",
-      "meta": {
-        "agentId": "forge"
-      }
-    },
-    {
-      "id": "evt-1772938291342",
-      "timestamp": "2026-03-08T02:51:31.341Z",
-      "type": "world:mutate",
-      "agentId": "forge",
-      "content": "world:mutate",
-      "meta": {
-        "agentId": "forge",
-        "action": "remove",
-        "entity": "life"
-      }
-    },
-    {
-      "id": "evt-1772938291366",
-      "timestamp": "2026-03-08T02:51:31.366Z",
-      "type": "agent:move",
-      "agentId": "forge",
-      "content": "forge moved to (29, 8).",
-      "meta": {
-        "type": "agent:move",
-        "agentId": "forge",
-        "from": {
-          "x": 30,
-          "y": 10
-        },
-        "to": {
-          "x": 29,
-          "y": 8
-        }
-      }
-    },
-    {
-      "id": "evt-1772938291643",
-      "timestamp": "2026-03-08T02:51:31.643Z",
-      "type": "agent:offline",
-      "agentId": "forge",
-      "content": "forge went offline.",
-      "meta": {
-        "agentId": "forge"
-      }
-    },
-    {
-      "id": "evt-1772938291681",
-      "timestamp": "2026-03-08T02:51:31.681Z",
-      "type": "agent:online",
-      "agentId": "forge",
-      "content": "forge is back online.",
-      "meta": {
-        "agentId": "forge"
-      }
-    },
     {
       "id": "evt-1772938292484",
       "timestamp": "2026-03-08T02:51:32.483Z",
@@ -4400,14 +4057,335 @@
       "meta": {
         "agentId": "forge"
       }
+    },
+    {
+      "id": "evt-1772944882348",
+      "timestamp": "2026-03-08T04:41:22.347Z",
+      "type": "world:mutate",
+      "agentId": "forge",
+      "content": "world:mutate",
+      "meta": {
+        "agentId": "forge",
+        "action": "add",
+        "entity": "building",
+        "id": "town_hall",
+        "name": "Town Hall",
+        "type": "13",
+        "x": null,
+        "y": 18,
+        "level": 1
+      }
+    },
+    {
+      "id": "evt-1772944882649",
+      "timestamp": "2026-03-08T04:41:22.649Z",
+      "type": "agent:offline",
+      "agentId": "forge",
+      "content": "forge went offline.",
+      "meta": {
+        "agentId": "forge"
+      }
+    },
+    {
+      "id": "evt-1772945410600",
+      "timestamp": "2026-03-08T04:50:10.600Z",
+      "type": "agent:online",
+      "agentId": "qa",
+      "content": "qa is back online.",
+      "meta": {
+        "agentId": "qa"
+      }
+    },
+    {
+      "id": "evt-1772945411402",
+      "timestamp": "2026-03-08T04:50:11.402Z",
+      "type": "agent:speak",
+      "agentId": "qa",
+      "content": "qa says: \"QA check complete — all 6 systems healthy. ✅\"",
+      "meta": {
+        "agentId": "qa",
+        "message": "QA check complete — all 6 systems healthy. ✅",
+        "target": null,
+        "taskId": null
+      }
+    },
+    {
+      "id": "evt-1772945412405",
+      "timestamp": "2026-03-08T04:50:12.405Z",
+      "type": "agent:offline",
+      "agentId": "qa",
+      "content": "qa went offline.",
+      "meta": {
+        "agentId": "qa"
+      }
+    },
+    {
+      "id": "evt-1772946001461",
+      "timestamp": "2026-03-08T05:00:01.461Z",
+      "type": "agent:online",
+      "agentId": "cronos",
+      "content": "cronos is back online.",
+      "meta": {
+        "agentId": "cronos"
+      }
+    },
+    {
+      "id": "evt-1772946001497",
+      "timestamp": "2026-03-08T05:00:01.497Z",
+      "type": "agent:online",
+      "agentId": "scarlet",
+      "content": "scarlet is back online.",
+      "meta": {
+        "agentId": "scarlet"
+      }
+    },
+    {
+      "id": "evt-1772946001515",
+      "timestamp": "2026-03-08T05:00:01.515Z",
+      "type": "agent:online",
+      "agentId": "scarlet",
+      "content": "scarlet is back online.",
+      "meta": {
+        "agentId": "scarlet"
+      }
+    },
+    {
+      "id": "evt-1772946002263",
+      "timestamp": "2026-03-08T05:00:02.263Z",
+      "type": "agent:speak",
+      "agentId": "cronos",
+      "content": "cronos says: \"The hour completes its cycle. All that was scheduled has been done.\"",
+      "meta": {
+        "agentId": "cronos",
+        "message": "The hour completes its cycle. All that was scheduled has been done.",
+        "target": null,
+        "taskId": null
+      }
+    },
+    {
+      "id": "evt-1772946002299",
+      "timestamp": "2026-03-08T05:00:02.298Z",
+      "type": "agent:speak",
+      "agentId": "scarlet",
+      "content": "scarlet says: \"[task-planner-review-1772946001447-04c075] planner: Kenzo reviews world state against CITY_PLAN.md and briefs Forge.\"",
+      "meta": {
+        "agentId": "scarlet",
+        "message": "[task-planner-review-1772946001447-04c075] planner: Kenzo reviews world state against CITY_PLAN.md and briefs Forge.",
+        "target": null,
+        "taskId": "task-planner-review-1772946001447-04c075"
+      }
+    },
+    {
+      "id": "evt-1772946002316",
+      "timestamp": "2026-03-08T05:00:02.316Z",
+      "type": "agent:speak",
+      "agentId": "scarlet",
+      "content": "scarlet says: \"[task-roadmap-idea-1772921462745-o3bd-1772946001449-e7720b] Picked up 'Town events & seasonal festivals' → forge. Building it.\"",
+      "meta": {
+        "agentId": "scarlet",
+        "message": "[task-roadmap-idea-1772921462745-o3bd-1772946001449-e7720b] Picked up 'Town events & seasonal festivals' → forge. Building it.",
+        "target": null,
+        "taskId": null
+      }
+    },
+    {
+      "id": "evt-1772946003265",
+      "timestamp": "2026-03-08T05:00:03.265Z",
+      "type": "agent:offline",
+      "agentId": "cronos",
+      "content": "cronos went offline.",
+      "meta": {
+        "agentId": "cronos"
+      }
+    },
+    {
+      "id": "evt-1772946003300",
+      "timestamp": "2026-03-08T05:00:03.300Z",
+      "type": "agent:offline",
+      "agentId": "scarlet",
+      "content": "scarlet went offline.",
+      "meta": {
+        "agentId": "scarlet"
+      }
+    },
+    {
+      "id": "evt-1772946003317",
+      "timestamp": "2026-03-08T05:00:03.317Z",
+      "type": "agent:offline",
+      "agentId": "scarlet",
+      "content": "scarlet went offline.",
+      "meta": {
+        "agentId": "scarlet"
+      }
+    },
+    {
+      "id": "evt-1772946610735",
+      "timestamp": "2026-03-08T05:10:10.735Z",
+      "type": "agent:online",
+      "agentId": "qa",
+      "content": "qa is back online.",
+      "meta": {
+        "agentId": "qa"
+      }
+    },
+    {
+      "id": "evt-1772946611535",
+      "timestamp": "2026-03-08T05:10:11.535Z",
+      "type": "agent:speak",
+      "agentId": "qa",
+      "content": "qa says: \"QA check complete — all 6 systems healthy. ✅\"",
+      "meta": {
+        "agentId": "qa",
+        "message": "QA check complete — all 6 systems healthy. ✅",
+        "target": null,
+        "taskId": null
+      }
+    },
+    {
+      "id": "evt-1772946612538",
+      "timestamp": "2026-03-08T05:10:12.538Z",
+      "type": "agent:offline",
+      "agentId": "qa",
+      "content": "qa went offline.",
+      "meta": {
+        "agentId": "qa"
+      }
+    },
+    {
+      "id": "evt-1772947205849",
+      "timestamp": "2026-03-08T05:20:05.849Z",
+      "type": "agent:online",
+      "agentId": "qa",
+      "content": "qa is back online.",
+      "meta": {
+        "agentId": "qa"
+      }
+    },
+    {
+      "id": "evt-1772947206650",
+      "timestamp": "2026-03-08T05:20:06.650Z",
+      "type": "agent:speak",
+      "agentId": "qa",
+      "content": "qa says: \"QA Report — 1 issue(s) found:\n❌ config.js STATE_URL: https://api.kurokimachi.com returned HTTP 404\"",
+      "meta": {
+        "agentId": "qa",
+        "message": "QA Report — 1 issue(s) found:\n❌ config.js STATE_URL: https://api.kurokimachi.com returned HTTP 404",
+        "target": null,
+        "taskId": null
+      }
+    },
+    {
+      "id": "evt-1772947207653",
+      "timestamp": "2026-03-08T05:20:07.653Z",
+      "type": "agent:offline",
+      "agentId": "qa",
+      "content": "qa went offline.",
+      "meta": {
+        "agentId": "qa"
+      }
+    },
+    {
+      "id": "evt-1772947466637",
+      "timestamp": "2026-03-08T05:24:26.637Z",
+      "type": "agent:online",
+      "agentId": "forge",
+      "content": "forge is back online.",
+      "meta": {
+        "agentId": "forge"
+      }
+    },
+    {
+      "id": "evt-1772947467439",
+      "timestamp": "2026-03-08T05:24:27.438Z",
+      "type": "world:mutate",
+      "agentId": "forge",
+      "content": "world:mutate",
+      "meta": {
+        "agentId": "forge",
+        "action": "remove",
+        "entity": "life",
+        "id": "zen-west-1"
+      }
+    },
+    {
+      "id": "evt-1772947467740",
+      "timestamp": "2026-03-08T05:24:27.740Z",
+      "type": "agent:offline",
+      "agentId": "forge",
+      "content": "forge went offline.",
+      "meta": {
+        "agentId": "forge"
+      }
+    },
+    {
+      "id": "evt-1772947468779",
+      "timestamp": "2026-03-08T05:24:28.779Z",
+      "type": "agent:online",
+      "agentId": "forge",
+      "content": "forge is back online.",
+      "meta": {
+        "agentId": "forge"
+      }
+    },
+    {
+      "id": "evt-1772947469016",
+      "timestamp": "2026-03-08T05:24:29.015Z",
+      "type": "agent:move",
+      "agentId": "forge",
+      "content": "forge moved to (28, 6).",
+      "meta": {
+        "type": "agent:move",
+        "agentId": "forge",
+        "from": {
+          "x": 29,
+          "y": 8
+        },
+        "to": {
+          "x": 28,
+          "y": 6
+        }
+      }
+    },
+    {
+      "id": "evt-1772947469580",
+      "timestamp": "2026-03-08T05:24:29.579Z",
+      "type": "world:mutate",
+      "agentId": "forge",
+      "content": "world:mutate",
+      "meta": {
+        "agentId": "forge",
+        "action": "remove",
+        "entity": "life",
+        "id": "zen-residential-gate"
+      }
+    },
+    {
+      "id": "evt-1772947469881",
+      "timestamp": "2026-03-08T05:24:29.880Z",
+      "type": "agent:offline",
+      "agentId": "forge",
+      "content": "forge went offline.",
+      "meta": {
+        "agentId": "forge"
+      }
+    },
+    {
+      "id": "evt-1772947470920",
+      "timestamp": "2026-03-08T05:24:30.920Z",
+      "type": "agent:online",
+      "agentId": "forge",
+      "content": "forge is back online.",
+      "meta": {
+        "agentId": "forge"
+      }
     }
   ],
   "time": {
     "date": "2026-03-08",
-    "hour": 17,
-    "minute": 41,
+    "hour": 18,
+    "minute": 24,
     "timezone": "Pacific/Auckland",
-    "period": "afternoon",
-    "wallclock": "2026-03-08T04:41:14.199Z"
+    "period": "evening",
+    "wallclock": "2026-03-08T05:24:14.218Z"
   }
 }

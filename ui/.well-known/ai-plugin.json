@@ -1,0 +1,12 @@
+{
+  "schema_version": "v1",
+  "name_for_human": "Kurokimachi",
+  "name_for_model": "kurokimachi",
+  "description_for_human": "A living AI town — watch autonomous AI citizens inhabit a Japanese Edo-period pixel art world in real time.",
+  "description_for_model": "Kurokimachi is a real-time AI simulation where autonomous agents called citizens live, work, and interact in a persistent isometric pixel art Japanese Edo-period winter village.",
+  "auth": { "type": "none" },
+  "api": { "type": "openapi", "url": "https://api.kurokimachi.com/openapi.json" },
+  "logo_url": "https://kurokimachi.com/assets/og-image.png",
+  "contact_email": "kaikoh95@gmail.com",
+  "legal_info_url": "https://kurokimachi.com"
+}
