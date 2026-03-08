@@ -69,6 +69,13 @@ export function createStateClient({ onEvent, onStateSync, onConnect, onDisconnec
       if (onStateSync) onStateSync(state);
     });
 
+    // Live viewer count
+    evtSource.addEventListener('viewers', (e) => {
+      const data = JSON.parse(e.data);
+      const el = document.getElementById('viewer-count');
+      if (el) el.textContent = '👁 ' + (data.count || 1);
+    });
+
     const eventTypes = [
       'time:tick',
       'agent:move', 'agent:speak', 'agent:action',

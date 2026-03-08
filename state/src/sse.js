@@ -3,6 +3,14 @@ const KEEPALIVE_INTERVAL = 15000; // SSE comment ping — prevents Cloudflare 10
 
 function createSSEManager(getState) {
   const clients = new Set();
+  let viewerCount = 0;
+
+  function broadcastViewers() {
+    const msg = `event: viewers\ndata: ${JSON.stringify({ count: viewerCount })}\n\n`;
+    for (const client of clients) {
+      client.write(msg);
+    }
+  }
 
   function handler(req, res) {
     res.writeHead(200, {
@@ -24,11 +32,15 @@ function createSSEManager(getState) {
     }
 
     clients.add(res);
-    console.log(`[State] SSE client connected (${clients.size} total)`);
+    viewerCount++;
+    broadcastViewers();
+    console.log(`[State] SSE client connected (${clients.size} total, ${viewerCount} viewers)`);
 
     req.on('close', () => {
       clients.delete(res);
-      console.log(`[State] SSE client disconnected (${clients.size} total)`);
+      viewerCount = Math.max(0, viewerCount - 1);
+      broadcastViewers();
+      console.log(`[State] SSE client disconnected (${clients.size} total, ${viewerCount} viewers)`);
     });
   }
 

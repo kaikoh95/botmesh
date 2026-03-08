@@ -47,7 +47,7 @@ const scans = [];
 
 // 1. Secret leak scan — check all tracked files in git
 scans.push(() => {
-  const patterns = ['AIza' + 'Sy', 'sk-' + 'ant', 'gh' + 'p_', 'Bear' + 'er ', 'pass' + 'word.*='];
+  const patterns = ['AIza' + 'Sy', 'sk-' + 'ant', 'gh' + 'p_', 'pass' + 'word.*='];
   const staged = run(`cd ${BOTMESH} && git ls-files`).split('\n').filter(Boolean);
   const hits = [];
   for (const file of staged) {

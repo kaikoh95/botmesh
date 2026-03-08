@@ -96,7 +96,7 @@ async function runChecks() {
   // 3. UI reachable
   try {
     const { status, body } = await fetchText(`${UI_LOCAL}/`);
-    status === 200 && body.includes('BotMesh')
+    status === 200 && body.includes('Kurokimachi') || body.includes('kurokimachi')
       ? pass('UI HTML :3003')
       : fail('UI HTML :3003', `HTTP ${status} or wrong content`);
   } catch (e) {
