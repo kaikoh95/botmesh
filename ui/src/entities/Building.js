@@ -117,15 +117,16 @@ export default class Building {
         const img = this.scene.add.image(0, 0, texKey);
         // Pixel art: nearest-neighbor filter for crisp rendering
         img.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
-        // Scale to fill the building's isometric footprint width
+        // Scale sprites to be visually impressive — 2.5x the footprint width.
+        // Isometric buildings should tower above their ground footprint (like the OG image).
         const TILE_W = 64;
         const TILE_H = 32;
-        const targetW = this.gridW * TILE_W;
+        const targetW = this.gridW * TILE_W * 2.5;
         const rawScale = targetW / img.width;
-        const scale = Math.round(rawScale * 4) / 4 || rawScale;
+        const scale = rawScale || 0.25;
         img.setScale(scale);
-        // Height cap — sprite must not tower more than 4 tile-rows above footprint
-        const maxH = (this.gridH + 4) * TILE_H * 2.5;
+        // Absolute height cap — prevent runaway large sprites
+        const maxH = (this.gridH + 8) * TILE_H * 4;
         if (img.displayHeight > maxH) {
           img.setScale(maxH / img.height);
         }
