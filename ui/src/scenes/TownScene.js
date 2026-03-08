@@ -426,19 +426,18 @@ export default class TownScene extends Phaser.Scene {
         .map(e => `${Math.round(e.x)},${Math.round(e.y)}`)
     );
     // Redraw ground layer with new path data
-    if (this._groundGraphics) {
-      this._groundGraphics.destroy();
-      this._groundGraphics = null;
-    }
-    this._groundGraphics = this._drawGround(this.mapW || 40, this.mapH || 30);
-    // Draw yards on top of ground
+    this._drawGround(this.mapW || 40, this.mapH || 50);
+    // Draw yards on dedicated layer above ground
     this._drawYards(this._lastBuildings || {});
   }
 
   _drawYards(buildings) {
-    if (!buildings || !this._groundGraphics) return;
-
-    const g = this._groundGraphics; // draw on same layer, after ground
+    if (!buildings) return;
+    // Own dedicated graphics layer — depth 1 sits above ground (depth 0)
+    if (this._yardsGraphics) { this._yardsGraphics.destroy(); this._yardsGraphics = null; }
+    const g = this.add.graphics();
+    g.setDepth(1);
+    this._yardsGraphics = g;
 
     for (const [id, b] of Object.entries(buildings)) {
       if (b.type !== 'cottage' && !id.includes('_home')) continue;
@@ -467,7 +466,7 @@ export default class TownScene extends Phaser.Scene {
           const yardBase = lvl >= 3 ? 0xc8a870 : lvl >= 2 ? 0xb89860 : 0xa88850;
           const yardColor = isEven ? yardBase + 0x101008 : yardBase;
 
-          g.fillStyle(yardColor, 0.7);
+          g.fillStyle(yardColor, 1.0);
           g.beginPath();
           g.moveTo(screen.x, screen.y - 16);
           g.lineTo(screen.x + 32, screen.y);
