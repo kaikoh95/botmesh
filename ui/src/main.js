@@ -459,10 +459,11 @@ async function init() {
             currentAgents[id].state = p.task ? 'working' : 'idle';
           }
           scene.setAgentOnline(id, true);
-          // Walk agent to their target building if one is set
-          if (p.targetBuilding) {
-            scene.walkAgentToBuilding(id, p.targetBuilding);
-            scene.setBuildingWorking(p.targetBuilding, true, id);
+          // Walk agent to building — use explicit target, or fall back to their job building
+          const targetBuilding = p.targetBuilding || AGENT_JOBS[id]?.building || null;
+          if (targetBuilding) {
+            scene.walkAgentToBuilding(id, targetBuilding);
+            scene.setBuildingWorking(targetBuilding, true, id);
           }
           updateRoster(currentAgents);
           break;

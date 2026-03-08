@@ -551,8 +551,8 @@ print('Forge sprite saved')
 
       const STATE_URL = 'https://homeless-matt-juvenile-formula.trycloudflare.com';
 
-      // Wake Forge
-      try { execSync(`curl -s -X POST http://localhost:3002/agents/forge/wake -H "Content-Type: application/json" -d '{"task":"Forge discretion - decide what the world needs"}'`); } catch {}
+      // Wake Forge — pass building so UI walks him to workshop
+      try { execSync(`curl -s -X POST http://localhost:3002/agents/forge/wake -H "Content-Type: application/json" -d '{"task":"Forge discretion - decide what the world needs","building":"workshop"}'`); } catch {}
 
       // Spawn Claude session — Forge decides everything
       const { spawnSession } = require('./spawn-session');
@@ -654,7 +654,7 @@ Make your decision. Do it. Narrate it. One thing. That's all.`);
       const doneIdeas = (roadmap.ideas || []).filter(i => i.status === 'done').map(i => i.title).join(', ');
       const STATE_URL = 'https://homeless-matt-juvenile-formula.trycloudflare.com';
 
-      try { execSync(`curl -s -X POST http://localhost:3002/agents/muse/wake -H "Content-Type: application/json" -d '{"task":"Generate new roadmap ideas"}'`); } catch {}
+      try { execSync(`curl -s -X POST http://localhost:3002/agents/muse/wake -H "Content-Type: application/json" -d '{"task":"Generate new roadmap ideas","building":"observatory"}'`); } catch {}
 
       const { spawnSession } = require('./spawn-session');
       spawnSession('muse', `# Muse 🎭 — The Visionary
@@ -900,6 +900,11 @@ function runIdeasMode() {
     const { spawnSession } = require('./spawn-session');
     const isComplex = idea.complexity === 'complex' || idea.complexity === '1';
     const agent = (idea.agents?.[0]) || 'forge';
+    // Wake agent with their home building so UI shows them walking to work
+    const agentBuildings = { forge:'workshop', lumen:'library', mosaic:'observatory', muse:'observatory',
+      sage:'library', iron:'town_hall', cronos:'post_office', echo:'post_office', scarlet:'town_hall',
+      patch:'bathhouse', canvas:'market' };
+    try { execSync(`curl -s -X POST http://localhost:3002/agents/${agent}/wake -H "Content-Type: application/json" -d '{"task":"${idea.title.replace(/'/g,".")}","building":"${agentBuildings[agent]||'town_hall'}"}'`); } catch {}
     const STATE_URL = 'https://homeless-matt-juvenile-formula.trycloudflare.com';
 
     const brief = `# ${agent.charAt(0).toUpperCase()+agent.slice(1)} — Roadmap Task
