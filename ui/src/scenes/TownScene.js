@@ -55,6 +55,8 @@ export default class TownScene extends Phaser.Scene {
       'townhall-l1','townhall-l2','townhall-l3',
       'well-l1',
       'workshop-l1','workshop-l2',
+      'smithy-l1',
+      'garden-l1',
     ];
     for (const f of buildingFiles) {
       this.load.image(`building-${f}`, `assets/buildings/${f}.png`);
