@@ -26,12 +26,15 @@ export default class TownScene extends Phaser.Scene {
       this.load.image(`agent-${id}`, `assets/sprites/${id}.png`);
     }
     // Building sprites (per level)
-    const buildings = ['bathhouse', 'cottage', 'townhall', 'postoffice', 'plaza', 'torii', 'well', 'workshop', 'library', 'market', 'observatory', 'teahouse'];
+    const buildings = ['bathhouse', 'cottage', 'townhall', 'postoffice', 'plaza', 'torii', 'well', 'workshop', 'library', 'market', 'observatory', 'teahouse', 'keep'];
     for (const b of buildings) {
       for (let lvl = 1; lvl <= 3; lvl++) {
         this.load.image(`building-${b}-l${lvl}`, `assets/buildings/${b}-l${lvl}.png`);
       }
     }
+    // Sacred structures — single level sprites
+    this.load.image('sanctum-l1', 'assets/buildings/sanctum-l1.png');
+    this.load.image('shrine-l1', 'assets/buildings/shrine-l1.png');
     // World life sprites (flora + fauna)
     const lifeSprites = ['sakura', 'bamboo', 'zen', 'koipond', 'deer', 'crane', 'firefly', 'butterfly', 'willow', 'lamp'];
     for (const name of lifeSprites) {
@@ -648,6 +651,26 @@ export default class TownScene extends Phaser.Scene {
 
     const building = new Building(this, bData, pos.x, pos.y);
     this.buildings[bData.id] = building;
+
+    // Scarlet Sanctum — heartbeat alpha pulse
+    if (bData.id === 'scarlet_sanctum' && building.spriteImg) {
+      this.tweens.add({
+        targets: building.spriteImg,
+        alpha: { from: 1, to: 0.65 },
+        duration: 1800,
+        yoyo: true,
+        repeat: -1,
+        ease: 'Sine.easeInOut'
+      });
+      // Deep pulse every 30 minutes
+      this.time.addEvent({
+        delay: 30 * 60 * 1000,
+        callback: () => {
+          this.tweens.add({ targets: building.spriteImg, alpha: 0.3, duration: 400, yoyo: true, repeat: 2 });
+        },
+        loop: true
+      });
+    }
   }
 
   _spawnBuildingDetail(bData, pos) {

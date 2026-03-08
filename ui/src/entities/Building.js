@@ -1,16 +1,19 @@
 // Map building id → sprite texture base name
 const BUILDING_TEXTURE_MAP = {
-  town_hall:   'townhall',
-  post_office: 'postoffice',
-  workshop:    'workshop',
-  library:     'library',
-  market:      'market',
-  observatory: 'observatory',
-  teahouse:    'teahouse',
-  torii:       'torii',
-  plaza:       'plaza',
-  well:        'well',
-  bathhouse:   'bathhouse',
+  town_hall:      'townhall',
+  post_office:    'postoffice',
+  workshop:       'workshop',
+  library:        'library',
+  market:         'market',
+  observatory:    'observatory',
+  teahouse:       'teahouse',
+  torii:          'torii',
+  plaza:          'plaza',
+  well:           'well',
+  bathhouse:      'bathhouse',
+  scarlet_sanctum: 'sanctum',
+  cronos_shrine:  'shrine',
+  iron_keep:      'keep',
 };
 
 // Map building type → sprite texture base name (fallback when id not in map above)

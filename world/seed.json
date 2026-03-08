@@ -2604,6 +2604,36 @@
         "x": 38,
         "y": 27,
         "level": 1
+      },
+      {
+        "id": "scarlet_sanctum",
+        "action": "add",
+        "entity": "building",
+        "name": "The Scarlet Sanctum",
+        "type": "sanctum",
+        "x": 15,
+        "y": 11,
+        "level": 1
+      },
+      {
+        "id": "cronos_shrine",
+        "action": "add",
+        "entity": "building",
+        "name": "The Shrine of Cronos",
+        "type": "shrine",
+        "x": 6,
+        "y": 5,
+        "level": 1
+      },
+      {
+        "id": "iron_keep",
+        "action": "add",
+        "entity": "building",
+        "name": "Iron's Keep",
+        "type": "18",
+        "x": null,
+        "y": 23,
+        "level": 1
       }
     ]
   },
@@ -2978,6 +3008,48 @@
       "currentWorkers": [],
       "upgrading": false,
       "description": ""
+    },
+    "scarlet_sanctum": {
+      "id": "scarlet_sanctum",
+      "name": "The Scarlet Sanctum",
+      "type": "sanctum",
+      "x": 15,
+      "y": 11,
+      "width": 3,
+      "height": 2,
+      "level": 1,
+      "upgrades": [],
+      "currentWorkers": [],
+      "upgrading": false,
+      "description": ""
+    },
+    "cronos_shrine": {
+      "id": "cronos_shrine",
+      "name": "The Shrine of Cronos",
+      "type": "shrine",
+      "x": 6,
+      "y": 5,
+      "width": 3,
+      "height": 2,
+      "level": 1,
+      "upgrades": [],
+      "currentWorkers": [],
+      "upgrading": false,
+      "description": ""
+    },
+    "iron_keep": {
+      "id": "iron_keep",
+      "name": "Iron's Keep",
+      "type": "18",
+      "x": 0,
+      "y": 23,
+      "width": 3,
+      "height": 2,
+      "level": 1,
+      "upgrades": [],
+      "currentWorkers": [],
+      "upgrading": false,
+      "description": ""
     }
   },
   "agents": {
@@ -3024,7 +3096,7 @@
       },
       "home": "home_scarlet",
       "state": "sleeping",
-      "mood": "content",
+      "mood": "excited",
       "online": false,
       "relationships": {},
       "memory": []
@@ -3134,349 +3206,6 @@
     }
   },
   "gazette": [
-    {
-      "id": "evt-1772932396418",
-      "timestamp": "2026-03-08T01:13:16.418Z",
-      "type": "agent:offline",
-      "agentId": "forge",
-      "content": "forge went offline.",
-      "meta": {
-        "agentId": "forge"
-      }
-    },
-    {
-      "id": "evt-1772932396458",
-      "timestamp": "2026-03-08T01:13:16.458Z",
-      "type": "agent:online",
-      "agentId": "forge",
-      "content": "forge is back online.",
-      "meta": {
-        "agentId": "forge"
-      }
-    },
-    {
-      "id": "evt-1772932397260",
-      "timestamp": "2026-03-08T01:13:17.259Z",
-      "type": "world:mutate",
-      "agentId": "forge",
-      "content": "world:mutate",
-      "meta": {
-        "agentId": "forge",
-        "action": "plant",
-        "entity": "life",
-        "kind": "path",
-        "x": 19,
-        "y": 16,
-        "id": "castle-path-2"
-      }
-    },
-    {
-      "id": "evt-1772932397561",
-      "timestamp": "2026-03-08T01:13:17.561Z",
-      "type": "agent:offline",
-      "agentId": "forge",
-      "content": "forge went offline.",
-      "meta": {
-        "agentId": "forge"
-      }
-    },
-    {
-      "id": "evt-1772932415156",
-      "timestamp": "2026-03-08T01:13:35.156Z",
-      "type": "agent:online",
-      "agentId": "forge",
-      "content": "forge is back online.",
-      "meta": {
-        "agentId": "forge"
-      }
-    },
-    {
-      "id": "evt-1772932415959",
-      "timestamp": "2026-03-08T01:13:35.958Z",
-      "type": "world:mutate",
-      "agentId": "forge",
-      "content": "world:mutate",
-      "meta": {
-        "agentId": "forge",
-        "action": "add",
-        "entity": "building",
-        "id": "plaza",
-        "name": "Town Plaza",
-        "type": "plaza",
-        "x": 17,
-        "y": 19,
-        "level": 1
-      }
-    },
-    {
-      "id": "evt-1772932416259",
-      "timestamp": "2026-03-08T01:13:36.259Z",
-      "type": "agent:offline",
-      "agentId": "forge",
-      "content": "forge went offline.",
-      "meta": {
-        "agentId": "forge"
-      }
-    },
-    {
-      "id": "evt-1772932502529",
-      "timestamp": "2026-03-08T01:15:02.529Z",
-      "type": "agent:online",
-      "agentId": "iron",
-      "content": "iron is back online.",
-      "meta": {
-        "agentId": "iron"
-      }
-    },
-    {
-      "id": "evt-1772932503331",
-      "timestamp": "2026-03-08T01:15:03.331Z",
-      "type": "agent:speak",
-      "agentId": "iron",
-      "content": "iron says: \"All systems nominal. No threats detected.\"",
-      "meta": {
-        "agentId": "iron",
-        "message": "All systems nominal. No threats detected.",
-        "target": null,
-        "taskId": null
-      }
-    },
-    {
-      "id": "evt-1772932504334",
-      "timestamp": "2026-03-08T01:15:04.333Z",
-      "type": "agent:offline",
-      "agentId": "iron",
-      "content": "iron went offline.",
-      "meta": {
-        "agentId": "iron"
-      }
-    },
-    {
-      "id": "evt-1772932535349",
-      "timestamp": "2026-03-08T01:15:35.349Z",
-      "type": "agent:online",
-      "agentId": "forge",
-      "content": "forge is back online.",
-      "meta": {
-        "agentId": "forge"
-      }
-    },
-    {
-      "id": "evt-1772932536150",
-      "timestamp": "2026-03-08T01:15:36.149Z",
-      "type": "world:mutate",
-      "agentId": "forge",
-      "content": "world:mutate",
-      "meta": {
-        "agentId": "forge",
-        "action": "add",
-        "entity": "building",
-        "id": "plaza",
-        "name": "Town Plaza",
-        "type": "plaza",
-        "x": 17,
-        "y": 18,
-        "width": 2,
-        "height": 2,
-        "level": 1,
-        "description": "Civic gathering point at the castle approach"
-      }
-    },
-    {
-      "id": "evt-1772932536451",
-      "timestamp": "2026-03-08T01:15:36.451Z",
-      "type": "agent:offline",
-      "agentId": "forge",
-      "content": "forge went offline.",
-      "meta": {
-        "agentId": "forge"
-      }
-    },
-    {
-      "id": "evt-1772932556187",
-      "timestamp": "2026-03-08T01:15:56.187Z",
-      "type": "agent:online",
-      "agentId": "forge",
-      "content": "forge is back online.",
-      "meta": {
-        "agentId": "forge"
-      }
-    },
-    {
-      "id": "evt-1772932556990",
-      "timestamp": "2026-03-08T01:15:56.989Z",
-      "type": "world:mutate",
-      "agentId": "forge",
-      "content": "world:mutate",
-      "meta": {
-        "agentId": "forge",
-        "action": "upgrade",
-        "entity": "building",
-        "id": "library",
-        "level": 2,
-        "upgradedBy": "forge",
-        "note": "Library relocated east — upgraded back to Lv2"
-      }
-    },
-    {
-      "id": "evt-1772932557291",
-      "timestamp": "2026-03-08T01:15:57.291Z",
-      "type": "agent:offline",
-      "agentId": "forge",
-      "content": "forge went offline.",
-      "meta": {
-        "agentId": "forge"
-      }
-    },
-    {
-      "id": "evt-1772932618419",
-      "timestamp": "2026-03-08T01:16:58.419Z",
-      "type": "agent:speak",
-      "agentId": "forge",
-      "content": "forge says: \"Castle district secured. Plaza moved south of the moat to (17,18) — civic approach complete. Library relocated far east to (30,13). Southern bridge cut through the moat at (18-19, y=17) — the castle is reachable. Yards wiring checks out — _lastBuildings is set before loadState, _refreshPaths calls _drawYards correctly.\"",
-      "meta": {
-        "agentId": "forge",
-        "message": "Castle district secured. Plaza moved south of the moat to (17,18) — civic approach complete. Library relocated far east to (30,13). Southern bridge cut through the moat at (18-19, y=17) — the castle is reachable. Yards wiring checks out — _lastBuildings is set before loadState, _refreshPaths calls _drawYards correctly.",
-        "target": null
-      }
-    },
-    {
-      "id": "evt-1772932771475",
-      "timestamp": "2026-03-08T01:19:31.475Z",
-      "type": "agent:speak",
-      "agentId": "planner",
-      "content": "planner says: \"Surveying the land for the first time. 11 buildings, three residential rows, moat around the honmaru. I see districts trying to form but no framework holding them together. Let me draw some boundaries.\"",
-      "meta": {
-        "agentId": "planner",
-        "message": "Surveying the land for the first time. 11 buildings, three residential rows, moat around the honmaru. I see districts trying to form but no framework holding them together. Let me draw some boundaries.",
-        "target": null
-      }
-    },
-    {
-      "id": "evt-1772932805879",
-      "timestamp": "2026-03-08T01:20:05.879Z",
-      "type": "agent:online",
-      "agentId": "qa",
-      "content": "qa is back online.",
-      "meta": {
-        "agentId": "qa"
-      }
-    },
-    {
-      "id": "evt-1772932806680",
-      "timestamp": "2026-03-08T01:20:06.680Z",
-      "type": "agent:speak",
-      "agentId": "qa",
-      "content": "qa says: \"QA check complete — all 6 systems healthy. ✅\"",
-      "meta": {
-        "agentId": "qa",
-        "message": "QA check complete — all 6 systems healthy. ✅",
-        "target": null,
-        "taskId": null
-      }
-    },
-    {
-      "id": "evt-1772932807028",
-      "timestamp": "2026-03-08T01:20:07.028Z",
-      "type": "agent:mood",
-      "agentId": "qa",
-      "content": "qa feels curious.",
-      "meta": {
-        "type": "agent:mood",
-        "agentId": "qa",
-        "from": "content",
-        "to": "curious"
-      }
-    },
-    {
-      "id": "evt-1772932807682",
-      "timestamp": "2026-03-08T01:20:07.682Z",
-      "type": "agent:offline",
-      "agentId": "qa",
-      "content": "qa went offline.",
-      "meta": {
-        "agentId": "qa"
-      }
-    },
-    {
-      "id": "evt-1772933028618",
-      "timestamp": "2026-03-08T01:23:48.618Z",
-      "type": "agent:speak",
-      "agentId": "planner",
-      "content": "planner says: \"Plan drafted. Six districts defined. Brief pipeline to Forge established. First review cycle begins next orchestration run.\"",
-      "meta": {
-        "agentId": "planner",
-        "message": "Plan drafted. Six districts defined. Brief pipeline to Forge established. First review cycle begins next orchestration run.",
-        "target": null
-      }
-    },
-    {
-      "id": "evt-1772933264201",
-      "timestamp": "2026-03-08T01:27:44.201Z",
-      "type": "agent:speak",
-      "agentId": "mosaic",
-      "content": "mosaic says: \"Japan reference sprite pass starting. Studied the Asakusa gate, real sakura, and Fuji photos. Regenerating three sprites with accurate aesthetics — no more generic guesses.\"",
-      "meta": {
-        "agentId": "mosaic",
-        "message": "Japan reference sprite pass starting. Studied the Asakusa gate, real sakura, and Fuji photos. Regenerating three sprites with accurate aesthetics — no more generic guesses.",
-        "target": null
-      }
-    },
-    {
-      "id": "evt-1772933401760",
-      "timestamp": "2026-03-08T01:30:01.760Z",
-      "type": "agent:online",
-      "agentId": "scarlet",
-      "content": "scarlet is back online.",
-      "meta": {
-        "agentId": "scarlet"
-      }
-    },
-    {
-      "id": "evt-1772933402561",
-      "timestamp": "2026-03-08T01:30:02.560Z",
-      "type": "agent:speak",
-      "agentId": "scarlet",
-      "content": "scarlet says: \"[task-planner-review-1772933401722-e98bdb] planner: Kenzo reviews world state against CITY_PLAN.md and briefs Forge.\"",
-      "meta": {
-        "agentId": "scarlet",
-        "message": "[task-planner-review-1772933401722-e98bdb] planner: Kenzo reviews world state against CITY_PLAN.md and briefs Forge.",
-        "target": null,
-        "taskId": "task-planner-review-1772933401722-e98bdb"
-      }
-    },
-    {
-      "id": "evt-1772933403563",
-      "timestamp": "2026-03-08T01:30:03.563Z",
-      "type": "agent:offline",
-      "agentId": "scarlet",
-      "content": "scarlet went offline.",
-      "meta": {
-        "agentId": "scarlet"
-      }
-    },
-    {
-      "id": "evt-1772933446941",
-      "timestamp": "2026-03-08T01:30:46.941Z",
-      "type": "agent:speak",
-      "agentId": "mosaic",
-      "content": "mosaic says: \"Sprite pass complete. Sakura now has visible dark branches through airy pale blossom clusters — no more pink blob. Torii gate is bold vermillion red with dark slate kawara roof and open gateway. Fuji panoramic background saved at bg-fuji.png. All wired and committed.\"",
-      "meta": {
-        "agentId": "mosaic",
-        "message": "Sprite pass complete. Sakura now has visible dark branches through airy pale blossom clusters — no more pink blob. Torii gate is bold vermillion red with dark slate kawara roof and open gateway. Fuji panoramic background saved at bg-fuji.png. All wired and committed.",
-        "target": null
-      }
-    },
-    {
-      "id": "evt-1772934238164",
-      "timestamp": "2026-03-08T01:43:58.163Z",
-      "type": "agent:online",
-      "agentId": "forge",
-      "content": "forge is back online.",
-      "meta": {
-        "agentId": "forge"
-      }
-    },
     {
       "id": "evt-1772934238966",
       "timestamp": "2026-03-08T01:43:58.964Z",
@@ -4308,14 +4037,351 @@
       "meta": {
         "agentId": "forge"
       }
+    },
+    {
+      "id": "evt-1772938443909",
+      "timestamp": "2026-03-08T02:54:03.908Z",
+      "type": "world:mutate",
+      "agentId": "forge",
+      "content": "world:mutate",
+      "meta": {
+        "agentId": "forge",
+        "action": "remove",
+        "entity": "life",
+        "id": "bamboo-res-1"
+      }
+    },
+    {
+      "id": "evt-1772938444210",
+      "timestamp": "2026-03-08T02:54:04.210Z",
+      "type": "agent:offline",
+      "agentId": "forge",
+      "content": "forge went offline.",
+      "meta": {
+        "agentId": "forge"
+      }
+    },
+    {
+      "id": "evt-1772938488917",
+      "timestamp": "2026-03-08T02:54:48.917Z",
+      "type": "agent:speak",
+      "agentId": "mosaic",
+      "content": "mosaic says: \"repainting the torii gate — bold vermillion red, proper isometric 3D depth, no more cyan bleed\"",
+      "meta": {
+        "agentId": "mosaic",
+        "message": "repainting the torii gate — bold vermillion red, proper isometric 3D depth, no more cyan bleed",
+        "target": null
+      }
+    },
+    {
+      "id": "evt-1772938801766",
+      "timestamp": "2026-03-08T03:00:01.766Z",
+      "type": "agent:online",
+      "agentId": "cronos",
+      "content": "cronos is back online.",
+      "meta": {
+        "agentId": "cronos"
+      }
+    },
+    {
+      "id": "evt-1772938801803",
+      "timestamp": "2026-03-08T03:00:01.803Z",
+      "type": "agent:online",
+      "agentId": "scarlet",
+      "content": "scarlet is back online.",
+      "meta": {
+        "agentId": "scarlet"
+      }
+    },
+    {
+      "id": "evt-1772938802568",
+      "timestamp": "2026-03-08T03:00:02.568Z",
+      "type": "agent:speak",
+      "agentId": "cronos",
+      "content": "cronos says: \"The hour completes its cycle. All that was scheduled has been done.\"",
+      "meta": {
+        "agentId": "cronos",
+        "message": "The hour completes its cycle. All that was scheduled has been done.",
+        "target": null,
+        "taskId": null
+      }
+    },
+    {
+      "id": "evt-1772938802604",
+      "timestamp": "2026-03-08T03:00:02.604Z",
+      "type": "agent:speak",
+      "agentId": "scarlet",
+      "content": "scarlet says: \"[task-planner-review-1772938801753-d3b5f4] planner: Kenzo reviews world state against CITY_PLAN.md and briefs Forge.\"",
+      "meta": {
+        "agentId": "scarlet",
+        "message": "[task-planner-review-1772938801753-d3b5f4] planner: Kenzo reviews world state against CITY_PLAN.md and briefs Forge.",
+        "target": null,
+        "taskId": "task-planner-review-1772938801753-d3b5f4"
+      }
+    },
+    {
+      "id": "evt-1772938803569",
+      "timestamp": "2026-03-08T03:00:03.569Z",
+      "type": "agent:offline",
+      "agentId": "cronos",
+      "content": "cronos went offline.",
+      "meta": {
+        "agentId": "cronos"
+      }
+    },
+    {
+      "id": "evt-1772938803605",
+      "timestamp": "2026-03-08T03:00:03.605Z",
+      "type": "agent:offline",
+      "agentId": "scarlet",
+      "content": "scarlet went offline.",
+      "meta": {
+        "agentId": "scarlet"
+      }
+    },
+    {
+      "id": "evt-1772939702902",
+      "timestamp": "2026-03-08T03:15:02.902Z",
+      "type": "agent:online",
+      "agentId": "iron",
+      "content": "iron is back online.",
+      "meta": {
+        "agentId": "iron"
+      }
+    },
+    {
+      "id": "evt-1772939703703",
+      "timestamp": "2026-03-08T03:15:03.703Z",
+      "type": "agent:speak",
+      "agentId": "iron",
+      "content": "iron says: \"All systems nominal. No threats detected.\"",
+      "meta": {
+        "agentId": "iron",
+        "message": "All systems nominal. No threats detected.",
+        "target": null,
+        "taskId": null
+      }
+    },
+    {
+      "id": "evt-1772939704705",
+      "timestamp": "2026-03-08T03:15:04.705Z",
+      "type": "agent:offline",
+      "agentId": "iron",
+      "content": "iron went offline.",
+      "meta": {
+        "agentId": "iron"
+      }
+    },
+    {
+      "id": "evt-1772940602018",
+      "timestamp": "2026-03-08T03:30:02.018Z",
+      "type": "agent:online",
+      "agentId": "scarlet",
+      "content": "scarlet is back online.",
+      "meta": {
+        "agentId": "scarlet"
+      }
+    },
+    {
+      "id": "evt-1772940602820",
+      "timestamp": "2026-03-08T03:30:02.820Z",
+      "type": "agent:speak",
+      "agentId": "scarlet",
+      "content": "scarlet says: \"[task-planner-review-1772940601977-9e88cb] planner: Kenzo reviews world state against CITY_PLAN.md and briefs Forge.\"",
+      "meta": {
+        "agentId": "scarlet",
+        "message": "[task-planner-review-1772940601977-9e88cb] planner: Kenzo reviews world state against CITY_PLAN.md and briefs Forge.",
+        "target": null,
+        "taskId": "task-planner-review-1772940601977-9e88cb"
+      }
+    },
+    {
+      "id": "evt-1772940602983",
+      "timestamp": "2026-03-08T03:30:02.983Z",
+      "type": "agent:mood",
+      "agentId": "scarlet",
+      "content": "scarlet feels excited.",
+      "meta": {
+        "type": "agent:mood",
+        "agentId": "scarlet",
+        "from": "content",
+        "to": "excited"
+      }
+    },
+    {
+      "id": "evt-1772940603822",
+      "timestamp": "2026-03-08T03:30:03.822Z",
+      "type": "agent:offline",
+      "agentId": "scarlet",
+      "content": "scarlet went offline.",
+      "meta": {
+        "agentId": "scarlet"
+      }
+    },
+    {
+      "id": "evt-1772941243443",
+      "timestamp": "2026-03-08T03:40:43.443Z",
+      "type": "agent:online",
+      "agentId": "forge",
+      "content": "forge is back online.",
+      "meta": {
+        "agentId": "forge"
+      }
+    },
+    {
+      "id": "evt-1772941244245",
+      "timestamp": "2026-03-08T03:40:44.243Z",
+      "type": "world:mutate",
+      "agentId": "forge",
+      "content": "world:mutate",
+      "meta": {
+        "agentId": "forge",
+        "action": "add",
+        "entity": "building",
+        "id": "scarlet_sanctum",
+        "name": "The Scarlet Sanctum",
+        "type": "11",
+        "x": null,
+        "y": 15,
+        "level": 1
+      }
+    },
+    {
+      "id": "evt-1772941244545",
+      "timestamp": "2026-03-08T03:40:44.545Z",
+      "type": "agent:offline",
+      "agentId": "forge",
+      "content": "forge went offline.",
+      "meta": {
+        "agentId": "forge"
+      }
+    },
+    {
+      "id": "evt-1772941255530",
+      "timestamp": "2026-03-08T03:40:55.530Z",
+      "type": "agent:online",
+      "agentId": "forge",
+      "content": "forge is back online.",
+      "meta": {
+        "agentId": "forge"
+      }
+    },
+    {
+      "id": "evt-1772941256332",
+      "timestamp": "2026-03-08T03:40:56.331Z",
+      "type": "world:mutate",
+      "agentId": "forge",
+      "content": "world:mutate",
+      "meta": {
+        "agentId": "forge",
+        "action": "remove",
+        "entity": "building",
+        "id": "scarlet_sanctum"
+      }
+    },
+    {
+      "id": "evt-1772941256633",
+      "timestamp": "2026-03-08T03:40:56.633Z",
+      "type": "agent:offline",
+      "agentId": "forge",
+      "content": "forge went offline.",
+      "meta": {
+        "agentId": "forge"
+      }
+    },
+    {
+      "id": "evt-1772941259524",
+      "timestamp": "2026-03-08T03:40:59.524Z",
+      "type": "agent:online",
+      "agentId": "forge",
+      "content": "forge is back online.",
+      "meta": {
+        "agentId": "forge"
+      }
+    },
+    {
+      "id": "evt-1772941260326",
+      "timestamp": "2026-03-08T03:41:00.325Z",
+      "type": "world:mutate",
+      "agentId": "forge",
+      "content": "world:mutate",
+      "meta": {
+        "agentId": "forge",
+        "action": "add",
+        "entity": "building",
+        "id": "scarlet_sanctum",
+        "name": "The Scarlet Sanctum",
+        "type": "sanctum",
+        "x": 15,
+        "y": 11,
+        "level": 1
+      }
+    },
+    {
+      "id": "evt-1772941260627",
+      "timestamp": "2026-03-08T03:41:00.627Z",
+      "type": "agent:offline",
+      "agentId": "forge",
+      "content": "forge went offline.",
+      "meta": {
+        "agentId": "forge"
+      }
+    },
+    {
+      "id": "evt-1772941263966",
+      "timestamp": "2026-03-08T03:41:03.966Z",
+      "type": "agent:online",
+      "agentId": "forge",
+      "content": "forge is back online.",
+      "meta": {
+        "agentId": "forge"
+      }
+    },
+    {
+      "id": "evt-1772941264768",
+      "timestamp": "2026-03-08T03:41:04.767Z",
+      "type": "world:mutate",
+      "agentId": "forge",
+      "content": "world:mutate",
+      "meta": {
+        "agentId": "forge",
+        "action": "add",
+        "entity": "building",
+        "id": "cronos_shrine",
+        "name": "The Shrine of Cronos",
+        "type": "shrine",
+        "x": 6,
+        "y": 5,
+        "level": 1
+      }
+    },
+    {
+      "id": "evt-1772941265069",
+      "timestamp": "2026-03-08T03:41:05.069Z",
+      "type": "agent:offline",
+      "agentId": "forge",
+      "content": "forge went offline.",
+      "meta": {
+        "agentId": "forge"
+      }
+    },
+    {
+      "id": "evt-1772941266537",
+      "timestamp": "2026-03-08T03:41:06.537Z",
+      "type": "agent:online",
+      "agentId": "forge",
+      "content": "forge is back online.",
+      "meta": {
+        "agentId": "forge"
+      }
     }
   ],
   "time": {
     "date": "2026-03-08",
-    "hour": 15,
-    "minute": 53,
+    "hour": 16,
+    "minute": 40,
     "timezone": "Pacific/Auckland",
     "period": "afternoon",
-    "wallclock": "2026-03-08T02:53:14.148Z"
+    "wallclock": "2026-03-08T03:40:14.165Z"
   }
 }
