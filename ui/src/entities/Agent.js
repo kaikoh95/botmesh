@@ -53,8 +53,8 @@ export default class Agent {
       this.body = scene.add.image(0, 0, textureKey);
       // Pixel art: use nearest-neighbor filter, integer scale
       this.body.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
-      // Scale to 32px tall — matches building proportions on the isometric grid
-      const targetH = 32;
+      // Scale to 48px tall — visible on mobile
+      const targetH = 48;
       const rawScale = targetH / this.body.height;
       // Round to nearest 0.25 step to avoid sub-pixel blur
       const scale = Math.round(rawScale * 4) / 4 || rawScale;
