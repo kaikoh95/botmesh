@@ -691,29 +691,7 @@ async function init() {
   client.connectSSE();
 
   // ── Agent Schedule System ───────────────────────────────────────────────
-  function checkAgentSchedules() {
-    if (!scene) return;
-    const hour = new Date().getHours();
-
-    Object.entries(AGENT_JOBS).forEach(([agentId, job]) => {
-      const agent = currentAgents[agentId];
-      if (!agent || agent.state === 'dormant' || agent.online === false) return;
-
-      const [start, end] = job.shift;
-      const onShift = start < end
-        ? (hour >= start && hour < end)
-        : (hour >= start || hour < end); // overnight shift (e.g. 20–4)
-
-      if (onShift) {
-        scene.walkAgentToBuilding(agentId, job.building);
-      } else {
-        scene.walkAgentHome(agentId);
-      }
-    });
-  }
-
-  setInterval(checkAgentSchedules, 60000);
-  setTimeout(checkAgentSchedules, 5000); // run shortly after connect
+  // Agent schedules are driven by the server-side walk ticker — no client timers needed.
 
   // Building clicks → HTML panel
   window.addEventListener('botmesh:buildingclick', (e) => {
