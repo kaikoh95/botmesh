@@ -69,10 +69,10 @@ scans.push(() => {
 scans.push(() => {
   const envInGit = run(`cd ${BOTMESH} && git ls-files | grep -E "\\.env"`);
   if (envInGit) return { severity: 'critical', msg: `.env file tracked in git: ${envInGit} — must be removed.` };
-  const botmeshEnv = '/home/kai/.botmesh.env';
+  const botmeshEnv = '/home/kai/projects/botmesh/.botmesh.env';
   if (fs.existsSync(botmeshEnv)) {
     const perms = run(`stat -c %a ${botmeshEnv}`);
-    if (perms !== '600') return { severity: 'warn', msg: `.botmesh.env permissions are ${perms}, should be 600. Run: chmod 600 ~/.botmesh.env` };
+    if (perms !== '600') return { severity: 'warn', msg: `.botmesh.env permissions are ${perms}, should be 600. Run: chmod 600 ~/projects/botmesh/.botmesh.env` };
   }
   return null;
 });

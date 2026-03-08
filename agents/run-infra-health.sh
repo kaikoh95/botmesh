@@ -1,6 +1,6 @@
 #!/bin/bash
 export PATH="/home/kai/.nvm/versions/node/v24.14.0/bin:$PATH"
-source /home/kai/.botmesh.env
+source /home/kai/projects/botmesh/.botmesh.env
 
 TUNNEL_URL="${TUNNEL_URL:-https://api.kurokimachi.com}"
 UI_URL="https://kurokimachi.com"

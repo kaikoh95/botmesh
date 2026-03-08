@@ -28,10 +28,10 @@ const KAI_CHAT_ID = process.env.KAI_CHAT_ID;
 const RATE_LIMIT_MS = 2 * 60 * 1000; // 2 minutes
 const RECONNECT_MS  = 5 * 1000;      // 5s retry on disconnect
 
-// Load token from ~/.botmesh.env
+// Load token from .botmesh.env (repo root)
 function loadToken() {
   try {
-    const envFile = path.join(process.env.HOME, '.botmesh.env');
+    const envFile = '/home/kai/projects/botmesh/.botmesh.env';
     const content = fs.readFileSync(envFile, 'utf8');
     const match   = content.match(/TELEGRAM_BOT_TOKEN[=\s]+([^\s\n]+)/);
     if (match) return match[1].replace(/^['"]|['"]$/g, '');

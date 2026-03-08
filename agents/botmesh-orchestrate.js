@@ -41,7 +41,7 @@ const ROADMAP = path.join(BOTMESH, 'roadmap.json');
 // ─── Auth token for write endpoints ──────────────────────────────────────────
 function loadSpeakToken() {
   try {
-    const env = fs.readFileSync(path.join(process.env.HOME, '.botmesh.env'), 'utf8');
+    const env = fs.readFileSync('/home/kai/projects/botmesh/.botmesh.env', 'utf8');
     const m = env.match(/^BOTMESH_SPEAK_TOKEN=(.+)$/m);
     return m ? m[1].trim() : process.env.BOTMESH_SPEAK_TOKEN || '';
   } catch { return process.env.BOTMESH_SPEAK_TOKEN || ''; }
