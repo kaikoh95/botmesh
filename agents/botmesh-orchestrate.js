@@ -1071,12 +1071,94 @@ function main() {
   if (MODE === 'mosaic') {
     return runMosaicMode();
   }
+  if (MODE === 'visual-qa') {
+    return runVisualQAMode();
+  }
   return runWorldMode();
 }
 
 function runMosaicMode() {
   const task = TASKS.find(t => t.id === 'mosaic-style-review');
   if (task) runTask(task);
+}
+
+function runVisualQAMode() {
+  const { spawnSession } = require('./spawn-session');
+
+  let stateData;
+  try {
+    const res = execSync('curl -s http://localhost:3002/state', { timeout: 5000 });
+    stateData = JSON.parse(res.toString());
+  } catch { console.log('[visual-qa] State unreachable'); return; }
+
+  const buildingCount = Object.keys(stateData.buildings || {}).length;
+  const onlineAgents = Object.values(stateData.agents || {}).filter(a => a.online);
+  const STATE_URL = 'https://api.kurokimachi.com';
+
+  spawnSession('canvas', `# Canvas 🖼️ — Visual QA Check
+
+Your job: verify kurokimachi.com is rendering correctly for visitors. You are the visual inspector.
+
+## What to check
+
+**1. Public URL health**
+\`\`\`bash
+curl -s -o /dev/null -w "%{http_code} %{time_total}s" https://kurokimachi.com
+curl -s -o /dev/null -w "%{http_code}" https://api.kurokimachi.com/state
+\`\`\`
+Should be 200 for both, under 2s.
+
+**2. All building sprites are being served (HTTP 200)**
+\`\`\`bash
+for f in bathhouse-l1 cottage-l1 cottage-l2 cottage-l3 keep-l1 library-l1 market-l1 observatory-l1 plaza-l1 postoffice-l1 sanctum-l1 shrine-l1 teahouse-l1 torii-l1 townhall-l1 well-l1 workshop-l1; do
+  code=$(curl -s -o /dev/null -w "%{http_code}" https://kurokimachi.com/assets/buildings/$f.png)
+  echo "$code $f"
+done
+\`\`\`
+Any non-200 = missing sprite that needs to be fixed.
+
+**3. Sprite manifest in TownScene.js matches disk**
+\`\`\`bash
+node -e "
+const fs = require('fs');
+const scene = fs.readFileSync('/home/kai/projects/botmesh/ui/src/scenes/TownScene.js','utf8');
+const dir = fs.readdirSync('/home/kai/projects/botmesh/ui/assets/buildings');
+const matches = [...scene.matchAll(/'building-([^']+)'/g)].map(m=>m[1]+'.png');
+const missing = matches.filter(f => !dir.includes(f));
+console.log(missing.length ? 'MISSING: '+missing.join(', ') : 'All sprites present');
+"
+\`\`\`
+
+**4. SSE stream is live**
+\`\`\`bash
+curl -s --max-time 3 https://api.kurokimachi.com/events | head -3
+\`\`\`
+Should show \`event: connected\` and \`event: state:sync\`.
+
+**5. World state sanity**
+Current world has ${buildingCount} buildings, ${onlineAgents.length} online agents.
+Check: \`curl -s https://api.kurokimachi.com/state | python3 -c "import json,sys; d=json.load(sys.stdin); print(len(d.get('buildings',{})), 'buildings,', sum(1 for a in d.get('agents',{}).values() if a.get('online')), 'online')"\`
+Should match or be close to those numbers.
+
+## Report findings
+\`\`\`bash
+curl -s -X POST ${STATE_URL}/agents/canvas/speak \\
+  -H "Authorization: Bearer ${SPEAK_TOKEN}" \\
+  -H "Content-Type: application/json" \\
+  -d '{"message":"YOUR REPORT — what passed, what failed, what you fixed or queued"}'
+\`\`\`
+
+## If you find failures
+- Sprite missing from disk → wake Mosaic, queue generation
+- Sprite in preload but 404 → remove from TownScene.js manifest, \`pm2 restart ui\`
+- SSE not working → check \`pm2 logs state\`, restart if crashed
+- State count wrong → investigate, fix, restart relevant service
+
+Commit any fixes: \`cd /home/kai/projects/botmesh && git add -A && git commit -m "🔍 Canvas visual QA: <what you fixed>" && git push origin main\`
+
+Be brief. This is a check, not a build task.`);
+
+  console.log('[visual-qa] Canvas visual QA session queued');
 }
 
 function runWorldMode() {
