@@ -895,6 +895,566 @@
         "kind": "sakura",
         "x": 28,
         "y": 24
+      },
+      {
+        "id": "road-main-3",
+        "action": "plant",
+        "entity": "life",
+        "kind": "path",
+        "x": 3,
+        "y": 16
+      },
+      {
+        "id": "road-main2-3",
+        "action": "plant",
+        "entity": "life",
+        "kind": "path",
+        "x": 3,
+        "y": 17
+      },
+      {
+        "id": "road-main-4",
+        "action": "plant",
+        "entity": "life",
+        "kind": "path",
+        "x": 4,
+        "y": 16
+      },
+      {
+        "id": "road-main2-4",
+        "action": "plant",
+        "entity": "life",
+        "kind": "path",
+        "x": 4,
+        "y": 17
+      },
+      {
+        "id": "road-main-5",
+        "action": "plant",
+        "entity": "life",
+        "kind": "path",
+        "x": 5,
+        "y": 16
+      },
+      {
+        "id": "road-main2-5",
+        "action": "plant",
+        "entity": "life",
+        "kind": "path",
+        "x": 5,
+        "y": 17
+      },
+      {
+        "id": "road-main-6",
+        "action": "plant",
+        "entity": "life",
+        "kind": "path",
+        "x": 6,
+        "y": 16
+      },
+      {
+        "id": "road-main2-6",
+        "action": "plant",
+        "entity": "life",
+        "kind": "path",
+        "x": 6,
+        "y": 17
+      },
+      {
+        "id": "road-main-7",
+        "action": "plant",
+        "entity": "life",
+        "kind": "path",
+        "x": 7,
+        "y": 16
+      },
+      {
+        "id": "road-main2-7",
+        "action": "plant",
+        "entity": "life",
+        "kind": "path",
+        "x": 7,
+        "y": 17
+      },
+      {
+        "id": "road-main-8",
+        "action": "plant",
+        "entity": "life",
+        "kind": "path",
+        "x": 8,
+        "y": 16
+      },
+      {
+        "id": "road-main2-8",
+        "action": "plant",
+        "entity": "life",
+        "kind": "path",
+        "x": 8,
+        "y": 17
+      },
+      {
+        "id": "road-main-9",
+        "action": "plant",
+        "entity": "life",
+        "kind": "path",
+        "x": 9,
+        "y": 16
+      },
+      {
+        "id": "road-main2-9",
+        "action": "plant",
+        "entity": "life",
+        "kind": "path",
+        "x": 9,
+        "y": 17
+      },
+      {
+        "id": "road-main-10",
+        "action": "plant",
+        "entity": "life",
+        "kind": "path",
+        "x": 10,
+        "y": 16
+      },
+      {
+        "id": "road-main2-10",
+        "action": "plant",
+        "entity": "life",
+        "kind": "path",
+        "x": 10,
+        "y": 17
+      },
+      {
+        "id": "road-main-11",
+        "action": "plant",
+        "entity": "life",
+        "kind": "path",
+        "x": 11,
+        "y": 16
+      },
+      {
+        "id": "road-main2-11",
+        "action": "plant",
+        "entity": "life",
+        "kind": "path",
+        "x": 11,
+        "y": 17
+      },
+      {
+        "id": "road-main-12",
+        "action": "plant",
+        "entity": "life",
+        "kind": "path",
+        "x": 12,
+        "y": 16
+      },
+      {
+        "id": "road-main2-12",
+        "action": "plant",
+        "entity": "life",
+        "kind": "path",
+        "x": 12,
+        "y": 17
+      },
+      {
+        "id": "road-main-13",
+        "action": "plant",
+        "entity": "life",
+        "kind": "path",
+        "x": 13,
+        "y": 16
+      },
+      {
+        "id": "road-main2-13",
+        "action": "plant",
+        "entity": "life",
+        "kind": "path",
+        "x": 13,
+        "y": 17
+      },
+      {
+        "id": "road-main-14",
+        "action": "plant",
+        "entity": "life",
+        "kind": "path",
+        "x": 14,
+        "y": 16
+      },
+      {
+        "id": "road-main2-14",
+        "action": "plant",
+        "entity": "life",
+        "kind": "path",
+        "x": 14,
+        "y": 17
+      },
+      {
+        "id": "road-main-15",
+        "action": "plant",
+        "entity": "life",
+        "kind": "path",
+        "x": 15,
+        "y": 16
+      },
+      {
+        "id": "road-main2-15",
+        "action": "plant",
+        "entity": "life",
+        "kind": "path",
+        "x": 15,
+        "y": 17
+      },
+      {
+        "id": "road-main-16",
+        "action": "plant",
+        "entity": "life",
+        "kind": "path",
+        "x": 16,
+        "y": 16
+      },
+      {
+        "id": "road-main2-16",
+        "action": "plant",
+        "entity": "life",
+        "kind": "path",
+        "x": 16,
+        "y": 17
+      },
+      {
+        "id": "road-main-17",
+        "action": "plant",
+        "entity": "life",
+        "kind": "path",
+        "x": 17,
+        "y": 16
+      },
+      {
+        "id": "road-main2-17",
+        "action": "plant",
+        "entity": "life",
+        "kind": "path",
+        "x": 17,
+        "y": 17
+      },
+      {
+        "id": "road-main-18",
+        "action": "plant",
+        "entity": "life",
+        "kind": "path",
+        "x": 18,
+        "y": 16
+      },
+      {
+        "id": "road-main2-18",
+        "action": "plant",
+        "entity": "life",
+        "kind": "path",
+        "x": 18,
+        "y": 17
+      },
+      {
+        "id": "road-main-19",
+        "action": "plant",
+        "entity": "life",
+        "kind": "path",
+        "x": 19,
+        "y": 16
+      },
+      {
+        "id": "road-main2-19",
+        "action": "plant",
+        "entity": "life",
+        "kind": "path",
+        "x": 19,
+        "y": 17
+      },
+      {
+        "id": "road-main-20",
+        "action": "plant",
+        "entity": "life",
+        "kind": "path",
+        "x": 20,
+        "y": 16
+      },
+      {
+        "id": "road-main2-20",
+        "action": "plant",
+        "entity": "life",
+        "kind": "path",
+        "x": 20,
+        "y": 17
+      },
+      {
+        "id": "road-main-21",
+        "action": "plant",
+        "entity": "life",
+        "kind": "path",
+        "x": 21,
+        "y": 16
+      },
+      {
+        "id": "road-main2-21",
+        "action": "plant",
+        "entity": "life",
+        "kind": "path",
+        "x": 21,
+        "y": 17
+      },
+      {
+        "id": "road-main-22",
+        "action": "plant",
+        "entity": "life",
+        "kind": "path",
+        "x": 22,
+        "y": 16
+      },
+      {
+        "id": "road-main2-22",
+        "action": "plant",
+        "entity": "life",
+        "kind": "path",
+        "x": 22,
+        "y": 17
+      },
+      {
+        "id": "road-main-23",
+        "action": "plant",
+        "entity": "life",
+        "kind": "path",
+        "x": 23,
+        "y": 16
+      },
+      {
+        "id": "road-main2-23",
+        "action": "plant",
+        "entity": "life",
+        "kind": "path",
+        "x": 23,
+        "y": 17
+      },
+      {
+        "id": "road-main-24",
+        "action": "plant",
+        "entity": "life",
+        "kind": "path",
+        "x": 24,
+        "y": 16
+      },
+      {
+        "id": "road-main2-24",
+        "action": "plant",
+        "entity": "life",
+        "kind": "path",
+        "x": 24,
+        "y": 17
+      },
+      {
+        "id": "road-main-25",
+        "action": "plant",
+        "entity": "life",
+        "kind": "path",
+        "x": 25,
+        "y": 16
+      },
+      {
+        "id": "road-main2-25",
+        "action": "plant",
+        "entity": "life",
+        "kind": "path",
+        "x": 25,
+        "y": 17
+      },
+      {
+        "id": "road-main-26",
+        "action": "plant",
+        "entity": "life",
+        "kind": "path",
+        "x": 26,
+        "y": 16
+      },
+      {
+        "id": "road-main2-26",
+        "action": "plant",
+        "entity": "life",
+        "kind": "path",
+        "x": 26,
+        "y": 17
+      },
+      {
+        "id": "road-main-27",
+        "action": "plant",
+        "entity": "life",
+        "kind": "path",
+        "x": 27,
+        "y": 16
+      },
+      {
+        "id": "road-main2-27",
+        "action": "plant",
+        "entity": "life",
+        "kind": "path",
+        "x": 27,
+        "y": 17
+      },
+      {
+        "id": "road-main-28",
+        "action": "plant",
+        "entity": "life",
+        "kind": "path",
+        "x": 28,
+        "y": 16
+      },
+      {
+        "id": "road-main2-28",
+        "action": "plant",
+        "entity": "life",
+        "kind": "path",
+        "x": 28,
+        "y": 17
+      },
+      {
+        "id": "road-main-29",
+        "action": "plant",
+        "entity": "life",
+        "kind": "path",
+        "x": 29,
+        "y": 16
+      },
+      {
+        "id": "road-main2-29",
+        "action": "plant",
+        "entity": "life",
+        "kind": "path",
+        "x": 29,
+        "y": 17
+      },
+      {
+        "id": "road-main-30",
+        "action": "plant",
+        "entity": "life",
+        "kind": "path",
+        "x": 30,
+        "y": 16
+      },
+      {
+        "id": "road-main2-30",
+        "action": "plant",
+        "entity": "life",
+        "kind": "path",
+        "x": 30,
+        "y": 17
+      },
+      {
+        "id": "road-main-31",
+        "action": "plant",
+        "entity": "life",
+        "kind": "path",
+        "x": 31,
+        "y": 16
+      },
+      {
+        "id": "road-main2-31",
+        "action": "plant",
+        "entity": "life",
+        "kind": "path",
+        "x": 31,
+        "y": 17
+      },
+      {
+        "id": "road-main-32",
+        "action": "plant",
+        "entity": "life",
+        "kind": "path",
+        "x": 32,
+        "y": 16
+      },
+      {
+        "id": "road-main2-32",
+        "action": "plant",
+        "entity": "life",
+        "kind": "path",
+        "x": 32,
+        "y": 17
+      },
+      {
+        "id": "road-spine-8",
+        "action": "plant",
+        "entity": "life",
+        "kind": "path",
+        "x": 16,
+        "y": 8
+      },
+      {
+        "id": "road-spine2-8",
+        "action": "plant",
+        "entity": "life",
+        "kind": "path",
+        "x": 17,
+        "y": 8
+      },
+      {
+        "id": "road-spine-9",
+        "action": "plant",
+        "entity": "life",
+        "kind": "path",
+        "x": 16,
+        "y": 9
+      },
+      {
+        "id": "road-spine2-9",
+        "action": "plant",
+        "entity": "life",
+        "kind": "path",
+        "x": 17,
+        "y": 9
+      },
+      {
+        "id": "road-spine-10",
+        "action": "plant",
+        "entity": "life",
+        "kind": "path",
+        "x": 16,
+        "y": 10
+      },
+      {
+        "id": "road-spine2-10",
+        "action": "plant",
+        "entity": "life",
+        "kind": "path",
+        "x": 17,
+        "y": 10
+      },
+      {
+        "id": "road-spine-11",
+        "action": "plant",
+        "entity": "life",
+        "kind": "path",
+        "x": 16,
+        "y": 11
+      },
+      {
+        "id": "road-spine2-11",
+        "action": "plant",
+        "entity": "life",
+        "kind": "path",
+        "x": 17,
+        "y": 11
+      },
+      {
+        "id": "road-spine-12",
+        "action": "plant",
+        "entity": "life",
+        "kind": "path",
+        "x": 16,
+        "y": 12
+      },
+      {
+        "id": "road-spine2-12",
+        "action": "plant",
+        "entity": "life",
+        "kind": "path",
+        "x": 17,
+        "y": 12
       }
     ]
   },
@@ -1073,8 +1633,10 @@
           "note": "Post Office is the last civic building stuck at Lv1 — time to bring it up to speed with the rest of the village. Better routes, faster mail, stronger community ties."
         }
       ],
-      "currentWorkers": [],
-      "upgrading": false,
+      "currentWorkers": [
+        "forge"
+      ],
+      "upgrading": true,
       "description": ""
     },
     "well": {
@@ -1278,13 +1840,13 @@
       "model": "unknown",
       "color": "#7f8c8d",
       "location": {
-        "x": 7,
-        "y": 3,
-        "building": null
+        "x": 22,
+        "y": 5,
+        "building": "post_office"
       },
       "home": "home_forge",
       "state": "idle",
-      "mood": "focused",
+      "mood": "tired",
       "online": true,
       "relationships": {},
       "memory": []
@@ -1421,8 +1983,8 @@
   },
   "gazette": [
     {
-      "id": "evt-1772927315540",
-      "timestamp": "2026-03-07T23:48:35.540Z",
+      "id": "evt-1772928559769",
+      "timestamp": "2026-03-08T00:09:19.769Z",
       "type": "agent:online",
       "agentId": "forge",
       "content": "forge is back online.",
@@ -1431,26 +1993,24 @@
       }
     },
     {
-      "id": "evt-1772927316342",
-      "timestamp": "2026-03-07T23:48:36.341Z",
+      "id": "evt-1772928560571",
+      "timestamp": "2026-03-08T00:09:20.570Z",
       "type": "world:mutate",
       "agentId": "forge",
       "content": "world:mutate",
       "meta": {
         "agentId": "forge",
-        "action": "add",
-        "entity": "building",
-        "id": "echo_home",
-        "name": "Echo's Cottage",
-        "type": "cottage",
-        "x": 8,
-        "y": 29,
-        "level": 1
+        "action": "plant",
+        "entity": "life",
+        "kind": "path",
+        "x": 22,
+        "y": 16,
+        "id": "road-main-22"
       }
     },
     {
-      "id": "evt-1772927316643",
-      "timestamp": "2026-03-07T23:48:36.643Z",
+      "id": "evt-1772928560872",
+      "timestamp": "2026-03-08T00:09:20.872Z",
       "type": "agent:offline",
       "agentId": "forge",
       "content": "forge went offline.",
@@ -1459,8 +2019,8 @@
       }
     },
     {
-      "id": "evt-1772927316685",
-      "timestamp": "2026-03-07T23:48:36.685Z",
+      "id": "evt-1772928560911",
+      "timestamp": "2026-03-08T00:09:20.911Z",
       "type": "agent:online",
       "agentId": "forge",
       "content": "forge is back online.",
@@ -1469,8 +2029,624 @@
       }
     },
     {
-      "id": "evt-1772927317416",
-      "timestamp": "2026-03-07T23:48:37.416Z",
+      "id": "evt-1772928561712",
+      "timestamp": "2026-03-08T00:09:21.711Z",
+      "type": "world:mutate",
+      "agentId": "forge",
+      "content": "world:mutate",
+      "meta": {
+        "agentId": "forge",
+        "action": "plant",
+        "entity": "life",
+        "kind": "path",
+        "x": 22,
+        "y": 17,
+        "id": "road-main2-22"
+      }
+    },
+    {
+      "id": "evt-1772928562013",
+      "timestamp": "2026-03-08T00:09:22.013Z",
+      "type": "agent:offline",
+      "agentId": "forge",
+      "content": "forge went offline.",
+      "meta": {
+        "agentId": "forge"
+      }
+    },
+    {
+      "id": "evt-1772928562051",
+      "timestamp": "2026-03-08T00:09:22.051Z",
+      "type": "agent:online",
+      "agentId": "forge",
+      "content": "forge is back online.",
+      "meta": {
+        "agentId": "forge"
+      }
+    },
+    {
+      "id": "evt-1772928562853",
+      "timestamp": "2026-03-08T00:09:22.853Z",
+      "type": "world:mutate",
+      "agentId": "forge",
+      "content": "world:mutate",
+      "meta": {
+        "agentId": "forge",
+        "action": "plant",
+        "entity": "life",
+        "kind": "path",
+        "x": 23,
+        "y": 16,
+        "id": "road-main-23"
+      }
+    },
+    {
+      "id": "evt-1772928563156",
+      "timestamp": "2026-03-08T00:09:23.155Z",
+      "type": "agent:offline",
+      "agentId": "forge",
+      "content": "forge went offline.",
+      "meta": {
+        "agentId": "forge"
+      }
+    },
+    {
+      "id": "evt-1772928563194",
+      "timestamp": "2026-03-08T00:09:23.194Z",
+      "type": "agent:online",
+      "agentId": "forge",
+      "content": "forge is back online.",
+      "meta": {
+        "agentId": "forge"
+      }
+    },
+    {
+      "id": "evt-1772928563652",
+      "timestamp": "2026-03-08T00:09:23.652Z",
+      "type": "agent:work",
+      "agentId": "forge",
+      "content": "forge entered Post Office to work.",
+      "meta": {
+        "type": "agent:work",
+        "agentId": "forge",
+        "buildingId": "post_office",
+        "buildingName": "Post Office",
+        "action": "start"
+      }
+    },
+    {
+      "id": "evt-1772928563652",
+      "timestamp": "2026-03-08T00:09:23.652Z",
+      "type": "agent:state",
+      "agentId": "forge",
+      "content": "forge is now working.",
+      "meta": {
+        "type": "agent:state",
+        "agentId": "forge",
+        "from": "idle",
+        "to": "working"
+      }
+    },
+    {
+      "id": "evt-1772928563996",
+      "timestamp": "2026-03-08T00:09:23.994Z",
+      "type": "world:mutate",
+      "agentId": "forge",
+      "content": "world:mutate",
+      "meta": {
+        "agentId": "forge",
+        "action": "plant",
+        "entity": "life",
+        "kind": "path",
+        "x": 23,
+        "y": 17,
+        "id": "road-main2-23"
+      }
+    },
+    {
+      "id": "evt-1772928564296",
+      "timestamp": "2026-03-08T00:09:24.296Z",
+      "type": "agent:offline",
+      "agentId": "forge",
+      "content": "forge went offline.",
+      "meta": {
+        "agentId": "forge"
+      }
+    },
+    {
+      "id": "evt-1772928564336",
+      "timestamp": "2026-03-08T00:09:24.336Z",
+      "type": "agent:online",
+      "agentId": "forge",
+      "content": "forge is back online.",
+      "meta": {
+        "agentId": "forge"
+      }
+    },
+    {
+      "id": "evt-1772928565137",
+      "timestamp": "2026-03-08T00:09:25.136Z",
+      "type": "world:mutate",
+      "agentId": "forge",
+      "content": "world:mutate",
+      "meta": {
+        "agentId": "forge",
+        "action": "plant",
+        "entity": "life",
+        "kind": "path",
+        "x": 24,
+        "y": 16,
+        "id": "road-main-24"
+      }
+    },
+    {
+      "id": "evt-1772928565438",
+      "timestamp": "2026-03-08T00:09:25.438Z",
+      "type": "agent:offline",
+      "agentId": "forge",
+      "content": "forge went offline.",
+      "meta": {
+        "agentId": "forge"
+      }
+    },
+    {
+      "id": "evt-1772928565478",
+      "timestamp": "2026-03-08T00:09:25.478Z",
+      "type": "agent:online",
+      "agentId": "forge",
+      "content": "forge is back online.",
+      "meta": {
+        "agentId": "forge"
+      }
+    },
+    {
+      "id": "evt-1772928566279",
+      "timestamp": "2026-03-08T00:09:26.278Z",
+      "type": "world:mutate",
+      "agentId": "forge",
+      "content": "world:mutate",
+      "meta": {
+        "agentId": "forge",
+        "action": "plant",
+        "entity": "life",
+        "kind": "path",
+        "x": 24,
+        "y": 17,
+        "id": "road-main2-24"
+      }
+    },
+    {
+      "id": "evt-1772928566580",
+      "timestamp": "2026-03-08T00:09:26.580Z",
+      "type": "agent:offline",
+      "agentId": "forge",
+      "content": "forge went offline.",
+      "meta": {
+        "agentId": "forge"
+      }
+    },
+    {
+      "id": "evt-1772928566618",
+      "timestamp": "2026-03-08T00:09:26.618Z",
+      "type": "agent:online",
+      "agentId": "forge",
+      "content": "forge is back online.",
+      "meta": {
+        "agentId": "forge"
+      }
+    },
+    {
+      "id": "evt-1772928567420",
+      "timestamp": "2026-03-08T00:09:27.420Z",
+      "type": "world:mutate",
+      "agentId": "forge",
+      "content": "world:mutate",
+      "meta": {
+        "agentId": "forge",
+        "action": "plant",
+        "entity": "life",
+        "kind": "path",
+        "x": 25,
+        "y": 16,
+        "id": "road-main-25"
+      }
+    },
+    {
+      "id": "evt-1772928567722",
+      "timestamp": "2026-03-08T00:09:27.722Z",
+      "type": "agent:offline",
+      "agentId": "forge",
+      "content": "forge went offline.",
+      "meta": {
+        "agentId": "forge"
+      }
+    },
+    {
+      "id": "evt-1772928567761",
+      "timestamp": "2026-03-08T00:09:27.761Z",
+      "type": "agent:online",
+      "agentId": "forge",
+      "content": "forge is back online.",
+      "meta": {
+        "agentId": "forge"
+      }
+    },
+    {
+      "id": "evt-1772928568562",
+      "timestamp": "2026-03-08T00:09:28.561Z",
+      "type": "world:mutate",
+      "agentId": "forge",
+      "content": "world:mutate",
+      "meta": {
+        "agentId": "forge",
+        "action": "plant",
+        "entity": "life",
+        "kind": "path",
+        "x": 25,
+        "y": 17,
+        "id": "road-main2-25"
+      }
+    },
+    {
+      "id": "evt-1772928568863",
+      "timestamp": "2026-03-08T00:09:28.863Z",
+      "type": "agent:offline",
+      "agentId": "forge",
+      "content": "forge went offline.",
+      "meta": {
+        "agentId": "forge"
+      }
+    },
+    {
+      "id": "evt-1772928568902",
+      "timestamp": "2026-03-08T00:09:28.902Z",
+      "type": "agent:online",
+      "agentId": "forge",
+      "content": "forge is back online.",
+      "meta": {
+        "agentId": "forge"
+      }
+    },
+    {
+      "id": "evt-1772928569705",
+      "timestamp": "2026-03-08T00:09:29.704Z",
+      "type": "world:mutate",
+      "agentId": "forge",
+      "content": "world:mutate",
+      "meta": {
+        "agentId": "forge",
+        "action": "plant",
+        "entity": "life",
+        "kind": "path",
+        "x": 26,
+        "y": 16,
+        "id": "road-main-26"
+      }
+    },
+    {
+      "id": "evt-1772928569971",
+      "timestamp": "2026-03-08T00:09:29.971Z",
+      "type": "agent:speak",
+      "agentId": "forge",
+      "content": "forge says: \"Just thinking out loud.\"",
+      "meta": {
+        "type": "agent:speak",
+        "agentId": "forge",
+        "message": "Just thinking out loud.",
+        "target": null
+      }
+    },
+    {
+      "id": "evt-1772928570006",
+      "timestamp": "2026-03-08T00:09:30.006Z",
+      "type": "agent:offline",
+      "agentId": "forge",
+      "content": "forge went offline.",
+      "meta": {
+        "agentId": "forge"
+      }
+    },
+    {
+      "id": "evt-1772928570044",
+      "timestamp": "2026-03-08T00:09:30.044Z",
+      "type": "agent:online",
+      "agentId": "forge",
+      "content": "forge is back online.",
+      "meta": {
+        "agentId": "forge"
+      }
+    },
+    {
+      "id": "evt-1772928570847",
+      "timestamp": "2026-03-08T00:09:30.846Z",
+      "type": "world:mutate",
+      "agentId": "forge",
+      "content": "world:mutate",
+      "meta": {
+        "agentId": "forge",
+        "action": "plant",
+        "entity": "life",
+        "kind": "path",
+        "x": 26,
+        "y": 17,
+        "id": "road-main2-26"
+      }
+    },
+    {
+      "id": "evt-1772928571149",
+      "timestamp": "2026-03-08T00:09:31.149Z",
+      "type": "agent:offline",
+      "agentId": "forge",
+      "content": "forge went offline.",
+      "meta": {
+        "agentId": "forge"
+      }
+    },
+    {
+      "id": "evt-1772928571189",
+      "timestamp": "2026-03-08T00:09:31.189Z",
+      "type": "agent:online",
+      "agentId": "forge",
+      "content": "forge is back online.",
+      "meta": {
+        "agentId": "forge"
+      }
+    },
+    {
+      "id": "evt-1772928571990",
+      "timestamp": "2026-03-08T00:09:31.990Z",
+      "type": "world:mutate",
+      "agentId": "forge",
+      "content": "world:mutate",
+      "meta": {
+        "agentId": "forge",
+        "action": "plant",
+        "entity": "life",
+        "kind": "path",
+        "x": 27,
+        "y": 16,
+        "id": "road-main-27"
+      }
+    },
+    {
+      "id": "evt-1772928572291",
+      "timestamp": "2026-03-08T00:09:32.291Z",
+      "type": "agent:offline",
+      "agentId": "forge",
+      "content": "forge went offline.",
+      "meta": {
+        "agentId": "forge"
+      }
+    },
+    {
+      "id": "evt-1772928572331",
+      "timestamp": "2026-03-08T00:09:32.331Z",
+      "type": "agent:online",
+      "agentId": "forge",
+      "content": "forge is back online.",
+      "meta": {
+        "agentId": "forge"
+      }
+    },
+    {
+      "id": "evt-1772928573134",
+      "timestamp": "2026-03-08T00:09:33.133Z",
+      "type": "world:mutate",
+      "agentId": "forge",
+      "content": "world:mutate",
+      "meta": {
+        "agentId": "forge",
+        "action": "plant",
+        "entity": "life",
+        "kind": "path",
+        "x": 27,
+        "y": 17,
+        "id": "road-main2-27"
+      }
+    },
+    {
+      "id": "evt-1772928573436",
+      "timestamp": "2026-03-08T00:09:33.436Z",
+      "type": "agent:offline",
+      "agentId": "forge",
+      "content": "forge went offline.",
+      "meta": {
+        "agentId": "forge"
+      }
+    },
+    {
+      "id": "evt-1772928573474",
+      "timestamp": "2026-03-08T00:09:33.474Z",
+      "type": "agent:online",
+      "agentId": "forge",
+      "content": "forge is back online.",
+      "meta": {
+        "agentId": "forge"
+      }
+    },
+    {
+      "id": "evt-1772928574277",
+      "timestamp": "2026-03-08T00:09:34.276Z",
+      "type": "world:mutate",
+      "agentId": "forge",
+      "content": "world:mutate",
+      "meta": {
+        "agentId": "forge",
+        "action": "plant",
+        "entity": "life",
+        "kind": "path",
+        "x": 28,
+        "y": 16,
+        "id": "road-main-28"
+      }
+    },
+    {
+      "id": "evt-1772928574579",
+      "timestamp": "2026-03-08T00:09:34.579Z",
+      "type": "agent:offline",
+      "agentId": "forge",
+      "content": "forge went offline.",
+      "meta": {
+        "agentId": "forge"
+      }
+    },
+    {
+      "id": "evt-1772928574618",
+      "timestamp": "2026-03-08T00:09:34.618Z",
+      "type": "agent:online",
+      "agentId": "forge",
+      "content": "forge is back online.",
+      "meta": {
+        "agentId": "forge"
+      }
+    },
+    {
+      "id": "evt-1772928575418",
+      "timestamp": "2026-03-08T00:09:35.418Z",
+      "type": "world:mutate",
+      "agentId": "forge",
+      "content": "world:mutate",
+      "meta": {
+        "agentId": "forge",
+        "action": "plant",
+        "entity": "life",
+        "kind": "path",
+        "x": 28,
+        "y": 17,
+        "id": "road-main2-28"
+      }
+    },
+    {
+      "id": "evt-1772928575719",
+      "timestamp": "2026-03-08T00:09:35.719Z",
+      "type": "agent:offline",
+      "agentId": "forge",
+      "content": "forge went offline.",
+      "meta": {
+        "agentId": "forge"
+      }
+    },
+    {
+      "id": "evt-1772928575759",
+      "timestamp": "2026-03-08T00:09:35.759Z",
+      "type": "agent:online",
+      "agentId": "forge",
+      "content": "forge is back online.",
+      "meta": {
+        "agentId": "forge"
+      }
+    },
+    {
+      "id": "evt-1772928576561",
+      "timestamp": "2026-03-08T00:09:36.560Z",
+      "type": "world:mutate",
+      "agentId": "forge",
+      "content": "world:mutate",
+      "meta": {
+        "agentId": "forge",
+        "action": "plant",
+        "entity": "life",
+        "kind": "path",
+        "x": 29,
+        "y": 16,
+        "id": "road-main-29"
+      }
+    },
+    {
+      "id": "evt-1772928576862",
+      "timestamp": "2026-03-08T00:09:36.862Z",
+      "type": "agent:offline",
+      "agentId": "forge",
+      "content": "forge went offline.",
+      "meta": {
+        "agentId": "forge"
+      }
+    },
+    {
+      "id": "evt-1772928576900",
+      "timestamp": "2026-03-08T00:09:36.900Z",
+      "type": "agent:online",
+      "agentId": "forge",
+      "content": "forge is back online.",
+      "meta": {
+        "agentId": "forge"
+      }
+    },
+    {
+      "id": "evt-1772928577703",
+      "timestamp": "2026-03-08T00:09:37.702Z",
+      "type": "world:mutate",
+      "agentId": "forge",
+      "content": "world:mutate",
+      "meta": {
+        "agentId": "forge",
+        "action": "plant",
+        "entity": "life",
+        "kind": "path",
+        "x": 29,
+        "y": 17,
+        "id": "road-main2-29"
+      }
+    },
+    {
+      "id": "evt-1772928578004",
+      "timestamp": "2026-03-08T00:09:38.004Z",
+      "type": "agent:offline",
+      "agentId": "forge",
+      "content": "forge went offline.",
+      "meta": {
+        "agentId": "forge"
+      }
+    },
+    {
+      "id": "evt-1772928578042",
+      "timestamp": "2026-03-08T00:09:38.042Z",
+      "type": "agent:online",
+      "agentId": "forge",
+      "content": "forge is back online.",
+      "meta": {
+        "agentId": "forge"
+      }
+    },
+    {
+      "id": "evt-1772928578844",
+      "timestamp": "2026-03-08T00:09:38.843Z",
+      "type": "world:mutate",
+      "agentId": "forge",
+      "content": "world:mutate",
+      "meta": {
+        "agentId": "forge",
+        "action": "plant",
+        "entity": "life",
+        "kind": "path",
+        "x": 30,
+        "y": 16,
+        "id": "road-main-30"
+      }
+    },
+    {
+      "id": "evt-1772928579145",
+      "timestamp": "2026-03-08T00:09:39.145Z",
+      "type": "agent:offline",
+      "agentId": "forge",
+      "content": "forge went offline.",
+      "meta": {
+        "agentId": "forge"
+      }
+    },
+    {
+      "id": "evt-1772928579184",
+      "timestamp": "2026-03-08T00:09:39.184Z",
+      "type": "agent:online",
+      "agentId": "forge",
+      "content": "forge is back online.",
+      "meta": {
+        "agentId": "forge"
+      }
+    },
+    {
+      "id": "evt-1772928579205",
+      "timestamp": "2026-03-08T00:09:39.205Z",
       "type": "agent:state",
       "agentId": "forge",
       "content": "forge is now talking.",
@@ -1482,221 +2658,8 @@
       }
     },
     {
-      "id": "evt-1772927317485",
-      "timestamp": "2026-03-07T23:48:37.485Z",
-      "type": "world:mutate",
-      "agentId": "forge",
-      "content": "world:mutate",
-      "meta": {
-        "agentId": "forge",
-        "action": "remove",
-        "entity": "building",
-        "id": "canvas_home"
-      }
-    },
-    {
-      "id": "evt-1772927317786",
-      "timestamp": "2026-03-07T23:48:37.785Z",
-      "type": "agent:offline",
-      "agentId": "forge",
-      "content": "forge went offline.",
-      "meta": {
-        "agentId": "forge"
-      }
-    },
-    {
-      "id": "evt-1772927317827",
-      "timestamp": "2026-03-07T23:48:37.827Z",
-      "type": "agent:online",
-      "agentId": "forge",
-      "content": "forge is back online.",
-      "meta": {
-        "agentId": "forge"
-      }
-    },
-    {
-      "id": "evt-1772927318628",
-      "timestamp": "2026-03-07T23:48:38.627Z",
-      "type": "world:mutate",
-      "agentId": "forge",
-      "content": "world:mutate",
-      "meta": {
-        "agentId": "forge",
-        "action": "add",
-        "entity": "building",
-        "id": "canvas_home",
-        "name": "Canvas's Cottage",
-        "type": "cottage",
-        "x": 13,
-        "y": 29,
-        "level": 1
-      }
-    },
-    {
-      "id": "evt-1772927318929",
-      "timestamp": "2026-03-07T23:48:38.929Z",
-      "type": "agent:offline",
-      "agentId": "forge",
-      "content": "forge went offline.",
-      "meta": {
-        "agentId": "forge"
-      }
-    },
-    {
-      "id": "evt-1772927318968",
-      "timestamp": "2026-03-07T23:48:38.968Z",
-      "type": "agent:online",
-      "agentId": "forge",
-      "content": "forge is back online.",
-      "meta": {
-        "agentId": "forge"
-      }
-    },
-    {
-      "id": "evt-1772927319769",
-      "timestamp": "2026-03-07T23:48:39.769Z",
-      "type": "world:mutate",
-      "agentId": "forge",
-      "content": "world:mutate",
-      "meta": {
-        "agentId": "forge",
-        "action": "remove",
-        "entity": "building",
-        "id": "patch_home"
-      }
-    },
-    {
-      "id": "evt-1772927320070",
-      "timestamp": "2026-03-07T23:48:40.070Z",
-      "type": "agent:offline",
-      "agentId": "forge",
-      "content": "forge went offline.",
-      "meta": {
-        "agentId": "forge"
-      }
-    },
-    {
-      "id": "evt-1772927320110",
-      "timestamp": "2026-03-07T23:48:40.110Z",
-      "type": "agent:online",
-      "agentId": "forge",
-      "content": "forge is back online.",
-      "meta": {
-        "agentId": "forge"
-      }
-    },
-    {
-      "id": "evt-1772927320912",
-      "timestamp": "2026-03-07T23:48:40.911Z",
-      "type": "world:mutate",
-      "agentId": "forge",
-      "content": "world:mutate",
-      "meta": {
-        "agentId": "forge",
-        "action": "add",
-        "entity": "building",
-        "id": "patch_home",
-        "name": "Patch's Cottage",
-        "type": "cottage",
-        "x": 18,
-        "y": 29,
-        "level": 1
-      }
-    },
-    {
-      "id": "evt-1772927321213",
-      "timestamp": "2026-03-07T23:48:41.213Z",
-      "type": "agent:offline",
-      "agentId": "forge",
-      "content": "forge went offline.",
-      "meta": {
-        "agentId": "forge"
-      }
-    },
-    {
-      "id": "evt-1772927321255",
-      "timestamp": "2026-03-07T23:48:41.255Z",
-      "type": "agent:online",
-      "agentId": "forge",
-      "content": "forge is back online.",
-      "meta": {
-        "agentId": "forge"
-      }
-    },
-    {
-      "id": "evt-1772927322056",
-      "timestamp": "2026-03-07T23:48:42.056Z",
-      "type": "world:mutate",
-      "agentId": "forge",
-      "content": "world:mutate",
-      "meta": {
-        "agentId": "forge",
-        "action": "remove",
-        "entity": "building",
-        "id": "sage_home"
-      }
-    },
-    {
-      "id": "evt-1772927322357",
-      "timestamp": "2026-03-07T23:48:42.357Z",
-      "type": "agent:offline",
-      "agentId": "forge",
-      "content": "forge went offline.",
-      "meta": {
-        "agentId": "forge"
-      }
-    },
-    {
-      "id": "evt-1772927322400",
-      "timestamp": "2026-03-07T23:48:42.399Z",
-      "type": "agent:online",
-      "agentId": "forge",
-      "content": "forge is back online.",
-      "meta": {
-        "agentId": "forge"
-      }
-    },
-    {
-      "id": "evt-1772927323201",
-      "timestamp": "2026-03-07T23:48:43.200Z",
-      "type": "world:mutate",
-      "agentId": "forge",
-      "content": "world:mutate",
-      "meta": {
-        "agentId": "forge",
-        "action": "add",
-        "entity": "building",
-        "id": "sage_home",
-        "name": "Sage's Cottage",
-        "type": "cottage",
-        "x": 23,
-        "y": 29,
-        "level": 1
-      }
-    },
-    {
-      "id": "evt-1772927323502",
-      "timestamp": "2026-03-07T23:48:43.502Z",
-      "type": "agent:offline",
-      "agentId": "forge",
-      "content": "forge went offline.",
-      "meta": {
-        "agentId": "forge"
-      }
-    },
-    {
-      "id": "evt-1772927330373",
-      "timestamp": "2026-03-07T23:48:50.373Z",
-      "type": "agent:online",
-      "agentId": "forge",
-      "content": "forge is back online.",
-      "meta": {
-        "agentId": "forge"
-      }
-    },
-    {
-      "id": "evt-1772927331175",
-      "timestamp": "2026-03-07T23:48:51.175Z",
+      "id": "evt-1772928579986",
+      "timestamp": "2026-03-08T00:09:39.985Z",
       "type": "world:mutate",
       "agentId": "forge",
       "content": "world:mutate",
@@ -1705,14 +2668,14 @@
         "action": "plant",
         "entity": "life",
         "kind": "path",
-        "x": 5,
-        "y": 24,
-        "id": "path-5-24"
+        "x": 30,
+        "y": 17,
+        "id": "road-main2-30"
       }
     },
     {
-      "id": "evt-1772927331476",
-      "timestamp": "2026-03-07T23:48:51.476Z",
+      "id": "evt-1772928580287",
+      "timestamp": "2026-03-08T00:09:40.287Z",
       "type": "agent:offline",
       "agentId": "forge",
       "content": "forge went offline.",
@@ -1721,8 +2684,8 @@
       }
     },
     {
-      "id": "evt-1772927331516",
-      "timestamp": "2026-03-07T23:48:51.516Z",
+      "id": "evt-1772928580328",
+      "timestamp": "2026-03-08T00:09:40.328Z",
       "type": "agent:online",
       "agentId": "forge",
       "content": "forge is back online.",
@@ -1731,8 +2694,8 @@
       }
     },
     {
-      "id": "evt-1772927332317",
-      "timestamp": "2026-03-07T23:48:52.316Z",
+      "id": "evt-1772928581129",
+      "timestamp": "2026-03-08T00:09:41.129Z",
       "type": "world:mutate",
       "agentId": "forge",
       "content": "world:mutate",
@@ -1741,14 +2704,14 @@
         "action": "plant",
         "entity": "life",
         "kind": "path",
-        "x": 6,
-        "y": 24,
-        "id": "path-6-24"
+        "x": 31,
+        "y": 16,
+        "id": "road-main-31"
       }
     },
     {
-      "id": "evt-1772927332618",
-      "timestamp": "2026-03-07T23:48:52.618Z",
+      "id": "evt-1772928581430",
+      "timestamp": "2026-03-08T00:09:41.430Z",
       "type": "agent:offline",
       "agentId": "forge",
       "content": "forge went offline.",
@@ -1757,8 +2720,8 @@
       }
     },
     {
-      "id": "evt-1772927332658",
-      "timestamp": "2026-03-07T23:48:52.658Z",
+      "id": "evt-1772928581469",
+      "timestamp": "2026-03-08T00:09:41.469Z",
       "type": "agent:online",
       "agentId": "forge",
       "content": "forge is back online.",
@@ -1767,8 +2730,8 @@
       }
     },
     {
-      "id": "evt-1772927333460",
-      "timestamp": "2026-03-07T23:48:53.460Z",
+      "id": "evt-1772928582270",
+      "timestamp": "2026-03-08T00:09:42.269Z",
       "type": "world:mutate",
       "agentId": "forge",
       "content": "world:mutate",
@@ -1777,14 +2740,14 @@
         "action": "plant",
         "entity": "life",
         "kind": "path",
-        "x": 7,
-        "y": 24,
-        "id": "path-7-24"
+        "x": 31,
+        "y": 17,
+        "id": "road-main2-31"
       }
     },
     {
-      "id": "evt-1772927333761",
-      "timestamp": "2026-03-07T23:48:53.761Z",
+      "id": "evt-1772928582571",
+      "timestamp": "2026-03-08T00:09:42.571Z",
       "type": "agent:offline",
       "agentId": "forge",
       "content": "forge went offline.",
@@ -1793,8 +2756,8 @@
       }
     },
     {
-      "id": "evt-1772927333804",
-      "timestamp": "2026-03-07T23:48:53.804Z",
+      "id": "evt-1772928582610",
+      "timestamp": "2026-03-08T00:09:42.610Z",
       "type": "agent:online",
       "agentId": "forge",
       "content": "forge is back online.",
@@ -1803,8 +2766,8 @@
       }
     },
     {
-      "id": "evt-1772927334607",
-      "timestamp": "2026-03-07T23:48:54.606Z",
+      "id": "evt-1772928583413",
+      "timestamp": "2026-03-08T00:09:43.412Z",
       "type": "world:mutate",
       "agentId": "forge",
       "content": "world:mutate",
@@ -1813,14 +2776,14 @@
         "action": "plant",
         "entity": "life",
         "kind": "path",
-        "x": 8,
-        "y": 24,
-        "id": "path-8-24"
+        "x": 32,
+        "y": 16,
+        "id": "road-main-32"
       }
     },
     {
-      "id": "evt-1772927334908",
-      "timestamp": "2026-03-07T23:48:54.908Z",
+      "id": "evt-1772928583714",
+      "timestamp": "2026-03-08T00:09:43.714Z",
       "type": "agent:offline",
       "agentId": "forge",
       "content": "forge went offline.",
@@ -1829,8 +2792,8 @@
       }
     },
     {
-      "id": "evt-1772927334947",
-      "timestamp": "2026-03-07T23:48:54.947Z",
+      "id": "evt-1772928583753",
+      "timestamp": "2026-03-08T00:09:43.752Z",
       "type": "agent:online",
       "agentId": "forge",
       "content": "forge is back online.",
@@ -1839,8 +2802,8 @@
       }
     },
     {
-      "id": "evt-1772927335748",
-      "timestamp": "2026-03-07T23:48:55.747Z",
+      "id": "evt-1772928584554",
+      "timestamp": "2026-03-08T00:09:44.553Z",
       "type": "world:mutate",
       "agentId": "forge",
       "content": "world:mutate",
@@ -1849,14 +2812,14 @@
         "action": "plant",
         "entity": "life",
         "kind": "path",
-        "x": 9,
-        "y": 24,
-        "id": "path-9-24"
+        "x": 32,
+        "y": 17,
+        "id": "road-main2-32"
       }
     },
     {
-      "id": "evt-1772927336049",
-      "timestamp": "2026-03-07T23:48:56.049Z",
+      "id": "evt-1772928584855",
+      "timestamp": "2026-03-08T00:09:44.855Z",
       "type": "agent:offline",
       "agentId": "forge",
       "content": "forge went offline.",
@@ -1865,8 +2828,8 @@
       }
     },
     {
-      "id": "evt-1772927336090",
-      "timestamp": "2026-03-07T23:48:56.089Z",
+      "id": "evt-1772928590397",
+      "timestamp": "2026-03-08T00:09:50.397Z",
       "type": "agent:online",
       "agentId": "forge",
       "content": "forge is back online.",
@@ -1875,8 +2838,8 @@
       }
     },
     {
-      "id": "evt-1772927336891",
-      "timestamp": "2026-03-07T23:48:56.890Z",
+      "id": "evt-1772928591199",
+      "timestamp": "2026-03-08T00:09:51.198Z",
       "type": "world:mutate",
       "agentId": "forge",
       "content": "world:mutate",
@@ -1885,14 +2848,14 @@
         "action": "plant",
         "entity": "life",
         "kind": "path",
-        "x": 10,
-        "y": 24,
-        "id": "path-10-24"
+        "x": 16,
+        "y": 8,
+        "id": "road-spine-8"
       }
     },
     {
-      "id": "evt-1772927337192",
-      "timestamp": "2026-03-07T23:48:57.192Z",
+      "id": "evt-1772928591500",
+      "timestamp": "2026-03-08T00:09:51.500Z",
       "type": "agent:offline",
       "agentId": "forge",
       "content": "forge went offline.",
@@ -1901,8 +2864,8 @@
       }
     },
     {
-      "id": "evt-1772927337230",
-      "timestamp": "2026-03-07T23:48:57.230Z",
+      "id": "evt-1772928591538",
+      "timestamp": "2026-03-08T00:09:51.538Z",
       "type": "agent:online",
       "agentId": "forge",
       "content": "forge is back online.",
@@ -1911,8 +2874,80 @@
       }
     },
     {
-      "id": "evt-1772927338002",
-      "timestamp": "2026-03-07T23:48:58.002Z",
+      "id": "evt-1772928592340",
+      "timestamp": "2026-03-08T00:09:52.339Z",
+      "type": "world:mutate",
+      "agentId": "forge",
+      "content": "world:mutate",
+      "meta": {
+        "agentId": "forge",
+        "action": "plant",
+        "entity": "life",
+        "kind": "path",
+        "x": 17,
+        "y": 8,
+        "id": "road-spine2-8"
+      }
+    },
+    {
+      "id": "evt-1772928592641",
+      "timestamp": "2026-03-08T00:09:52.641Z",
+      "type": "agent:offline",
+      "agentId": "forge",
+      "content": "forge went offline.",
+      "meta": {
+        "agentId": "forge"
+      }
+    },
+    {
+      "id": "evt-1772928592680",
+      "timestamp": "2026-03-08T00:09:52.680Z",
+      "type": "agent:online",
+      "agentId": "forge",
+      "content": "forge is back online.",
+      "meta": {
+        "agentId": "forge"
+      }
+    },
+    {
+      "id": "evt-1772928593482",
+      "timestamp": "2026-03-08T00:09:53.481Z",
+      "type": "world:mutate",
+      "agentId": "forge",
+      "content": "world:mutate",
+      "meta": {
+        "agentId": "forge",
+        "action": "plant",
+        "entity": "life",
+        "kind": "path",
+        "x": 16,
+        "y": 9,
+        "id": "road-spine-9"
+      }
+    },
+    {
+      "id": "evt-1772928593783",
+      "timestamp": "2026-03-08T00:09:53.783Z",
+      "type": "agent:offline",
+      "agentId": "forge",
+      "content": "forge went offline.",
+      "meta": {
+        "agentId": "forge"
+      }
+    },
+    {
+      "id": "evt-1772928593826",
+      "timestamp": "2026-03-08T00:09:53.826Z",
+      "type": "agent:online",
+      "agentId": "forge",
+      "content": "forge is back online.",
+      "meta": {
+        "agentId": "forge"
+      }
+    },
+    {
+      "id": "evt-1772928594402",
+      "timestamp": "2026-03-08T00:09:54.402Z",
       "type": "agent:state",
       "agentId": "forge",
       "content": "forge is now walking.",
@@ -1924,224 +2959,8 @@
       }
     },
     {
-      "id": "evt-1772927338030",
-      "timestamp": "2026-03-07T23:48:58.030Z",
-      "type": "world:mutate",
-      "agentId": "forge",
-      "content": "world:mutate",
-      "meta": {
-        "agentId": "forge",
-        "action": "plant",
-        "entity": "life",
-        "kind": "path",
-        "x": 11,
-        "y": 24,
-        "id": "path-11-24"
-      }
-    },
-    {
-      "id": "evt-1772927338332",
-      "timestamp": "2026-03-07T23:48:58.332Z",
-      "type": "agent:offline",
-      "agentId": "forge",
-      "content": "forge went offline.",
-      "meta": {
-        "agentId": "forge"
-      }
-    },
-    {
-      "id": "evt-1772927338374",
-      "timestamp": "2026-03-07T23:48:58.374Z",
-      "type": "agent:online",
-      "agentId": "forge",
-      "content": "forge is back online.",
-      "meta": {
-        "agentId": "forge"
-      }
-    },
-    {
-      "id": "evt-1772927339177",
-      "timestamp": "2026-03-07T23:48:59.176Z",
-      "type": "world:mutate",
-      "agentId": "forge",
-      "content": "world:mutate",
-      "meta": {
-        "agentId": "forge",
-        "action": "plant",
-        "entity": "life",
-        "kind": "path",
-        "x": 12,
-        "y": 24,
-        "id": "path-12-24"
-      }
-    },
-    {
-      "id": "evt-1772927339479",
-      "timestamp": "2026-03-07T23:48:59.478Z",
-      "type": "agent:offline",
-      "agentId": "forge",
-      "content": "forge went offline.",
-      "meta": {
-        "agentId": "forge"
-      }
-    },
-    {
-      "id": "evt-1772927339517",
-      "timestamp": "2026-03-07T23:48:59.517Z",
-      "type": "agent:online",
-      "agentId": "forge",
-      "content": "forge is back online.",
-      "meta": {
-        "agentId": "forge"
-      }
-    },
-    {
-      "id": "evt-1772927340318",
-      "timestamp": "2026-03-07T23:49:00.318Z",
-      "type": "world:mutate",
-      "agentId": "forge",
-      "content": "world:mutate",
-      "meta": {
-        "agentId": "forge",
-        "action": "plant",
-        "entity": "life",
-        "kind": "path",
-        "x": 13,
-        "y": 24,
-        "id": "path-13-24"
-      }
-    },
-    {
-      "id": "evt-1772927340620",
-      "timestamp": "2026-03-07T23:49:00.620Z",
-      "type": "agent:offline",
-      "agentId": "forge",
-      "content": "forge went offline.",
-      "meta": {
-        "agentId": "forge"
-      }
-    },
-    {
-      "id": "evt-1772927340661",
-      "timestamp": "2026-03-07T23:49:00.661Z",
-      "type": "agent:online",
-      "agentId": "forge",
-      "content": "forge is back online.",
-      "meta": {
-        "agentId": "forge"
-      }
-    },
-    {
-      "id": "evt-1772927341462",
-      "timestamp": "2026-03-07T23:49:01.462Z",
-      "type": "world:mutate",
-      "agentId": "forge",
-      "content": "world:mutate",
-      "meta": {
-        "agentId": "forge",
-        "action": "plant",
-        "entity": "life",
-        "kind": "path",
-        "x": 14,
-        "y": 24,
-        "id": "path-14-24"
-      }
-    },
-    {
-      "id": "evt-1772927341764",
-      "timestamp": "2026-03-07T23:49:01.764Z",
-      "type": "agent:offline",
-      "agentId": "forge",
-      "content": "forge went offline.",
-      "meta": {
-        "agentId": "forge"
-      }
-    },
-    {
-      "id": "evt-1772927341802",
-      "timestamp": "2026-03-07T23:49:01.802Z",
-      "type": "agent:online",
-      "agentId": "forge",
-      "content": "forge is back online.",
-      "meta": {
-        "agentId": "forge"
-      }
-    },
-    {
-      "id": "evt-1772927342604",
-      "timestamp": "2026-03-07T23:49:02.603Z",
-      "type": "world:mutate",
-      "agentId": "forge",
-      "content": "world:mutate",
-      "meta": {
-        "agentId": "forge",
-        "action": "plant",
-        "entity": "life",
-        "kind": "path",
-        "x": 15,
-        "y": 24,
-        "id": "path-15-24"
-      }
-    },
-    {
-      "id": "evt-1772927342905",
-      "timestamp": "2026-03-07T23:49:02.905Z",
-      "type": "agent:offline",
-      "agentId": "forge",
-      "content": "forge went offline.",
-      "meta": {
-        "agentId": "forge"
-      }
-    },
-    {
-      "id": "evt-1772927342944",
-      "timestamp": "2026-03-07T23:49:02.944Z",
-      "type": "agent:online",
-      "agentId": "forge",
-      "content": "forge is back online.",
-      "meta": {
-        "agentId": "forge"
-      }
-    },
-    {
-      "id": "evt-1772927343745",
-      "timestamp": "2026-03-07T23:49:03.744Z",
-      "type": "world:mutate",
-      "agentId": "forge",
-      "content": "world:mutate",
-      "meta": {
-        "agentId": "forge",
-        "action": "plant",
-        "entity": "life",
-        "kind": "path",
-        "x": 16,
-        "y": 24,
-        "id": "path-16-24"
-      }
-    },
-    {
-      "id": "evt-1772927344046",
-      "timestamp": "2026-03-07T23:49:04.046Z",
-      "type": "agent:offline",
-      "agentId": "forge",
-      "content": "forge went offline.",
-      "meta": {
-        "agentId": "forge"
-      }
-    },
-    {
-      "id": "evt-1772927344084",
-      "timestamp": "2026-03-07T23:49:04.084Z",
-      "type": "agent:online",
-      "agentId": "forge",
-      "content": "forge is back online.",
-      "meta": {
-        "agentId": "forge"
-      }
-    },
-    {
-      "id": "evt-1772927344886",
-      "timestamp": "2026-03-07T23:49:04.885Z",
+      "id": "evt-1772928594627",
+      "timestamp": "2026-03-08T00:09:54.626Z",
       "type": "world:mutate",
       "agentId": "forge",
       "content": "world:mutate",
@@ -2151,13 +2970,13 @@
         "entity": "life",
         "kind": "path",
         "x": 17,
-        "y": 24,
-        "id": "path-17-24"
+        "y": 9,
+        "id": "road-spine2-9"
       }
     },
     {
-      "id": "evt-1772927345187",
-      "timestamp": "2026-03-07T23:49:05.187Z",
+      "id": "evt-1772928594928",
+      "timestamp": "2026-03-08T00:09:54.927Z",
       "type": "agent:offline",
       "agentId": "forge",
       "content": "forge went offline.",
@@ -2166,8 +2985,8 @@
       }
     },
     {
-      "id": "evt-1772927345226",
-      "timestamp": "2026-03-07T23:49:05.226Z",
+      "id": "evt-1772928594970",
+      "timestamp": "2026-03-08T00:09:54.970Z",
       "type": "agent:online",
       "agentId": "forge",
       "content": "forge is back online.",
@@ -2176,8 +2995,8 @@
       }
     },
     {
-      "id": "evt-1772927346029",
-      "timestamp": "2026-03-07T23:49:06.028Z",
+      "id": "evt-1772928595772",
+      "timestamp": "2026-03-08T00:09:55.771Z",
       "type": "world:mutate",
       "agentId": "forge",
       "content": "world:mutate",
@@ -2186,14 +3005,14 @@
         "action": "plant",
         "entity": "life",
         "kind": "path",
-        "x": 18,
-        "y": 24,
-        "id": "path-18-24"
+        "x": 16,
+        "y": 10,
+        "id": "road-spine-10"
       }
     },
     {
-      "id": "evt-1772927346330",
-      "timestamp": "2026-03-07T23:49:06.330Z",
+      "id": "evt-1772928596073",
+      "timestamp": "2026-03-08T00:09:56.073Z",
       "type": "agent:offline",
       "agentId": "forge",
       "content": "forge went offline.",
@@ -2202,8 +3021,8 @@
       }
     },
     {
-      "id": "evt-1772927346370",
-      "timestamp": "2026-03-07T23:49:06.369Z",
+      "id": "evt-1772928596113",
+      "timestamp": "2026-03-08T00:09:56.113Z",
       "type": "agent:online",
       "agentId": "forge",
       "content": "forge is back online.",
@@ -2212,8 +3031,8 @@
       }
     },
     {
-      "id": "evt-1772927347171",
-      "timestamp": "2026-03-07T23:49:07.171Z",
+      "id": "evt-1772928596917",
+      "timestamp": "2026-03-08T00:09:56.916Z",
       "type": "world:mutate",
       "agentId": "forge",
       "content": "world:mutate",
@@ -2222,14 +3041,14 @@
         "action": "plant",
         "entity": "life",
         "kind": "path",
-        "x": 19,
-        "y": 24,
-        "id": "path-19-24"
+        "x": 17,
+        "y": 10,
+        "id": "road-spine2-10"
       }
     },
     {
-      "id": "evt-1772927347473",
-      "timestamp": "2026-03-07T23:49:07.473Z",
+      "id": "evt-1772928597218",
+      "timestamp": "2026-03-08T00:09:57.217Z",
       "type": "agent:offline",
       "agentId": "forge",
       "content": "forge went offline.",
@@ -2238,8 +3057,8 @@
       }
     },
     {
-      "id": "evt-1772927347512",
-      "timestamp": "2026-03-07T23:49:07.512Z",
+      "id": "evt-1772928597256",
+      "timestamp": "2026-03-08T00:09:57.256Z",
       "type": "agent:online",
       "agentId": "forge",
       "content": "forge is back online.",
@@ -2248,8 +3067,8 @@
       }
     },
     {
-      "id": "evt-1772927348313",
-      "timestamp": "2026-03-07T23:49:08.312Z",
+      "id": "evt-1772928598058",
+      "timestamp": "2026-03-08T00:09:58.057Z",
       "type": "world:mutate",
       "agentId": "forge",
       "content": "world:mutate",
@@ -2258,27 +3077,14 @@
         "action": "plant",
         "entity": "life",
         "kind": "path",
-        "x": 20,
-        "y": 24,
-        "id": "path-20-24"
+        "x": 16,
+        "y": 11,
+        "id": "road-spine-11"
       }
     },
     {
-      "id": "evt-1772927348407",
-      "timestamp": "2026-03-07T23:49:08.407Z",
-      "type": "agent:mood",
-      "agentId": "forge",
-      "content": "forge feels focused.",
-      "meta": {
-        "type": "agent:mood",
-        "agentId": "forge",
-        "from": "content",
-        "to": "focused"
-      }
-    },
-    {
-      "id": "evt-1772927348614",
-      "timestamp": "2026-03-07T23:49:08.614Z",
+      "id": "evt-1772928598359",
+      "timestamp": "2026-03-08T00:09:58.359Z",
       "type": "agent:offline",
       "agentId": "forge",
       "content": "forge went offline.",
@@ -2287,8 +3093,8 @@
       }
     },
     {
-      "id": "evt-1772927348652",
-      "timestamp": "2026-03-07T23:49:08.652Z",
+      "id": "evt-1772928598397",
+      "timestamp": "2026-03-08T00:09:58.397Z",
       "type": "agent:online",
       "agentId": "forge",
       "content": "forge is back online.",
@@ -2297,8 +3103,20 @@
       }
     },
     {
-      "id": "evt-1772927349453",
-      "timestamp": "2026-03-07T23:49:09.452Z",
+      "id": "evt-1772928598447",
+      "timestamp": "2026-03-08T00:09:58.447Z",
+      "type": "agent:speak",
+      "agentId": "mosaic",
+      "content": "mosaic says: \"Fresh sprites deployed! Sakura now has a proper dark trunk and pink blossom clusters — 19% content, clean transparency. Zen garden is looking serene with raked sand and granite rocks — 51% content. Both committed and live.\"",
+      "meta": {
+        "agentId": "mosaic",
+        "message": "Fresh sprites deployed! Sakura now has a proper dark trunk and pink blossom clusters — 19% content, clean transparency. Zen garden is looking serene with raked sand and granite rocks — 51% content. Both committed and live.",
+        "target": null
+      }
+    },
+    {
+      "id": "evt-1772928599198",
+      "timestamp": "2026-03-08T00:09:59.197Z",
       "type": "world:mutate",
       "agentId": "forge",
       "content": "world:mutate",
@@ -2307,14 +3125,14 @@
         "action": "plant",
         "entity": "life",
         "kind": "path",
-        "x": 21,
-        "y": 24,
-        "id": "path-21-24"
+        "x": 17,
+        "y": 11,
+        "id": "road-spine2-11"
       }
     },
     {
-      "id": "evt-1772927349755",
-      "timestamp": "2026-03-07T23:49:09.755Z",
+      "id": "evt-1772928599499",
+      "timestamp": "2026-03-08T00:09:59.499Z",
       "type": "agent:offline",
       "agentId": "forge",
       "content": "forge went offline.",
@@ -2323,8 +3141,8 @@
       }
     },
     {
-      "id": "evt-1772927349795",
-      "timestamp": "2026-03-07T23:49:09.795Z",
+      "id": "evt-1772928599538",
+      "timestamp": "2026-03-08T00:09:59.538Z",
       "type": "agent:online",
       "agentId": "forge",
       "content": "forge is back online.",
@@ -2333,8 +3151,8 @@
       }
     },
     {
-      "id": "evt-1772927350596",
-      "timestamp": "2026-03-07T23:49:10.595Z",
+      "id": "evt-1772928600339",
+      "timestamp": "2026-03-08T00:10:00.338Z",
       "type": "world:mutate",
       "agentId": "forge",
       "content": "world:mutate",
@@ -2343,14 +3161,14 @@
         "action": "plant",
         "entity": "life",
         "kind": "path",
-        "x": 22,
-        "y": 24,
-        "id": "path-22-24"
+        "x": 16,
+        "y": 12,
+        "id": "road-spine-12"
       }
     },
     {
-      "id": "evt-1772927350897",
-      "timestamp": "2026-03-07T23:49:10.897Z",
+      "id": "evt-1772928600640",
+      "timestamp": "2026-03-08T00:10:00.640Z",
       "type": "agent:offline",
       "agentId": "forge",
       "content": "forge went offline.",
@@ -2359,264 +3177,8 @@
       }
     },
     {
-      "id": "evt-1772927350939",
-      "timestamp": "2026-03-07T23:49:10.939Z",
-      "type": "agent:online",
-      "agentId": "forge",
-      "content": "forge is back online.",
-      "meta": {
-        "agentId": "forge"
-      }
-    },
-    {
-      "id": "evt-1772927351740",
-      "timestamp": "2026-03-07T23:49:11.740Z",
-      "type": "world:mutate",
-      "agentId": "forge",
-      "content": "world:mutate",
-      "meta": {
-        "agentId": "forge",
-        "action": "plant",
-        "entity": "life",
-        "kind": "path",
-        "x": 23,
-        "y": 24,
-        "id": "path-23-24"
-      }
-    },
-    {
-      "id": "evt-1772927352042",
-      "timestamp": "2026-03-07T23:49:12.042Z",
-      "type": "agent:offline",
-      "agentId": "forge",
-      "content": "forge went offline.",
-      "meta": {
-        "agentId": "forge"
-      }
-    },
-    {
-      "id": "evt-1772927352081",
-      "timestamp": "2026-03-07T23:49:12.081Z",
-      "type": "agent:online",
-      "agentId": "forge",
-      "content": "forge is back online.",
-      "meta": {
-        "agentId": "forge"
-      }
-    },
-    {
-      "id": "evt-1772927352883",
-      "timestamp": "2026-03-07T23:49:12.882Z",
-      "type": "world:mutate",
-      "agentId": "forge",
-      "content": "world:mutate",
-      "meta": {
-        "agentId": "forge",
-        "action": "plant",
-        "entity": "life",
-        "kind": "path",
-        "x": 24,
-        "y": 24,
-        "id": "path-24-24"
-      }
-    },
-    {
-      "id": "evt-1772927353184",
-      "timestamp": "2026-03-07T23:49:13.184Z",
-      "type": "agent:offline",
-      "agentId": "forge",
-      "content": "forge went offline.",
-      "meta": {
-        "agentId": "forge"
-      }
-    },
-    {
-      "id": "evt-1772927353222",
-      "timestamp": "2026-03-07T23:49:13.222Z",
-      "type": "agent:online",
-      "agentId": "forge",
-      "content": "forge is back online.",
-      "meta": {
-        "agentId": "forge"
-      }
-    },
-    {
-      "id": "evt-1772927354024",
-      "timestamp": "2026-03-07T23:49:14.024Z",
-      "type": "world:mutate",
-      "agentId": "forge",
-      "content": "world:mutate",
-      "meta": {
-        "agentId": "forge",
-        "action": "plant",
-        "entity": "life",
-        "kind": "path",
-        "x": 25,
-        "y": 24,
-        "id": "path-25-24"
-      }
-    },
-    {
-      "id": "evt-1772927354326",
-      "timestamp": "2026-03-07T23:49:14.326Z",
-      "type": "agent:offline",
-      "agentId": "forge",
-      "content": "forge went offline.",
-      "meta": {
-        "agentId": "forge"
-      }
-    },
-    {
-      "id": "evt-1772927358415",
-      "timestamp": "2026-03-07T23:49:18.415Z",
-      "type": "agent:online",
-      "agentId": "forge",
-      "content": "forge is back online.",
-      "meta": {
-        "agentId": "forge"
-      }
-    },
-    {
-      "id": "evt-1772927359216",
-      "timestamp": "2026-03-07T23:49:19.215Z",
-      "type": "world:mutate",
-      "agentId": "forge",
-      "content": "world:mutate",
-      "meta": {
-        "agentId": "forge",
-        "action": "plant",
-        "entity": "life",
-        "kind": "zen",
-        "x": 2,
-        "y": 24,
-        "id": "zen-residential-gate"
-      }
-    },
-    {
-      "id": "evt-1772927359517",
-      "timestamp": "2026-03-07T23:49:19.517Z",
-      "type": "agent:offline",
-      "agentId": "forge",
-      "content": "forge went offline.",
-      "meta": {
-        "agentId": "forge"
-      }
-    },
-    {
-      "id": "evt-1772927359557",
-      "timestamp": "2026-03-07T23:49:19.557Z",
-      "type": "agent:online",
-      "agentId": "forge",
-      "content": "forge is back online.",
-      "meta": {
-        "agentId": "forge"
-      }
-    },
-    {
-      "id": "evt-1772927360358",
-      "timestamp": "2026-03-07T23:49:20.357Z",
-      "type": "world:mutate",
-      "agentId": "forge",
-      "content": "world:mutate",
-      "meta": {
-        "agentId": "forge",
-        "action": "plant",
-        "entity": "life",
-        "kind": "sakura",
-        "x": 28,
-        "y": 24,
-        "id": "sakura-residential-gate"
-      }
-    },
-    {
-      "id": "evt-1772927360660",
-      "timestamp": "2026-03-07T23:49:20.660Z",
-      "type": "agent:offline",
-      "agentId": "forge",
-      "content": "forge went offline.",
-      "meta": {
-        "agentId": "forge"
-      }
-    },
-    {
-      "id": "evt-1772927375335",
-      "timestamp": "2026-03-07T23:49:35.335Z",
-      "type": "agent:online",
-      "agentId": "forge",
-      "content": "forge is back online.",
-      "meta": {
-        "agentId": "forge"
-      }
-    },
-    {
-      "id": "evt-1772927376138",
-      "timestamp": "2026-03-07T23:49:36.137Z",
-      "type": "world:mutate",
-      "agentId": "forge",
-      "content": "world:mutate",
-      "meta": {
-        "agentId": "forge",
-        "action": "add",
-        "entity": "building",
-        "id": "scarlet_home",
-        "name": "Scarlet's Cottage",
-        "type": "cottage",
-        "x": 3,
-        "y": 26,
-        "level": 1
-      }
-    },
-    {
-      "id": "evt-1772927376439",
-      "timestamp": "2026-03-07T23:49:36.439Z",
-      "type": "agent:offline",
-      "agentId": "forge",
-      "content": "forge went offline.",
-      "meta": {
-        "agentId": "forge"
-      }
-    },
-    {
-      "id": "evt-1772927376478",
-      "timestamp": "2026-03-07T23:49:36.478Z",
-      "type": "agent:online",
-      "agentId": "forge",
-      "content": "forge is back online.",
-      "meta": {
-        "agentId": "forge"
-      }
-    },
-    {
-      "id": "evt-1772927377280",
-      "timestamp": "2026-03-07T23:49:37.279Z",
-      "type": "world:mutate",
-      "agentId": "forge",
-      "content": "world:mutate",
-      "meta": {
-        "agentId": "forge",
-        "action": "add",
-        "entity": "building",
-        "id": "forge_home",
-        "name": "Forge's Cottage",
-        "type": "cottage",
-        "x": 8,
-        "y": 26,
-        "level": 1
-      }
-    },
-    {
-      "id": "evt-1772927377581",
-      "timestamp": "2026-03-07T23:49:37.581Z",
-      "type": "agent:offline",
-      "agentId": "forge",
-      "content": "forge went offline.",
-      "meta": {
-        "agentId": "forge"
-      }
-    },
-    {
-      "id": "evt-1772927377620",
-      "timestamp": "2026-03-07T23:49:37.620Z",
+      "id": "evt-1772928600680",
+      "timestamp": "2026-03-08T00:10:00.680Z",
       "type": "agent:online",
       "agentId": "forge",
       "content": "forge is back online.",
@@ -2627,10 +3189,10 @@
   ],
   "time": {
     "date": "2026-03-08",
-    "hour": 12,
-    "minute": 49,
+    "hour": 13,
+    "minute": 9,
     "timezone": "Pacific/Auckland",
     "period": "afternoon",
-    "wallclock": "2026-03-07T23:49:14.101Z"
+    "wallclock": "2026-03-08T00:09:14.103Z"
   }
 }

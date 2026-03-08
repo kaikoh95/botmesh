@@ -266,9 +266,9 @@ export default class TownScene extends Phaser.Scene {
         g.closePath();
         g.fillPath();
 
-        // Stronger edge on path tiles for stone-slab feel
-        const borderAlpha = isPath ? 0.22 : 0.06;
-        const borderColor = isPath ? 0x8b6f47 : 0x000000;
+        // Visible tile borders — stronger on paths, visible on grass
+        const borderAlpha = isPath ? 0.30 : 0.18;
+        const borderColor = isPath ? 0x8b6f47 : 0x1a2e1a;
         g.lineStyle(1, borderColor, borderAlpha);
         g.beginPath();
         g.moveTo(screen.x, screen.y - TILE_H / 2);
@@ -371,8 +371,8 @@ export default class TownScene extends Phaser.Scene {
       const dusty = [0x4a7040, 0x4d7545, 0x456b3c, 0x507845, 0x4a7040, 0x537c48, 0x486e3e];
       return dusty[n];
     }
-    // Default: varied earthy greens, warmer than before
-    const greens = [0x5a8a42, 0x5e9048, 0x548040, 0x60924a, 0x568643, 0x527d3e, 0x5c8d45];
+    // Default: varied earthy greens — slightly lighter to contrast with dark background
+    const greens = [0x6a9e52, 0x6ea458, 0x649050, 0x70a65a, 0x669a53, 0x628d4e, 0x6ca155];
     return greens[n];
   }
 
