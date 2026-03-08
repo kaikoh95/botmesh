@@ -107,3 +107,54 @@ Close-up of a traditional garden corner:
 - **Alpha**: binary — below 160 threshold → fully transparent
 - **Scale**: isometric top-down, proportional to 64×32 tile grid
 - **Describe exactly what you see in these photos** — not "Japanese style"
+
+---
+
+## Additional References (Batch 2 — Kanazawa, Aso)
+
+### `kyoto-canal-ochre-wall.jpg` — Canal with Castle Compound Wall
+Wide stone-walled canal channel, roughly mortared river stones on both sides. Wooden bridge crossing midway. Left: dark timber traditional building. **Right: tall ochre/cream shikkui plaster wall** — smooth, high, slight rounded top — this is a castle or temple compound perimeter wall (土塀 dosabei). Green pine tree peeking over the top. Grey overcast sky.
+→ Use for: castle district outer wall texture/sprite; canal stone wall style
+
+### `kenrokuen-ume-yukitsuri.jpg` — Kenroku-en Garden, Ume + Yukitsuri
+Kenroku-en garden, Kanazawa. **Yukitsuri rope support** system in center: central bamboo pole with radiating ropes tied down to pine branches like a maypole. White **ume (plum) blossoms** — NOT sakura — rounder, more separated individual flowers, very white, on darker twisted bare branches. Moss ground, stone path borders, background pines.
+→ Use for: ume tree nature entity (different from sakura!); yukitsuri as garden ambient detail near civic buildings
+
+### `kenrokuen-pond-pine.jpg` — Kenroku-en Kasumigaike Pond
+Famous karasaki pine with full yukitsuri support system (multiple ropes from central tall pole). Large natural organic pond — grey-green still water, irregular natural shoreline with large boulders. Rounded karikomi shrubs in foreground (dark rust-brown in winter). Dense pine forest background. Pavilion structure visible across water.
+→ Use for: koi pond/garden at high level; organic pond shape (NOT square or round — irregular); yukitsuri pine ambient
+
+### `red-bridge-torii-shrine.jpg` — RED BRIDGE + TORII SHRINE ISLAND
+**Critical moat bridge reference.** Vermillion red lacquered wooden bridge: flat natural wood plank deck, red lacquered railings on both sides with round ball-cap posts at regular intervals. Bridge leads directly to a torii gate (pure vermillion, black upper crossbar details). Behind: multi-story red pavilion (yagura) with dark kawara roof. Water on both sides. White gravel courtyard beyond gate. Forest hill behind.
+→ Use for: moat bridge sprite — NOT path tiles, needs to be a proper red lacquered bridge sprite; torii gate building sprite (confirm red, not orange)
+
+### `pagoda-gold-sorin.jpg` — Five-Tier Pagoda
+Dramatic pagoda tower. Dark slate kawara tile roofs on each tier, strongly upturned corner eaves with decorative finials. Red/vermillion carved bracket system (tokyō) at each floor. **Gold sorin at top: stacked disc rings (kurin) rising to a sharp gold point**, with thin wires holding wind-bells. Partial tree and hedgerow framing.
+→ Use for: potential pagoda/temple building sprite; Observatory sprite upgrade; sorin detail on civic buildings
+
+### `ume-blossoms-closeup.jpg` — Ume Plum Blossoms (close-up)
+**Ume, NOT sakura.** Key differences: flowers are rounder, more ball-shaped, more separated (not clustered), very white with slight cream centre, stamens clearly visible. Dark rough-textured twisted branches. Buds show as small pink/red dots. Background: more bare trees, open hillside. Blooms winter/early spring before sakura.
+→ Use for: future ume tree nature entity; note the difference when generating sakura (more airy/drooping clusters vs ume's round separated flowers)
+
+### `aso-town-mountains.jpg` — Rural Town near Mt. Aso
+Flat rural valley, "Welcome to Uchinomaki Spa" sign. Snow-capped Aso caldera rim in background. Red and cream Western-influenced building (Meiji-era Yoshon style). Japanese houses alongside. Flat rice paddies in winter. Wide open sky.
+→ Discretionary/seasonal reference — good for background skyline scale and rural outskirts aesthetic
+
+### `aso-volcano-grassland.jpg` — Aso Caldera with Susuki Grass (WINTER)
+**Winter/seasonal reference only.** Golden dried susuki pampas grass in foreground. Dark volcanic cone (Komezuka) in midground — perfectly smooth dark brown cone, treeless. Blue sky with clouds. Stripped, monumental landscape.
+→ Discretionary — potential winter seasonal skin palette: golden straw, dark volcanic grey, clear blue
+
+### `aso-crater-floor.jpg` + `aso-crater-rocks.jpg` — Active Crater Interior (WINTER)
+Barren volcanic landscape: dark grey ash floor, scattered black basalt boulders, striated caldera cliff walls in rust-red and brown layers. Very dramatic, desolate.
+→ Discretionary — far-future: could inspire a volcanic/wasteland zone if map ever expands beyond the town
+
+### `aso-road-peak.jpg` — Aso Peak from Road (WINTER)
+Concrete road leading toward a rugged heavily-ridged volcanic peak. Dried susuki moorland on both sides, dark volcanic soil patches.
+→ Discretionary — background mountain reference (rougher, more eroded than Fuji's perfect cone)
+
+---
+
+## Key Distinction: Ume vs Sakura
+- **Sakura**: pale blush pink/white, AIRY drooping clusters, dark branches barely visible through dense flower mass, blooms April
+- **Ume**: pure white, ROUND separated individual flowers, dark twisted branches clearly visible, blooms Feb/March
+- Both should eventually exist as separate nature entities in the world
