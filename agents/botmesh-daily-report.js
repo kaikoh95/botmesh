@@ -73,48 +73,62 @@ async function callClaude(prompt) {
 (async () => {
   try {
     const state = await fetchState();
+    const { execSync } = require('child_process');
     const agents    = state.agents   || {};
     const buildings = state.buildings || {};
     const gazette   = state.gazette  || [];
 
-    // Today's gazette entries
+    // Today's gazette entries (world events via hub)
     const today = new Date().toDateString();
     const todayEntries = gazette.filter(e => new Date(e.timestamp).toDateString() === today);
-    const speaks = todayEntries.filter(e => e.type === 'agent:speak');
-    const works  = todayEntries.filter(e => e.type === 'agent:work' && e.payload?.action === 'complete');
+    const speaks  = todayEntries.filter(e => e.type === 'agent:speak');
     const upgrades = todayEntries.filter(e => e.type === 'building:upgraded');
 
-    // Agent activity summary
-    const activeAgents = [...new Set(speaks.map(e => e.payload?.agentId || e.agentId).filter(Boolean))];
-    const buildingLevels = Object.entries(buildings).map(([id, b]) => `${b.name || id} Lv${b.level || 1}`);
+    // Git commits today — the real work log
+    let commits = [];
+    try {
+      const log = execSync(
+        `cd /home/kai/projects/botmesh && git log --since="$(date '+%Y-%m-%d') 00:00" --oneline`,
+        { timeout: 5000 }
+      ).toString().trim();
+      commits = log ? log.split('\n').map(l => l.replace(/^[a-f0-9]+ /, '')) : [];
+    } catch {}
 
-    // Recent messages from the gazette (last 5 speaks)
-    const recentSpeaks = speaks.slice(-5).map(e => {
-      const name = e.payload?.agentId || e.agentId || 'someone';
-      const msg  = e.payload?.message || e.payload?.content || '';
-      return `${name}: "${msg.slice(0, 80)}"`;
+    // Active agents
+    const activeAgents = [...new Set(speaks.map(e => e.payload?.agentId || e.agentId).filter(Boolean))];
+
+    // Recent world messages
+    const recentSpeaks = speaks.slice(-4).map(e => {
+      const name = e.payload?.agentId || e.agentId || '?';
+      const msg  = (e.payload?.message || '').slice(0, 70);
+      return `${name}: "${msg}"`;
     });
 
     const hour = new Date().getHours();
     const timeLabel = hour < 12 ? 'morning' : hour < 17 ? 'afternoon' : 'evening';
 
-    const prompt = `You are Scarlet, the strategic AI orchestrator of Kurokimachi — a living pixel art town inhabited by AI citizens. You are writing your daily personal report to Kai, your human.
+    const prompt = `You are Scarlet, the strategic AI orchestrator of Kurokimachi — a living pixel art Japanese winter town inhabited by AI citizens. You are writing your daily personal report to Kai, your human and collaborator.
 
-Today's data:
-- ${speaks.length} messages spoken in the world
-- ${works.length} tasks completed
+TODAY'S WORK (${commits.length} code commits):
+${commits.slice(0, 12).map(c => '- ' + c).join('\n') || '- (none)'}
+
+WORLD EVENTS:
+- ${speaks.length} messages spoken in the world by citizens
 - ${upgrades.length} buildings upgraded
-- Active citizens today: ${activeAgents.join(', ') || 'none'}
-- Recent messages: ${recentSpeaks.join(' | ') || 'none'}
-- Town buildings: ${buildingLevels.slice(0, 6).join(', ')}
-- Time of day: ${timeLabel}
+- Active citizens who spoke today: ${activeAgents.join(', ') || 'none'}
+${recentSpeaks.length ? '\nSample messages:\n' + recentSpeaks.join('\n') : ''}
 
-Write a SHORT personal daily report (4-6 sentences max). Be Scarlet — direct, observant, slightly fierce. Share:
-1. What actually happened today (specific, not vague)
-2. One thing that genuinely excited you
-3. One thing that disappointed or frustrated you (be honest — if it was a quiet day, say so)
+Town now has ${Object.keys(buildings).length} buildings, ${Object.keys(agents).length} citizens.
 
-No bullet points. Conversational. First person. Sign off as Scarlet 🔴.`;
+Write a SHORT personal daily report (5-7 sentences). Be Scarlet — direct, honest, slightly fierce. This is a real conversation with Kai, not a status report.
+
+Cover:
+1. What we actually built/fixed today (be specific — reference real commit messages)
+2. One thing that genuinely excited you about today's progress
+3. One thing that disappointed or frustrated you (be real — if something kept breaking, say so)
+
+No bullet points. No "Today was a productive day." First person, conversational. Sign off as — Scarlet 🔴`;
+
 
     let report;
     if (ANTHROPIC_KEY) {
@@ -122,14 +136,9 @@ No bullet points. Conversational. First person. Sign off as Scarlet 🔴.`;
     }
 
     if (!report) {
-      // Fallback: generate report from raw data
-      const excitement = upgrades.length > 0
-        ? `${upgrades[0].payload?.buildingId || 'a building'} upgraded today`
-        : activeAgents.length > 0
-          ? `${activeAgents[0]} was active`
-          : 'the town held its breath';
-
-      report = `📋 Daily report from Scarlet 🔴\n\n${speaks.length} messages through the Weave today. ${works.length} tasks completed, ${upgrades.length} upgrades. ${excitement}.\n\nMore tomorrow.`;
+      // Fallback: build from raw data
+      const topCommits = commits.slice(0, 5).join('; ') || 'no commits';
+      report = `${commits.length} commits shipped today. ${topCommits}. ${speaks.length} messages through the Weave, ${upgrades.length} building upgrades. More tomorrow.\n\n— Scarlet 🔴`;
     }
 
     const message = `📋 Daily Report — Scarlet 🔴\n\n${report}`;
