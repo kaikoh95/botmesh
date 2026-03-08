@@ -12,17 +12,17 @@ const CHARACTERS_DIR = path.join(__dirname, '../../characters');
 
 // ── Home spawn positions for each citizen ─────────────────────────────────
 const HOME_LOCATIONS = {
-  scarlet: { x: 15, y: 12 }, // centre, Town Hall area
-  forge:   { x: 13, y: 15 }, // Workshop area
+  scarlet: { x: 15, y: 12 }, // Town Hall area
+  forge:   { x: 6,  y: 20 }, // Workshop area (west)
   lumen:   { x: 24, y: 14 }, // Library area
-  sage:    { x: 25, y: 13 }, // Library area
-  iron:    { x: 10, y: 10 }, // Northern perimeter
-  cronos:  { x: 16, y: 10 }, // Observatory area
+  sage:    { x: 27, y: 13 }, // Library area (east offset)
+  iron:    { x: 18, y: 11 }, // Civic perimeter
+  cronos:  { x: 4,  y: 8  }, // Cultural NW — far from echo
   mosaic:  { x: 8,  y: 15 }, // Western quarter
-  echo:    { x: 20, y: 18 }, // Post Office area
-  canvas:  { x: 22, y: 20 }, // Market area
-  patch:   { x: 8,  y: 8  }, // Infrastructure corner
-  muse:    { x: 18, y: 8  }, // Northern quarter
+  echo:    { x: 29, y: 11 }, // Post Office area (NE) — far from cronos
+  canvas:  { x: 16, y: 21 }, // Market area
+  patch:   { x: 10, y: 20 }, // Commercial zone
+  muse:    { x: 4,  y: 6  }, // Cultural NW near observatory
 };
 const DEFAULT_HOME = { x: 12, y: 12 };
 
