@@ -33,7 +33,7 @@ export default class TownScene extends Phaser.Scene {
       }
     }
     // World life sprites (flora + fauna)
-    const lifeSprites = ['sakura', 'bamboo', 'zen', 'koipond', 'deer', 'crane', 'firefly', 'butterfly'];
+    const lifeSprites = ['sakura', 'bamboo', 'zen', 'koipond', 'deer', 'crane', 'firefly', 'butterfly', 'willow', 'lamp'];
     for (const name of lifeSprites) {
       this.load.image(`life-${name}`, `assets/sprites/life/${name}.png`);
     }

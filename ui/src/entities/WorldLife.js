@@ -88,6 +88,22 @@ export default class WorldLife {
       }
     }
 
+    // Willow trees — canal/moat-side placement
+    const willowSpots = [
+      [14, 17], [23, 17], [11, 18], [26, 18],
+    ];
+    for (const [tx, ty] of willowSpots) {
+      if (scene._isPath?.(tx, ty)) continue;
+      const pos = scene.gridToScreen(tx, ty);
+      const key = scene.textures.exists('life-willow') ? 'life-willow' : null;
+      if (key) {
+        const spr = scene.add.image(pos.x, pos.y - 8, key).setOrigin(0.5, 1).setDepth(pos.y - 3);
+        spr.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
+        scaleToMaxH(spr, 2.0 * TILE_H); // willows — tall, drooping
+        this.elements.push(spr);
+      }
+    }
+
     // Koi pond (always present if texture exists)
     if (scene.textures.exists('life-koipond')) {
       const pos = scene.gridToScreen(14, 24);
