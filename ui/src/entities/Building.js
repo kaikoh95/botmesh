@@ -7,7 +7,7 @@ const BUILDING_TEXTURE_MAP = {
   market:      'market',
   observatory: 'observatory',
   teahouse:    'teahouse',
-  torii:       'plaza',
+  torii:       'torii',
   plaza:       'plaza',
   well:        'well',
   bathhouse:   'bathhouse',
