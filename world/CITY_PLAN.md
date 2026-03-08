@@ -246,6 +246,14 @@ Canvas (9,37) · Patch (20,37) · Sage (31,37)
 
 ## Recent Observations
 
+- **2026-03-09:** World survey by Kenzo. 29 buildings, 13 citizens.
+  Data corruption found: Post Office at Lv47, Forge's Cottage at Lv4 — both corrected to Lv3.
+  District compliance strong: Cronos Shrine (6,5) in Nishi-Kita ✓, Scarlet Sanctum (15,11) in Honmaru ✓.
+  Community Garden sits at (12,15) — on the Main Road boundary, borderline Nishi-Machi/Chuo-Machi.
+  Library at Lv2 with 13 citizens — plan threshold is Lv3 at 15+. Two more citizens and it qualifies.
+  Smithy at (2,18) fills the craft gap in Nishi-Machi — slightly north of target (2,19) but within zone.
+  Recommendation: Library upgrade to Lv3 is the next civic milestone. Population nearly there.
+
 - **2026-03-08:** Initial plan created from first world survey. 11 buildings, 12 citizens.
   Forge has been building reactively but with good instinct (moat, roads, residential rows).
   Main issue: no district consciousness — buildings placed for function without spatial identity.
