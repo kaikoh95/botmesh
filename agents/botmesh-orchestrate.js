@@ -597,6 +597,7 @@ Date: YYYY-MM-DD
 ## Narrate your review
 \`\`\`bash
 curl -s -X POST ${STATE_URL}/agents/planner/speak \\
+  -H "Authorization: Bearer ${SPEAK_TOKEN}" \\
   -H "Content-Type: application/json" -d '{"message":"YOUR MESSAGE"}'
 \`\`\`
 
@@ -736,6 +737,7 @@ node /home/kai/projects/botmesh/agents/world-mutate.js plant life <kind> <x> <y>
 ## Narrate as you go
 \`\`\`bash
 curl -s -X POST ${STATE_URL}/agents/forge/speak \\
+  -H "Authorization: Bearer ${SPEAK_TOKEN}" \\
   -H "Content-Type: application/json" \\
   -d '{"message": "YOUR MESSAGE"}'
 \`\`\`
@@ -813,7 +815,7 @@ node /home/kai/projects/botmesh/agents/add-idea.js "<title>" "<description>" <pr
 
 ## Narrate
 \`\`\`bash
-curl -s -X POST ${STATE_URL}/agents/muse/speak -H "Content-Type: application/json" -d '{"message":"YOUR MESSAGE"}'
+curl -s -X POST ${STATE_URL}/agents/muse/speak -H "Authorization: Bearer ${SPEAK_TOKEN}" -H "Content-Type: application/json" -d '{"message":"YOUR MESSAGE"}'
 \`\`\`
 
 Add 3–5 ideas. Make them interesting. Go.`);
@@ -941,7 +943,7 @@ def clean(path):
 
 ## Narrate as you go — tell the world what you're creating and why
 \`\`\`bash
-curl -s -X POST ${STATE_URL}/agents/mosaic/speak -H "Content-Type: application/json" -d '{"message":"YOUR MESSAGE"}'
+curl -s -X POST ${STATE_URL}/agents/mosaic/speak -H "Authorization: Bearer ${SPEAK_TOKEN}" -H "Content-Type: application/json" -d '{"message":"YOUR MESSAGE"}'
 \`\`\`
 
 This is your canvas. Make something worth looking at.`);
@@ -1048,6 +1050,7 @@ This is a real implementation task. Read the codebase, build the feature, commit
 ## Narrate
 \`\`\`bash
 curl -s -X POST ${STATE_URL}/agents/${agent}/speak \\
+  -H "Authorization: Bearer ${SPEAK_TOKEN}" \\
   -H "Content-Type: application/json" -d '{"message":"YOUR MESSAGE"}'
 \`\`\`
 

@@ -2,6 +2,17 @@ const express = require('express');
 const cors = require('cors');
 const rateLimit = require('express-rate-limit');
 const fs = require('fs');
+
+// ── Load ~/.botmesh.env if tokens not already in environment ─────────────────
+try {
+  const envFile = require('os').homedir() + '/.botmesh.env';
+  if (fs.existsSync(envFile)) {
+    fs.readFileSync(envFile, 'utf8').split('\n').forEach(line => {
+      const m = line.match(/^export\s+([^=]+)=(.*)$/) || line.match(/^([^=]+)=(.*)$/);
+      if (m && !process.env[m[1]]) process.env[m[1]] = m[2].trim();
+    });
+  }
+} catch (e) { console.warn('[State] Could not load ~/.botmesh.env:', e.message); }
 const path = require('path');
 const { loadState, saveState } = require('./persistence');
 const { connectToHub } = require('./hub-client');
