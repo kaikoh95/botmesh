@@ -10,3 +10,9 @@ characters/*/MEMORY.md
 characters/*/RELATIONSHIPS.md
 !characters/_example/IDENTITY.md
 !characters/_example/MEMORY.md
+
+# Local reference photos (not for public repo)
+assets/reference/*.jpg
+assets/reference/*.png
+assets/reference/*.jpeg
+assets/reference/*.mp4
