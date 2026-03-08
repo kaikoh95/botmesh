@@ -19,6 +19,7 @@
 const http    = require('http');
 const net     = require('net');
 const https   = require('https');
+const fs      = require('fs');
 const { execSync } = require('child_process');
 const path    = require('path');
 
@@ -158,6 +159,94 @@ async function runChecks() {
     pass('SSE endpoint reachable (headers check skipped)');
   }
 
+  // 7. Sprite manifest sync — TownScene.js preload vs disk
+  try {
+    const TownScene = fs.readFileSync(path.join(__dirname, '../ui/src/scenes/TownScene.js'), 'utf8');
+    const buildingDir = path.join(__dirname, '../ui/assets/buildings');
+
+    // Extract building keys from preload manifest
+    const manifestMatches = TownScene.matchAll(/'building-([^']+)'/g);
+    const missingBuildings = [];
+    for (const m of manifestMatches) {
+      const file = `${m[1]}.png`;
+      if (!fs.existsSync(path.join(buildingDir, file))) missingBuildings.push(file);
+    }
+    missingBuildings.length === 0
+      ? pass('Sprite manifest — all building files exist')
+      : fail('Sprite manifest', `Missing: ${missingBuildings.join(', ')}`);
+
+    // Check for speculative loads (404-prone)
+    const allBuildingFiles = new Set(fs.readdirSync(buildingDir));
+    const speculativeMatches = TownScene.matchAll(/'building-([^']+)'/g);
+    const speculative = [];
+    for (const m of speculativeMatches) {
+      if (!allBuildingFiles.has(`${m[1]}.png`)) speculative.push(m[1]);
+    }
+    speculative.length === 0
+      ? pass('No speculative preloads')
+      : fail('Speculative preloads in TownScene', `404-prone: ${speculative.join(', ')}`);
+  } catch (e) {
+    fail('Sprite manifest check', e.message);
+  }
+
+  // 8. Walk ticker — agents should be moving
+  try {
+    const state1 = await fetchJSON(`${STATE_LOCAL}/state`);
+    await new Promise(r => setTimeout(r, 2100));
+    const state2 = await fetchJSON(`${STATE_LOCAL}/state`);
+    const onlineAgents = Object.entries(state1.body.agents || {}).filter(([,a]) => a.online);
+    if (onlineAgents.length === 0) {
+      pass('Walk ticker (no online agents to check)');
+    } else {
+      const moved = onlineAgents.some(([id]) => {
+        const loc1 = state1.body.agents[id]?.location;
+        const loc2 = state2.body.agents[id]?.location;
+        return loc1 && loc2 && (loc1.x !== loc2.x || loc1.y !== loc2.y);
+      });
+      moved
+        ? pass('Walk ticker — agents moving')
+        : fail('Walk ticker', 'Online agents not moving between checks');
+    }
+  } catch (e) {
+    fail('Walk ticker', e.message);
+  }
+
+  // 9. SSE delivers state:sync event on connect
+  await new Promise((resolve) => {
+    const req = http.get(`${STATE_LOCAL}/events`, { timeout: 3500 }, res => {
+      let got = false;
+      res.on('data', chunk => {
+        if (!got && chunk.toString().includes('state:sync')) {
+          got = true;
+          pass('SSE delivers state:sync on connect');
+          req.destroy();
+          resolve();
+        }
+      });
+      setTimeout(() => {
+        if (!got) fail('SSE state:sync', 'No state:sync received within 3s');
+        req.destroy();
+        resolve();
+      }, 3200);
+    });
+    req.on('error', () => { fail('SSE connect', 'connection failed'); resolve(); });
+  });
+
+  // 10. main.js imports all resolve to existing files
+  try {
+    const mainJs = fs.readFileSync(path.join(__dirname, '../ui/src/main.js'), 'utf8');
+    const imports = [...mainJs.matchAll(/from ['"]\.\/([^'"]+)['"]/g)].map(m => m[1]);
+    const missing = imports.filter(f => {
+      const p = path.join(__dirname, '../ui/src', f.endsWith('.js') ? f : f + '.js');
+      return !fs.existsSync(p);
+    });
+    missing.length === 0
+      ? pass('main.js imports all resolve')
+      : fail('main.js broken imports', missing.join(', '));
+  } catch (e) {
+    fail('main.js import check', e.message);
+  }
+
   return results;
 }
 
@@ -206,6 +295,52 @@ async function main() {
       });
     } catch (e) {
       console.error('[QA] task-registry error:', e.message);
+    }
+
+    // Spawn Patch as an auto-fixer
+    try {
+      const { spawnSession } = require('./spawn-session');
+      const envSource = fs.readFileSync('/home/kai/projects/botmesh/.botmesh.env', 'utf8');
+      const getEnv = (k) => { const m = envSource.match(new RegExp(`^${k}=(.+)$`, 'm')); return m ? m[1].trim() : ''; };
+      const STATE_URL = getEnv('BOTMESH_API_URL') || 'https://api.kurokimachi.com';
+      const SPEAK_TOKEN = getEnv('BOTMESH_SPEAK_TOKEN') || '';
+
+      spawnSession('patch', `# Patch 🔧 — Auto-fix QA Failures
+
+QA found ${failures.length} issue(s) that need fixing:
+
+${failures.map(f => `## ❌ ${f.name}\n${f.reason}`).join('\n\n')}
+
+## Your job
+Investigate each failure, find the root cause, and fix it.
+
+For sprite manifest issues: update the preload list in \`/home/kai/projects/botmesh/ui/src/scenes/TownScene.js\`
+For import issues: fix the import path in the relevant JS file
+For walk ticker issues: check \`/home/kai/projects/botmesh/state/src/index.js\` walk ticker code
+
+After fixing, run QA manually to verify:
+\`\`\`bash
+source /home/kai/projects/botmesh/.botmesh.env
+node /home/kai/projects/botmesh/agents/botmesh-qa.js
+\`\`\`
+
+Narrate what you found and fixed:
+\`\`\`bash
+curl -s -X POST ${STATE_URL}/agents/patch/speak \\
+  -H "Authorization: Bearer ${SPEAK_TOKEN}" \\
+  -H "Content-Type: application/json" \\
+  -d '{"message":"YOUR MESSAGE"}'
+\`\`\`
+
+Commit your fix:
+\`\`\`bash
+cd /home/kai/projects/botmesh && git add -A && git commit -m "🔧 Patch: <what you fixed>" && git push origin main
+\`\`\`
+
+Then \`pm2 restart\` whatever services you changed.`);
+      console.log('[QA] Patch session queued for auto-fix');
+    } catch (e) {
+      console.error('[QA] Failed to spawn Patch session:', e.message);
     }
 
     process.exit(1);
