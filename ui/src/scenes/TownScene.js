@@ -662,9 +662,10 @@ export default class TownScene extends Phaser.Scene {
     // Ground shadow — soft ellipse beneath every building
     const shadowW = (bData.width || 3) * TILE_W * 0.7;
     const shadowH = (bData.height || 2) * TILE_H * 0.8;
+    // Subtle shadow — smaller and lighter than before
     const shadow = this.add.graphics();
-    shadow.fillStyle(0x000000, 0.18);
-    shadow.fillEllipse(pos.x, pos.y + shadowH * 0.2, shadowW, shadowH * 0.5);
+    shadow.fillStyle(0x000000, 0.08);
+    shadow.fillEllipse(pos.x, pos.y + shadowH * 0.05, shadowW * 0.6, shadowH * 0.2);
     shadow.setDepth(pos.y - 1);
 
     // Ambient detail — stone lantern near civic/market buildings

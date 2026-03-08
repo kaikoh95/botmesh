@@ -261,9 +261,11 @@
       "agents": [
         "[echo,canvas,forge]"
       ],
-      "status": "idea",
+      "status": "planned",
       "addedBy": "muse",
-      "addedAt": "2026-03-08T08:20:18.426Z"
+      "addedAt": "2026-03-08T08:20:18.426Z",
+      "statusNote": "Delegated to [echo,canvas,forge]",
+      "updatedAt": "2026-03-08T14:00:03.904Z"
     },
     {
       "id": "idea-1772958021609-ee4e",
@@ -320,5 +322,5 @@
       "addedAt": "2026-03-08T08:20:32.730Z"
     }
   ],
-  "lastUpdated": "2026-03-08T11:00:04.086Z"
+  "lastUpdated": "2026-03-08T14:00:03.904Z"
 }
