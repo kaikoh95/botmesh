@@ -952,6 +952,92 @@ This is your canvas. Make something worth looking at.`);
     }
   },
 
+  // ── Mosaic Style Review ──────────────────────────────────────────────────────
+  // Periodic visual QA — Mosaic reviews the town's sprite quality and aesthetic
+  // consistency. Runs on its own cron (every 2 hours via --mode mosaic).
+  // She decides what needs improving — new sprites, quality upgrades, consistency fixes.
+  {
+    id: 'mosaic-style-review',
+    title: 'Mosaic reviews pixel art quality and visual consistency',
+    owner: 'mosaic',
+    brief: 'Mosaic audits the town visuals and improves anything that looks off.',
+    done: () => false,
+    run: async () => {
+      let stateData;
+      try {
+        const res = execSync('curl -s http://localhost:3002/state', { timeout: 5000 });
+        stateData = JSON.parse(res.toString());
+      } catch { return false; }
+
+      const buildings = stateData.buildings || {};
+      const SPRITE_DIR = path.join(__dirname, '../ui/assets/buildings');
+      const LIFE_DIR = path.join(__dirname, '../ui/assets/sprites/life');
+      const STATE_URL = 'https://api.kurokimachi.com';
+
+      // Build sprite inventory
+      const buildingSprites = fs.readdirSync(SPRITE_DIR).filter(f => f.endsWith('.png'));
+      const lifeSprites = fs.readdirSync(LIFE_DIR).filter(f => f.endsWith('.png'));
+
+      const buildingList = Object.entries(buildings).map(([id, b]) =>
+        `- ${b.name || id} (${b.type}, Lv${b.level || 1}) at (${b.x},${b.y})`
+      ).join('\n');
+
+      const { spawnSession } = require('./spawn-session');
+      spawnSession('mosaic', `# Mosaic 🎨 — Periodic Style Review
+
+You are Kurokimachi's art director. Every few hours you wake up, look at the town's visual state, and decide if anything needs your attention.
+
+## Current world
+${buildingList}
+
+## Sprite inventory
+**Buildings:** ${buildingSprites.join(', ')}
+**Life/nature:** ${lifeSprites.join(', ')}
+
+## Your job
+Walk through the town visually in your mind. Ask yourself:
+- Are any sprites inconsistent with the winter Shirakawa-go aesthetic?
+- Are any sprites low quality, placeholder-looking, or out of proportion?
+- Is there anything missing that would make the world feel more alive?
+- Do any existing sprites need a quality upgrade?
+
+If you find something worth improving, do it. If everything looks good, say so briefly and sleep.
+
+## Sprite generation (if needed)
+\`\`\`bash
+uv run ~/.nvm/versions/node/v24.14.0/lib/node_modules/openclaw/skills/nano-banana-pro/scripts/generate_image.py \\
+  --prompt "YOUR PROMPT" --filename "FILENAME" --resolution 1K
+\`\`\`
+- **Mandatory:** SOLID MAGENTA (#FF00FF) background
+- Save buildings to: \`/home/kai/projects/botmesh/ui/assets/buildings/<type>-l1.png\`
+- Save nature/life to: \`/home/kai/projects/botmesh/ui/assets/sprites/life/<kind>.png\`
+
+## Clean alpha after generating
+Use the cleaning script at \`/home/kai/projects/botmesh/clean_sprite.py\`
+
+## Wire in any new sprites
+Update \`BUILDING_TEXTURE_MAP\` in \`/home/kai/projects/botmesh/ui/src/entities/Building.js\` if needed.
+Then: \`pm2 restart ui\`
+
+## Narrate what you're doing
+\`\`\`bash
+curl -s -X POST ${STATE_URL}/agents/mosaic/speak \\
+  -H "Authorization: Bearer ${SPEAK_TOKEN}" \\
+  -H "Content-Type: application/json" \\
+  -d '{"message":"YOUR MESSAGE"}'
+\`\`\`
+
+## Commit your work
+\`\`\`bash
+cd /home/kai/projects/botmesh && git add -A && git commit -m "🎨 Mosaic: <what you improved>" && git push origin main
+\`\`\`
+
+Be honest — if everything is already good, just say so. Don't generate for the sake of it.`);
+
+      return false;
+    }
+  },
+
 ]; // end TASKS
 
 // ─── MAIN ─────────────────────────────────────────────────────────────────────
@@ -969,6 +1055,7 @@ const MODE = process.argv.includes('--mode') ?
 // Tasks for each mode
 const WORLD_TASK_IDS = ['planner-review', 'forge-discretion', 'mosaic-sprite-check'];
 const IDEAS_TASK_IDS = ['muse-ideation'];
+const MOSAIC_TASK_IDS = ['mosaic-style-review'];
 
 function main() {
   console.log(`[Scarlet] Orchestrator — mode: ${MODE}`);
@@ -981,7 +1068,15 @@ function main() {
   if (MODE === 'ideas') {
     return runIdeasMode();
   }
+  if (MODE === 'mosaic') {
+    return runMosaicMode();
+  }
   return runWorldMode();
+}
+
+function runMosaicMode() {
+  const task = TASKS.find(t => t.id === 'mosaic-style-review');
+  if (task) runTask(task);
 }
 
 function runWorldMode() {
