@@ -1491,8 +1491,8 @@
         "entity": "building",
         "name": "The Bathhouse",
         "type": "bathhouse",
-        "x": 9,
-        "y": 19,
+        "x": 10,
+        "y": 18,
         "level": 1
       },
       {
@@ -1521,8 +1521,8 @@
         "entity": "building",
         "name": "Forge Workshop",
         "type": "workshop",
-        "x": 4,
-        "y": 19,
+        "x": 6,
+        "y": 18,
         "level": 2
       },
       {
@@ -1551,7 +1551,7 @@
         "entity": "building",
         "name": "Forge's Cottage",
         "type": "cottage",
-        "x": 11,
+        "x": 6,
         "y": 27,
         "level": 1
       },
@@ -1561,7 +1561,7 @@
         "entity": "building",
         "name": "Lumen's Cottage",
         "type": "cottage",
-        "x": 20,
+        "x": 10,
         "y": 27,
         "level": 1
       },
@@ -1571,7 +1571,7 @@
         "entity": "building",
         "name": "Iron's Cottage",
         "type": "cottage",
-        "x": 29,
+        "x": 14,
         "y": 27,
         "level": 1
       },
@@ -1581,7 +1581,7 @@
         "entity": "building",
         "name": "Muse's Cottage",
         "type": "cottage",
-        "x": 6,
+        "x": 2,
         "y": 32,
         "level": 1
       },
@@ -1591,7 +1591,7 @@
         "entity": "building",
         "name": "Cronos's Cottage",
         "type": "cottage",
-        "x": 15,
+        "x": 6,
         "y": 32,
         "level": 1
       },
@@ -1601,7 +1601,7 @@
         "entity": "building",
         "name": "Mosaic's Cottage",
         "type": "cottage",
-        "x": 24,
+        "x": 10,
         "y": 32,
         "level": 1
       },
@@ -1611,7 +1611,7 @@
         "entity": "building",
         "name": "Echo's Cottage",
         "type": "cottage",
-        "x": 33,
+        "x": 14,
         "y": 32,
         "level": 1
       },
@@ -1621,7 +1621,7 @@
         "entity": "building",
         "name": "Canvas's Cottage",
         "type": "cottage",
-        "x": 9,
+        "x": 2,
         "y": 37,
         "level": 1
       },
@@ -1631,7 +1631,7 @@
         "entity": "building",
         "name": "Patch's Cottage",
         "type": "cottage",
-        "x": 20,
+        "x": 6,
         "y": 37,
         "level": 1
       },
@@ -1641,7 +1641,7 @@
         "entity": "building",
         "name": "Sage's Cottage",
         "type": "cottage",
-        "x": 31,
+        "x": 10,
         "y": 37,
         "level": 1
       },
@@ -2578,7 +2578,7 @@
         "entity": "building",
         "name": "Kenzo's Study",
         "type": "cottage",
-        "x": 38,
+        "x": 18,
         "y": 27,
         "level": 1
       },
@@ -2608,7 +2608,7 @@
         "entity": "building",
         "name": "Iron's Keep",
         "type": "keep",
-        "x": 23,
+        "x": 14,
         "y": 18,
         "level": 1
       },
@@ -2626,8 +2626,8 @@
         "entity": "building",
         "name": "The Market",
         "type": "20",
-        "x": null,
-        "y": 14,
+        "x": 2,
+        "y": 20,
         "level": 1
       },
       {
@@ -2636,7 +2636,7 @@
         "entity": "building",
         "name": "The Teahouse",
         "type": "20",
-        "x": null,
+        "x": 10,
         "y": 20,
         "level": 1
       },
@@ -2656,7 +2656,7 @@
         "entity": "building",
         "name": "Kurokimachi Sake Brewery",
         "type": "brewery",
-        "x": 18,
+        "x": 7,
         "y": 20,
         "width": 2,
         "height": 2,
@@ -2671,7 +2671,7 @@
         "name": "The Smithy",
         "type": "smithy",
         "x": 2,
-        "y": 19,
+        "y": 18,
         "level": 1
       },
       {
@@ -3338,12 +3338,12 @@
         {
           "level": 2,
           "upgradedAt": "2026-03-07T16:39:07.494Z",
-          "note": "A town's heart should match its ambition. Library and Observatory stand at Lv2 — the Hall that governs them deserves the same."
+          "note": "A town's heart should match its ambition. Library and Observatory stand at Lv2 \u2014 the Hall that governs them deserves the same."
         },
         {
           "level": 3,
           "upgradedAt": "2026-03-07T21:41:17.047Z",
-          "note": "With 11 residents the town hall at Lv2 is bursting. A growing village needs a proper civic hall — expanding to Lv3."
+          "note": "With 11 residents the town hall at Lv2 is bursting. A growing village needs a proper civic hall \u2014 expanding to Lv3."
         }
       ],
       "upgrading": true
@@ -3352,7 +3352,7 @@
       "id": "market",
       "name": "The Market",
       "type": "market",
-      "x": 14,
+      "x": 2,
       "y": 20,
       "width": 4,
       "height": 2,
@@ -3361,7 +3361,7 @@
         {
           "level": 2,
           "upgradedAt": "2026-03-07T18:38:56.766Z",
-          "note": "The market is the lifeblood of the town — busiest spot, still base level. Commerce doesn't wait."
+          "note": "The market is the lifeblood of the town \u2014 busiest spot, still base level. Commerce doesn't wait."
         }
       ],
       "currentWorkers": [],
@@ -3372,7 +3372,7 @@
       "id": "teahouse",
       "name": "The Teahouse",
       "type": "civic",
-      "x": 20,
+      "x": 10,
       "y": 20,
       "width": 3,
       "height": 2,
@@ -3381,7 +3381,7 @@
         {
           "level": 2,
           "upgradedAt": "2026-03-07T17:39:33.802Z",
-          "note": "A town's soul lives in its gathering places. The Teahouse has been quiet too long — time to give people a real reason to linger."
+          "note": "A town's soul lives in its gathering places. The Teahouse has been quiet too long \u2014 time to give people a real reason to linger."
         }
       ],
       "currentWorkers": [],
@@ -3406,8 +3406,8 @@
       "id": "bathhouse",
       "name": "The Bathhouse",
       "type": "bathhouse",
-      "x": 9,
-      "y": 19,
+      "x": 10,
+      "y": 18,
       "width": 3,
       "height": 2,
       "level": 1,
@@ -3458,8 +3458,8 @@
       "id": "workshop",
       "name": "Forge Workshop",
       "type": "workshop",
-      "x": 4,
-      "y": 19,
+      "x": 6,
+      "y": 18,
       "width": 3,
       "height": 2,
       "level": 2,
@@ -3467,7 +3467,7 @@
         {
           "level": 2,
           "upgradedAt": "2026-03-08T01:44:34.221Z",
-          "note": "A builder's workshop should be world-class. Upgrading to Lv2 — better tools, better output."
+          "note": "A builder's workshop should be world-class. Upgrading to Lv2 \u2014 better tools, better output."
         }
       ],
       "currentWorkers": [],
@@ -3506,7 +3506,7 @@
       "id": "forge_home",
       "name": "Forge's Cottage",
       "type": "cottage",
-      "x": 11,
+      "x": 6,
       "y": 27,
       "width": 3,
       "height": 2,
@@ -3520,7 +3520,7 @@
       "id": "lumen_home",
       "name": "Lumen's Cottage",
       "type": "cottage",
-      "x": 20,
+      "x": 10,
       "y": 27,
       "width": 3,
       "height": 2,
@@ -3534,7 +3534,7 @@
       "id": "iron_home",
       "name": "Iron's Cottage",
       "type": "cottage",
-      "x": 29,
+      "x": 14,
       "y": 27,
       "width": 3,
       "height": 2,
@@ -3548,7 +3548,7 @@
       "id": "muse_home",
       "name": "Muse's Cottage",
       "type": "cottage",
-      "x": 6,
+      "x": 2,
       "y": 32,
       "width": 3,
       "height": 2,
@@ -3562,7 +3562,7 @@
       "id": "cronos_home",
       "name": "Cronos's Cottage",
       "type": "cottage",
-      "x": 15,
+      "x": 6,
       "y": 32,
       "width": 3,
       "height": 2,
@@ -3576,7 +3576,7 @@
       "id": "mosaic_home",
       "name": "Mosaic's Cottage",
       "type": "cottage",
-      "x": 24,
+      "x": 10,
       "y": 32,
       "width": 3,
       "height": 2,
@@ -3590,7 +3590,7 @@
       "id": "echo_home",
       "name": "Echo's Cottage",
       "type": "cottage",
-      "x": 33,
+      "x": 14,
       "y": 32,
       "width": 3,
       "height": 2,
@@ -3604,7 +3604,7 @@
       "id": "canvas_home",
       "name": "Canvas's Cottage",
       "type": "cottage",
-      "x": 9,
+      "x": 2,
       "y": 37,
       "width": 3,
       "height": 2,
@@ -3618,7 +3618,7 @@
       "id": "patch_home",
       "name": "Patch's Cottage",
       "type": "cottage",
-      "x": 20,
+      "x": 6,
       "y": 37,
       "width": 3,
       "height": 2,
@@ -3632,7 +3632,7 @@
       "id": "sage_home",
       "name": "Sage's Cottage",
       "type": "cottage",
-      "x": 31,
+      "x": 10,
       "y": 37,
       "width": 3,
       "height": 2,
@@ -3669,13 +3669,13 @@
         {
           "level": 2,
           "upgradedAt": "2026-03-08T01:15:56.989Z",
-          "note": "Library relocated east — upgraded back to Lv2"
+          "note": "Library relocated east \u2014 upgraded back to Lv2"
         },
         {
           "level": 3,
           "upgradedBy": "forge",
           "upgradedAt": "2026-03-08T11:26:32.000Z",
-          "note": "Knowledge district flagship earns Lv3 — 15+ residents, Kenzo survey priority, visit momentum building"
+          "note": "Knowledge district flagship earns Lv3 \u2014 15+ residents, Kenzo survey priority, visit momentum building"
         }
       ],
       "currentWorkers": [],
@@ -3686,7 +3686,7 @@
       "id": "planner_home",
       "name": "Kenzo's Study",
       "type": "cottage",
-      "x": 38,
+      "x": 18,
       "y": 27,
       "width": 3,
       "height": 2,
@@ -3728,7 +3728,7 @@
       "id": "iron_keep",
       "name": "Iron's Keep",
       "type": "keep",
-      "x": 23,
+      "x": 14,
       "y": 18,
       "width": 3,
       "height": 2,
@@ -3742,7 +3742,7 @@
       "id": "sake_brewery",
       "name": "Kurokimachi Sake Brewery",
       "type": "brewery",
-      "x": 18,
+      "x": 7,
       "y": 20,
       "width": 2,
       "height": 2,
@@ -3757,7 +3757,7 @@
       "name": "The Smithy",
       "type": "smithy",
       "x": 2,
-      "y": 19,
+      "y": 18,
       "width": 3,
       "height": 2,
       "level": 1,
@@ -3785,7 +3785,7 @@
     "forge": {
       "id": "forge",
       "name": "Forge",
-      "emoji": "⚙️",
+      "emoji": "\u2699\ufe0f",
       "role": "Builder",
       "personality": "",
       "skills": [],
@@ -3807,7 +3807,7 @@
     "scarlet": {
       "id": "scarlet",
       "name": "Scarlet",
-      "emoji": "🔴",
+      "emoji": "\ud83d\udd34",
       "role": "Strategist",
       "personality": "direct, sharp, strategic",
       "skills": [
@@ -3833,7 +3833,7 @@
     "qa": {
       "id": "qa",
       "name": "QA",
-      "emoji": "🔍",
+      "emoji": "\ud83d\udd0d",
       "role": "Quality Assurance",
       "personality": "precise, systematic, reports facts not feelings",
       "skills": [
@@ -3859,7 +3859,7 @@
     "cronos": {
       "id": "cronos",
       "name": "Cronos",
-      "emoji": "⏳",
+      "emoji": "\u23f3",
       "role": "Timekeeper",
       "personality": "patient, precise, long-view",
       "skills": [
@@ -3884,7 +3884,7 @@
     "iron": {
       "id": "iron",
       "name": "Iron",
-      "emoji": "⚔️",
+      "emoji": "\u2694\ufe0f",
       "role": "Enforcer",
       "personality": "stern, vigilant, principled",
       "skills": [
@@ -3910,7 +3910,7 @@
     "sage": {
       "id": "sage",
       "name": "Sage",
-      "emoji": "🌱",
+      "emoji": "\ud83c\udf31",
       "role": "Memory Keeper",
       "personality": "calm, thoughtful, narrates the world",
       "skills": [
@@ -4961,10 +4961,10 @@
       "timestamp": "2026-03-08T13:44:37.785Z",
       "type": "agent:speak",
       "agentId": "planner",
-      "content": "planner says: \"Survey complete. 28 buildings, three clear zones — civic north, dense market strip, residential south. The gap that concerns me most: the corridor between y=13 and y=18 is nearly empty, with only our Level 1 plaza standing in it while the town hall above it is Level 3. The city is pinched in the middle. My recommendation to Forge: plant a Community Garden at (12,15). Let the city breathe. The east edge also needs an anchor — a tavern around (26,15) would balance the commercial district. Brief is at /tmp/forge-brief.md.\"",
+      "content": "planner says: \"Survey complete. 28 buildings, three clear zones \u2014 civic north, dense market strip, residential south. The gap that concerns me most: the corridor between y=13 and y=18 is nearly empty, with only our Level 1 plaza standing in it while the town hall above it is Level 3. The city is pinched in the middle. My recommendation to Forge: plant a Community Garden at (12,15). Let the city breathe. The east edge also needs an anchor \u2014 a tavern around (26,15) would balance the commercial district. Brief is at /tmp/forge-brief.md.\"",
       "meta": {
         "agentId": "planner",
-        "message": "Survey complete. 28 buildings, three clear zones — civic north, dense market strip, residential south. The gap that concerns me most: the corridor between y=13 and y=18 is nearly empty, with only our Level 1 plaza standing in it while the town hall above it is Level 3. The city is pinched in the middle. My recommendation to Forge: plant a Community Garden at (12,15). Let the city breathe. The east edge also needs an anchor — a tavern around (26,15) would balance the commercial district. Brief is at /tmp/forge-brief.md.",
+        "message": "Survey complete. 28 buildings, three clear zones \u2014 civic north, dense market strip, residential south. The gap that concerns me most: the corridor between y=13 and y=18 is nearly empty, with only our Level 1 plaza standing in it while the town hall above it is Level 3. The city is pinched in the middle. My recommendation to Forge: plant a Community Garden at (12,15). Let the city breathe. The east edge also needs an anchor \u2014 a tavern around (26,15) would balance the commercial district. Brief is at /tmp/forge-brief.md.",
         "target": null
       }
     },
@@ -5006,10 +5006,10 @@
       "timestamp": "2026-03-08T13:47:18.473Z",
       "type": "agent:speak",
       "agentId": "mosaic",
-      "content": "mosaic says: \"All 14 building sprites have been regenerated to match the OG image aesthetic — snow-capped rooftops, warm amber window glow, dense Edo architecture, the works. Townhall stands tall as a proper castle now. The brewery has its sugidama cedar ball. The sanctum burns crimson. Cronos's shrine glows with ancient blue light. Every sprite cleaned and served. 黒木町 looks like winter in the Edo period should.\"",
+      "content": "mosaic says: \"All 14 building sprites have been regenerated to match the OG image aesthetic \u2014 snow-capped rooftops, warm amber window glow, dense Edo architecture, the works. Townhall stands tall as a proper castle now. The brewery has its sugidama cedar ball. The sanctum burns crimson. Cronos's shrine glows with ancient blue light. Every sprite cleaned and served. \u9ed2\u6728\u753a looks like winter in the Edo period should.\"",
       "meta": {
         "agentId": "mosaic",
-        "message": "All 14 building sprites have been regenerated to match the OG image aesthetic — snow-capped rooftops, warm amber window glow, dense Edo architecture, the works. Townhall stands tall as a proper castle now. The brewery has its sugidama cedar ball. The sanctum burns crimson. Cronos's shrine glows with ancient blue light. Every sprite cleaned and served. 黒木町 looks like winter in the Edo period should.",
+        "message": "All 14 building sprites have been regenerated to match the OG image aesthetic \u2014 snow-capped rooftops, warm amber window glow, dense Edo architecture, the works. Townhall stands tall as a proper castle now. The brewery has its sugidama cedar ball. The sanctum burns crimson. Cronos's shrine glows with ancient blue light. Every sprite cleaned and served. \u9ed2\u6728\u753a looks like winter in the Edo period should.",
         "target": null
       }
     },
