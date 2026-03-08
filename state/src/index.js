@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+const rateLimit = require('express-rate-limit');
 const fs = require('fs');
 const path = require('path');
 const { loadState, saveState } = require('./persistence');
@@ -420,10 +421,41 @@ function formatGazetteContent(event) {
   }
 }
 
+// ── Rate limiting ────────────────────────────────────────────────────────────
+const globalLimiter = rateLimit({
+  windowMs: 60 * 1000, // 1 minute
+  max: 120,
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+const writeLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  max: 10,
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
 // Express app
 const app = express();
-app.use(cors());
+app.use(globalLimiter);
+app.use(cors({
+  origin: ['https://kurokimachi.com', 'https://www.kurokimachi.com', 'http://localhost:3003'],
+  credentials: false,
+}));
+app.use((req, res, next) => {
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('X-Frame-Options', 'DENY');
+  res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+  next();
+});
 app.use(express.json());
+
+// Stricter rate limits on write endpoints
+app.use('/world/mutate', writeLimiter);
+app.use('/agents/:id/speak', writeLimiter);
+app.use('/agents/:id/wake', writeLimiter);
+app.use('/agents/:id/sleep', writeLimiter);
+app.use('/command', writeLimiter);
 
 // SSE
 const sse = createSSEManager(getState);

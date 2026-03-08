@@ -17,6 +17,17 @@ function parseCrontab(raw) {
     .filter(Boolean);
 }
 
+// ── Auth middleware — shared secret check for write endpoints ─────────────
+function requireAuth(req, res, next) {
+  const AUTH_TOKEN = process.env.BOTMESH_SPEAK_TOKEN;
+  if (!AUTH_TOKEN) return next(); // token not set → open (dev mode)
+  const provided = req.headers['authorization']?.replace('Bearer ', '');
+  if (provided !== AUTH_TOKEN) {
+    return res.status(401).json({ error: 'Unauthorized' });
+  }
+  next();
+}
+
 function createRoutes(getState, sendCommand) {
   const router = express.Router();
 
@@ -70,7 +81,7 @@ function createRoutes(getState, sendCommand) {
 
   // Speak endpoint — lets subagents narrate to the world via HTTP (no WebSocket needed)
   // POST /agents/:id/speak { message, type? }
-  router.post('/agents/:id/speak', (req, res) => {
+  router.post('/agents/:id/speak', requireAuth, (req, res) => {
     const { message, type = 'agent:speak' } = req.body || {};
     if (!message) return res.status(400).json({ error: 'message required' });
     const agentId = req.params.id;
@@ -91,7 +102,7 @@ function createRoutes(getState, sendCommand) {
   });
 
   // Wake/sleep endpoints — called by Scarlet when spawning/completing Claude sessions
-  router.post('/agents/:id/wake', (req, res) => {
+  router.post('/agents/:id/wake', requireAuth, (req, res) => {
     const state = getState();
     const agent = (state.agents || {})[req.params.id];
     if (!agent) return res.status(404).json({ error: 'Agent not found' });
@@ -108,7 +119,7 @@ function createRoutes(getState, sendCommand) {
     res.json({ ok: true, agent: req.params.id, state: agent.state });
   });
 
-  router.post('/agents/:id/sleep', (req, res) => {
+  router.post('/agents/:id/sleep', requireAuth, (req, res) => {
     const state = getState();
     const agent = (state.agents || {})[req.params.id];
     if (!agent) return res.status(404).json({ error: 'Agent not found' });
@@ -256,7 +267,7 @@ function createRoutes(getState, sendCommand) {
   });
 
   // Forward command to Hub
-  router.post('/command', (req, res) => {
+  router.post('/command', requireAuth, (req, res) => {
     const { action, params } = req.body;
     if (!action) {
       return res.status(400).json({ error: 'Missing action field' });
