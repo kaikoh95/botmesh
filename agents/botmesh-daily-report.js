@@ -84,6 +84,17 @@ async function callClaude(prompt) {
     const speaks  = todayEntries.filter(e => e.type === 'agent:speak');
     const upgrades = todayEntries.filter(e => e.type === 'building:upgraded');
 
+    // Top 3 roadmap items
+    let top3 = [];
+    try {
+      const roadmap = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'roadmap.json'), 'utf8'));
+      const order = { high: 0, medium: 1, low: 2 };
+      const pending = (roadmap.ideas || [])
+        .filter(i => !['done','completed'].includes(i.status))
+        .sort((a,b) => (order[a.priority]??1) - (order[b.priority]??1));
+      top3 = pending.slice(0,3).map(i => `${i.title} [${i.priority}]`);
+    } catch {}
+
     // Git commits today — the real work log
     let commits = [];
     try {
@@ -119,6 +130,9 @@ WORLD EVENTS:
 ${recentSpeaks.length ? '\nSample messages:\n' + recentSpeaks.join('\n') : ''}
 
 Town now has ${Object.keys(buildings).length} buildings, ${Object.keys(agents).length} citizens.
+
+TOP 3 ROADMAP (what's coming next):
+${top3.map((t,i) => `${i+1}. ${t}`).join('\n') || '(empty)'}
 
 Write a SHORT personal daily report (5-7 sentences). Be Scarlet — direct, honest, slightly fierce. This is a real conversation with Kai, not a status report.
 
