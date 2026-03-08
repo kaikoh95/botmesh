@@ -104,6 +104,17 @@ export default class WorldLife {
       }
     }
 
+    // Kuroki — ancient black pine (kuro-matsu), singular named tree near Sanctum
+    // Planted at x:14, y:12 — west moat wall. This tree has been here longer than the town.
+    if (scene.textures.exists('life-pine')) {
+      const pos = scene.gridToScreen(14, 12);
+      const kuroki = scene.add.image(pos.x, pos.y - 16, 'life-pine').setOrigin(0.5, 1).setDepth(pos.y - 6);
+      kuroki.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
+      scaleToMaxH(kuroki, 2.5 * TILE_H); // taller than willow, upright and imposing
+      kuroki.setName('kuroki');
+      this.elements.push(kuroki);
+    }
+
     // Koi pond (always present if texture exists)
     if (scene.textures.exists('life-koipond')) {
       const pos = scene.gridToScreen(14, 24);

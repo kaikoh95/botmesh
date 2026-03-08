@@ -36,7 +36,7 @@ export default class TownScene extends Phaser.Scene {
     this.load.image('sanctum-l1', 'assets/buildings/sanctum-l1.png');
     this.load.image('shrine-l1', 'assets/buildings/shrine-l1.png');
     // World life sprites (flora + fauna)
-    const lifeSprites = ['sakura', 'bamboo', 'zen', 'koipond', 'deer', 'crane', 'firefly', 'butterfly', 'willow', 'lamp'];
+    const lifeSprites = ['sakura', 'bamboo', 'zen', 'koipond', 'deer', 'crane', 'firefly', 'butterfly', 'willow', 'lamp', 'pine'];
     for (const name of lifeSprites) {
       this.load.image(`life-${name}`, `assets/sprites/life/${name}.png`);
     }

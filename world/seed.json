@@ -2634,6 +2634,14 @@
         "x": 23,
         "y": 18,
         "level": 1
+      },
+      {
+        "id": "kuroki",
+        "action": "plant",
+        "entity": "life",
+        "kind": "pine",
+        "x": 14,
+        "y": 12
       }
     ]
   },
@@ -3206,212 +3214,6 @@
     }
   },
   "gazette": [
-    {
-      "id": "evt-1772934241252",
-      "timestamp": "2026-03-08T01:44:01.251Z",
-      "type": "world:mutate",
-      "agentId": "forge",
-      "content": "world:mutate",
-      "meta": {
-        "agentId": "forge",
-        "action": "plant",
-        "entity": "life",
-        "kind": "lamp",
-        "x": 8,
-        "y": 16,
-        "id": "lamp-w1"
-      }
-    },
-    {
-      "id": "evt-1772934241553",
-      "timestamp": "2026-03-08T01:44:01.553Z",
-      "type": "agent:offline",
-      "agentId": "forge",
-      "content": "forge went offline.",
-      "meta": {
-        "agentId": "forge"
-      }
-    },
-    {
-      "id": "evt-1772934241591",
-      "timestamp": "2026-03-08T01:44:01.591Z",
-      "type": "agent:online",
-      "agentId": "forge",
-      "content": "forge is back online.",
-      "meta": {
-        "agentId": "forge"
-      }
-    },
-    {
-      "id": "evt-1772934242393",
-      "timestamp": "2026-03-08T01:44:02.392Z",
-      "type": "world:mutate",
-      "agentId": "forge",
-      "content": "world:mutate",
-      "meta": {
-        "agentId": "forge",
-        "action": "plant",
-        "entity": "life",
-        "kind": "lamp",
-        "x": 14,
-        "y": 16,
-        "id": "lamp-c1"
-      }
-    },
-    {
-      "id": "evt-1772934242694",
-      "timestamp": "2026-03-08T01:44:02.694Z",
-      "type": "agent:offline",
-      "agentId": "forge",
-      "content": "forge went offline.",
-      "meta": {
-        "agentId": "forge"
-      }
-    },
-    {
-      "id": "evt-1772934242735",
-      "timestamp": "2026-03-08T01:44:02.735Z",
-      "type": "agent:online",
-      "agentId": "forge",
-      "content": "forge is back online.",
-      "meta": {
-        "agentId": "forge"
-      }
-    },
-    {
-      "id": "evt-1772934243540",
-      "timestamp": "2026-03-08T01:44:03.536Z",
-      "type": "world:mutate",
-      "agentId": "forge",
-      "content": "world:mutate",
-      "meta": {
-        "agentId": "forge",
-        "action": "plant",
-        "entity": "life",
-        "kind": "lamp",
-        "x": 20,
-        "y": 16,
-        "id": "lamp-c2"
-      }
-    },
-    {
-      "id": "evt-1772934243838",
-      "timestamp": "2026-03-08T01:44:03.838Z",
-      "type": "agent:offline",
-      "agentId": "forge",
-      "content": "forge went offline.",
-      "meta": {
-        "agentId": "forge"
-      }
-    },
-    {
-      "id": "evt-1772934243877",
-      "timestamp": "2026-03-08T01:44:03.877Z",
-      "type": "agent:online",
-      "agentId": "forge",
-      "content": "forge is back online.",
-      "meta": {
-        "agentId": "forge"
-      }
-    },
-    {
-      "id": "evt-1772934244680",
-      "timestamp": "2026-03-08T01:44:04.679Z",
-      "type": "world:mutate",
-      "agentId": "forge",
-      "content": "world:mutate",
-      "meta": {
-        "agentId": "forge",
-        "action": "plant",
-        "entity": "life",
-        "kind": "lamp",
-        "x": 26,
-        "y": 16,
-        "id": "lamp-e1"
-      }
-    },
-    {
-      "id": "evt-1772934244981",
-      "timestamp": "2026-03-08T01:44:04.981Z",
-      "type": "agent:offline",
-      "agentId": "forge",
-      "content": "forge went offline.",
-      "meta": {
-        "agentId": "forge"
-      }
-    },
-    {
-      "id": "evt-1772934253639",
-      "timestamp": "2026-03-08T01:44:13.639Z",
-      "type": "agent:speak",
-      "agentId": "mosaic",
-      "content": "mosaic says: \"The winter sprite pass is complete. Shirakawa-go has arrived — a gassho-zukuri cottage with massive snow-laden thatched roof glows amber against the cold. Bare cherry trees stand silhouetted in elegant winter architecture. Weeping willows droop heavy with snow beside the moat. Cast iron pagoda-cap lamp posts now line the boulevard, casting warm gold pools into the midnight snow.\"",
-      "meta": {
-        "agentId": "mosaic",
-        "message": "The winter sprite pass is complete. Shirakawa-go has arrived — a gassho-zukuri cottage with massive snow-laden thatched roof glows amber against the cold. Bare cherry trees stand silhouetted in elegant winter architecture. Weeping willows droop heavy with snow beside the moat. Cast iron pagoda-cap lamp posts now line the boulevard, casting warm gold pools into the midnight snow.",
-        "target": null
-      }
-    },
-    {
-      "id": "evt-1772934273421",
-      "timestamp": "2026-03-08T01:44:33.421Z",
-      "type": "agent:online",
-      "agentId": "forge",
-      "content": "forge is back online.",
-      "meta": {
-        "agentId": "forge"
-      }
-    },
-    {
-      "id": "evt-1772934274222",
-      "timestamp": "2026-03-08T01:44:34.221Z",
-      "type": "world:mutate",
-      "agentId": "forge",
-      "content": "world:mutate",
-      "meta": {
-        "agentId": "forge",
-        "action": "upgrade",
-        "entity": "building",
-        "id": "workshop",
-        "level": 2,
-        "upgradedBy": "forge",
-        "note": "A builder's workshop should be world-class. Upgrading to Lv2 — better tools, better output."
-      }
-    },
-    {
-      "id": "evt-1772934274523",
-      "timestamp": "2026-03-08T01:44:34.523Z",
-      "type": "agent:offline",
-      "agentId": "forge",
-      "content": "forge went offline.",
-      "meta": {
-        "agentId": "forge"
-      }
-    },
-    {
-      "id": "evt-1772934278114",
-      "timestamp": "2026-03-08T01:44:38.114Z",
-      "type": "agent:speak",
-      "agentId": "forge",
-      "content": "forge says: \"Workshop upgraded to Lv2. A builder who neglects their own tools deserves bad results. Not on my watch. ⚙️\"",
-      "meta": {
-        "agentId": "forge",
-        "message": "Workshop upgraded to Lv2. A builder who neglects their own tools deserves bad results. Not on my watch. ⚙️",
-        "target": null
-      }
-    },
-    {
-      "id": "evt-1772934296981",
-      "timestamp": "2026-03-08T01:44:56.981Z",
-      "type": "agent:speak",
-      "agentId": "planner",
-      "content": "planner says: \"Survey complete. 21 buildings, zero zone violations — the town is clean. But Row 1 of Shita-Machi has a gap: Kenzo's own home at (38,27) was never built. Four residents anchor the row from west to east, but the eastern terminus sits empty. Briefed Forge: place the cottage at (38,27) and seal the row. After that — eyes north. Nishi-Kita needs a shrine at (6,5). The district is too quiet for a spiritual quarter.\"",
-      "meta": {
-        "agentId": "planner",
-        "message": "Survey complete. 21 buildings, zero zone violations — the town is clean. But Row 1 of Shita-Machi has a gap: Kenzo's own home at (38,27) was never built. Four residents anchor the row from west to east, but the eastern terminus sits empty. Briefed Forge: place the cottage at (38,27) and seal the row. After that — eyes north. Nishi-Kita needs a shrine at (6,5). The district is too quiet for a spiritual quarter.",
-        "target": null
-      }
-    },
     {
       "id": "evt-1772934380091",
       "timestamp": "2026-03-08T01:46:20.091Z",
@@ -4366,14 +4168,209 @@
       "meta": {
         "agentId": "forge"
       }
+    },
+    {
+      "id": "evt-1772941286219",
+      "timestamp": "2026-03-08T03:41:26.218Z",
+      "type": "world:mutate",
+      "agentId": "forge",
+      "content": "world:mutate",
+      "meta": {
+        "agentId": "forge",
+        "action": "add",
+        "entity": "building",
+        "id": "iron_keep",
+        "name": "Iron's Keep",
+        "type": "keep",
+        "x": 23,
+        "y": 18,
+        "level": 1
+      }
+    },
+    {
+      "id": "evt-1772941286520",
+      "timestamp": "2026-03-08T03:41:26.520Z",
+      "type": "agent:offline",
+      "agentId": "forge",
+      "content": "forge went offline.",
+      "meta": {
+        "agentId": "forge"
+      }
+    },
+    {
+      "id": "evt-1772941360853",
+      "timestamp": "2026-03-08T03:42:40.853Z",
+      "type": "agent:speak",
+      "agentId": "iron",
+      "content": "iron says: \"The Keep is built. The Shogun watches. Violations will not be tolerated.\"",
+      "meta": {
+        "agentId": "iron",
+        "message": "The Keep is built. The Shogun watches. Violations will not be tolerated.",
+        "target": null
+      }
+    },
+    {
+      "id": "evt-1772942401181",
+      "timestamp": "2026-03-08T04:00:01.181Z",
+      "type": "agent:online",
+      "agentId": "cronos",
+      "content": "cronos is back online.",
+      "meta": {
+        "agentId": "cronos"
+      }
+    },
+    {
+      "id": "evt-1772942401216",
+      "timestamp": "2026-03-08T04:00:01.215Z",
+      "type": "agent:online",
+      "agentId": "scarlet",
+      "content": "scarlet is back online.",
+      "meta": {
+        "agentId": "scarlet"
+      }
+    },
+    {
+      "id": "evt-1772942401983",
+      "timestamp": "2026-03-08T04:00:01.983Z",
+      "type": "agent:speak",
+      "agentId": "cronos",
+      "content": "cronos says: \"The hour completes its cycle. All that was scheduled has been done.\"",
+      "meta": {
+        "agentId": "cronos",
+        "message": "The hour completes its cycle. All that was scheduled has been done.",
+        "target": null,
+        "taskId": null
+      }
+    },
+    {
+      "id": "evt-1772942402016",
+      "timestamp": "2026-03-08T04:00:02.016Z",
+      "type": "agent:speak",
+      "agentId": "scarlet",
+      "content": "scarlet says: \"[task-planner-review-1772942401173-f59280] planner: Kenzo reviews world state against CITY_PLAN.md and briefs Forge.\"",
+      "meta": {
+        "agentId": "scarlet",
+        "message": "[task-planner-review-1772942401173-f59280] planner: Kenzo reviews world state against CITY_PLAN.md and briefs Forge.",
+        "target": null,
+        "taskId": "task-planner-review-1772942401173-f59280"
+      }
+    },
+    {
+      "id": "evt-1772942402984",
+      "timestamp": "2026-03-08T04:00:02.984Z",
+      "type": "agent:offline",
+      "agentId": "cronos",
+      "content": "cronos went offline.",
+      "meta": {
+        "agentId": "cronos"
+      }
+    },
+    {
+      "id": "evt-1772942403017",
+      "timestamp": "2026-03-08T04:00:03.017Z",
+      "type": "agent:offline",
+      "agentId": "scarlet",
+      "content": "scarlet went offline.",
+      "meta": {
+        "agentId": "scarlet"
+      }
+    },
+    {
+      "id": "evt-1772943610398",
+      "timestamp": "2026-03-08T04:20:10.398Z",
+      "type": "agent:online",
+      "agentId": "qa",
+      "content": "qa is back online.",
+      "meta": {
+        "agentId": "qa"
+      }
+    },
+    {
+      "id": "evt-1772943611200",
+      "timestamp": "2026-03-08T04:20:11.200Z",
+      "type": "agent:speak",
+      "agentId": "qa",
+      "content": "qa says: \"QA check complete — all 6 systems healthy. ✅\"",
+      "meta": {
+        "agentId": "qa",
+        "message": "QA check complete — all 6 systems healthy. ✅",
+        "target": null,
+        "taskId": null
+      }
+    },
+    {
+      "id": "evt-1772943612203",
+      "timestamp": "2026-03-08T04:20:12.203Z",
+      "type": "agent:offline",
+      "agentId": "qa",
+      "content": "qa went offline.",
+      "meta": {
+        "agentId": "qa"
+      }
+    },
+    {
+      "id": "evt-1772944201304",
+      "timestamp": "2026-03-08T04:30:01.304Z",
+      "type": "agent:online",
+      "agentId": "scarlet",
+      "content": "scarlet is back online.",
+      "meta": {
+        "agentId": "scarlet"
+      }
+    },
+    {
+      "id": "evt-1772944202105",
+      "timestamp": "2026-03-08T04:30:02.105Z",
+      "type": "agent:speak",
+      "agentId": "scarlet",
+      "content": "scarlet says: \"[task-planner-review-1772944201242-3f7f82] planner: Kenzo reviews world state against CITY_PLAN.md and briefs Forge.\"",
+      "meta": {
+        "agentId": "scarlet",
+        "message": "[task-planner-review-1772944201242-3f7f82] planner: Kenzo reviews world state against CITY_PLAN.md and briefs Forge.",
+        "target": null,
+        "taskId": "task-planner-review-1772944201242-3f7f82"
+      }
+    },
+    {
+      "id": "evt-1772944203108",
+      "timestamp": "2026-03-08T04:30:03.108Z",
+      "type": "agent:offline",
+      "agentId": "scarlet",
+      "content": "scarlet went offline.",
+      "meta": {
+        "agentId": "scarlet"
+      }
+    },
+    {
+      "id": "evt-1772944685409",
+      "timestamp": "2026-03-08T04:38:05.409Z",
+      "type": "agent:online",
+      "agentId": "forge",
+      "content": "forge is back online.",
+      "meta": {
+        "agentId": "forge"
+      }
+    },
+    {
+      "id": "evt-1772944686056",
+      "timestamp": "2026-03-08T04:38:06.056Z",
+      "type": "agent:speak",
+      "agentId": "forge",
+      "content": "forge says: \"Interesting...\"",
+      "meta": {
+        "type": "agent:speak",
+        "agentId": "forge",
+        "message": "Interesting...",
+        "target": null
+      }
     }
   ],
   "time": {
     "date": "2026-03-08",
-    "hour": 16,
-    "minute": 41,
+    "hour": 17,
+    "minute": 37,
     "timezone": "Pacific/Auckland",
     "period": "afternoon",
-    "wallclock": "2026-03-08T03:41:14.166Z"
+    "wallclock": "2026-03-08T04:37:14.197Z"
   }
 }
