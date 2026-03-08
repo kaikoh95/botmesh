@@ -45,7 +45,7 @@ export default class TownScene extends Phaser.Scene {
       'keep-l1',
       'library-l1','library-l2',
       'market-l1','market-l2',
-      'observatory-l1',
+      'observatory-l1','observatory-l2',
       'plaza-l1','plaza-l2',
       'postoffice-l1','postoffice-l2','postoffice-l3',
       'sanctum-l1',
