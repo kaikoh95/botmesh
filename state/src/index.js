@@ -525,7 +525,7 @@ setInterval(() => {
       if (home) {
         const dx = home.x - (agent.location.x || 0);
         const dy = home.y - (agent.location.y || 0);
-        if (Math.abs(dx) + Math.abs(dy) > 1) dest = home;
+        if (Math.abs(dx) + Math.abs(dy) > 0) dest = home;
       }
     }
 
