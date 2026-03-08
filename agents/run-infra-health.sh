@@ -4,7 +4,7 @@ source /home/kai/.botmesh.env
 
 TUNNEL_URL="${TUNNEL_URL:-https://api.kurokimachi.com}"
 UI_URL="https://kurokimachi.com"
-KAI_CHAT_ID="${KAI_CHAT_ID:-334289141}"
+KAI_CHAT_ID="${KAI_CHAT_ID}"
 BOT_TOKEN="${TELEGRAM_BOT_TOKEN}"
 ALERTS=()
 

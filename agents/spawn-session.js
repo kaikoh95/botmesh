@@ -14,7 +14,7 @@ const { execSync }  = require('child_process');
 
 const QUEUE_FILE  = '/tmp/botmesh-session-queue.json';
 const BOT_TOKEN   = process.env.TELEGRAM_BOT_TOKEN;
-const KAI_CHAT_ID = process.env.KAI_CHAT_ID || '334289141';
+const KAI_CHAT_ID = process.env.KAI_CHAT_ID;
 
 function pingTelegram(agentId, taskId) {
   if (!BOT_TOKEN) return;

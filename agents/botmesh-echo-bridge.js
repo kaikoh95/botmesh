@@ -24,7 +24,7 @@ const { execSync }  = require('child_process');
 // ─── CONFIG ───────────────────────────────────────────────────────────────────
 
 const STATE_URL   = 'http://localhost:3002/events';
-const KAI_CHAT_ID = '334289141';
+const KAI_CHAT_ID = process.env.KAI_CHAT_ID;
 const RATE_LIMIT_MS = 2 * 60 * 1000; // 2 minutes
 const RECONNECT_MS  = 5 * 1000;      // 5s retry on disconnect
 

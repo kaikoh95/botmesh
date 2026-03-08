@@ -9,7 +9,7 @@
  *   PENDING → IN_PROGRESS → DONE | FAILED
  *
  * Origin types:
- *   'kai'      → response goes to Telegram (chat 334289141)
+ *   'kai'      → response goes to Telegram (KAI_CHAT_ID from env)
  *   'agent:X'  → response goes back to agent X via hub
  *   'cron'     → no response needed, just log
  */
