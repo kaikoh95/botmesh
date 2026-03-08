@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "BotMesh town UI — Phaser.js isometric pixel art + live gazette",
   "scripts": {
-    "start": "npx http-server . -p 3003 -c-1 --cors"
+    "start": "npx http-server . -p 3003 -c3600 --cors"
   },
   "dependencies": {
     "http-server": "^14.1.1"
