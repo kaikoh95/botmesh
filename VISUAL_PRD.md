@@ -22,7 +22,11 @@ The world at kurokimachi.com looks like the OG image:
 - [x] DONE: Ground tiles too checkerboard-stark — darken the light tile to reduce contrast
 - [x] DONE: Building labels too small/hard to read — bumped 9px→11px, stroke 2→3, brighter color
 - [x] DONE: Visual QA snapshot — Scarlet ran full checklist 2026-03-09 (see QA findings below)
-- [ ] PENDING: Purple sky bleed — upper-left and behind pagoda reads magenta/purple, not pure midnight blue; shift sky bg toward #0a0e1a or deeper blue
+- [x] DONE: Purple sky bleed (partial) — sky bg shifted #0d1520→#080c14 (deeper blue). Root cause: townhall-l1/l2 sprites have baked-in magenta guide lines + purple path artifacts — needs sprite regen (see sprite issues below)
+- [ ] PENDING: Regen townhall-l1 + townhall-l2 — current sprites have baked magenta guide lines, purple path artifacts, irregular snow ground plane; need clean isometric portrait-oriented sprites, no baked ground
+- [ ] PENDING: Regen cottage-l1 — baked-in stone path ground plane throws off anchor; canvas too tight on right edge causing crop; needs proper padding + clean base
+- [ ] PENDING: Fix floating anchor logic — code assumes 30px transparent padding for all sprites; actual padding varies per sprite; trim transparent rows at load time or per-sprite setY offset
+- [ ] PENDING: Cobblestone road tile sprite — paths are programmatic colored diamonds (0x6a6878); need actual isometric stone/cobblestone tile PNG to replace
 - [ ] PENDING: Window glow too cool/blue — building interior glow is blue-tinted not amber; re-audit shoji window pixel colors or add warm overlay layer
 - [ ] PENDING: Label truncation + overlap — "The Teahouse L..." cut off; building labels stack with agent names in dense left cluster; consider shorter building names or label fade-out past zoom threshold
 

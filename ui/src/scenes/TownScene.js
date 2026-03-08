@@ -71,7 +71,7 @@ export default class TownScene extends Phaser.Scene {
   }
 
   create() {
-    this.cameras.main.setBackgroundColor('#0d1520'); // midnight blue winter sky
+    this.cameras.main.setBackgroundColor('#080c14'); // deep midnight blue — no purple bleed
 
     this.mapW = 42;
     this.mapH = 50; // extend south so camera never shows bare background
