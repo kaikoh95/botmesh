@@ -21,21 +21,23 @@ export default class TownScene extends Phaser.Scene {
 
   preload() {
     // Character sprites
-    const spriteAgents = ['scarlet', 'lumen', 'canvas', 'forge', 'sage', 'echo', 'iron', 'cronos', 'mosaic', 'patch'];
+    const spriteAgents = ['scarlet', 'lumen', 'canvas', 'forge', 'sage', 'echo', 'iron', 'cronos', 'mosaic', 'patch', 'muse', 'planner', 'qa'];
     for (const id of spriteAgents) {
       this.load.image(`agent-${id}`, `assets/sprites/${id}.png`);
     }
-    // Building sprites (per level)
-    const buildings = ['bathhouse', 'cottage', 'townhall', 'postoffice', 'plaza', 'torii', 'well', 'workshop', 'library', 'market', 'observatory', 'teahouse', 'keep'];
+    // Building sprites — load all levels 1-5 for all known types
+    // Phaser silently skips 404s; fallback logic in Building.js handles missing levels
+    const buildings = [
+      'bathhouse','cottage','townhall','postoffice','plaza','torii','well',
+      'workshop','library','market','observatory','teahouse','keep',
+      'sanctum','shrine','inn','forge','dojo','shrine','stable','hall',
+    ];
     for (const b of buildings) {
-      for (let lvl = 1; lvl <= 3; lvl++) {
+      for (let lvl = 1; lvl <= 5; lvl++) {
         this.load.image(`building-${b}-l${lvl}`, `assets/buildings/${b}-l${lvl}.png`);
       }
     }
-    // Sacred structures — single level sprites
-    this.load.image('sanctum-l1', 'assets/buildings/sanctum-l1.png');
-    this.load.image('shrine-l1', 'assets/buildings/shrine-l1.png');
-    // World life sprites (flora + fauna)
+    // World life sprites
     const lifeSprites = ['sakura', 'bamboo', 'zen', 'koipond', 'deer', 'crane', 'firefly', 'butterfly', 'willow', 'lamp', 'pine'];
     for (const name of lifeSprites) {
       this.load.image(`life-${name}`, `assets/sprites/life/${name}.png`);

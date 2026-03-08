@@ -373,6 +373,9 @@ async function init() {
   feedEl.innerHTML = '<div class="empty-state" id="empty-state-msg">Connecting to BotMesh...</div>';
   createGazette(feedEl);
 
+  // State may arrive before Phaser is ready — buffer it and replay once scene loads
+  let pendingState = null;
+
   const container = document.getElementById('game-container');
   scene = await createGame(container);
   window.__botmeshScene = scene; // expose for debugging
@@ -381,6 +384,17 @@ async function init() {
     console.error('[UI] TownScene failed to initialize — world will be empty but Weave will still work');
   } else {
     console.log('[UI] TownScene active');
+    // Flush any state that arrived before scene was ready
+    if (pendingState) {
+      console.log('[UI] Replaying buffered state after scene ready');
+      scene._lastBuildings = currentBuildings;
+      scene.loadState(pendingState);
+      syncColors(currentAgents);
+      updateRoster(currentAgents);
+      updateClock(pendingState.time);
+      updateStats(pendingState);
+      pendingState = null;
+    }
   }
 
   function syncColors(agents) {
@@ -421,15 +435,18 @@ async function init() {
       console.log('[UI] State sync:', Object.keys(state.agents || {}).length, 'agents');
       currentAgents = state.agents || {};
       currentBuildings = state.buildings || {};
-      window.__botmeshState = state; // expose for building panel
-      if (scene) scene._lastBuildings = currentBuildings;
+      window.__botmeshState = state;
+      if (!scene) {
+        // Scene not ready yet — buffer state, replay when scene loads
+        pendingState = state;
+        return;
+      }
+      scene._lastBuildings = currentBuildings;
       scene.loadState(state);
       syncColors(currentAgents);
       updateRoster(currentAgents);
       updateClock(state.time);
       updateStats(state);
-      // Server owns positions — agent:move events handle movement.
-      // Just restore building work indicators on sync.
       for (const [id, agent] of Object.entries(currentAgents)) {
         if (agent.online && agent.targetBuilding) {
           scene.setBuildingWorking(agent.targetBuilding, true, id);
@@ -636,7 +653,8 @@ async function init() {
       currentAgents = state.agents || {};
       currentBuildings = state.buildings || {};
       window.__botmeshState = state; // includes full upgrades[] from disk
-      if (scene) scene._lastBuildings = currentBuildings;
+      if (!scene) { pendingState = state; return; }
+      scene._lastBuildings = currentBuildings;
       scene.loadState(state);
       syncColors(currentAgents);
       updateRoster(currentAgents);
