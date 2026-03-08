@@ -18,8 +18,8 @@ The world at kurokimachi.com looks like the OG image:
 - [ ] DONE: Townhall dark bg box — regenerated l1/l2/l3 clean alpha, shadows reduced
 - [ ] DONE: Pack buildings tighter in seed.json — residential 1-tile gaps, commercial strip packed
 - [ ] DONE: Amber window glow audit — all sprites have 9k–63k amber pixels (already solid)
-- [ ] PENDING: Sakura sprite is summer red/orange — regen as winter (snow-covered or bare branches)
-- [ ] PENDING: Ground tiles too checkerboard-stark — darken the light tile to reduce contrast
+- [x] DONE: Sakura sprite is summer red/orange — regen as winter (snow-covered or bare branches)
+- [x] DONE: Ground tiles too checkerboard-stark — darken the light tile to reduce contrast
 - [ ] PENDING: Building labels too small/hard to read — increase font size or make optional
 - [ ] PENDING: Visual QA snapshot — Canvas screenshots kurokimachi.com and compares to OG image checklist
 
