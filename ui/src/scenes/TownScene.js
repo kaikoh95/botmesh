@@ -678,14 +678,7 @@ export default class TownScene extends Phaser.Scene {
         repeat: -1,
         ease: 'Sine.easeInOut'
       });
-      // Deep pulse every 30 minutes
-      this.time.addEvent({
-        delay: 30 * 60 * 1000,
-        callback: () => {
-          this.tweens.add({ targets: building.spriteImg, alpha: 0.3, duration: 400, yoyo: true, repeat: 2 });
-        },
-        loop: true
-      });
+      // (single heartbeat tween above is sufficient)
     }
   }
 
@@ -797,8 +790,8 @@ export default class TownScene extends Phaser.Scene {
     const overlays = {
       morning:   { color: 0xfff0c0, alpha: 0.0 },
       afternoon: { color: 0xffc864, alpha: 0.08 },
-      evening:   { color: 0xff9632, alpha: 0.25 },
-      night:     { color: 0x141432, alpha: 0.45 },
+      evening:   { color: 0xff9632, alpha: 0.10 },
+      night:     { color: 0x141432, alpha: 0.12 },
     };
 
     // Building tints per period — walls dim, sprites get cool/warm cast

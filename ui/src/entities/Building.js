@@ -128,15 +128,16 @@ export default class Building {
           img.setScale(maxH / img.height);
         }
         const spriteH = img.height * scale;
-        // Anchor at 50% x, 85% y — places the isometric ground base correctly
-        img.setOrigin(0.5, 0.85);
-        // Shift up slightly so base sits on the ground plane
-        img.setY(-(spriteH * 0.15));
+        // Anchor at bottom-center — sprite base sits exactly on the isometric ground plane.
+        // All sprites have 30px transparent padding; origin(0.5, 1.0) accounts for that.
+        img.setOrigin(0.5, 1.0);
+        // No manual Y shift needed — origin handles placement
+        img.setY(0);
         this.container.addAt(img, 0); // add behind label
         this.spriteImg = img;
 
         // Update label above sprite — place above the very top of the sprite
-        this.label.setPosition(0, -(spriteH + 14));
+        this.label.setPosition(0, -(spriteH + 8));
         this.label.setText(`${this.name} Lv${this.level}`);
         // DO NOT set sprite interactive — grid-based click detection handles it
         // (sprite bounds would allow clicks on empty sky above the building)
