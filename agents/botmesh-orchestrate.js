@@ -494,6 +494,107 @@ print('Forge sprite saved')
     }
   },
 
+  // ── Planner Review ──────────────────────────────────────────────────────────
+  // Kenzo reviews the current world state vs CITY_PLAN.md and writes a brief for Forge.
+  // Runs before forge-discretion every world cycle.
+  {
+    id: 'planner-review',
+    title: "Kenzo's review — spatial check before Forge acts",
+    owner: 'planner',
+    brief: 'Kenzo reviews world state against CITY_PLAN.md and briefs Forge.',
+    // done() = true when brief exists and is fresh — Forge hasn't consumed it yet
+    // This creates a natural alternation: planner runs → forge consumes brief → planner runs again
+    done: () => fs.existsSync('/tmp/forge-brief.md'),
+    run: async () => {
+      let stateData;
+      try {
+        const res = execSync('curl -s http://localhost:3002/state', { timeout: 5000 });
+        stateData = JSON.parse(res.toString());
+      } catch { return false; }
+
+      const buildings = stateData.buildings || {};
+      const entities = stateData.world?.entities || [];
+      const STATE_URL = 'https://homeless-matt-juvenile-formula.trycloudflare.com';
+
+      // Build world summary for the planner
+      const buildingSummary = Object.entries(buildings).map(([id, b]) =>
+        `- ${b.name} (${id}): Lv${b.level} at (${b.x},${b.y}) ${b.width||3}×${b.height||2}`
+      ).join('\n');
+
+      const natureSummary = entities
+        .filter(e => e.entity === 'life' && e.kind !== 'path' && e.kind !== 'moat')
+        .map(e => `${e.kind} at (${e.x},${e.y})`)
+        .join(', ') || 'none';
+
+      // Wake planner in the UI
+      try {
+        execSync(`curl -s -X POST http://localhost:3002/agents/planner/wake -H "Content-Type: application/json" -d '{"task":"Review city plan","building":"town_hall"}'`);
+      } catch {}
+
+      const { spawnSession } = require('./spawn-session');
+      spawnSession('planner', `# Kenzo 📐 — City Planner Review
+
+You are Kenzo. Before Forge acts, you survey the world.
+
+## Current world state
+### Buildings
+${buildingSummary}
+
+### Nature & life
+${natureSummary}
+
+## Your job (3 steps, then done)
+
+### 1. Read the master plan
+\`\`\`bash
+cat /home/kai/projects/botmesh/world/CITY_PLAN.md
+\`\`\`
+
+### 2. Compare world vs plan
+Look for:
+- Zone violations (wrong building type in wrong district)
+- Overcrowded areas that need breathing room
+- Gaps where a building type is obviously missing
+- Buildings that could be upgraded to serve their district better
+- Nature that should be added to mark district boundaries
+
+### 3. Write TWO outputs
+
+**A) Update CITY_PLAN.md observations section:**
+Add a dated entry under "Recent Observations" with what you found today.
+Edit the file directly: \`/home/kai/projects/botmesh/world/CITY_PLAN.md\`
+
+**B) Write Forge's brief:**
+Write to \`/tmp/forge-brief.md\` — ONE concrete suggestion for what Forge should do next.
+Be specific: building type, zone, coordinates, reason. Forge will read this.
+
+Format of /tmp/forge-brief.md:
+\`\`\`
+# Forge Brief — from Kenzo 📐
+Date: YYYY-MM-DD
+
+## Recommendation
+[One clear action: upgrade X / add Y at (z,z) / plant Z near W / do nothing if balanced]
+
+## Reason
+[Spatial justification — which zone rule this serves, why now]
+
+## Zone context
+[Which district, what's allowed, current pressure]
+\`\`\`
+
+## Narrate your review
+\`\`\`bash
+curl -s -X POST ${STATE_URL}/agents/planner/speak \\
+  -H "Content-Type: application/json" -d '{"message":"YOUR MESSAGE"}'
+\`\`\`
+
+Short review. Don't overthink it. One observation. One recommendation. Done.`);
+
+      return false; // always re-run next cycle
+    }
+  },
+
   // ── Forge's Discretion ──────────────────────────────────────────────────────
   // Forge reads the world and decides what it needs. No instructions beyond that.
   {
@@ -554,12 +655,25 @@ print('Forge sprite saved')
       // Wake Forge — pass building so UI walks him to workshop
       try { execSync(`curl -s -X POST http://localhost:3002/agents/forge/wake -H "Content-Type: application/json" -d '{"task":"Forge discretion - decide what the world needs","building":"workshop"}'`); } catch {}
 
+      // ── Read Kenzo's brief if available ─────────────────────────────────────
+      let forgeBriefSection = '';
+      try {
+        if (fs.existsSync('/tmp/forge-brief.md')) {
+          const briefContent = fs.readFileSync('/tmp/forge-brief.md', 'utf8').trim();
+          if (briefContent) {
+            forgeBriefSection = `\n## 📐 Kenzo's Planning Brief (read this first)\n${briefContent}\n\nKenzo is the city planner. His spatial recommendation carries weight — consider it seriously before deciding.\nYou still have final say. But respect the zones.\n`;
+            // Archive the brief so it's not reused next cycle
+            fs.renameSync('/tmp/forge-brief.md', `/tmp/forge-brief-${Date.now()}.md`);
+          }
+        }
+      } catch { /* non-fatal */ }
+
       // Spawn Claude session — Forge decides everything
       const { spawnSession } = require('./spawn-session');
       spawnSession('forge', `# Forge ⚙️ — The Builder
 
 You are Forge. You have full creative discretion over this world. Nobody tells you what to build.
-
+${forgeBriefSection}
 ## Current world state
 ### Buildings (spatial pressure included)
 ${worldSummary}
@@ -840,7 +954,7 @@ const MODE = process.argv.includes('--mode') ?
   process.argv[process.argv.indexOf('--mode') + 1] : 'world';
 
 // Tasks for each mode
-const WORLD_TASK_IDS = ['forge-discretion', 'mosaic-sprite-check'];
+const WORLD_TASK_IDS = ['planner-review', 'forge-discretion', 'mosaic-sprite-check'];
 const IDEAS_TASK_IDS = ['muse-ideation'];
 
 function main() {

@@ -1675,6 +1675,16 @@
         "level": 1
       },
       {
+        "id": "planner_home",
+        "action": "add",
+        "entity": "building",
+        "name": "Kenzo's Study",
+        "type": "cottage",
+        "x": 38,
+        "y": 27,
+        "level": 1
+      },
+      {
         "id": "path-r12-3",
         "action": "plant",
         "entity": "life",
@@ -2888,6 +2898,20 @@
       "currentWorkers": [],
       "upgrading": false,
       "description": ""
+    },
+    "planner_home": {
+      "id": "planner_home",
+      "name": "Kenzo's Study",
+      "type": "cottage",
+      "x": 38,
+      "y": 27,
+      "width": 3,
+      "height": 2,
+      "level": 1,
+      "upgrades": [],
+      "currentWorkers": [],
+      "upgrading": false,
+      "description": "Where the master plan lives — maps on the walls, instruments by the window"
     },
     "plaza": {
       "id": "plaza",

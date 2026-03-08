@@ -37,6 +37,7 @@ const AGENT_JOBS = {
   patch:   { building: 'workshop',    title: 'Apprentice',   shift: [8, 18] },
   canvas:  { building: 'library',     title: 'Illustrator',  shift: [10, 18] },
   scarlet: { building: 'town_hall',   title: 'Orchestrator', shift: [0, 24] }, // always on
+  planner: { building: 'town_hall',   title: 'City Planner', shift: [7, 19] },
 };
 
 // ── HTML Panel Manager ────────────────────────────────────────────────────

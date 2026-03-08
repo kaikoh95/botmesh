@@ -23,6 +23,7 @@ const HOME_LOCATIONS = {
   canvas:  { x: 16, y: 21 }, // Market area
   patch:   { x: 10, y: 20 }, // Commercial zone
   muse:    { x: 4,  y: 6  }, // Cultural NW near observatory
+  planner: { x: 19, y: 13 }, // Town Hall area — observing the civic core
 };
 const DEFAULT_HOME = { x: 12, y: 12 };
 
