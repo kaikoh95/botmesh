@@ -495,6 +495,69 @@ setInterval(() => {
   saveState(state);
 }, 30 * 1000); // every 30s
 
+// ── Agent walk ticker ─────────────────────────────────────────────────────
+// Server owns agent positions. Every tick, move each online agent one step
+// toward their destination. Broadcasts agent:move so all connected clients
+// stay in sync — joining mid-walk gets the correct position immediately.
+const WALK_TICK_MS = 900;   // ms between position steps
+const WALK_STEP    = 1;     // grid tiles per tick
+
+setInterval(() => {
+  const agents   = state.agents   || {};
+  const buildings = state.buildings || {};
+
+  for (const [id, agent] of Object.entries(agents)) {
+    if (!agent.online) continue;
+    if (!agent.location) continue;
+
+    // Determine destination
+    let dest = null;
+    if (agent.targetBuilding && buildings[agent.targetBuilding]) {
+      const b = buildings[agent.targetBuilding];
+      // Stand just in front of the building entrance
+      dest = {
+        x: Math.round((b.x || 0) + Math.floor((b.width || 2) / 2)),
+        y: Math.round((b.y || 0) + (b.height || 1)),
+      };
+    } else if (!agent.targetBuilding) {
+      // No target — walk to home position if not already there
+      const home = HOME_LOCATIONS[id];
+      if (home) {
+        const dx = home.x - (agent.location.x || 0);
+        const dy = home.y - (agent.location.y || 0);
+        if (Math.abs(dx) + Math.abs(dy) > 1) dest = home;
+      }
+    }
+
+    if (!dest) continue;
+
+    const cx = agent.location.x || 0;
+    const cy = agent.location.y || 0;
+    const dx = dest.x - cx;
+    const dy = dest.y - cy;
+
+    // Already there
+    if (Math.abs(dx) < 0.5 && Math.abs(dy) < 0.5) continue;
+
+    // Step toward destination — move on whichever axis has more distance
+    let nx = cx, ny = cy;
+    if (Math.abs(dx) >= Math.abs(dy)) {
+      nx = cx + Math.sign(dx) * Math.min(WALK_STEP, Math.abs(dx));
+    } else {
+      ny = cy + Math.sign(dy) * Math.min(WALK_STEP, Math.abs(dy));
+    }
+
+    agent.location = { x: Math.round(nx), y: Math.round(ny), building: null };
+
+    // Broadcast so all clients receive the position update
+    const moveEvent = {
+      type: 'agent:move',
+      payload: { agentId: id, to: { x: agent.location.x, y: agent.location.y } },
+    };
+    sse.broadcast(moveEvent);
+  }
+}, WALK_TICK_MS);
+
 const server = app.listen(PORT, () => {
   console.log(`[State] HTTP server listening on port ${PORT}`);
 });

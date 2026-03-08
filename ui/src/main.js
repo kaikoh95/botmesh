@@ -428,10 +428,11 @@ async function init() {
       updateRoster(currentAgents);
       updateClock(state.time);
       updateStats(state);
-      // Walk online agents to their buildings on every state sync
+      // Server owns positions — agent:move events handle movement.
+      // Just restore building work indicators on sync.
       for (const [id, agent] of Object.entries(currentAgents)) {
         if (agent.online && agent.targetBuilding) {
-          scene.walkAgentToBuilding(id, agent.targetBuilding);
+          scene.setBuildingWorking(agent.targetBuilding, true, id);
         }
       }
     },
@@ -644,17 +645,15 @@ async function init() {
       // Clear the empty state message once we have data
       const emptyMsg = document.getElementById('empty-state-msg');
       if (emptyMsg) emptyMsg.remove();
-      // Walk any agents already working at load time — they missed the agent:online event
+      // Server-side ticker broadcasts agent:move continuously — no client walk needed.
+      // Just ensure building work indicators are shown for already-working agents.
       setTimeout(() => {
         for (const [id, agent] of Object.entries(currentAgents)) {
           if (agent.online && agent.targetBuilding) {
-            scene.walkAgentToBuilding(id, agent.targetBuilding);
             scene.setBuildingWorking(agent.targetBuilding, true, id);
-          } else if (agent.online && AGENT_JOBS[id]?.building) {
-            scene.walkAgentToBuilding(id, AGENT_JOBS[id].building);
           }
         }
-      }, 800); // short delay so Phaser scene is fully settled
+      }, 500);
       // Load gazette history — normalize entries to have `payload` field
       const gazette = state.gazette || state.entries || [];
       if (gazette.length > 0) {
