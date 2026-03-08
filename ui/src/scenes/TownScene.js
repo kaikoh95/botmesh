@@ -42,7 +42,7 @@ export default class TownScene extends Phaser.Scene {
     const buildingFiles = [
       'bathhouse-l1','bathhouse-l2',
       'cottage-l1','cottage-l2','cottage-l3',
-      'keep-l1',
+      'keep-l1','keep-l2',
       'library-l1','library-l2',
       'market-l1','market-l2',
       'observatory-l1','observatory-l2',
