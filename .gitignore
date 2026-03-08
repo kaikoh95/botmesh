@@ -34,3 +34,4 @@ assets/reference/*.png
 assets/reference/*.jpeg
 assets/reference/*.mp4
 ui/config.js
+!.botmesh.env.example
