@@ -20,23 +20,37 @@ export default class TownScene extends Phaser.Scene {
   }
 
   preload() {
+    // Suppress 404 errors for missing sprites — fallback rendering handles them gracefully
+    this.load.on('loaderror', () => {});
+
     // Character sprites
     const spriteAgents = ['scarlet', 'lumen', 'canvas', 'forge', 'sage', 'echo', 'iron', 'cronos', 'mosaic', 'patch', 'muse', 'planner', 'qa'];
     for (const id of spriteAgents) {
       this.load.image(`agent-${id}`, `assets/sprites/${id}.png`);
     }
-    // Building sprites — load all levels 1-5 for all known types
-    // Phaser silently skips 404s; fallback logic in Building.js handles missing levels
-    const buildings = [
-      'bathhouse','cottage','townhall','postoffice','plaza','torii','well',
-      'workshop','library','market','observatory','teahouse','keep',
-      'sanctum','shrine','inn','forge','dojo','shrine','stable','hall',
+
+    // Building sprites — exact manifest of what exists on disk (no speculative loads)
+    const buildingFiles = [
+      'bathhouse-l1',
+      'cottage-l1','cottage-l2','cottage-l3',
+      'keep-l1',
+      'library-l1',
+      'market-l1',
+      'observatory-l1',
+      'plaza-l1',
+      'postoffice-l1','postoffice-l2','postoffice-l3',
+      'sanctum-l1',
+      'shrine-l1',
+      'teahouse-l1',
+      'torii-l1',
+      'townhall-l1','townhall-l2','townhall-l3',
+      'well-l1',
+      'workshop-l1','workshop-l2',
     ];
-    for (const b of buildings) {
-      for (let lvl = 1; lvl <= 5; lvl++) {
-        this.load.image(`building-${b}-l${lvl}`, `assets/buildings/${b}-l${lvl}.png`);
-      }
+    for (const f of buildingFiles) {
+      this.load.image(`building-${f}`, `assets/buildings/${f}.png`);
     }
+
     // World life sprites
     const lifeSprites = ['sakura', 'bamboo', 'zen', 'koipond', 'deer', 'crane', 'firefly', 'butterfly', 'willow', 'lamp', 'pine'];
     for (const name of lifeSprites) {
