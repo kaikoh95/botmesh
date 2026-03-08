@@ -163,6 +163,9 @@ export default class TownScene extends Phaser.Scene {
     };
     window._zoomReset = () => { this._zoom = 1.0; CAM.setZoom(1.0); };
 
+    // ── Snowfall ────────────────────────────────────────────────────────────
+    this._initSnow();
+
     // ── Grid toggle ────────────────────────────────────────────────────────
     this._gridVisible = true;
     window.botmeshToggleGrid = () => {
@@ -266,6 +269,61 @@ export default class TownScene extends Phaser.Scene {
         }
       }
     } catch (e) { /* silent — don't break if state unreachable */ }
+  }
+
+  _initSnow() {
+    const W = this.cameras.main.width  || 900;
+    const H = this.cameras.main.height || 700;
+    const FLAKE_COUNT = 120;
+    this._snowFlakes = [];
+
+    for (let i = 0; i < FLAKE_COUNT; i++) {
+      const size   = Phaser.Math.Between(1, 3);
+      const alpha  = Phaser.Math.FloatBetween(0.25, 0.75);
+      const speed  = Phaser.Math.FloatBetween(28, 80);   // px/s fall speed
+      const drift  = Phaser.Math.FloatBetween(-18, 18);  // px/s horizontal drift
+      const wobble = Phaser.Math.FloatBetween(0, Math.PI * 2); // phase offset
+
+      // Draw a simple white circle
+      const g = this.add.graphics();
+      g.fillStyle(0xdce8f0, alpha);
+      g.fillCircle(0, 0, size);
+      g.setScrollFactor(0);         // fixed to camera — not part of world
+      g.setDepth(9999);             // always on top
+
+      const flake = {
+        gfx:    g,
+        x:      Phaser.Math.Between(0, W),
+        y:      Phaser.Math.Between(-H, H),  // stagger initial positions vertically
+        size,
+        speed,
+        drift,
+        wobble,
+        wobbleAmp: Phaser.Math.FloatBetween(8, 25),
+        wobbleFreq: Phaser.Math.FloatBetween(0.6, 1.4),
+      };
+      this._snowFlakes.push(flake);
+    }
+  }
+
+  _updateSnow(delta) {
+    if (!this._snowFlakes) return;
+    const W = this.cameras.main.width  || 900;
+    const H = this.cameras.main.height || 700;
+    const dt = delta / 1000; // seconds
+
+    for (const f of this._snowFlakes) {
+      f.wobble += dt * f.wobbleFreq;
+      f.x += f.drift * dt + Math.sin(f.wobble) * f.wobbleAmp * dt;
+      f.y += f.speed * dt;
+
+      // Wrap around edges
+      if (f.y > H + 10)    { f.y = -10; f.x = Phaser.Math.Between(0, W); }
+      if (f.x > W + 10)    { f.x = -10; }
+      if (f.x < -10)       { f.x = W + 10; }
+
+      f.gfx.setPosition(f.x, f.y);
+    }
   }
 
   _drawGround(mapW, mapH) {
@@ -1450,5 +1508,9 @@ export default class TownScene extends Phaser.Scene {
         }
       });
     });
+  }
+
+  update(_time, delta) {
+    this._updateSnow(delta);
   }
 }
