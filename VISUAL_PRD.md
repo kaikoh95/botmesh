@@ -29,7 +29,7 @@ The world at kurokimachi.com looks like the OG image:
 - [x] DONE: SPRITE_STYLE_GUIDE.md created — canonical 512x512 spec for all future sprite generation
 - [x] DONE: Purple sky bleed — sanctum-l1 had massive baked-in purple sky (10k+ purple px); regenerated clean, hard alpha cutoff applied (commit d67aa04)
 - [x] DONE: Window glow too cool/blue — pixel pass across all sprites: >235-brightness window pixels blended 55% toward amber #f0a030 (commit f0273ef)
-- [ ] PENDING: Label truncation + overlap — "The Teahouse L..." cut off; building labels stack with agent names in dense left cluster
+- [x] DONE: Label truncation + overlap — shortened 9 building names in seed/state, added 13-char safety truncation with ellipsis in Building.js (commit 98fa1c7)
 
 ## QA Findings (2026-03-09)
 ✅ Dense packed buildings — tight left cluster, small gaps  
