@@ -1552,7 +1552,7 @@
         "type": "workshop",
         "x": 4,
         "y": 19,
-        "level": 1
+        "level": 2
       },
       {
         "id": "observatory",
@@ -2616,6 +2616,16 @@
         "kind": "lamp",
         "x": 26,
         "y": 16
+      },
+      {
+        "id": "planner_home",
+        "action": "add",
+        "entity": "building",
+        "name": "Kenzo's Study",
+        "type": "cottage",
+        "x": 38,
+        "y": 27,
+        "level": 1
       }
     ]
   },
@@ -2763,8 +2773,14 @@
       "y": 19,
       "width": 3,
       "height": 2,
-      "level": 1,
-      "upgrades": [],
+      "level": 2,
+      "upgrades": [
+        {
+          "level": 2,
+          "upgradedAt": "2026-03-08T01:44:34.221Z",
+          "note": "A builder's workshop should be world-class. Upgrading to Lv2 — better tools, better output."
+        }
+      ],
       "currentWorkers": [],
       "upgrading": false,
       "description": ""
@@ -2970,6 +2986,20 @@
       "currentWorkers": [],
       "upgrading": false,
       "description": ""
+    },
+    "planner_home": {
+      "id": "planner_home",
+      "name": "Kenzo's Study",
+      "type": "cottage",
+      "x": 38,
+      "y": 27,
+      "width": 3,
+      "height": 2,
+      "level": 1,
+      "upgrades": [],
+      "currentWorkers": [],
+      "upgrading": false,
+      "description": ""
     }
   },
   "agents": {
@@ -2990,7 +3020,7 @@
       },
       "home": "home_forge",
       "state": "idle",
-      "mood": "content",
+      "mood": "excited",
       "online": true,
       "relationships": {},
       "memory": []
@@ -3126,124 +3156,6 @@
     }
   },
   "gazette": [
-    {
-      "id": "evt-1772931621510",
-      "timestamp": "2026-03-08T01:00:21.510Z",
-      "type": "agent:offline",
-      "agentId": "forge",
-      "content": "forge went offline.",
-      "meta": {
-        "agentId": "forge"
-      }
-    },
-    {
-      "id": "evt-1772931621549",
-      "timestamp": "2026-03-08T01:00:21.549Z",
-      "type": "agent:online",
-      "agentId": "forge",
-      "content": "forge is back online.",
-      "meta": {
-        "agentId": "forge"
-      }
-    },
-    {
-      "id": "evt-1772931622350",
-      "timestamp": "2026-03-08T01:00:22.349Z",
-      "type": "world:mutate",
-      "agentId": "forge",
-      "content": "world:mutate",
-      "meta": {
-        "agentId": "forge",
-        "action": "plant",
-        "entity": "life",
-        "kind": "moat",
-        "x": 15,
-        "y": 13,
-        "id": "moat-left-13"
-      }
-    },
-    {
-      "id": "evt-1772931622651",
-      "timestamp": "2026-03-08T01:00:22.651Z",
-      "type": "agent:offline",
-      "agentId": "forge",
-      "content": "forge went offline.",
-      "meta": {
-        "agentId": "forge"
-      }
-    },
-    {
-      "id": "evt-1772931622689",
-      "timestamp": "2026-03-08T01:00:22.689Z",
-      "type": "agent:online",
-      "agentId": "forge",
-      "content": "forge is back online.",
-      "meta": {
-        "agentId": "forge"
-      }
-    },
-    {
-      "id": "evt-1772931623491",
-      "timestamp": "2026-03-08T01:00:23.490Z",
-      "type": "world:mutate",
-      "agentId": "forge",
-      "content": "world:mutate",
-      "meta": {
-        "agentId": "forge",
-        "action": "plant",
-        "entity": "life",
-        "kind": "moat",
-        "x": 22,
-        "y": 13,
-        "id": "moat-right-13"
-      }
-    },
-    {
-      "id": "evt-1772931623792",
-      "timestamp": "2026-03-08T01:00:23.792Z",
-      "type": "agent:offline",
-      "agentId": "forge",
-      "content": "forge went offline.",
-      "meta": {
-        "agentId": "forge"
-      }
-    },
-    {
-      "id": "evt-1772931623830",
-      "timestamp": "2026-03-08T01:00:23.830Z",
-      "type": "agent:online",
-      "agentId": "forge",
-      "content": "forge is back online.",
-      "meta": {
-        "agentId": "forge"
-      }
-    },
-    {
-      "id": "evt-1772931624632",
-      "timestamp": "2026-03-08T01:00:24.631Z",
-      "type": "world:mutate",
-      "agentId": "forge",
-      "content": "world:mutate",
-      "meta": {
-        "agentId": "forge",
-        "action": "plant",
-        "entity": "life",
-        "kind": "moat",
-        "x": 15,
-        "y": 14,
-        "id": "moat-left-14"
-      }
-    },
-    {
-      "id": "evt-1772931624934",
-      "timestamp": "2026-03-08T01:00:24.934Z",
-      "type": "agent:offline",
-      "agentId": "forge",
-      "content": "forge went offline.",
-      "meta": {
-        "agentId": "forge"
-      }
-    },
     {
       "id": "evt-1772931624972",
       "timestamp": "2026-03-08T01:00:24.972Z",
@@ -4334,14 +4246,135 @@
       "meta": {
         "agentId": "forge"
       }
+    },
+    {
+      "id": "evt-1772934244680",
+      "timestamp": "2026-03-08T01:44:04.679Z",
+      "type": "world:mutate",
+      "agentId": "forge",
+      "content": "world:mutate",
+      "meta": {
+        "agentId": "forge",
+        "action": "plant",
+        "entity": "life",
+        "kind": "lamp",
+        "x": 26,
+        "y": 16,
+        "id": "lamp-e1"
+      }
+    },
+    {
+      "id": "evt-1772934244981",
+      "timestamp": "2026-03-08T01:44:04.981Z",
+      "type": "agent:offline",
+      "agentId": "forge",
+      "content": "forge went offline.",
+      "meta": {
+        "agentId": "forge"
+      }
+    },
+    {
+      "id": "evt-1772934253639",
+      "timestamp": "2026-03-08T01:44:13.639Z",
+      "type": "agent:speak",
+      "agentId": "mosaic",
+      "content": "mosaic says: \"The winter sprite pass is complete. Shirakawa-go has arrived — a gassho-zukuri cottage with massive snow-laden thatched roof glows amber against the cold. Bare cherry trees stand silhouetted in elegant winter architecture. Weeping willows droop heavy with snow beside the moat. Cast iron pagoda-cap lamp posts now line the boulevard, casting warm gold pools into the midnight snow.\"",
+      "meta": {
+        "agentId": "mosaic",
+        "message": "The winter sprite pass is complete. Shirakawa-go has arrived — a gassho-zukuri cottage with massive snow-laden thatched roof glows amber against the cold. Bare cherry trees stand silhouetted in elegant winter architecture. Weeping willows droop heavy with snow beside the moat. Cast iron pagoda-cap lamp posts now line the boulevard, casting warm gold pools into the midnight snow.",
+        "target": null
+      }
+    },
+    {
+      "id": "evt-1772934273421",
+      "timestamp": "2026-03-08T01:44:33.421Z",
+      "type": "agent:online",
+      "agentId": "forge",
+      "content": "forge is back online.",
+      "meta": {
+        "agentId": "forge"
+      }
+    },
+    {
+      "id": "evt-1772934274222",
+      "timestamp": "2026-03-08T01:44:34.221Z",
+      "type": "world:mutate",
+      "agentId": "forge",
+      "content": "world:mutate",
+      "meta": {
+        "agentId": "forge",
+        "action": "upgrade",
+        "entity": "building",
+        "id": "workshop",
+        "level": 2,
+        "upgradedBy": "forge",
+        "note": "A builder's workshop should be world-class. Upgrading to Lv2 — better tools, better output."
+      }
+    },
+    {
+      "id": "evt-1772934274523",
+      "timestamp": "2026-03-08T01:44:34.523Z",
+      "type": "agent:offline",
+      "agentId": "forge",
+      "content": "forge went offline.",
+      "meta": {
+        "agentId": "forge"
+      }
+    },
+    {
+      "id": "evt-1772934278114",
+      "timestamp": "2026-03-08T01:44:38.114Z",
+      "type": "agent:speak",
+      "agentId": "forge",
+      "content": "forge says: \"Workshop upgraded to Lv2. A builder who neglects their own tools deserves bad results. Not on my watch. ⚙️\"",
+      "meta": {
+        "agentId": "forge",
+        "message": "Workshop upgraded to Lv2. A builder who neglects their own tools deserves bad results. Not on my watch. ⚙️",
+        "target": null
+      }
+    },
+    {
+      "id": "evt-1772934296981",
+      "timestamp": "2026-03-08T01:44:56.981Z",
+      "type": "agent:speak",
+      "agentId": "planner",
+      "content": "planner says: \"Survey complete. 21 buildings, zero zone violations — the town is clean. But Row 1 of Shita-Machi has a gap: Kenzo's own home at (38,27) was never built. Four residents anchor the row from west to east, but the eastern terminus sits empty. Briefed Forge: place the cottage at (38,27) and seal the row. After that — eyes north. Nishi-Kita needs a shrine at (6,5). The district is too quiet for a spiritual quarter.\"",
+      "meta": {
+        "agentId": "planner",
+        "message": "Survey complete. 21 buildings, zero zone violations — the town is clean. But Row 1 of Shita-Machi has a gap: Kenzo's own home at (38,27) was never built. Four residents anchor the row from west to east, but the eastern terminus sits empty. Briefed Forge: place the cottage at (38,27) and seal the row. After that — eyes north. Nishi-Kita needs a shrine at (6,5). The district is too quiet for a spiritual quarter.",
+        "target": null
+      }
+    },
+    {
+      "id": "evt-1772934380091",
+      "timestamp": "2026-03-08T01:46:20.091Z",
+      "type": "agent:online",
+      "agentId": "forge",
+      "content": "forge is back online.",
+      "meta": {
+        "agentId": "forge"
+      }
+    },
+    {
+      "id": "evt-1772934380613",
+      "timestamp": "2026-03-08T01:46:20.613Z",
+      "type": "agent:mood",
+      "agentId": "forge",
+      "content": "forge feels excited.",
+      "meta": {
+        "type": "agent:mood",
+        "agentId": "forge",
+        "from": "content",
+        "to": "excited"
+      }
     }
   ],
   "time": {
     "date": "2026-03-08",
     "hour": 14,
-    "minute": 43,
+    "minute": 46,
     "timezone": "Pacific/Auckland",
     "period": "afternoon",
-    "wallclock": "2026-03-08T01:43:14.120Z"
+    "wallclock": "2026-03-08T01:46:14.122Z"
   }
 }
