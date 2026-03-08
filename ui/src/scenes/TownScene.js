@@ -405,11 +405,11 @@ export default class TownScene extends Phaser.Scene {
     }
     if (inResidential) {
       // Residential: warm ivory snow — lamp glow, footprints, life
-      const ivorySnow = [0xd8d4c8, 0xe0dcd0, 0xd4d0c4, 0xdcd8cc, 0xd6d2c6, 0xdedad0, 0xd2ceC2];
+      const ivorySnow = [0x9a9488, 0xa09a8e, 0x98908a, 0x9c9690, 0x968e84, 0xa0988c, 0x928e84];
       return ivorySnow[n];
     }
     // Civic/cultural: crisp blue-white snow, clean and undisturbed
-    const blueSnow = [0xd8e4ee, 0xcedaea, 0xd4e0ec, 0xccd8e8, 0xd0dce8, 0xc8d6e4, 0xd6e2ee];
+    const blueSnow = [0x8294aa, 0x7e90a6, 0x8098ac, 0x7a8ea4, 0x7e92a8, 0x7a8ea0, 0x8296ac];
     return blueSnow[n];
   }
 

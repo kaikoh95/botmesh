@@ -15,9 +15,9 @@ The world at kurokimachi.com looks like the OG image:
 - [ ] DONE: Sprite scale 1x→2.5x footprint width  
 - [ ] DONE: Sanctum flashing removed
 - [ ] DONE: Cottage magenta pixels removed (purple pillars)
-- [ ] PENDING: Townhall dark bg box — regenerate l1/l2/l3 on solid magenta (in progress: Mosaic subagent)
-- [ ] PENDING: Pack buildings tighter in seed.json — 1-2 tile gaps (in progress: layout subagent)
-- [ ] PENDING: Amber window glow audit — check all sprites, regen any with <50 amber pixels
+- [ ] DONE: Townhall dark bg box — regenerated l1/l2/l3 clean alpha, shadows reduced
+- [ ] DONE: Pack buildings tighter in seed.json — residential 1-tile gaps, commercial strip packed
+- [ ] DONE: Amber window glow audit — all sprites have 9k–63k amber pixels (already solid)
 - [ ] PENDING: Sakura sprite is summer red/orange — regen as winter (snow-covered or bare branches)
 - [ ] PENDING: Ground tiles too checkerboard-stark — darken the light tile to reduce contrast
 - [ ] PENDING: Building labels too small/hard to read — increase font size or make optional

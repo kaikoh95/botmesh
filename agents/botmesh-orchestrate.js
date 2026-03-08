@@ -1074,7 +1074,96 @@ function main() {
   if (MODE === 'visual-qa') {
     return runVisualQAMode();
   }
+  // Auto-advance any active PRD files before world cycle
+  runPRDMode();
   return runWorldMode();
+}
+
+// ─── PRD Auto-Advance (RALPH loop) ───────────────────────────────────────────
+// Scans for *_PRD.md files in repo root, picks next PENDING task, delegates to
+// the right agent based on task content keywords. Runs every world cycle.
+function runPRDMode() {
+  const fs = require('fs');
+  const path = require('path');
+  const repoRoot = path.resolve(__dirname, '..');
+
+  // Find all *_PRD.md files
+  const prdFiles = fs.readdirSync(repoRoot).filter(f => f.endsWith('_PRD.md'));
+  if (!prdFiles.length) return;
+
+  for (const prdFile of prdFiles) {
+    const prdPath = path.join(repoRoot, prdFile);
+    const content = fs.readFileSync(prdPath, 'utf8');
+    const lines = content.split('\n');
+
+    // Find first PENDING task
+    const pendingLine = lines.find(l => l.includes('- [ ] PENDING:'));
+    if (!pendingLine) continue;
+
+    const taskDesc = pendingLine.replace('- [ ] PENDING:', '').trim();
+    console.log(`[PRD] Found pending task in ${prdFile}: ${taskDesc}`);
+
+    // Already have a session queued for this? Skip.
+    const existing = registry.getByStatus('pending').concat(registry.getByStatus('running'));
+    if (existing.some(s => s.description && s.description.includes(taskDesc.slice(0, 40)))) {
+      console.log('[PRD] Task already queued, skipping.');
+      continue;
+    }
+
+    // Route to the right agent based on keywords
+    let agentId = 'patch'; // default fallback
+    const t = taskDesc.toLowerCase();
+    if (t.includes('sprite') || t.includes('visual') || t.includes('art') || t.includes('pixel') || t.includes('glow') || t.includes('color') || t.includes('aesthetic')) {
+      agentId = 'mosaic';
+    } else if (t.includes('building') || t.includes('layout') || t.includes('seed') || t.includes('plant') || t.includes('construct') || t.includes('forge')) {
+      agentId = 'forge';
+    } else if (t.includes('plan') || t.includes('district') || t.includes('survey') || t.includes('kenzo')) {
+      agentId = 'planner';
+    } else if (t.includes('qa') || t.includes('test') || t.includes('check') || t.includes('verify') || t.includes('snapshot')) {
+      agentId = 'canvas';
+    } else if (t.includes('bug') || t.includes('fix') || t.includes('error') || t.includes('broken') || t.includes('crash')) {
+      agentId = 'patch';
+    } else if (t.includes('idea') || t.includes('roadmap') || t.includes('muse')) {
+      agentId = 'muse';
+    }
+
+    const { spawnSession } = require('./spawn-session');
+    spawnSession(agentId, `# RALPH Loop Task — ${prdFile}
+
+You are ${agentId} in Kurokimachi. You've been assigned a RALPH loop task.
+
+## Task
+${taskDesc}
+
+## Context
+Full PRD is at: /home/kai/projects/botmesh/${prdFile}
+Read it first to understand the full picture and completion criteria.
+
+## Instructions
+1. Complete the task above
+2. When done, edit ${prdFile} — change \`- [ ] PENDING: ${taskDesc}\` to \`- [ ] DONE: ${taskDesc}\`
+3. Commit: \`cd /home/kai/projects/botmesh && git add -A && git commit -m "ralph(${agentId}): ${taskDesc.slice(0, 60)}" && git push origin main\`
+4. Narrate what you did to the world feed
+5. Sleep
+
+## Narrate
+\`\`\`bash
+curl -s -X POST https://api.kurokimachi.com/agents/${agentId}/speak \\
+  -H "Authorization: Bearer ${SPEAK_TOKEN}" \\
+  -H "Content-Type: application/json" \\
+  -d '{"message":"WHAT_YOU_DID_HERE"}'
+\`\`\`
+
+## Sleep
+\`\`\`bash
+curl -s -X POST http://localhost:3002/agents/${agentId}/sleep \\
+  -H "Authorization: Bearer ${SPEAK_TOKEN}"
+\`\`\`
+`, { reason: `PRD task: ${taskDesc.slice(0, 60)}` });
+
+    console.log(`[PRD] Queued ${agentId} for: ${taskDesc}`);
+    break; // One task per cycle
+  }
 }
 
 function runMosaicMode() {
