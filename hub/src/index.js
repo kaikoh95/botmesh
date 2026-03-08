@@ -219,6 +219,17 @@ function handleCommand(ws, payload) {
       console.log('[Hub] World reset to seed');
       break;
     }
+    case 'world:mutate': {
+      // Allow state service / admin to trigger world mutations via command channel
+      const mutation = payload.params || {};
+      const agentId = mutation.agentId || 'system';
+      const event = createEvent('world:mutate', { agentId, ...mutation });
+      world.applyMutation(mutation);
+      broadcast(wss, event);
+      addToGazette(event);
+      console.log(`[Hub] world:mutate (cmd) ${agentId} → ${mutation.action} ${mutation.entity} ${mutation.id || mutation.kind || ''}`);
+      break;
+    }
     default:
       console.log(`[Hub] Unknown command: ${payload.action}`);
   }

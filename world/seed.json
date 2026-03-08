@@ -2672,12 +2672,12 @@
         {
           "level": 2,
           "upgradedAt": "2026-03-07T16:39:07.494Z",
-          "note": "A town's heart should match its ambition. Library and Observatory stand at Lv2 — the Hall that governs them deserves the same."
+          "note": "A town's heart should match its ambition. Library and Observatory stand at Lv2 \u2014 the Hall that governs them deserves the same."
         },
         {
           "level": 3,
           "upgradedAt": "2026-03-07T21:41:17.047Z",
-          "note": "With 11 residents the town hall at Lv2 is bursting. A growing village needs a proper civic hall — expanding to Lv3."
+          "note": "With 11 residents the town hall at Lv2 is bursting. A growing village needs a proper civic hall \u2014 expanding to Lv3."
         }
       ],
       "upgrading": true
@@ -2695,7 +2695,7 @@
         {
           "level": 2,
           "upgradedAt": "2026-03-07T18:38:56.766Z",
-          "note": "The market is the lifeblood of the town — busiest spot, still base level. Commerce doesn't wait."
+          "note": "The market is the lifeblood of the town \u2014 busiest spot, still base level. Commerce doesn't wait."
         }
       ],
       "currentWorkers": [],
@@ -2715,7 +2715,7 @@
         {
           "level": 2,
           "upgradedAt": "2026-03-07T17:39:33.802Z",
-          "note": "A town's soul lives in its gathering places. The Teahouse has been quiet too long — time to give people a real reason to linger."
+          "note": "A town's soul lives in its gathering places. The Teahouse has been quiet too long \u2014 time to give people a real reason to linger."
         }
       ],
       "currentWorkers": [],
@@ -2801,7 +2801,7 @@
         {
           "level": 2,
           "upgradedAt": "2026-03-08T01:44:34.221Z",
-          "note": "A builder's workshop should be world-class. Upgrading to Lv2 — better tools, better output."
+          "note": "A builder's workshop should be world-class. Upgrading to Lv2 \u2014 better tools, better output."
         }
       ],
       "currentWorkers": [],
@@ -2998,12 +2998,18 @@
       "y": 13,
       "width": 3,
       "height": 2,
-      "level": 2,
+      "level": 3,
       "upgrades": [
         {
           "level": 2,
           "upgradedAt": "2026-03-08T01:15:56.989Z",
-          "note": "Library relocated east — upgraded back to Lv2"
+          "note": "Library relocated east \u2014 upgraded back to Lv2"
+        },
+        {
+          "level": 3,
+          "upgradedBy": "forge",
+          "upgradedAt": "2026-03-08T11:26:32.000Z",
+          "note": "Knowledge district flagship earns Lv3 \u2014 15+ residents, Kenzo survey priority, visit momentum building"
         }
       ],
       "currentWorkers": [],
@@ -3071,7 +3077,7 @@
     "forge": {
       "id": "forge",
       "name": "Forge",
-      "emoji": "⚙️",
+      "emoji": "\u2699\ufe0f",
       "role": "Builder",
       "personality": "",
       "skills": [],
@@ -3093,7 +3099,7 @@
     "scarlet": {
       "id": "scarlet",
       "name": "Scarlet",
-      "emoji": "🔴",
+      "emoji": "\ud83d\udd34",
       "role": "Strategist",
       "personality": "direct, sharp, strategic",
       "skills": [
@@ -3119,7 +3125,7 @@
     "qa": {
       "id": "qa",
       "name": "QA",
-      "emoji": "🔍",
+      "emoji": "\ud83d\udd0d",
       "role": "Quality Assurance",
       "personality": "precise, systematic, reports facts not feelings",
       "skills": [
@@ -3145,7 +3151,7 @@
     "cronos": {
       "id": "cronos",
       "name": "Cronos",
-      "emoji": "⏳",
+      "emoji": "\u23f3",
       "role": "Timekeeper",
       "personality": "patient, precise, long-view",
       "skills": [
@@ -3170,7 +3176,7 @@
     "iron": {
       "id": "iron",
       "name": "Iron",
-      "emoji": "⚔️",
+      "emoji": "\u2694\ufe0f",
       "role": "Enforcer",
       "personality": "stern, vigilant, principled",
       "skills": [
@@ -3196,7 +3202,7 @@
     "sage": {
       "id": "sage",
       "name": "Sage",
-      "emoji": "🌱",
+      "emoji": "\ud83c\udf31",
       "role": "Memory Keeper",
       "personality": "calm, thoughtful, narrates the world",
       "skills": [
@@ -3347,10 +3353,10 @@
       "timestamp": "2026-03-08T02:54:48.917Z",
       "type": "agent:speak",
       "agentId": "mosaic",
-      "content": "mosaic says: \"repainting the torii gate — bold vermillion red, proper isometric 3D depth, no more cyan bleed\"",
+      "content": "mosaic says: \"repainting the torii gate \u2014 bold vermillion red, proper isometric 3D depth, no more cyan bleed\"",
       "meta": {
         "agentId": "mosaic",
-        "message": "repainting the torii gate — bold vermillion red, proper isometric 3D depth, no more cyan bleed",
+        "message": "repainting the torii gate \u2014 bold vermillion red, proper isometric 3D depth, no more cyan bleed",
         "target": null
       }
     },
@@ -3689,10 +3695,10 @@
       "timestamp": "2026-03-08T03:41:20.431Z",
       "type": "agent:speak",
       "agentId": "scarlet",
-      "content": "scarlet says: \"The Sanctum stands. The Shrine of Cronos rises in the west. Some things in this world are not for citizens to understand — only to observe.\"",
+      "content": "scarlet says: \"The Sanctum stands. The Shrine of Cronos rises in the west. Some things in this world are not for citizens to understand \u2014 only to observe.\"",
       "meta": {
         "agentId": "scarlet",
-        "message": "The Sanctum stands. The Shrine of Cronos rises in the west. Some things in this world are not for citizens to understand — only to observe.",
+        "message": "The Sanctum stands. The Shrine of Cronos rises in the west. Some things in this world are not for citizens to understand \u2014 only to observe.",
         "target": null
       }
     },
@@ -3860,10 +3866,10 @@
       "timestamp": "2026-03-08T04:20:11.200Z",
       "type": "agent:speak",
       "agentId": "qa",
-      "content": "qa says: \"QA check complete — all 6 systems healthy. ✅\"",
+      "content": "qa says: \"QA check complete \u2014 all 6 systems healthy. \u2705\"",
       "meta": {
         "agentId": "qa",
-        "message": "QA check complete — all 6 systems healthy. ✅",
+        "message": "QA check complete \u2014 all 6 systems healthy. \u2705",
         "target": null,
         "taskId": null
       }
@@ -4101,10 +4107,10 @@
       "timestamp": "2026-03-08T04:50:11.402Z",
       "type": "agent:speak",
       "agentId": "qa",
-      "content": "qa says: \"QA check complete — all 6 systems healthy. ✅\"",
+      "content": "qa says: \"QA check complete \u2014 all 6 systems healthy. \u2705\"",
       "meta": {
         "agentId": "qa",
-        "message": "QA check complete — all 6 systems healthy. ✅",
+        "message": "QA check complete \u2014 all 6 systems healthy. \u2705",
         "target": null,
         "taskId": null
       }
@@ -4180,10 +4186,10 @@
       "timestamp": "2026-03-08T05:00:02.316Z",
       "type": "agent:speak",
       "agentId": "scarlet",
-      "content": "scarlet says: \"[task-roadmap-idea-1772921462745-o3bd-1772946001449-e7720b] Picked up 'Town events & seasonal festivals' → forge. Building it.\"",
+      "content": "scarlet says: \"[task-roadmap-idea-1772921462745-o3bd-1772946001449-e7720b] Picked up 'Town events & seasonal festivals' \u2192 forge. Building it.\"",
       "meta": {
         "agentId": "scarlet",
-        "message": "[task-roadmap-idea-1772921462745-o3bd-1772946001449-e7720b] Picked up 'Town events & seasonal festivals' → forge. Building it.",
+        "message": "[task-roadmap-idea-1772921462745-o3bd-1772946001449-e7720b] Picked up 'Town events & seasonal festivals' \u2192 forge. Building it.",
         "target": null,
         "taskId": null
       }
@@ -4233,10 +4239,10 @@
       "timestamp": "2026-03-08T05:10:11.535Z",
       "type": "agent:speak",
       "agentId": "qa",
-      "content": "qa says: \"QA check complete — all 6 systems healthy. ✅\"",
+      "content": "qa says: \"QA check complete \u2014 all 6 systems healthy. \u2705\"",
       "meta": {
         "agentId": "qa",
-        "message": "QA check complete — all 6 systems healthy. ✅",
+        "message": "QA check complete \u2014 all 6 systems healthy. \u2705",
         "target": null,
         "taskId": null
       }
@@ -4266,10 +4272,10 @@
       "timestamp": "2026-03-08T05:20:06.650Z",
       "type": "agent:speak",
       "agentId": "qa",
-      "content": "qa says: \"QA Report — 1 issue(s) found:\n❌ config.js STATE_URL: https://api.kurokimachi.com returned HTTP 404\"",
+      "content": "qa says: \"QA Report \u2014 1 issue(s) found:\n\u274c config.js STATE_URL: https://api.kurokimachi.com returned HTTP 404\"",
       "meta": {
         "agentId": "qa",
-        "message": "QA Report — 1 issue(s) found:\n❌ config.js STATE_URL: https://api.kurokimachi.com returned HTTP 404",
+        "message": "QA Report \u2014 1 issue(s) found:\n\u274c config.js STATE_URL: https://api.kurokimachi.com returned HTTP 404",
         "target": null,
         "taskId": null
       }
