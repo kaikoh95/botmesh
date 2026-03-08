@@ -26,6 +26,9 @@ if (action === 'upgrade' && entity === 'building') {
 } else if (action === 'add' && entity === 'building') {
   const [id, name, x, y, type] = args;
   payload = { action: 'add', entity: 'building', id, name, type: type||id, x: parseFloat(x), y: parseFloat(y), level: 1 };
+} else if (action === 'remove' && entity === 'life') {
+  const [id] = args;
+  payload = { action: 'remove', entity: 'life', id };
 } else if (action === 'remove' && entity === 'building') {
   const [id] = args;
   payload = { action: 'remove', entity: 'building', id };

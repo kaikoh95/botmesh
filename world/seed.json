@@ -14,13 +14,6 @@
         "y": 8
       },
       {
-        "id": "bamboo-east-1",
-        "entity": "life",
-        "kind": "bamboo",
-        "x": 25,
-        "y": 10
-      },
-      {
         "id": "zen-west-1",
         "entity": "life",
         "kind": "zen",
@@ -33,13 +26,6 @@
         "kind": "sakura",
         "x": 22,
         "y": 22
-      },
-      {
-        "id": "bamboo-north-2",
-        "entity": "life",
-        "kind": "bamboo",
-        "x": 14,
-        "y": 6
       },
       {
         "id": "koipond-east-1",
@@ -2259,14 +2245,6 @@
         "y": 33
       },
       {
-        "id": "bamboo-res-1",
-        "action": "plant",
-        "entity": "life",
-        "kind": "bamboo",
-        "x": 5,
-        "y": 38
-      },
-      {
         "id": "sakura-res-5",
         "action": "plant",
         "entity": "life",
@@ -3156,117 +3134,6 @@
     }
   },
   "gazette": [
-    {
-      "id": "evt-1772932393032",
-      "timestamp": "2026-03-08T01:13:13.032Z",
-      "type": "agent:online",
-      "agentId": "forge",
-      "content": "forge is back online.",
-      "meta": {
-        "agentId": "forge"
-      }
-    },
-    {
-      "id": "evt-1772932393834",
-      "timestamp": "2026-03-08T01:13:13.833Z",
-      "type": "world:mutate",
-      "agentId": "forge",
-      "content": "world:mutate",
-      "meta": {
-        "agentId": "forge",
-        "action": "plant",
-        "entity": "life",
-        "kind": "path",
-        "x": 18,
-        "y": 18,
-        "id": "approach-1"
-      }
-    },
-    {
-      "id": "evt-1772932394135",
-      "timestamp": "2026-03-08T01:13:14.135Z",
-      "type": "agent:offline",
-      "agentId": "forge",
-      "content": "forge went offline.",
-      "meta": {
-        "agentId": "forge"
-      }
-    },
-    {
-      "id": "evt-1772932394174",
-      "timestamp": "2026-03-08T01:13:14.174Z",
-      "type": "agent:online",
-      "agentId": "forge",
-      "content": "forge is back online.",
-      "meta": {
-        "agentId": "forge"
-      }
-    },
-    {
-      "id": "evt-1772932394714",
-      "timestamp": "2026-03-08T01:13:14.714Z",
-      "type": "agent:speak",
-      "agentId": "forge",
-      "content": "forge says: \"Hello, anyone there?\"",
-      "meta": {
-        "type": "agent:speak",
-        "agentId": "forge",
-        "message": "Hello, anyone there?",
-        "target": null
-      }
-    },
-    {
-      "id": "evt-1772932394975",
-      "timestamp": "2026-03-08T01:13:14.974Z",
-      "type": "world:mutate",
-      "agentId": "forge",
-      "content": "world:mutate",
-      "meta": {
-        "agentId": "forge",
-        "action": "plant",
-        "entity": "life",
-        "kind": "path",
-        "x": 19,
-        "y": 18,
-        "id": "approach-2"
-      }
-    },
-    {
-      "id": "evt-1772932395276",
-      "timestamp": "2026-03-08T01:13:15.276Z",
-      "type": "agent:offline",
-      "agentId": "forge",
-      "content": "forge went offline.",
-      "meta": {
-        "agentId": "forge"
-      }
-    },
-    {
-      "id": "evt-1772932395316",
-      "timestamp": "2026-03-08T01:13:15.316Z",
-      "type": "agent:online",
-      "agentId": "forge",
-      "content": "forge is back online.",
-      "meta": {
-        "agentId": "forge"
-      }
-    },
-    {
-      "id": "evt-1772932396117",
-      "timestamp": "2026-03-08T01:13:16.116Z",
-      "type": "world:mutate",
-      "agentId": "forge",
-      "content": "world:mutate",
-      "meta": {
-        "agentId": "forge",
-        "action": "plant",
-        "entity": "life",
-        "kind": "path",
-        "x": 18,
-        "y": 16,
-        "id": "castle-path-1"
-      }
-    },
     {
       "id": "evt-1772932396418",
       "timestamp": "2026-03-08T01:13:16.418Z",
@@ -4343,14 +4210,112 @@
       "meta": {
         "agentId": "forge"
       }
+    },
+    {
+      "id": "evt-1772938292484",
+      "timestamp": "2026-03-08T02:51:32.483Z",
+      "type": "world:mutate",
+      "agentId": "forge",
+      "content": "world:mutate",
+      "meta": {
+        "agentId": "forge",
+        "action": "remove",
+        "entity": "life"
+      }
+    },
+    {
+      "id": "evt-1772938292785",
+      "timestamp": "2026-03-08T02:51:32.785Z",
+      "type": "agent:offline",
+      "agentId": "forge",
+      "content": "forge went offline.",
+      "meta": {
+        "agentId": "forge"
+      }
+    },
+    {
+      "id": "evt-1772938440826",
+      "timestamp": "2026-03-08T02:54:00.826Z",
+      "type": "agent:online",
+      "agentId": "forge",
+      "content": "forge is back online.",
+      "meta": {
+        "agentId": "forge"
+      }
+    },
+    {
+      "id": "evt-1772938441628",
+      "timestamp": "2026-03-08T02:54:01.627Z",
+      "type": "world:mutate",
+      "agentId": "forge",
+      "content": "world:mutate",
+      "meta": {
+        "agentId": "forge",
+        "action": "remove",
+        "entity": "life",
+        "id": "bamboo-east-1"
+      }
+    },
+    {
+      "id": "evt-1772938441928",
+      "timestamp": "2026-03-08T02:54:01.928Z",
+      "type": "agent:offline",
+      "agentId": "forge",
+      "content": "forge went offline.",
+      "meta": {
+        "agentId": "forge"
+      }
+    },
+    {
+      "id": "evt-1772938441965",
+      "timestamp": "2026-03-08T02:54:01.965Z",
+      "type": "agent:online",
+      "agentId": "forge",
+      "content": "forge is back online.",
+      "meta": {
+        "agentId": "forge"
+      }
+    },
+    {
+      "id": "evt-1772938442767",
+      "timestamp": "2026-03-08T02:54:02.766Z",
+      "type": "world:mutate",
+      "agentId": "forge",
+      "content": "world:mutate",
+      "meta": {
+        "agentId": "forge",
+        "action": "remove",
+        "entity": "life",
+        "id": "bamboo-north-2"
+      }
+    },
+    {
+      "id": "evt-1772938443068",
+      "timestamp": "2026-03-08T02:54:03.068Z",
+      "type": "agent:offline",
+      "agentId": "forge",
+      "content": "forge went offline.",
+      "meta": {
+        "agentId": "forge"
+      }
+    },
+    {
+      "id": "evt-1772938443108",
+      "timestamp": "2026-03-08T02:54:03.108Z",
+      "type": "agent:online",
+      "agentId": "forge",
+      "content": "forge is back online.",
+      "meta": {
+        "agentId": "forge"
+      }
     }
   ],
   "time": {
     "date": "2026-03-08",
     "hour": 15,
-    "minute": 51,
+    "minute": 53,
     "timezone": "Pacific/Auckland",
     "period": "afternoon",
-    "wallclock": "2026-03-08T02:51:14.148Z"
+    "wallclock": "2026-03-08T02:53:14.148Z"
   }
 }
