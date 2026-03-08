@@ -27,7 +27,7 @@ The world at kurokimachi.com looks like the OG image:
 - [x] DONE: Fix floating anchor logic — replaced hardcoded -30px with 80%-canvas-height rule; uniform footprint-ratio scale for all sprites (commit ef1da15)
 - [x] DONE: Cobblestone road tile sprite — path-tile.png generated, wired into TownScene as isometric image (commit ef1da15)
 - [x] DONE: SPRITE_STYLE_GUIDE.md created — canonical 512x512 spec for all future sprite generation
-- [ ] PENDING: Purple sky bleed — upper-left and behind pagoda reads magenta/purple not midnight blue; likely a building sprite with violet tones bleeding into bg
+- [x] DONE: Purple sky bleed — sanctum-l1 had massive baked-in purple sky (10k+ purple px); regenerated clean, hard alpha cutoff applied (commit d67aa04)
 - [ ] PENDING: Window glow too cool/blue — building interior shoji glow is blue-tinted not warm amber
 - [ ] PENDING: Label truncation + overlap — "The Teahouse L..." cut off; building labels stack with agent names in dense left cluster
 
