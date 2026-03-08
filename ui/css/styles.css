@@ -275,7 +275,11 @@ html, body {
 
 #game-container canvas {
   display: block;
-  background: #4a7c59;
+  width: 100% !important;
+  height: 100% !important;
+  background: #0d1520;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges; /* Firefox */
 }
 
 /* ── Sidebar ─────────────────────────────────────────────────────────────── */

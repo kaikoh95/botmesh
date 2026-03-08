@@ -5,11 +5,13 @@ export function createGame(container) {
     const config = {
       type: Phaser.AUTO,
       parent: container,
-      width: container.clientWidth,
-      height: container.clientHeight,
+      width: window.innerWidth,
+      height: window.innerHeight,
       backgroundColor: '#0d1520',
       pixelArt: true,
       roundPixels: true,
+      antialias: false,
+      antialiasGL: false,
       scene: [TownScene],
       scale: {
         mode: Phaser.Scale.RESIZE,
