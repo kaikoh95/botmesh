@@ -262,9 +262,10 @@ export default class TownScene extends Phaser.Scene {
           baseColor = this._grassColor(x, y);
           // Shift alternate tiles ±12 brightness for a visible grid
           if (even) {
-            const r = ((baseColor >> 16) & 0xff) + 14;
-            const g2 = ((baseColor >> 8) & 0xff) + 14;
-            const b2 = (baseColor & 0xff) + 10;
+            // Brighter even tiles — +28 gives clearly visible checkerboard
+            const r = ((baseColor >> 16) & 0xff) + 28;
+            const g2 = ((baseColor >> 8) & 0xff) + 28;
+            const b2 = (baseColor & 0xff) + 20;
             baseColor = (Math.min(r,255) << 16) | (Math.min(g2,255) << 8) | Math.min(b2,255);
           }
         }

@@ -52,7 +52,7 @@ export default class WorldLife {
       if (key) {
         const spr = scene.add.image(pos.x, pos.y - 16, key).setOrigin(0.5, 1).setDepth(pos.y - 5);
         spr.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
-        scaleToMaxH(spr, 3 * TILE_H);
+        scaleToMaxH(spr, 1.4 * TILE_H); // sakura — compact, not larger than buildings
         this.elements.push(spr);
       }
     }
@@ -68,7 +68,7 @@ export default class WorldLife {
       if (key) {
         const spr = scene.add.image(pos.x, pos.y - 12, key).setOrigin(0.5, 1).setDepth(pos.y - 4);
         spr.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
-        scaleToMaxH(spr, 5 * TILE_H);
+        scaleToMaxH(spr, 2.2 * TILE_H); // bamboo — tall but not towering
         this.elements.push(spr);
       }
     }
@@ -83,7 +83,7 @@ export default class WorldLife {
       if (key) {
         const spr = scene.add.image(pos.x, pos.y, key).setOrigin(0.5, 0.75).setDepth(pos.y - 2);
         spr.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
-        scaleToMaxH(spr, 2 * TILE_H);
+        scaleToMaxH(spr, 1.2 * TILE_H); // zen garden — ground-level, compact
         this.elements.push(spr);
       }
     }
@@ -93,7 +93,7 @@ export default class WorldLife {
       const pos = scene.gridToScreen(14, 24);
       const pond = scene.add.image(pos.x, pos.y, 'life-koipond').setOrigin(0.5, 0.75).setDepth(pos.y - 1);
       pond.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
-      scaleToMaxH(pond, 2 * TILE_H);
+      scaleToMaxH(pond, 1.5 * TILE_H);
       this.elements.push(pond);
     }
   }
