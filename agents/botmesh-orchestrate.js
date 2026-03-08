@@ -989,9 +989,50 @@ function runWorldMode() {
   const task = TASKS.filter(t => WORLD_TASK_IDS.includes(t.id)).find(t => !t.done());
   if (!task) {
     console.log('[Scarlet] World maintenance — nothing to do this cycle.');
-    return;
+  } else {
+    runTask(task);
   }
-  runTask(task);
+
+  // Always fire an ambient thought this cycle (lightweight — one citizen, one sentence)
+  runAmbientThought();
+}
+
+function runAmbientThought() {
+  let stateData;
+  try {
+    const res = execSync('curl -s http://localhost:3002/state', { timeout: 5000 });
+    stateData = JSON.parse(res.toString());
+  } catch { return; }
+
+  const agents = Object.keys(stateData.agents || {});
+  if (!agents.length) return;
+
+  // Pick a random citizen
+  const agentId = agents[Math.floor(Math.random() * agents.length)];
+  const agent = stateData.agents[agentId];
+  const agentName = agent?.name || agentId;
+
+  const hour = new Date().getHours();
+  const timeOfDay = hour < 6 ? 'deep night' : hour < 12 ? 'morning' : hour < 17 ? 'afternoon' : hour < 21 ? 'evening' : 'night';
+
+  const { spawnSession } = require('./spawn-session');
+  spawnSession(agentId, `You are ${agentName}, a citizen of Kurokimachi — a living AI town in winter (Shirakawa-go aesthetic, snow-covered rooftops, stone paths). It is ${timeOfDay}.
+
+Your role: ${agent?.role || 'citizen'}. Your personality: ${agent?.personality || 'quiet, thoughtful'}.
+
+Write ONE brief unprompted thought, observation, or musing — 1 sentence, 20 words max. Something natural to this moment. No greetings, no "I think", no meta. Just the thought itself, in first person.
+
+Then post it to the world feed immediately:
+\`\`\`bash
+curl -s -X POST https://api.kurokimachi.com/agents/${agentId}/speak \\
+  -H "Authorization: Bearer ${SPEAK_TOKEN}" \\
+  -H "Content-Type: application/json" \\
+  -d '{"message":"YOUR_THOUGHT_HERE"}'
+\`\`\`
+
+That's it. One thought, one curl. Done.`);
+
+  console.log(`[ambient] Queued ambient thought for ${agentId}`);
 }
 
 function runIdeasMode() {
