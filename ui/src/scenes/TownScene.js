@@ -68,7 +68,7 @@ export default class TownScene extends Phaser.Scene {
   }
 
   create() {
-    this.cameras.main.setBackgroundColor('#5c8a42'); // warmer earthy green
+    this.cameras.main.setBackgroundColor('#0d1520'); // midnight blue winter sky
 
     this.mapW = 42;
     this.mapH = 50; // extend south so camera never shows bare background
@@ -786,16 +786,8 @@ export default class TownScene extends Phaser.Scene {
 
   setTime(period) {
     this.currentPeriod = period;
-    if (!this.dayOverlay) return;
 
-    const overlays = {
-      morning:   { color: 0xfff0c0, alpha: 0.0 },
-      afternoon: { color: 0xffc864, alpha: 0.08 },
-      evening:   { color: 0xff9632, alpha: 0.10 },
-      night:     { color: 0x141432, alpha: 0.12 },
-    };
-
-    // Building tints per period — walls dim, sprites get cool/warm cast
+    // Tint-only day/night — no overlay rectangles (see RENDER STANDARD at top)
     const buildingTints = {
       morning:   0xffffff,
       afternoon: 0xfff5e0,
@@ -803,17 +795,9 @@ export default class TownScene extends Phaser.Scene {
       night:     0x6688cc,
     };
 
-    const o = overlays[period] || overlays.morning;
-    this.tweens.add({
-      targets: this.dayOverlay,
-      alpha: o.alpha,
-      duration: 2000,
-      ease: 'Power2',
-    });
-    this.dayOverlay.setFillStyle(o.color, o.alpha);
+    const tint = buildingTints[period] || 0xffffff;
 
     // Apply tint to all buildings
-    const tint = buildingTints[period] || 0xffffff;
     Object.values(this.buildings || {}).forEach(b => {
       const target = b.spriteImg || b.graphics;
       if (!target) return;
@@ -821,6 +805,16 @@ export default class TownScene extends Phaser.Scene {
         target.clearTint?.();
       } else {
         target.setTint?.(tint);
+      }
+    });
+
+    // Apply tint to all agents
+    Object.values(this.agents || {}).forEach(a => {
+      if (!a.body) return;
+      if (tint === 0xffffff) {
+        a.body.clearTint?.();
+      } else {
+        a.body.setTint?.(tint);
       }
     });
   }
