@@ -399,6 +399,64 @@ export default class Building {
     }
   }
 
+  // ─── MURAL OVERLAY ─────────────────────────────────────────────────────────
+  // A small tasteful badge on the lower-right wall of the building
+
+  setMural(mural) {
+    // Remove old mural if any
+    if (this._muralTween) { this._muralTween.remove(); this._muralTween = null; }
+    if (this._muralContainer) { this._muralContainer.destroy(); this._muralContainer = null; }
+    if (!mural) return;
+
+    const caption = (mural.caption || '').slice(0, 40);
+    const hexColor = mural.color || '#e8c97e';
+
+    const mc = this.scene.add.container(0, 0);
+
+    // Small colored rectangle — mural "canvas"
+    const bg = this.scene.add.graphics();
+    const textWidth = Math.min(caption.length * 5 + 8, 80);
+    bg.fillStyle(Phaser.Display.Color.HexStringToColor(hexColor).color, 0.85);
+    bg.fillRoundedRect(-textWidth / 2, -7, textWidth, 14, 2);
+    bg.lineStyle(1, 0x000000, 0.3);
+    bg.strokeRoundedRect(-textWidth / 2, -7, textWidth, 14, 2);
+    mc.add(bg);
+
+    // Caption text
+    const txt = this.scene.add.text(0, 0, caption, {
+      fontSize: '6px',
+      fontFamily: '"Press Start 2P", monospace',
+      color: '#ffffff',
+      stroke: '#000000',
+      strokeThickness: 2,
+    }).setOrigin(0.5);
+    mc.add(txt);
+
+    // Position: lower-right area of the building
+    if (this.spriteImg) {
+      // For sprite buildings: bottom-right corner, offset up slightly
+      mc.setPosition(this.spriteImg.displayWidth * 0.25, this.spriteImg.y + 12);
+    } else {
+      // For programmatic buildings: right wall area
+      const tileW = 64;
+      const w = this.gridW * tileW / 4;
+      mc.setPosition(w * 0.6, -8);
+    }
+
+    this.container.add(mc);
+    this._muralContainer = mc;
+
+    // Gentle fade-pulse so it catches the eye subtly
+    this._muralTween = this.scene.tweens.add({
+      targets: mc,
+      alpha: { from: 0.9, to: 0.6 },
+      duration: 3000,
+      yoyo: true,
+      repeat: -1,
+      ease: 'Sine.easeInOut',
+    });
+  }
+
   setGlow(on) {
     if (this.glow === on) return;
     this.glow = on;
@@ -486,6 +544,8 @@ export default class Building {
     if (this._damageTween) this._damageTween.remove();
     if (this._dmgTween) this._dmgTween.remove();
     if (this._dmgLabel) this._dmgLabel.destroy();
+    if (this._muralTween) this._muralTween.remove();
+    if (this._muralContainer) this._muralContainer.destroy();
     if (this.spriteImg) this.spriteImg.destroy();
     this.container.destroy();
   }

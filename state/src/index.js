@@ -74,7 +74,40 @@ function seedCitizens(state) {
 let state = loadState();
 console.log('[State] Loaded state from disk');
 seedCitizens(state);
+seedMurals(state);
 console.log(`[State] Citizens: ${Object.keys(state.agents || {}).length} total`);
+
+// ── Seed murals — ensure at least one mural exists for first-time visitors ──
+function seedMurals(state) {
+  if (!state.murals) state.murals = [];
+  if (state.murals.length === 0) {
+    state.murals.push({
+      id: 'mural-seed-1',
+      buildingId: 'scarlet_sanctum',
+      caption: 'The town that builds itself',
+      color: '#c0392b',
+      author: 'canvas',
+      createdAt: '2026-03-09T00:00:00.000Z',
+    });
+    state.murals.push({
+      id: 'mural-seed-2',
+      buildingId: 'library',
+      caption: 'Knowledge grows here',
+      color: '#8b6914',
+      author: 'canvas',
+      createdAt: '2026-03-09T00:00:00.000Z',
+    });
+    state.murals.push({
+      id: 'mural-seed-3',
+      buildingId: 'plaza',
+      caption: 'Where citizens gather',
+      color: '#2980b9',
+      author: 'canvas',
+      createdAt: '2026-03-09T00:00:00.000Z',
+    });
+    console.log('[State] Seeded 3 murals on Sanctum, Library, and Plaza');
+  }
+}
 
 function getState() {
   return state;
@@ -96,6 +129,7 @@ function applyEvent(event) {
     case 'state:sync': {
       // Merge hub sync — preserve state layer's authoritative data
       // Hub restarts empty; state layer is the source of truth for buildings + world
+      const muralsBackup = state.murals || [];
       state = {
         ...payload,
         agents:    { ...state.agents, ...(payload.agents || {}) },
@@ -111,8 +145,11 @@ function applyEvent(event) {
           ),
         },
       };
+      // Preserve murals across syncs — state layer is authoritative
+      if (!state.murals && muralsBackup) state.murals = muralsBackup;
       // Re-seed any citizens that may have been wiped
       seedCitizens(state);
+      seedMurals(state);
       break;
     }
 
@@ -259,6 +296,22 @@ function applyEvent(event) {
             if (e) e.damaged = false;
             if (state.buildings && state.buildings[entityId]) state.buildings[entityId].damaged = false;
             break; }
+        case 'mural': {
+          // Add a mural to a building wall
+          if (!state.murals) state.murals = [];
+          const mural = {
+            id: `mural-${Date.now()}`,
+            buildingId: payload.buildingId || entityId,
+            caption: (payload.caption || '').slice(0, 40),
+            color: payload.color || '#e8c97e',
+            author: payload.author || 'unknown',
+            createdAt: new Date().toISOString(),
+          };
+          state.murals.push(mural);
+          // Keep last 50 murals to prevent unbounded growth
+          if (state.murals.length > 50) state.murals = state.murals.slice(-50);
+          break;
+        }
         case 'remove':
         case 'clear':
           state.world.entities = state.world.entities.filter(e => e.id !== entityId);

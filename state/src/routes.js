@@ -73,6 +73,12 @@ function createRoutes(getState, sendCommand, HOME_LOCATIONS = {}) {
     res.json({ buildings: state.buildings || {} });
   });
 
+  // Murals — art on building walls
+  router.get('/murals', (req, res) => {
+    const state = getState();
+    res.json({ murals: state.murals || [] });
+  });
+
   // Current time
   router.get('/time', (req, res) => {
     const state = getState();

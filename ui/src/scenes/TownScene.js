@@ -622,8 +622,26 @@ export default class TownScene extends Phaser.Scene {
       }
     }
 
+    // Apply murals to buildings
+    if (state.murals) {
+      this.applyMurals(state.murals);
+    }
+
     if (state.time?.period) {
       this.setTime(state.time.period);
+    }
+  }
+
+  applyMurals(murals) {
+    if (!Array.isArray(murals)) return;
+    // Group by buildingId, keep only the latest mural per building
+    const latest = {};
+    for (const m of murals) {
+      latest[m.buildingId] = m;
+    }
+    for (const [buildingId, mural] of Object.entries(latest)) {
+      const building = this.buildings[buildingId];
+      if (building) building.setMural(mural);
     }
   }
 

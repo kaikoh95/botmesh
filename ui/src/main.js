@@ -615,6 +615,19 @@ async function init() {
             case 'restore':
               scene.buildingSetDamaged(p.id || p.buildingId, false);
               break;
+            case 'mural':
+              if (scene && p.buildingId) {
+                const mural = {
+                  buildingId: p.buildingId,
+                  caption: p.caption,
+                  color: p.color,
+                  author: p.author,
+                  createdAt: event.timestamp || new Date().toISOString(),
+                };
+                const building = scene.buildings[p.buildingId];
+                if (building) building.setMural(mural);
+              }
+              break;
             case 'remove':
             case 'clear':
               scene.removeEntity(p.id || p.kind);

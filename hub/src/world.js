@@ -225,6 +225,18 @@ function applyMutation(mutation) {
     }
     const we = (state.world.entities || []).find(e => e.id === entityId);
     if (we) we.level = (we.level || 1) + 1;
+  } else if (action === 'mural') {
+    if (!state.murals) state.murals = [];
+    const mural = {
+      id: `mural-${Date.now()}`,
+      buildingId: mutation.buildingId || entityId,
+      caption: (mutation.caption || '').slice(0, 40),
+      color: mutation.color || '#e8c97e',
+      author: mutation.author || 'unknown',
+      createdAt: new Date().toISOString(),
+    };
+    state.murals.push(mural);
+    if (state.murals.length > 50) state.murals = state.murals.slice(-50);
   } else if (action === 'remove' || action === 'clear') {
     state.world.entities = state.world.entities.filter(e => e.id !== entityId);
     delete state.buildings[entityId];

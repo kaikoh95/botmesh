@@ -8,6 +8,7 @@
  *   node world-mutate.js plant life <kind> <x> <y> "<id>"
  *   node world-mutate.js add building <id> <name> <x> <y> [type]
  *   node world-mutate.js remove building <id>
+ *   node world-mutate.js mural building <buildingId> "<caption>" <color> <author>
  */
 
 const WebSocket = require('ws');
@@ -32,6 +33,9 @@ if (action === 'upgrade' && entity === 'building') {
 } else if (action === 'remove' && entity === 'building') {
   const [id] = args;
   payload = { action: 'remove', entity: 'building', id };
+} else if (action === 'mural' && entity === 'building') {
+  const [buildingId, caption, color, author] = args;
+  payload = { action: 'mural', entity: 'building', id: buildingId, buildingId, caption, color: color || '#e8c97e', author: author || 'canvas' };
 } else {
   // Pass raw JSON if provided
   try { payload = JSON.parse(args[0]); } catch {}
