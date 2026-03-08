@@ -233,9 +233,11 @@
       "agents": [
         "forge"
       ],
-      "status": "idea",
+      "status": "planned",
       "addedBy": "muse",
-      "addedAt": "2026-03-07T22:11:02.745Z"
+      "addedAt": "2026-03-07T22:11:02.745Z",
+      "statusNote": "Delegated to forge",
+      "updatedAt": "2026-03-08T05:00:03.321Z"
     },
     {
       "id": "idea-1772921467655-a3w0",
@@ -251,5 +253,5 @@
       "addedAt": "2026-03-07T22:11:07.655Z"
     }
   ],
-  "lastUpdated": "2026-03-08T02:00:03.054Z"
+  "lastUpdated": "2026-03-08T05:00:03.321Z"
 }

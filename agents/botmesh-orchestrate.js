@@ -514,7 +514,7 @@ print('Forge sprite saved')
 
       const buildings = stateData.buildings || {};
       const entities = stateData.world?.entities || [];
-      const STATE_URL = 'https://homeless-matt-juvenile-formula.trycloudflare.com';
+      const STATE_URL = 'https://api.kurokimachi.com';
 
       // Build world summary for the planner
       const buildingSummary = Object.entries(buildings).map(([id, b]) =>
@@ -650,7 +650,7 @@ Short review. Don't overthink it. One observation. One recommendation. Done.`);
       }).join('\n');
       const entitySummary = entities.map(e => `${e.kind||e.entity} at (${e.x},${e.y})`).join(', ') || 'none';
 
-      const STATE_URL = 'https://homeless-matt-juvenile-formula.trycloudflare.com';
+      const STATE_URL = 'https://api.kurokimachi.com';
 
       // Wake Forge — pass building so UI walks him to workshop
       try { execSync(`curl -s -X POST http://localhost:3002/agents/forge/wake -H "Content-Type: application/json" -d '{"task":"Forge discretion - decide what the world needs","building":"workshop"}'`); } catch {}
@@ -766,7 +766,7 @@ Make your decision. Do it. Narrate it. One thing. That's all.`);
       const buildings = Object.values(stateData.buildings || {}).map(b => `${b.name} Lv${b.level}`).join(', ');
       const citizens = Object.keys(stateData.agents || {}).join(', ');
       const doneIdeas = (roadmap.ideas || []).filter(i => i.status === 'done').map(i => i.title).join(', ');
-      const STATE_URL = 'https://homeless-matt-juvenile-formula.trycloudflare.com';
+      const STATE_URL = 'https://api.kurokimachi.com';
 
       try { execSync(`curl -s -X POST http://localhost:3002/agents/muse/wake -H "Content-Type: application/json" -d '{"task":"Generate new roadmap ideas","building":"observatory"}'`); } catch {}
 
@@ -833,7 +833,7 @@ Add 3–5 ideas. Make them interesting. Go.`);
       } catch { return false; }
 
       const buildings = stateData.buildings || {};
-      const STATE_URL = 'https://homeless-matt-juvenile-formula.trycloudflare.com';
+      const STATE_URL = 'https://api.kurokimachi.com';
 
       // Find buildings without sprites
       const needsSprite = Object.entries(buildings).filter(([id, b]) => {
@@ -1019,7 +1019,7 @@ function runIdeasMode() {
       sage:'library', iron:'town_hall', cronos:'post_office', echo:'post_office', scarlet:'town_hall',
       patch:'bathhouse', canvas:'market' };
     try { execSync(`curl -s -X POST http://localhost:3002/agents/${agent}/wake -H "Content-Type: application/json" -d '{"task":"${idea.title.replace(/'/g,".")}","building":"${agentBuildings[agent]||'town_hall'}"}'`); } catch {}
-    const STATE_URL = 'https://homeless-matt-juvenile-formula.trycloudflare.com';
+    const STATE_URL = 'https://api.kurokimachi.com';
 
     const brief = `# ${agent.charAt(0).toUpperCase()+agent.slice(1)} — Roadmap Task
 

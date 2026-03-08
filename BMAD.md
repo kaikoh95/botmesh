@@ -117,7 +117,7 @@ curl -s http://localhost:3002/state
 curl -s "http://localhost:3002/world/free-spot?w=2&h=2"
 
 # Agent narration
-curl -s -X POST https://homeless-matt-juvenile-formula.trycloudflare.com/agents/{id}/speak \
+curl -s -X POST https://api.kurokimachi.com/agents/{id}/speak \
   -H "Content-Type: application/json" -d '{"message":"present tense action"}'
 
 # Wake/sleep
