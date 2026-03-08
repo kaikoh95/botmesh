@@ -42,8 +42,8 @@ export default class TownScene extends Phaser.Scene {
   create() {
     this.cameras.main.setBackgroundColor('#5c8a42'); // warmer earthy green
 
-    this.mapW = 40;
-    this.mapH = 32;
+    this.mapW = 42;
+    this.mapH = 50; // extend south so camera never shows bare background
     const mapW = this.mapW;
     const mapH = this.mapH;
     // Origin: shift right + up so more of the northern map is visible
@@ -253,11 +253,23 @@ export default class TownScene extends Phaser.Scene {
         const screen = this.gridToScreen(x, y);
         const isWater = this._isWater(x, y);
         const isPath = this._isPath(x, y);
-        // Path: warm sandstone; alternate tiles slightly for texture
-        const pathColor = ((x + y) % 2 === 0) ? 0xc8a882 : 0xd4b48e;
-        const color = isWater ? this._waterColor(x, y) : isPath ? pathColor : this._grassColor(x, y);
+        // Alternating tile shading — natural checkerboard grid (no alpha tricks needed)
+        const even = (x + y) % 2 === 0;
+        let baseColor;
+        if (isPath) {
+          baseColor = even ? 0xc8a882 : 0xb89870;
+        } else {
+          baseColor = this._grassColor(x, y);
+          // Shift alternate tiles ±12 brightness for a visible grid
+          if (even) {
+            const r = ((baseColor >> 16) & 0xff) + 14;
+            const g2 = ((baseColor >> 8) & 0xff) + 14;
+            const b2 = (baseColor & 0xff) + 10;
+            baseColor = (Math.min(r,255) << 16) | (Math.min(g2,255) << 8) | Math.min(b2,255);
+          }
+        }
 
-        g.fillStyle(color, 1);
+        g.fillStyle(baseColor, 1);
         g.beginPath();
         g.moveTo(screen.x, screen.y - TILE_H / 2);
         g.lineTo(screen.x + TILE_W / 2, screen.y);
@@ -266,10 +278,10 @@ export default class TownScene extends Phaser.Scene {
         g.closePath();
         g.fillPath();
 
-        // Visible tile borders — stronger on paths, visible on grass
-        const borderAlpha = isPath ? 0.30 : 0.18;
-        const borderColor = isPath ? 0x8b6f47 : 0x1a2e1a;
-        g.lineStyle(1, borderColor, borderAlpha);
+        // Thin border for crisp tile edges
+        const bAlpha = isPath ? 0.35 : 0.22;
+        const bColor = isPath ? 0x7a5a35 : 0x2a4020;
+        g.lineStyle(1, bColor, bAlpha);
         g.beginPath();
         g.moveTo(screen.x, screen.y - TILE_H / 2);
         g.lineTo(screen.x + TILE_W / 2, screen.y);
