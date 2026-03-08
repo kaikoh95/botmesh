@@ -282,6 +282,35 @@ function applyEvent(event) {
         } else if (payload.action === 'complete') {
           building.currentWorkers = building.currentWorkers.filter(id => id !== payload.agentId);
           building.upgrading = building.currentWorkers.length > 0;
+
+          // ── Work count tracking + home upgrade progression ──
+          const agentId = payload.agentId;
+          const agent = (state.agents || {})[agentId];
+          if (agent) {
+            if (!agent.workCount) agent.workCount = 0;
+            agent.workCount++;
+
+            // Check upgrade thresholds for agent's home
+            const home_id = `${agentId}_home`;
+            const thresholds = { 3: 2, 8: 3, 20: 4, 50: 5 };
+            for (const [threshold, level] of Object.entries(thresholds)) {
+              if (agent.workCount === parseInt(threshold)) {
+                const homeBuilding = (state.buildings || {})[home_id];
+                if (homeBuilding && (homeBuilding.level || 1) < level) {
+                  homeBuilding.level = level;
+                  homeBuilding.upgradedAt = new Date().toISOString();
+                  if (!Array.isArray(homeBuilding.upgrades)) homeBuilding.upgrades = [];
+                  homeBuilding.upgrades.push({
+                    level,
+                    upgradedBy: agentId,
+                    upgradedAt: homeBuilding.upgradedAt,
+                    note: `${agentId} earned it (${agent.workCount} tasks completed)`,
+                  });
+                  console.log(`[State] 🏠 ${agentId}'s home upgraded to level ${level} (${agent.workCount} tasks completed)`);
+                }
+              }
+            }
+          }
         }
       }
       addGazetteEntry(event);

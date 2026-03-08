@@ -256,7 +256,9 @@ export default class TownScene extends Phaser.Scene {
         // Alternating tile shading — natural checkerboard grid (no alpha tricks needed)
         const even = (x + y) % 2 === 0;
         let baseColor;
-        if (isPath) {
+        if (isWater) {
+          baseColor = this._waterColor(x, y);
+        } else if (isPath) {
           baseColor = even ? 0xc8a882 : 0xb89870;
         } else {
           baseColor = this._grassColor(x, y);
@@ -280,8 +282,8 @@ export default class TownScene extends Phaser.Scene {
         g.fillPath();
 
         // Thin border for crisp tile edges
-        const bAlpha = isPath ? 0.35 : 0.22;
-        const bColor = isPath ? 0x7a5a35 : 0x2a4020;
+        const bAlpha = isWater ? 0.4 : isPath ? 0.35 : 0.22;
+        const bColor = isWater ? 0x1a5276 : isPath ? 0x7a5a35 : 0x2a4020;
         g.lineStyle(1, bColor, bAlpha);
         g.beginPath();
         g.moveTo(screen.x, screen.y - TILE_H / 2);
@@ -403,8 +405,8 @@ export default class TownScene extends Phaser.Scene {
     return blues[n];
   }
 
-  _isWater(_x, _y) {
-    return false; // water zone removed — residential district now occupies south
+  _isWater(x, y) {
+    return this.moatTiles?.has(`${x},${y}`) || false;
   }
 
   _isPath(x, y) {
@@ -418,12 +420,74 @@ export default class TownScene extends Phaser.Scene {
         .filter(e => e.kind === 'path' || e.entity === 'path')
         .map(e => `${Math.round(e.x)},${Math.round(e.y)}`)
     );
+    this.moatTiles = new Set(
+      (entities || [])
+        .filter(e => e.kind === 'moat')
+        .map(e => `${Math.round(e.x)},${Math.round(e.y)}`)
+    );
     // Redraw ground layer with new path data
     if (this._groundGraphics) {
       this._groundGraphics.destroy();
       this._groundGraphics = null;
     }
     this._groundGraphics = this._drawGround(this.mapW || 40, this.mapH || 30);
+    // Draw yards on top of ground
+    this._drawYards(this._lastBuildings || {});
+  }
+
+  _drawYards(buildings) {
+    if (!buildings || !this._groundGraphics) return;
+
+    const g = this._groundGraphics; // draw on same layer, after ground
+
+    for (const [id, b] of Object.entries(buildings)) {
+      if (b.type !== 'cottage' && !id.includes('_home')) continue;
+
+      const bx = b.x ?? 0;
+      const by = b.y ?? 0;
+      const bw = b.w ?? 2;
+      const bh = b.h ?? 2;
+      const lvl = b.level ?? 1;
+
+      // Yard extends 1+ tiles around the building in each direction
+      const yardPad = 1 + Math.floor(lvl / 2); // bigger house = bigger yard
+
+      for (let dy = -yardPad; dy < bh + yardPad; dy++) {
+        for (let dx = -yardPad; dx < bw + yardPad; dx++) {
+          const tx = bx + dx;
+          const ty = by + dy;
+          if (this._isPath(tx, ty)) continue; // don't overwrite roads
+
+          const screen = this.gridToScreen(tx, ty);
+          const isBuilding = dx >= 0 && dx < bw && dy >= 0 && dy < bh;
+          if (isBuilding) continue; // skip the building footprint itself
+
+          // Yard color — warm sandy garden
+          const isEven = (tx + ty) % 2 === 0;
+          const yardBase = lvl >= 3 ? 0xc8a870 : lvl >= 2 ? 0xb89860 : 0xa88850;
+          const yardColor = isEven ? yardBase + 0x101008 : yardBase;
+
+          g.fillStyle(yardColor, 0.7);
+          g.beginPath();
+          g.moveTo(screen.x, screen.y - 16);
+          g.lineTo(screen.x + 32, screen.y);
+          g.lineTo(screen.x, screen.y + 16);
+          g.lineTo(screen.x - 32, screen.y);
+          g.closePath();
+          g.fillPath();
+
+          // Subtle border
+          g.lineStyle(1, 0x7a6040, 0.25);
+          g.beginPath();
+          g.moveTo(screen.x, screen.y - 16);
+          g.lineTo(screen.x + 32, screen.y);
+          g.lineTo(screen.x, screen.y + 16);
+          g.lineTo(screen.x - 32, screen.y);
+          g.closePath();
+          g.strokePath();
+        }
+      }
+    }
   }
 
   gridToScreen(gridX, gridY) {

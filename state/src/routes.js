@@ -46,6 +46,16 @@ function createRoutes(getState, sendCommand) {
     res.json({ agent });
   });
 
+  // Agent work count
+  router.get('/agents/:id/workcount', (req, res) => {
+    const state = getState();
+    const agent = (state.agents || {})[req.params.id];
+    if (!agent) {
+      return res.status(404).json({ error: 'Agent not found', agentId: req.params.id });
+    }
+    res.json({ agentId: req.params.id, workCount: agent.workCount || 0 });
+  });
+
   // All buildings
   router.get('/buildings', (req, res) => {
     const state = getState();

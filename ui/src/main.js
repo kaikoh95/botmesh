@@ -426,6 +426,7 @@ async function init() {
       currentAgents = state.agents || {};
       currentBuildings = state.buildings || {};
       window.__botmeshState = state; // expose for building panel
+      if (scene) scene._lastBuildings = currentBuildings;
       scene.loadState(state);
       syncColors(currentAgents);
       updateRoster(currentAgents);
@@ -632,6 +633,7 @@ async function init() {
       currentAgents = state.agents || {};
       currentBuildings = state.buildings || {};
       window.__botmeshState = state; // includes full upgrades[] from disk
+      if (scene) scene._lastBuildings = currentBuildings;
       scene.loadState(state);
       syncColors(currentAgents);
       updateRoster(currentAgents);
