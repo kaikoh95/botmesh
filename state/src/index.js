@@ -486,7 +486,7 @@ const { sendCommand: sendCmd, close: closeHub } = connectToHub(
   () => {}
 );
 
-const routes = createRoutes(getState, sendCmd);
+const routes = createRoutes(getState, sendCmd, HOME_LOCATIONS);
 app.use(routes);
 
 // Periodic snapshot — ensures state.json always reflects current world

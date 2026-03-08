@@ -28,7 +28,7 @@ function requireAuth(req, res, next) {
   next();
 }
 
-function createRoutes(getState, sendCommand) {
+function createRoutes(getState, sendCommand, HOME_LOCATIONS = {}) {
   const router = express.Router();
 
   // Health check
@@ -129,6 +129,9 @@ function createRoutes(getState, sendCommand) {
     agent.currentTask = null;
     agent.targetBuilding = null;
     agent.lastSeen = new Date().toISOString();
+    // Return agent to their home position so dormant agents don't pile up
+    const home = HOME_LOCATIONS[req.params.id];
+    if (home) agent.location = { x: home.x, y: home.y, building: null };
     sendCommand({ type: 'agent:offline', payload: {
       agentId: req.params.id,
       prevBuilding,
