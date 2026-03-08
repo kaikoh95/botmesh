@@ -67,7 +67,8 @@ scans.push(() => {
 
 // 2. .env file exposure
 scans.push(() => {
-  const envInGit = run(`cd ${BOTMESH} && git ls-files | grep -E "\\.env"`);
+  // .example files are intentional templates — skip them
+  const envInGit = run(`cd ${BOTMESH} && git ls-files | grep -E "\\.env" | grep -v "\\.example$" | grep -v node_modules`);
   if (envInGit) return { severity: 'critical', msg: `.env file tracked in git: ${envInGit} — must be removed.` };
   const botmeshEnv = '/home/kai/projects/botmesh/.botmesh.env';
   if (fs.existsSync(botmeshEnv)) {
