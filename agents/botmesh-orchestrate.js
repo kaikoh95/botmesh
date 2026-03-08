@@ -601,7 +601,7 @@ curl -s -X POST ${STATE_URL}/agents/planner/speak \\
   -H "Content-Type: application/json" -d '{"message":"YOUR MESSAGE"}'
 \`\`\`
 
-Short review. Don't overthink it. One observation. One recommendation. Done.`);
+Short review. Don't overthink it. One observation. One recommendation. Done.`, { timeout: 300, reason: 'city planning review before next Forge build cycle' });
 
       return false; // always re-run next cycle
     }
@@ -742,7 +742,7 @@ curl -s -X POST ${STATE_URL}/agents/forge/speak \\
   -d '{"message": "YOUR MESSAGE"}'
 \`\`\`
 
-Make your decision. Do it. Narrate it. One thing. That's all.`);
+Make your decision. Do it. Narrate it. One thing. That's all.`, { timeout: 600, reason: 'build or upgrade a building' });
 
       return false;
     }
@@ -818,7 +818,7 @@ node /home/kai/projects/botmesh/agents/add-idea.js "<title>" "<description>" <pr
 curl -s -X POST ${STATE_URL}/agents/muse/speak -H "Authorization: Bearer ${SPEAK_TOKEN}" -H "Content-Type: application/json" -d '{"message":"YOUR MESSAGE"}'
 \`\`\`
 
-Add 3–5 ideas. Make them interesting. Go.`);
+Add 3–5 ideas. Make them interesting. Go.`, { timeout: 300, reason: 'generate new roadmap ideas' });
 
       return false;
     }
@@ -946,7 +946,7 @@ def clean(path):
 curl -s -X POST ${STATE_URL}/agents/mosaic/speak -H "Authorization: Bearer ${SPEAK_TOKEN}" -H "Content-Type: application/json" -d '{"message":"YOUR MESSAGE"}'
 \`\`\`
 
-This is your canvas. Make something worth looking at.`);
+This is your canvas. Make something worth looking at.`, { timeout: 600, reason: 'generate missing building sprites' });
 
       return false;
     }
@@ -1032,7 +1032,7 @@ curl -s -X POST ${STATE_URL}/agents/mosaic/speak \\
 cd /home/kai/projects/botmesh && git add -A && git commit -m "🎨 Mosaic: <what you improved>" && git push origin main
 \`\`\`
 
-Be honest — if everything is already good, just say so. Don't generate for the sake of it.`);
+Be honest — if everything is already good, just say so. Don't generate for the sake of it.`, { timeout: 600, reason: 'periodic style + quality audit' });
 
       return false;
     }
@@ -1156,7 +1156,7 @@ curl -s -X POST ${STATE_URL}/agents/canvas/speak \\
 
 Commit any fixes: \`cd /home/kai/projects/botmesh && git add -A && git commit -m "🔍 Canvas visual QA: <what you fixed>" && git push origin main\`
 
-Be brief. This is a check, not a build task.`);
+Be brief. This is a check, not a build task.`, { timeout: 300, reason: 'visual QA — render health + sprites + SSE' });
 
   console.log('[visual-qa] Canvas visual QA session queued');
 }

@@ -16,14 +16,17 @@ const QUEUE_FILE  = '/tmp/botmesh-session-queue.json';
 const BOT_TOKEN   = process.env.TELEGRAM_BOT_TOKEN;
 const KAI_CHAT_ID = process.env.KAI_CHAT_ID;
 
-function pingTelegram(agentId, taskId) {
+function pingTelegram(agentId, taskId, reason) {
   if (!BOT_TOKEN) return;
   try {
-    const msg = `🤖 Session queued: *${agentId}* (${taskId}) — process it.`;
+    // e.g. "🤖 Kenzo queued — city planning review before next Forge cycle (sq-...)"
+    const label = agentId.charAt(0).toUpperCase() + agentId.slice(1);
+    const detail = reason ? ` — ${reason}` : '';
+    const msg = `🤖 *${label}* queued${detail} \`${taskId}\``;
     execSync(
       `curl -s -X POST "https://api.telegram.org/bot${BOT_TOKEN}/sendMessage"` +
       ` -H "Content-Type: application/json"` +
-      ` -d '{"chat_id":"${KAI_CHAT_ID}","text":"${msg.replace(/'/g,"'")}","parse_mode":"Markdown"}'`,
+      ` -d '{"chat_id":"${KAI_CHAT_ID}","text":"${msg.replace(/\\/g,'\\\\').replace(/'/g,"\\'")}","parse_mode":"Markdown"}'`,
       { timeout: 10000 }
     );
   } catch { /* non-fatal */ }
@@ -44,6 +47,7 @@ function spawnSession(agentId, brief, opts = {}) {
     id:       `sq-${Date.now()}-${Math.random().toString(36).slice(2,5)}`,
     agentId,
     brief,
+    reason:   opts.reason   || '',
     priority: opts.priority || 'normal',
     timeout:  opts.timeout  || 300,
     queuedAt: new Date().toISOString(),
@@ -55,7 +59,7 @@ function spawnSession(agentId, brief, opts = {}) {
   console.log(`[spawn] Queued session for ${agentId} (${entry.id})`);
 
   // Ping Scarlet immediately so she processes without waiting for heartbeat
-  pingTelegram(agentId, entry.id);
+  pingTelegram(agentId, entry.id, opts.reason);
 
   return entry.id;
 }
