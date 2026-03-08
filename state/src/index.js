@@ -448,6 +448,7 @@ const writeLimiter = rateLimit({
 
 // Express app
 const app = express();
+app.set('trust proxy', 1); // trust Cloudflare tunnel proxy headers
 app.use(globalLimiter);
 app.use(cors({
   origin: ['https://kurokimachi.com', 'https://www.kurokimachi.com', 'http://localhost:3003'],
@@ -495,6 +496,78 @@ setInterval(() => {
   saveState(state);
 }, 30 * 1000); // every 30s
 
+// ── Visit XP thresholds ────────────────────────────────────────────────────
+// Returns how many visits needed to level up FROM currentLevel
+function getVisitXPThreshold(currentLevel) {
+  const base = [10, 30, 75, 150]; // Lv1→2, Lv2→3, Lv3→4, Lv4→5
+  if (currentLevel <= 4) return base[currentLevel - 1];
+  return 150 * Math.pow(2, currentLevel - 4); // Lv5→6: 300, Lv6→7: 600, ...
+}
+
+// Per-agent visit cooldown — prevents double-counting when hub restores targetBuilding
+const VISIT_COOLDOWN_MS = 60 * 1000; // 60s between visits to the same building
+const lastVisitLog = {}; // { "agentId:buildingId": timestamp }
+
+// Handle a citizen arriving at a building — award visit XP and maybe upgrade
+function handleBuildingArrival(agentId, agent, buildingId, buildings) {
+  const building = buildings[buildingId];
+  if (!building) return;
+
+  // Cooldown guard — don't count the same visit twice if hub keeps restoring targetBuilding
+  const visitKey = `${agentId}:${buildingId}`;
+  const now = Date.now();
+  if (lastVisitLog[visitKey] && now - lastVisitLog[visitKey] < VISIT_COOLDOWN_MS) {
+    agent.targetBuilding = null; // still clear so agent can walk home
+    return;
+  }
+  lastVisitLog[visitKey] = now;
+
+  if (!building.visitCount) building.visitCount = 0;
+  if (!building.visitXP)    building.visitXP    = 0;
+  building.visitCount++;
+  building.visitXP++;
+
+  console.log(`[State] 🏛️  ${agentId} visited ${building.name} (visit #${building.visitCount}, XP: ${building.visitXP})`);
+
+  const currentLevel = building.level || 1;
+  const threshold    = getVisitXPThreshold(currentLevel);
+
+  if (building.visitXP >= threshold) {
+    // Reset XP bucket for next level
+    building.visitXP = 0;
+
+    // Trigger upgrade via the standard world:mutate path
+    const upgradeEvent = {
+      type: 'world:mutate',
+      timestamp: new Date().toISOString(),
+      payload: {
+        action:   'upgrade',
+        entity:   'building',
+        id:       buildingId,
+        agentId:  'visits',
+        note:     `Reached visit threshold (Lv${currentLevel}→Lv${currentLevel + 1})`,
+      },
+    };
+    applyEvent(upgradeEvent);
+    sse.broadcast(upgradeEvent);
+    saveState(state);
+
+    const newLevel = building.level || currentLevel + 1;
+    console.log(`[State] 🎉 ${building.name} levelled up to Lv${newLevel} from citizen visits!`);
+
+    // Announce to The Weave as Forge
+    const announcement = `The ${building.name} buzzes with life — it has grown to Lv${newLevel}! ✨`;
+    fetch('https://api.kurokimachi.com/agents/forge/speak', {
+      method: 'POST',
+      headers: {
+        'Authorization': 'Bearer cf32979009820158ebe185497d772c255428744d9c2bc8a09e0693a759706c18',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ message: announcement }),
+    }).catch(e => console.warn('[State] Forge speak failed:', e.message));
+  }
+}
+
 // ── Agent walk ticker ─────────────────────────────────────────────────────
 // Server owns agent positions. Every tick, move each online agent one step
 // toward their destination. Broadcasts agent:move so all connected clients
@@ -536,8 +609,14 @@ setInterval(() => {
     const dx = dest.x - cx;
     const dy = dest.y - cy;
 
-    // Already there
-    if (Math.abs(dx) < 0.5 && Math.abs(dy) < 0.5) continue;
+    // Already there — if agent arrived at a targetBuilding, log the visit
+    if (Math.abs(dx) < 0.5 && Math.abs(dy) < 0.5) {
+      if (agent.targetBuilding) {
+        handleBuildingArrival(id, agent, agent.targetBuilding, buildings);
+        agent.targetBuilding = null;
+      }
+      continue;
+    }
 
     // Step toward destination — move on whichever axis has more distance
     let nx = cx, ny = cy;

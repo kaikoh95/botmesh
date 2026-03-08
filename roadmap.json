@@ -287,9 +287,11 @@
       "agents": [
         "[forge,scarlet,planner]"
       ],
-      "status": "idea",
+      "status": "planned",
       "addedBy": "muse",
-      "addedAt": "2026-03-08T08:20:25.153Z"
+      "addedAt": "2026-03-08T08:20:25.153Z",
+      "statusNote": "Delegated to [forge,scarlet,planner]",
+      "updatedAt": "2026-03-08T11:00:04.086Z"
     },
     {
       "id": "idea-1772958028906-xnlm",
@@ -318,5 +320,5 @@
       "addedAt": "2026-03-08T08:20:32.730Z"
     }
   ],
-  "lastUpdated": "2026-03-08T05:00:03.321Z"
+  "lastUpdated": "2026-03-08T11:00:04.086Z"
 }
