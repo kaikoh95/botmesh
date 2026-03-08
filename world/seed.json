@@ -3350,7 +3350,7 @@
     },
     "market": {
       "id": "market",
-      "name": "The Market",
+      "name": "Market",
       "type": "market",
       "x": 2,
       "y": 20,
@@ -3370,7 +3370,7 @@
     },
     "teahouse": {
       "id": "teahouse",
-      "name": "The Teahouse",
+      "name": "Teahouse",
       "type": "civic",
       "x": 10,
       "y": 20,
@@ -3404,7 +3404,7 @@
     },
     "bathhouse": {
       "id": "bathhouse",
-      "name": "The Bathhouse",
+      "name": "Bathhouse",
       "type": "bathhouse",
       "x": 10,
       "y": 18,
@@ -3456,7 +3456,7 @@
     },
     "workshop": {
       "id": "workshop",
-      "name": "Forge Workshop",
+      "name": "Workshop",
       "type": "workshop",
       "x": 6,
       "y": 18,
@@ -3476,7 +3476,7 @@
     },
     "observatory": {
       "id": "observatory",
-      "name": "The Observatory",
+      "name": "Observatory",
       "type": "observatory",
       "x": 3,
       "y": 7,
@@ -3698,7 +3698,7 @@
     },
     "scarlet_sanctum": {
       "id": "scarlet_sanctum",
-      "name": "The Scarlet Sanctum",
+      "name": "Sanctum",
       "type": "sanctum",
       "x": 15,
       "y": 11,
@@ -3712,7 +3712,7 @@
     },
     "cronos_shrine": {
       "id": "cronos_shrine",
-      "name": "The Shrine of Cronos",
+      "name": "Cronos Shrine",
       "type": "shrine",
       "x": 6,
       "y": 5,
@@ -3740,7 +3740,7 @@
     },
     "sake_brewery": {
       "id": "sake_brewery",
-      "name": "Kurokimachi Sake Brewery",
+      "name": "Sake Brewery",
       "type": "brewery",
       "x": 7,
       "y": 20,
@@ -3768,7 +3768,7 @@
     },
     "community_garden": {
       "id": "community_garden",
-      "name": "Community Garden",
+      "name": "Garden",
       "type": "garden",
       "x": 12,
       "y": 15,

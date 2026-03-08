@@ -101,6 +101,12 @@ export default class Building {
     return this.baseColor;
   }
 
+  // Truncate name to max 13 chars to prevent label overflow at 11px Press Start 2P
+  _shortName() {
+    const MAX = 13;
+    return this.name.length > MAX ? this.name.slice(0, MAX - 1) + '…' : this.name;
+  }
+
   _draw() {
     // Use pixel art sprite if available
     if (this.texBase) {
@@ -141,7 +147,7 @@ export default class Building {
         // Label: place above the visible top of the sprite
         const visibleTop = spriteH * (1 - baseOffsetFraction);
         this.label.setPosition(0, -(visibleTop + 6));
-        this.label.setText(`${this.name} Lv${this.level}`);
+        this.label.setText(`${this._shortName()} Lv${this.level}`);
         // DO NOT set sprite interactive — grid-based click detection handles it
         // (sprite bounds would allow clicks on empty sky above the building)
         return; // skip programmatic draw
@@ -240,7 +246,7 @@ export default class Building {
 
     // Update label position — above the roof (+ star if level 3)
     this.label.setPosition(0, -wallH - h - (this.level >= 3 ? 28 : 14));
-    this.label.setText(`${this.name} Lv${this.level}`);
+    this.label.setText(`${this._shortName()} Lv${this.level}`);
 
     // DO NOT set graphics interactive — grid-based click detection handles it
     this.graphics.on('pointerover', () => this.scene.input.setDefaultCursor('pointer'));
