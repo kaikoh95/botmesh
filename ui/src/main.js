@@ -128,17 +128,8 @@ const Panels = {
       { label: 'State',    value: agent.state || 'active' },
       { label: 'Location', value: agent.location?.building ? `📍 ${agent.location.building}` : `(${Math.round(agent.location?.x||0)}, ${Math.round(agent.location?.y||0)})` },
     ];
-    if (agent.mood) rows.push({ label: 'Mood', value: agent.mood });
-    if (agent.lastSeen) {
-      const seenMs = Date.now() - new Date(agent.lastSeen).getTime();
-      let seenStr;
-      if (seenMs < 60000) seenStr = 'just now';
-      else if (seenMs < 3600000) seenStr = `${Math.floor(seenMs / 60000)}m ago`;
-      else if (seenMs < 86400000) seenStr = `${Math.floor(seenMs / 3600000)}h ago`;
-      else seenStr = `${Math.floor(seenMs / 86400000)}d ago`;
-      rows.push({ label: 'Last Seen', value: seenStr });
-    }
     if (agent.currentTask) rows.push({ label: 'Task', value: agent.currentTask });
+    if (agent.mood) rows.push({ label: 'Mood', value: agent.mood });
 
     const isDormant = agent.online === false || agent.state === 'dormant';
     const statusBadge = isDormant ? '💤 Dormant' : '🟢 Active';
