@@ -16,18 +16,17 @@ html, body {
 }
 
 #app {
-  display: flex;
   width: 100vw;
   height: 100vh;
+  position: relative;
+  overflow: hidden;
 }
 
-/* --- Left: Game --- */
+/* Game is always full screen */
 #game-container {
-  flex: 1;
-  height: 100%;
+  position: fixed;
+  inset: 0;
   background: #0d1520;
-  position: relative;
-  min-width: 0;
 }
 
 /* ── HTML overlay panels ──────────────────────────────────────────────────── */
@@ -280,60 +279,87 @@ html, body {
 }
 
 /* ── Sidebar ─────────────────────────────────────────────────────────────── */
-.sidebar {
-  width: 35%;
-  height: 100%;
-  background: #16213e;
-  border-left: 2px solid #0f3460;
-  display: flex;
-  flex-direction: row;
-  flex-shrink: 0;
-  transition: width 0.25s ease;
-  position: relative;
-  overflow: hidden;
-}
-
-.sidebar.collapsed {
-  width: 28px;
-}
-
-/* Toggle tab */
-#sidebar-toggle {
-  position: absolute;
-  left: 0;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 28px;
-  height: 60px;
-  background: #0f3460;
-  border: none;
-  border-right: 1px solid #1a1a5e;
-  color: #7ec8e3;
-  font-size: 14px;
-  cursor: pointer;
-  z-index: 10;
+/* Hamburger button — always visible over the game */
+#menu-toggle {
+  position: fixed;
+  top: 14px;
+  right: 14px;
+  z-index: 900;
+  background: rgba(15, 52, 96, 0.85);
+  border: 1px solid rgba(126, 200, 227, 0.4);
+  border-radius: 8px;
+  color: #e8d5a3;
+  font-size: 20px;
+  width: 42px;
+  height: 42px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 0 4px 4px 0;
-  transition: background 0.15s;
+  cursor: pointer;
+  backdrop-filter: blur(4px);
+  transition: background 0.15s, opacity 0.2s;
 }
-#sidebar-toggle:hover { background: #1a2a6e; }
+#menu-toggle:hover { background: rgba(26, 42, 110, 0.95); }
 
-/* Inner content (hidden when sidebar collapsed) */
+/* Backdrop */
+#sidebar-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  z-index: 1000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+#sidebar-backdrop.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Sidebar drawer */
+.sidebar {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: min(420px, 100vw);
+  height: 100vh;
+  background: #16213e;
+  border-left: 2px solid #0f3460;
+  display: flex;
+  flex-direction: column;
+  z-index: 1001;
+  transform: translateX(100%);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+}
+
+.sidebar.open {
+  transform: translateX(0);
+}
+
+/* Inner content */
 #sidebar-inner {
   flex: 1;
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  margin-left: 28px; /* space for toggle tab */
   min-width: 0;
 }
 
-.sidebar.collapsed #sidebar-inner {
-  visibility: hidden;
-  pointer-events: none;
+/* Close button inside header */
+#sidebar-close {
+  background: none;
+  border: none;
+  color: #7ec8e3;
+  font-size: 18px;
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: 4px;
+  line-height: 1;
+  flex-shrink: 0;
+  transition: background 0.15s;
 }
+#sidebar-close:hover { background: rgba(126, 200, 227, 0.15); }
 
 /* Header */
 #gazette-header {
@@ -857,7 +883,7 @@ html, body {
 
 /* Zoom controls */
 #zoom-controls {
-  position: absolute;
+  position: fixed;
   bottom: 16px;
   left: 16px;
   z-index: 100;
@@ -881,59 +907,22 @@ html, body {
 }
 #zoom-controls button:hover { background: rgba(40,40,40,0.95); }
 
-/* ── Mobile responsive ──────────────────────────────────────────────────── */
+/* ── Mobile — drawer is already full-width, just tweak panel sizes ─────── */
 @media (max-width: 600px) {
-  #app {
-    flex-direction: column-reverse;
-  }
-
   .sidebar {
-    width: 100%;
-    height: 42vh;
-    border-left: none;
-    border-top: 2px solid #0f3460;
-    flex-direction: column;
-    flex-shrink: 0;
-    transition: height 0.25s ease;
+    width: 100vw;
   }
 
-  .sidebar.collapsed {
-    width: 100%;
-    height: 36px;
-  }
-
-  #sidebar-toggle {
-    position: absolute;
-    left: 50%;
-    top: 0;
-    transform: translateX(-50%);
-    width: 60px;
-    height: 24px;
-    border-radius: 0 0 6px 6px;
-    border-right: none;
-    border-bottom: 1px solid #1a1a5e;
-  }
-
-  #sidebar-inner {
-    margin-left: 0;
-    margin-top: 28px;
-  }
-
-  #game-container {
-    flex: 1;
-    height: 58vh;
-    min-height: 0;
+  .info-panel {
+    width: 85vw;
+    max-height: 55vh;
+    font-size: 10px;
   }
 
   #zoom-controls {
     bottom: 8px;
     top: auto;
+    left: auto;
     right: 8px;
-  }
-
-  .info-panel {
-    width: 85vw;
-    max-height: 60vw;
-    font-size: 10px;
   }
 }

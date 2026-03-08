@@ -130,6 +130,7 @@
   <div id="loading-screen">黒木町 is waking…</div>
 
   <div id="app">
+    <!-- Game is always full screen -->
     <div id="game-container">
       <div id="zoom-controls">
         <button onclick="window.botmeshZoom && window.botmeshZoom(0.2)" title="Zoom in">＋</button>
@@ -145,23 +146,27 @@
       <div id="roadmap-panel" class="info-panel roadmap-panel hidden"></div>
     </div>
 
-    <!-- Sidebar -->
+    <!-- Hamburger button — always visible over the game -->
+    <button id="menu-toggle" title="Open menu" aria-label="Open menu">☰</button>
+
+    <!-- Backdrop — shown behind drawer when open -->
+    <div id="sidebar-backdrop"></div>
+
+    <!-- Sidebar drawer — slides in from right -->
     <div id="sidebar" class="sidebar">
 
-      <!-- Sidebar toggle tab (always visible) -->
-      <button id="sidebar-toggle" title="Toggle sidebar">&#x276F;</button>
-
-      <!-- Sidebar inner content (hidden when collapsed) -->
+      <!-- Sidebar inner content -->
       <div id="sidebar-inner">
 
-        <!-- Header row: title + clock -->
+        <!-- Header row: title + close + clock -->
         <div id="gazette-header">
           <h2>The Weave</h2>
           <div id="gazette-header-controls">
             <button id="roadmap-btn" title="View Roadmap">📋</button>
             <div id="world-clock"></div>
-            <div id="connection-status" style="font-size:10px;color:#888;margin-left:6px">⏳ Connecting</div>
-            <span id="viewer-count" style="font-size:10px;color:#7ec8e3;margin-left:8px">👁 1</span>
+            <div id="connection-status" style="font-size:10px;color:#888">⏳</div>
+            <span id="viewer-count" style="font-size:10px;color:#7ec8e3">👁 1</span>
+            <button id="sidebar-close" title="Close menu" aria-label="Close menu">✕</button>
           </div>
         </div>
 
@@ -250,13 +255,28 @@
     // Auto-dismiss after 5s regardless — don't block on API connectivity
     setTimeout(window.__dismissLoadingScreen, 5000);
 
-    // ── Sidebar toggle ──────────────────────────────────────────────────────
+    // ── Sidebar drawer ──────────────────────────────────────────────────────
     const sidebar = document.getElementById('sidebar');
-    const toggleBtn = document.getElementById('sidebar-toggle');
-    toggleBtn.addEventListener('click', () => {
-      sidebar.classList.toggle('collapsed');
-      toggleBtn.innerHTML = sidebar.classList.contains('collapsed') ? '&#x276E;' : '&#x276F;';
-    });
+    const backdrop = document.getElementById('sidebar-backdrop');
+    const menuToggle = document.getElementById('menu-toggle');
+    const closeBtn = document.getElementById('sidebar-close');
+
+    function openSidebar() {
+      sidebar.classList.add('open');
+      backdrop.classList.add('visible');
+      menuToggle.style.opacity = '0';
+      menuToggle.style.pointerEvents = 'none';
+    }
+    function closeSidebar() {
+      sidebar.classList.remove('open');
+      backdrop.classList.remove('visible');
+      menuToggle.style.opacity = '1';
+      menuToggle.style.pointerEvents = 'auto';
+    }
+
+    menuToggle.addEventListener('click', openSidebar);
+    closeBtn.addEventListener('click', closeSidebar);
+    backdrop.addEventListener('click', closeSidebar);
 
     // ── Roadmap button ──────────────────────────────────────────────────────
     // Wired after main.js module loads — use event delegation on DOMContentLoaded
