@@ -727,10 +727,11 @@ export default class TownScene extends Phaser.Scene {
     const agent = this.agents[agentId];
     const building = this.buildings[buildingId];
     if (!agent || !building) return;
-    // Walk to a spot just beside the building
-    const bx = building.x + 16;
-    const by = building.y + 24;
-    agent.moveTo(bx, by);
+    // Convert grid coords to screen coords, offset slightly beside the building entrance
+    const gx = (building.gridX ?? building.x ?? 0) + Math.floor((building.gridW ?? 2) / 2);
+    const gy = (building.gridY ?? building.y ?? 0) + (building.gridH ?? 1) + 1;
+    const pos = this.gridToScreen(gx, gy);
+    agent.moveTo(pos.x, pos.y, gx, gy);
   }
 
   walkAgentHome(agentId) {

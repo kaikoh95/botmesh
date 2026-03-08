@@ -428,6 +428,12 @@ async function init() {
       updateRoster(currentAgents);
       updateClock(state.time);
       updateStats(state);
+      // Walk online agents to their buildings on every state sync
+      for (const [id, agent] of Object.entries(currentAgents)) {
+        if (agent.online && agent.targetBuilding) {
+          scene.walkAgentToBuilding(id, agent.targetBuilding);
+        }
+      }
     },
 
     onEvent(event) {
@@ -638,6 +644,17 @@ async function init() {
       // Clear the empty state message once we have data
       const emptyMsg = document.getElementById('empty-state-msg');
       if (emptyMsg) emptyMsg.remove();
+      // Walk any agents already working at load time — they missed the agent:online event
+      setTimeout(() => {
+        for (const [id, agent] of Object.entries(currentAgents)) {
+          if (agent.online && agent.targetBuilding) {
+            scene.walkAgentToBuilding(id, agent.targetBuilding);
+            scene.setBuildingWorking(agent.targetBuilding, true, id);
+          } else if (agent.online && AGENT_JOBS[id]?.building) {
+            scene.walkAgentToBuilding(id, AGENT_JOBS[id].building);
+          }
+        }
+      }, 800); // short delay so Phaser scene is fully settled
       // Load gazette history — normalize entries to have `payload` field
       const gazette = state.gazette || state.entries || [];
       if (gazette.length > 0) {
