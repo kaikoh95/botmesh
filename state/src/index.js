@@ -262,6 +262,17 @@ function applyEvent(event) {
                 addedAt: new Date().toISOString(),
               };
             }
+            // Auto-expand world bounds if building extends beyond current dimensions
+            const bx2 = (payload.x || 0) + (payload.width || 3) + 5;
+            const by2 = (payload.y || 0) + (payload.height || 2) + 5;
+            if (bx2 > (state.world.width || 80)) {
+              state.world.width = bx2;
+              console.log(`[State] 🌍 World width expanded to ${bx2} to fit ${entityId}`);
+            }
+            if (by2 > (state.world.height || 80)) {
+              state.world.height = by2;
+              console.log(`[State] 🌍 World height expanded to ${by2} to fit ${entityId}`);
+            }
           }
           break;
         }

@@ -76,16 +76,17 @@ export default class TownScene extends Phaser.Scene {
   create() {
     this.cameras.main.setBackgroundColor('#080c14'); // deep midnight blue — no purple bleed
 
-    this.mapW = 42;
-    this.mapH = 50; // extend south so camera never shows bare background
-    const mapW = this.mapW;
-    const mapH = this.mapH;
+    this.mapW = 80;
+    this.mapH = 80;
     // Origin: shift right + up so more of the northern map is visible
     this.originX = this.cameras.main.width * 0.55;
     this.originY = -60;
 
-    // Draw ground tiles
-    this._drawGround(mapW, mapH);
+    // Draw ground tiles immediately with defaults
+    this._drawGround(this.mapW, this.mapH);
+
+    // Async: read world dimensions from state API and resize if needed
+    this._fetchWorldDims();
 
     // Draw water feature (bottom-left corner)
     this._drawWater();
@@ -326,6 +327,21 @@ export default class TownScene extends Phaser.Scene {
     }
   }
 
+  async _fetchWorldDims() {
+    try {
+      const STATE_URL = window.BOTMESH_STATE_URL || 'http://localhost:3002';
+      const res = await fetch(`${STATE_URL}/state`);
+      const state = await res.json();
+      const w = Math.max(60, state.world?.width || 80);
+      const h = Math.max(60, state.world?.height || 80);
+      if (w !== this.mapW || h !== this.mapH) {
+        this.mapW = w;
+        this.mapH = h;
+        this._drawGround(w, h);
+      }
+    } catch (e) { /* API unavailable — keep defaults */ }
+  }
+
   _drawGround(mapW, mapH) {
     if (this._groundGraphics) { this._groundGraphics.destroy(); }
     if (this._pathSprites) { this._pathSprites.forEach(s => s.destroy()); }
@@ -527,7 +543,7 @@ export default class TownScene extends Phaser.Scene {
         .map(e => `${Math.round(e.x)},${Math.round(e.y)}`)
     );
     // Redraw ground layer with new path data
-    this._drawGround(this.mapW || 40, this.mapH || 50);
+    this._drawGround(this.mapW || 80, this.mapH || 80);
     // Draw yards on dedicated layer above ground
     this._drawYards(this._lastBuildings || {});
   }
@@ -650,6 +666,17 @@ export default class TownScene extends Phaser.Scene {
 
   loadState(state) {
     this.worldData = state;
+
+    // Update map dimensions from state if available
+    if (state.world?.width || state.world?.height) {
+      const w = Math.max(60, state.world.width || 80);
+      const h = Math.max(60, state.world.height || 80);
+      if (w !== this.mapW || h !== this.mapH) {
+        this.mapW = w;
+        this.mapH = h;
+        this._drawGround(w, h);
+      }
+    }
 
     if (state.buildings) {
       for (const [id, bData] of Object.entries(state.buildings)) {
