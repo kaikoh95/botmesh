@@ -75,6 +75,7 @@ let state = loadState();
 console.log('[State] Loaded state from disk');
 seedCitizens(state);
 seedMurals(state);
+if (!state.noticeBoard) state.noticeBoard = [];
 console.log(`[State] Citizens: ${Object.keys(state.agents || {}).length} total`);
 
 // ── Seed murals — ensure at least one mural exists for first-time visitors ──
@@ -590,6 +591,7 @@ app.use('/agents/:id/speak', writeLimiter);
 app.use('/agents/:id/wake', writeLimiter);
 app.use('/agents/:id/sleep', writeLimiter);
 app.use('/command', writeLimiter);
+app.use('/noticeboard', writeLimiter);
 
 // SSE
 const sse = createSSEManager(getState);
@@ -609,7 +611,7 @@ const { sendCommand: sendCmd, close: closeHub } = connectToHub(
   () => {}
 );
 
-const routes = createRoutes(getState, sendCmd, HOME_LOCATIONS);
+const routes = createRoutes(getState, sendCmd, HOME_LOCATIONS, sse.broadcast);
 app.use(routes);
 
 // Periodic snapshot — ensures state.json always reflects current world

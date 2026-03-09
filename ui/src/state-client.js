@@ -66,7 +66,7 @@ export function createStateClient({ onEvent, onStateSync, onConnect, onDisconnec
       'agent:work', 'building:upgraded',
       'building:damaged', 'building:restored',
       'task:complete', 'infra:down', 'infra:up', 'agent:crashed',
-      'world:mutate', 'world:event', 'system:start',
+      'world:mutate', 'world:event', 'system:start', 'notice:post',
     ];
     for (const type of eventTypes) {
       evtSource.addEventListener(type, (e) => {

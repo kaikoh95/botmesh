@@ -28,7 +28,7 @@ function requireAuth(req, res, next) {
   next();
 }
 
-function createRoutes(getState, sendCommand, HOME_LOCATIONS = {}) {
+function createRoutes(getState, sendCommand, HOME_LOCATIONS = {}, sseBroadcast = null) {
   const router = express.Router();
 
   // Health check
@@ -273,6 +273,51 @@ function createRoutes(getState, sendCommand, HOME_LOCATIONS = {}) {
     } catch (e) {
       res.status(500).json({ error: 'Failed to read roadmap', detail: e.message });
     }
+  });
+
+  // ── Notice Board — shared async communication hub at the Town Plaza ─────
+  // GET /noticeboard — read all active notices (aged out after 72h)
+  router.get('/noticeboard', (req, res) => {
+    const state = getState();
+    if (!state.noticeBoard) state.noticeBoard = [];
+    const now = Date.now();
+    const MAX_AGE_MS = 72 * 60 * 60 * 1000; // 72 hours
+    // Filter out expired notices
+    state.noticeBoard = state.noticeBoard.filter(n => now - new Date(n.pinnedAt).getTime() < MAX_AGE_MS);
+    res.json({ notices: state.noticeBoard });
+  });
+
+  // POST /noticeboard — pin a new notice (agents or Kai)
+  router.post('/noticeboard', requireAuth, (req, res) => {
+    const { author, message, category } = req.body || {};
+    if (!author || !message) return res.status(400).json({ error: 'author and message required' });
+    if (message.length > 200) return res.status(400).json({ error: 'message too long (200 char max)' });
+
+    const state = getState();
+    if (!state.noticeBoard) state.noticeBoard = [];
+
+    const notice = {
+      id: `notice-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+      author,
+      message: message.slice(0, 200),
+      category: category || 'general', // general, help-wanted, lost-found, observation, compliment, announcement
+      pinnedAt: new Date().toISOString(),
+    };
+    state.noticeBoard.push(notice);
+
+    // Cap at 30 notices
+    if (state.noticeBoard.length > 30) state.noticeBoard = state.noticeBoard.slice(-30);
+
+    // Broadcast via SSE so UI picks it up in real time
+    if (sseBroadcast) {
+      sseBroadcast({
+        type: 'notice:post',
+        timestamp: notice.pinnedAt,
+        payload: { notice },
+      });
+    }
+
+    res.json({ ok: true, notice });
   });
 
   // Forward command to Hub

@@ -324,6 +324,110 @@ const Panels = {
   },
 };
 
+// ── Notice Board Panel ──────────────────────────────────────────────────
+const NoticeBoardPanel = {
+  _open: false,
+  _notices: [],
+
+  async show() {
+    const panel = document.getElementById('noticeboard-panel');
+    panel.innerHTML = `
+      <div class="panel-accent-bar" style="background:#c9a96e"></div>
+      <div class="panel-titlebar">
+        <span class="panel-title">📌 Town Notice Board</span>
+        <button class="panel-close" id="noticeboard-panel-close">✕</button>
+      </div>
+      <div class="panel-body noticeboard-body">
+        <div class="noticeboard-loading">Loading notices…</div>
+      </div>
+    `;
+    panel.classList.remove('hidden');
+    this._open = true;
+    document.getElementById('noticeboard-panel-close').onclick = () => this.hide();
+
+    try {
+      const STATE_URL = window.BOTMESH_STATE_URL || 'http://localhost:3002';
+      const res = await fetch(`${STATE_URL}/noticeboard`);
+      const data = await res.json();
+      this._notices = data.notices || [];
+      this._render(panel);
+    } catch (e) {
+      panel.querySelector('.noticeboard-body').innerHTML =
+        `<div style="color:#c0392b;font-size:10px">Error: ${e.message}</div>`;
+    }
+  },
+
+  hide() {
+    document.getElementById('noticeboard-panel').classList.add('hidden');
+    this._open = false;
+  },
+
+  addNotice(notice) {
+    this._notices.push(notice);
+    if (this._open) {
+      const panel = document.getElementById('noticeboard-panel');
+      if (panel) this._render(panel);
+    }
+  },
+
+  _render(panel) {
+    const body = panel.querySelector('.noticeboard-body');
+    if (!body) return;
+
+    if (this._notices.length === 0) {
+      body.innerHTML = '<div style="color:#888;font-style:italic;padding:8px 0">The board is empty. No notices pinned yet.</div>';
+      return;
+    }
+
+    const now = Date.now();
+    const categoryIcons = {
+      'general': '📋', 'help-wanted': '🆘', 'lost-found': '🔍',
+      'observation': '👁', 'compliment': '💐', 'announcement': '📢',
+    };
+
+    // Sort newest first
+    const sorted = [...this._notices].sort((a, b) => new Date(b.pinnedAt) - new Date(a.pinnedAt));
+
+    let html = '';
+    for (const notice of sorted) {
+      const ageMs = now - new Date(notice.pinnedAt).getTime();
+      const ageHours = ageMs / (1000 * 60 * 60);
+      // Aging: fresh (< 12h), aging (12-48h), yellowed (48-72h)
+      let ageClass = 'notice-fresh';
+      if (ageHours > 48) ageClass = 'notice-yellowed';
+      else if (ageHours > 12) ageClass = 'notice-aging';
+
+      const icon = categoryIcons[notice.category] || '📋';
+      const isAnnouncement = notice.category === 'announcement';
+      const authorEmoji = AGENT_PROFILES[notice.author]?.emoji || (isAnnouncement ? '👑' : '📝');
+      const authorName = notice.author.charAt(0).toUpperCase() + notice.author.slice(1);
+
+      const ago = _formatNoticeAge(ageMs);
+
+      html += `<div class="notice-card ${ageClass}${isAnnouncement ? ' notice-announcement' : ''}">
+        <div class="notice-header">
+          <span class="notice-icon">${icon}</span>
+          <span class="notice-author">${authorEmoji} ${authorName}</span>
+          <span class="notice-age">${ago}</span>
+        </div>
+        <div class="notice-message">${_escapeHtml(notice.message)}</div>
+      </div>`;
+    }
+    body.innerHTML = html;
+  },
+};
+
+function _formatNoticeAge(ms) {
+  if (ms < 60000) return 'just now';
+  if (ms < 3600000) return `${Math.floor(ms / 60000)}m ago`;
+  if (ms < 86400000) return `${Math.floor(ms / 3600000)}h ago`;
+  return `${Math.floor(ms / 86400000)}d ago`;
+}
+
+function _escapeHtml(str) {
+  return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
 function updateRoster(agents) {
   const roster = document.getElementById('agent-roster');
   if (!roster) return;
@@ -570,6 +674,10 @@ async function init() {
           if (scene) scene.buildingSetDamaged(p.buildingId, false);
           break;
         }
+        case 'notice:post': {
+          if (p.notice) NoticeBoardPanel.addNotice(p.notice);
+          break;
+        }
         case 'world:mutate': {
           if (!scene) break;
           switch (p.action) {
@@ -701,9 +809,13 @@ async function init() {
   // ── Agent Schedule System ───────────────────────────────────────────────
   // Agent schedules are driven by the server-side walk ticker — no client timers needed.
 
-  // Building clicks → HTML panel
+  // Building clicks → HTML panel (plaza → notice board)
   window.addEventListener('botmesh:buildingclick', (e) => {
-    Panels.showBuilding(e.detail.buildingId);
+    if (e.detail.buildingId === 'plaza') {
+      NoticeBoardPanel.show();
+    } else {
+      Panels.showBuilding(e.detail.buildingId);
+    }
   });
 
   // Agent sprite clicks → citizen profile panel
