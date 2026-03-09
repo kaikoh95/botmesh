@@ -7,10 +7,42 @@
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { background: #050810; display: flex; justify-content: center; align-items: center; min-height: 100vh; overflow: hidden; padding-bottom: 42px; }
-    #oracle-inbox { position: fixed; bottom: 0; left: 0; right: 0; display: flex; gap: 4px; padding: 6px 24px 8px; background: #0a0e1a; border-top: 1px solid #1a2030; z-index: 9999; }
-    #oracle-inbox input { flex: 1; background: #0e1220; border: 1px solid #2a3040; color: #e0d8c8; font-family: monospace; font-size: 13px; padding: 7px 12px; outline: none; border-radius: 2px; }
-    #oracle-inbox input:focus { border-color: #f0a030; }
-    #oracle-inbox button { background: #f0a030; color: #0a0e1a; border: none; font-size: 14px; padding: 4px 14px; cursor: pointer; font-family: monospace; border-radius: 2px; font-weight: bold; }
+    #oracle-inbox {
+      position: fixed; bottom: 0; left: 0; right: 0;
+      display: flex; gap: 6px; padding: 8px 24px 10px;
+      background: linear-gradient(180deg, #0c101e 0%, #080c16 100%);
+      border-top: 2px solid #1a1408;
+      box-shadow: 0 -4px 20px rgba(240,160,48,0.04), inset 0 1px 0 rgba(240,160,48,0.06);
+      z-index: 9999;
+    }
+    #oracle-inbox::before {
+      content: '奉'; position: absolute; left: 10px; top: 50%; transform: translateY(-50%);
+      font-size: 14px; color: #3a2a10; opacity: 0.5; font-family: serif;
+    }
+    #oracle-inbox input {
+      flex: 1; background: #0a0e18; border: 1px solid #2a2010;
+      color: #e0d8c8; font-family: monospace; font-size: 13px;
+      padding: 8px 14px; outline: none; border-radius: 1px;
+      box-shadow: inset 0 1px 4px rgba(0,0,0,0.4);
+      transition: border-color 0.3s, box-shadow 0.3s;
+    }
+    #oracle-inbox input::placeholder { color: #4a3a20; font-style: italic; }
+    #oracle-inbox input:focus {
+      border-color: #c08020;
+      box-shadow: inset 0 1px 4px rgba(0,0,0,0.4), 0 0 8px rgba(240,160,48,0.12);
+    }
+    #oracle-inbox button {
+      background: linear-gradient(180deg, #d09030 0%, #a06820 100%);
+      color: #0a0e1a; border: 1px solid #8a5a10; font-size: 13px;
+      padding: 6px 16px; cursor: pointer; font-family: monospace;
+      border-radius: 1px; font-weight: bold; letter-spacing: 1px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+      transition: background 0.2s, box-shadow 0.2s;
+    }
+    #oracle-inbox button:hover {
+      background: linear-gradient(180deg, #e0a040 0%, #c08030 100%);
+      box-shadow: 0 1px 8px rgba(240,160,48,0.25);
+    }
     canvas { display: block; }
   </style>
   <script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js"></script>
@@ -108,6 +140,7 @@ class OracleChamberScene extends Phaser.Scene {
 
     // Animations
     this.addCandleFlicker();    // Iter 2
+    this.addBrazierFlicker();   // Brazier ember pulse
     this.addIncenseSmoke();     // Iter 5
     this.addSnowfall();         // Iter 7
     this.addAmbientParticles(); // Iter 10: dust motes
@@ -146,13 +179,49 @@ class OracleChamberScene extends Phaser.Scene {
     g.fillStyle(0x080c16, 0.5);
     g.fillRect(0, 70, W, 30);
 
-    // Corner darkness (vignette)
-    g.fillStyle(0x020408, 0.4);
-    g.fillRect(0, 0, 40, H);
-    g.fillStyle(0x020408, 0.4);
-    g.fillRect(W - 40, 0, 40, H);
-    g.fillStyle(0x020408, 0.3);
-    g.fillRect(0, H - 60, W, 60);
+    // Stone crack details on floor
+    g.lineStyle(1, 0x080c14, 0.6);
+    const cracks = [
+      [[80,200],[95,240],[88,280]], [[400,300],[420,340],[410,380]],
+      [[200,500],[220,530],[215,570]], [[500,150],[510,190],[520,220]],
+      [[150,650],[170,680],[160,710]], [[450,550],[470,580],[465,620]],
+    ];
+    cracks.forEach(pts => {
+      g.beginPath();
+      g.moveTo(pts[0][0], pts[0][1]);
+      pts.slice(1).forEach(p => g.lineTo(p[0], p[1]));
+      g.strokePath();
+    });
+
+    // Subtle light pools from candles (warm spots on floor)
+    const lgp = this.add.graphics();
+    lgp.fillStyle(0xf0a030, 0.015);
+    for (let row = 0; row < STELE_ROWS; row++) {
+      for (let col = 0; col < STELE_COLS; col++) {
+        const idx = row * STELE_COLS + col;
+        if (idx >= AGENTS.length) break;
+        const pos = stelePos(col, row);
+        lgp.fillCircle(pos.x + STELE_W / 2, pos.y + STELE_H + 20, 40);
+      }
+    }
+
+    // Radial vignette — layered ellipses from edges
+    const vig = this.add.graphics();
+    vig.fillStyle(0x020408, 0.5);
+    vig.fillRect(0, 0, 40, H);
+    vig.fillStyle(0x020408, 0.5);
+    vig.fillRect(W - 40, 0, 40, H);
+    vig.fillStyle(0x020408, 0.35);
+    vig.fillRect(0, H - 60, W, 60);
+    // Soft gradient bands along edges
+    for (let i = 0; i < 5; i++) {
+      vig.fillStyle(0x020408, 0.12 - i * 0.02);
+      vig.fillRect(40 + i * 10, 0, 10, H);
+      vig.fillRect(W - 50 - i * 10, 0, 10, H);
+    }
+    // Top darkness for depth
+    vig.fillStyle(0x020408, 0.25);
+    vig.fillRect(0, 0, W, 90);
   }
 
   // ── Iter 1: Basic stele grid + Iter 2: candle slots ──
@@ -215,23 +284,57 @@ class OracleChamberScene extends Phaser.Scene {
     g.closePath();
     g.fillPath();
 
-    // Engraved border lines
-    g.lineStyle(1, 0x3a4050, 0.4);
+    // Engraved border lines — double border for carved look
+    g.lineStyle(1, 0x3a4050, 0.35);
     g.strokeRect(bx + 8, by + 4, bw - 16, bh - 8);
+    g.lineStyle(1, 0x1a2030, 0.25);
+    g.strokeRect(bx + 10, by + 6, bw - 20, bh - 12);
 
-    // Base pedestal
+    // Rune engravings — small decorative marks
+    const runeAlpha = 0.15;
+    g.lineStyle(1, 0x4a5a70, runeAlpha);
+    // Top rune bar
+    const runeY = by + 22;
+    g.lineBetween(bx + 14, runeY, bx + bw - 14, runeY);
+    // Side rune ticks
+    for (let r = 0; r < 3; r++) {
+      const ry = by + 28 + r * 14;
+      g.lineBetween(bx + 12, ry, bx + 16, ry);
+      g.lineBetween(bx + bw - 16, ry, bx + bw - 12, ry);
+    }
+    // Bottom rune bar
+    g.lineBetween(bx + 14, by + bh - 14, bx + bw - 14, by + bh - 14);
+
+    // Corner rune symbols (tiny L shapes)
+    g.lineStyle(1, 0x4a5a70, runeAlpha * 0.8);
+    [[bx+12,by+8,bx+18,by+8,bx+12,by+14], [bx+bw-12,by+8,bx+bw-18,by+8,bx+bw-12,by+14],
+     [bx+12,by+bh-8,bx+18,by+bh-8,bx+12,by+bh-14], [bx+bw-12,by+bh-8,bx+bw-18,by+bh-8,bx+bw-12,by+bh-14]
+    ].forEach(([x1,y1,x2,y2,x3,y3]) => {
+      g.lineBetween(x1,y1,x2,y2);
+      g.lineBetween(x1,y1,x3,y3);
+    });
+
+    // Base pedestal — wider, more substantial
+    g.fillStyle(0x12161e, 1);
+    g.fillRect(pos.x + 4, pos.y + STELE_H - 6, STELE_W - 8, 12);
     g.fillStyle(PAL.steleBase, 1);
     g.fillRect(pos.x + 6, pos.y + STELE_H - 8, STELE_W - 12, 10);
+    g.lineStyle(1, 0x2a3040, 0.3);
+    g.strokeRect(pos.x + 6, pos.y + STELE_H - 8, STELE_W - 12, 10);
 
     // Agent name
     const nameText = this.add.text(cx, pos.y + STELE_H - 12, agent.name.toLowerCase(), {
       fontFamily: 'monospace', fontSize: '10px', color: '#5a6a7a', align: 'center'
     }).setOrigin(0.5);
 
-    // Status dot (online/offline)
+    // Status dot (online/offline) — larger, more visible
     const statusDot = this.add.graphics();
-    statusDot.fillStyle(PAL.coldGlow, 1);
-    statusDot.fillCircle(cx, pos.y + STELE_H + 2, 3);
+    statusDot.fillStyle(PAL.coldGlow, 0.5);
+    statusDot.fillCircle(cx, pos.y + STELE_H + 4, 4);
+    // Outer ring for offline state
+    const statusRing = this.add.graphics();
+    statusRing.lineStyle(1, PAL.coldGlow, 0.3);
+    statusRing.strokeCircle(cx, pos.y + STELE_H + 4, 6);
 
     // Iter 2: Candle on top of stele
     const candleG = this.add.graphics();
@@ -248,7 +351,7 @@ class OracleChamberScene extends Phaser.Scene {
     }).setOrigin(0.5, 0).setAlpha(0);
 
     this.steleObjects[agent.id] = {
-      g, glowG, candleG, statusDot, nameText, inkText,
+      g, glowG, candleG, statusDot, statusRing, nameText, inkText,
       pos, cx, cy, bx, by, bw, bh
     };
   }
@@ -284,10 +387,17 @@ class OracleChamberScene extends Phaser.Scene {
     g.fillStyle(0x4a2a10, 1);
     g.fillEllipse(bx, by - 2, 36, 10);
 
-    // Inner glow
-    g.fillStyle(PAL.brazierOrange, 0.3);
-    g.fillEllipse(bx, by - 2, 24, 6);
-    g.fillStyle(PAL.amberBright, 0.15);
+    // Ember bed inside brazier
+    g.fillStyle(0x8a2a08, 0.6);
+    g.fillEllipse(bx, by - 2, 28, 7);
+    g.fillStyle(PAL.brazierOrange, 0.45);
+    g.fillEllipse(bx, by - 2, 20, 5);
+    g.fillStyle(PAL.amberBright, 0.3);
+    g.fillEllipse(bx, by - 3, 10, 3);
+    // Ambient glow on surrounding floor
+    g.fillStyle(PAL.amberBright, 0.04);
+    g.fillCircle(bx, by, 80);
+    g.fillStyle(PAL.brazierOrange, 0.06);
     g.fillCircle(bx, by, 50);
 
     // Legs
@@ -318,11 +428,21 @@ class OracleChamberScene extends Phaser.Scene {
     g.fillRect(wx - 2, wy - wh / 2, 4, wh);
     g.fillRect(wx - ww / 2, wy - 2, ww, 4);
 
-    // Moon glow
-    g.fillStyle(0x4060a0, 0.15);
+    // Stars in window
+    g.fillStyle(0xc0d0e0, 0.6);
+    [[wx-15,wy-12],[wx-25,wy-5],[wx+10,wy-14],[wx-8,wy+8],[wx+25,wy+5]].forEach(([sx,sy]) => {
+      g.fillCircle(sx, sy, 0.5 + Math.random() * 0.5);
+    });
+
+    // Moon glow — layered for depth
+    g.fillStyle(0x3050a0, 0.12);
+    g.fillCircle(wx + 20, wy - 8, 12);
+    g.fillStyle(0x4060a0, 0.2);
     g.fillCircle(wx + 20, wy - 8, 8);
-    g.fillStyle(0x8090b0, 0.25);
+    g.fillStyle(0x8090b0, 0.35);
     g.fillCircle(wx + 20, wy - 8, 4);
+    g.fillStyle(0xc0d0e0, 0.4);
+    g.fillCircle(wx + 20, wy - 8, 2);
 
     // Moonlight spill onto floor
     g.fillStyle(0x2040608, 0.0);
@@ -435,48 +555,104 @@ class OracleChamberScene extends Phaser.Scene {
     });
   }
 
-  // ── Iter 5: Incense smoke particles from brazier ──
+  // ── Brazier ember flicker ──
+  addBrazierFlicker() {
+    if (!this.brazierPos) return;
+    const bp = this.brazierPos;
+    // Flickering ember sparks
+    const sparks = [];
+    for (let i = 0; i < 5; i++) {
+      const spark = this.add.graphics();
+      spark.fillStyle(PAL.amberBright, 1);
+      spark.fillCircle(0, 0, 1);
+      spark.setAlpha(0);
+      sparks.push(spark);
+    }
+    this.time.addEvent({
+      delay: 300,
+      loop: true,
+      callback: () => {
+        const spark = sparks[Math.floor(Math.random() * sparks.length)];
+        const sx = bp.x + (Math.random() - 0.5) * 20;
+        const sy = bp.y - 4;
+        spark.setPosition(sx, sy);
+        spark.setAlpha(0.7 + Math.random() * 0.3);
+        this.tweens.add({
+          targets: spark,
+          x: sx + (Math.random() - 0.5) * 10,
+          y: sy - 10 - Math.random() * 15,
+          alpha: 0,
+          duration: 600 + Math.random() * 600,
+          ease: 'Quad.easeOut'
+        });
+      }
+    });
+  }
+
+  // ── Iter 5: Incense smoke particles from brazier (enhanced) ──
   addIncenseSmoke() {
     this.smokeParticles = [];
     const bx = W / 2, by = GRID_Y + 1.5 * (STELE_H + GAP_Y) - 10;
 
-    for (let i = 0; i < 12; i++) {
-      const smoke = this.add.graphics();
-      smoke.fillStyle(PAL.incense, 1);
-      smoke.fillCircle(0, 0, 2 + Math.random() * 2);
-      smoke.setAlpha(0);
+    // Three layers: small warm, medium mid, large cool
+    const layers = [
+      { count: 8, sizeMin: 1.5, sizeMax: 3, color: 0x6a5040, maxAlpha: 0.30, speedMin: 0.35, speedMax: 0.5, maxLife: 2500 },
+      { count: 6, sizeMin: 3, sizeMax: 5, color: 0x5a5068, maxAlpha: 0.18, speedMin: 0.25, speedMax: 0.4, maxLife: 4000 },
+      { count: 4, sizeMin: 5, sizeMax: 8, color: 0x4a4860, maxAlpha: 0.08, speedMin: 0.15, speedMax: 0.3, maxLife: 5500 },
+    ];
 
-      this.smokeParticles.push({
-        gfx: smoke,
-        x: bx + (Math.random() - 0.5) * 16,
-        y: by - 8,
-        delay: i * 400,
-        speed: 0.3 + Math.random() * 0.2,
-        drift: (Math.random() - 0.5) * 0.4,
-        life: 0,
-        maxLife: 3000 + Math.random() * 2000
-      });
-    }
+    layers.forEach((layer, li) => {
+      for (let i = 0; i < layer.count; i++) {
+        const size = layer.sizeMin + Math.random() * (layer.sizeMax - layer.sizeMin);
+        const smoke = this.add.graphics();
+        smoke.fillStyle(layer.color, 1);
+        smoke.fillCircle(0, 0, size);
+        smoke.setAlpha(0);
+
+        this.smokeParticles.push({
+          gfx: smoke,
+          x: bx + (Math.random() - 0.5) * 14,
+          y: by - 6,
+          speed: layer.speedMin + Math.random() * (layer.speedMax - layer.speedMin),
+          drift: (Math.random() - 0.5) * 0.3,
+          wobblePhase: Math.random() * Math.PI * 2,
+          wobbleSpeed: 0.002 + Math.random() * 0.002,
+          wobbleAmp: 0.4 + Math.random() * 0.6,
+          life: li * 600 + i * 350 + Math.random() * 200,
+          maxLife: layer.maxLife + Math.random() * 1500,
+          maxAlpha: layer.maxAlpha,
+          originX: bx,
+          originY: by - 6,
+        });
+      }
+    });
 
     this.time.addEvent({
-      delay: 50,
+      delay: 40,
       loop: true,
       callback: () => {
         this.smokeParticles.forEach(p => {
-          p.life += 50;
+          p.life += 40;
           if (p.life > p.maxLife) {
             p.life = 0;
-            p.x = bx + (Math.random() - 0.5) * 16;
-            p.y = by - 8;
-            p.drift = (Math.random() - 0.5) * 0.4;
+            p.x = p.originX + (Math.random() - 0.5) * 14;
+            p.y = p.originY;
+            p.drift = (Math.random() - 0.5) * 0.3;
+            p.wobblePhase = Math.random() * Math.PI * 2;
           }
           const progress = p.life / p.maxLife;
           p.y -= p.speed;
-          p.x += p.drift + Math.sin(p.life * 0.003) * 0.3;
-          const alpha = progress < 0.1 ? progress * 10 :
-                        progress > 0.7 ? (1 - progress) / 0.3 : 1;
+          // Natural sinusoidal drift + slight acceleration sideways
+          p.x += p.drift + Math.sin(p.wobblePhase + p.life * p.wobbleSpeed) * p.wobbleAmp;
+          // Smoke expands slightly as it rises
+          const scale = 1 + progress * 0.8;
+          p.gfx.setScale(scale);
+          // Fade in quickly, sustain, fade out slowly
+          const alpha = progress < 0.08 ? progress / 0.08 :
+                        progress < 0.4 ? 1 :
+                        Math.pow(1 - (progress - 0.4) / 0.6, 1.5);
           p.gfx.setPosition(p.x, p.y);
-          p.gfx.setAlpha(alpha * 0.25);
+          p.gfx.setAlpha(alpha * p.maxAlpha);
         });
       }
     });
@@ -525,24 +701,48 @@ class OracleChamberScene extends Phaser.Scene {
     }
   }
 
-  // ── Iter 10: Ambient dust motes ──
+  // ── Iter 10: Ambient dust motes (enhanced) ──
   addAmbientParticles() {
-    for (let i = 0; i < 6; i++) {
+    // Warm dust near brazier
+    for (let i = 0; i < 4; i++) {
       const mote = this.add.graphics();
-      mote.fillStyle(0x8090a0, 1);
-      mote.fillCircle(0, 0, 0.8);
+      mote.fillStyle(0xc0a060, 1);
+      mote.fillCircle(0, 0, 0.6 + Math.random() * 0.4);
 
-      const sx = 60 + Math.random() * (W - 120);
+      const sx = W / 2 + (Math.random() - 0.5) * 120;
+      const sy = this.brazierPos ? this.brazierPos.y - 20 + Math.random() * 40 : 300;
+      mote.setPosition(sx, sy);
+
+      this.tweens.add({
+        targets: mote,
+        x: sx + (Math.random() - 0.5) * 40,
+        y: sy - 30 - Math.random() * 40,
+        alpha: { from: 0, to: 0.25 },
+        duration: 5000 + Math.random() * 3000,
+        delay: i * 1200,
+        yoyo: true,
+        repeat: -1,
+        ease: 'Sine.easeInOut'
+      });
+    }
+
+    // Cool dust in periphery
+    for (let i = 0; i < 5; i++) {
+      const mote = this.add.graphics();
+      mote.fillStyle(0x6070a0, 1);
+      mote.fillCircle(0, 0, 0.5 + Math.random() * 0.5);
+
+      const sx = 50 + Math.random() * (W - 100);
       const sy = 100 + Math.random() * (H - 200);
       mote.setPosition(sx, sy);
 
       this.tweens.add({
         targets: mote,
-        x: sx + (Math.random() - 0.5) * 30,
-        y: sy - 20 - Math.random() * 30,
-        alpha: { from: 0, to: 0.3 },
-        duration: 4000 + Math.random() * 3000,
-        delay: i * 800,
+        x: sx + (Math.random() - 0.5) * 25,
+        y: sy - 15 - Math.random() * 25,
+        alpha: { from: 0, to: 0.18 },
+        duration: 6000 + Math.random() * 4000,
+        delay: i * 1000,
         yoyo: true,
         repeat: -1,
         ease: 'Sine.easeInOut'
@@ -744,22 +944,41 @@ class OracleChamberScene extends Phaser.Scene {
     const s = this.steleObjects[agentId];
     if (!s) return;
 
-    // Warm glow status dot
+    // Warm glowing status dot
     s.statusDot.clear();
-    s.statusDot.fillStyle(PAL.amberGlow, 0.8);
-    s.statusDot.fillCircle(s.cx, s.pos.y + STELE_H + 2, 3);
+    s.statusDot.fillStyle(PAL.amberGlow, 0.9);
+    s.statusDot.fillCircle(s.cx, s.pos.y + STELE_H + 4, 4);
+    // Warm ring
+    s.statusRing.clear();
+    s.statusRing.lineStyle(1.5, PAL.amberGlow, 0.5);
+    s.statusRing.strokeCircle(s.cx, s.pos.y + STELE_H + 4, 7);
+    // Ambient halo under status
+    s.statusDot.fillStyle(PAL.amberGlow, 0.06);
+    s.statusDot.fillCircle(s.cx, s.pos.y + STELE_H + 4, 14);
     // Warm name color
     s.nameText.setColor('#c0a060');
 
-    // Brief warm pulse
+    // Start breathing glow for online agents
+    if (s._breathTween) s._breathTween.stop();
+    s._breathTween = this.tweens.add({
+      targets: s.statusDot,
+      alpha: { from: 1, to: 0.5 },
+      duration: 2000,
+      yoyo: true,
+      repeat: -1,
+      ease: 'Sine.easeInOut'
+    });
+
+    // Brief warm pulse on stele body
     s.glowG.clear();
-    s.glowG.fillStyle(PAL.warmGlow, 0.12);
+    s.glowG.fillStyle(PAL.warmGlow, 0.15);
     s.glowG.fillRect(s.bx + 4, s.by, s.bw - 8, s.bh);
     s.glowG.setAlpha(1);
     this.tweens.add({
       targets: s.glowG,
       alpha: 0,
-      duration: 1500
+      duration: 2000,
+      ease: 'Sine.easeOut'
     });
   }
 
@@ -770,12 +989,22 @@ class OracleChamberScene extends Phaser.Scene {
     const s = this.steleObjects[agentId];
     if (!s) return;
 
-    // Cold grey status dot
+    // Stop breathing
+    if (s._breathTween) { s._breathTween.stop(); s._breathTween = null; }
+
+    // Cold grey status dot — smaller, dimmer
     s.statusDot.clear();
-    s.statusDot.fillStyle(PAL.coldGlow, 0.5);
-    s.statusDot.fillCircle(s.cx, s.pos.y + STELE_H + 2, 3);
+    s.statusDot.fillStyle(PAL.coldGlow, 0.3);
+    s.statusDot.fillCircle(s.cx, s.pos.y + STELE_H + 4, 3);
+    s.statusDot.setAlpha(1);
+    // Dim ring
+    s.statusRing.clear();
+    s.statusRing.lineStyle(1, PAL.coldGlow, 0.15);
+    s.statusRing.strokeCircle(s.cx, s.pos.y + STELE_H + 4, 6);
     // Dim name
-    s.nameText.setColor('#3a4a5a');
+    s.nameText.setColor('#2a3444');
+    // Dim candle
+    s.candleG.setAlpha(0.15);
   }
 
   // ── Iter 9: Ticker typewriter ──
