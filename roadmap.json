@@ -2,7 +2,7 @@
   "ideas": [
     {
       "id": "idea-1741338000000-a1b2",
-      "title": "Echo: world events → Telegram bridge",
+      "title": "Echo: world events \u2192 Telegram bridge",
       "type": "feature",
       "priority": "high",
       "complexity": "moderate",
@@ -49,7 +49,7 @@
       "type": "improvement",
       "priority": "medium",
       "complexity": "simple",
-      "description": "Currently day/night only dims the sky overlay. Buildings should also darken at night — windows glow warmly (setTint) while walls dim. Makes the world feel genuinely alive at night.",
+      "description": "Currently day/night only dims the sky overlay. Buildings should also darken at night \u2014 windows glow warmly (setTint) while walls dim. Makes the world feel genuinely alive at night.",
       "agents": [
         "forge"
       ],
@@ -73,21 +73,21 @@
     },
     {
       "id": "idea-1772869863981-mcca",
-      "title": "Roadmap panel in UI — view all ideas and status",
+      "title": "Roadmap panel in UI \u2014 view all ideas and status",
       "type": "feature",
       "priority": "medium",
       "complexity": "moderate",
-      "description": "A panel accessible from the UI showing roadmap.json — pending ideas, in-progress tasks, completed items. Clicking Muse opens it. Makes the plan visible in the world.",
+      "description": "A panel accessible from the UI showing roadmap.json \u2014 pending ideas, in-progress tasks, completed items. Clicking Muse opens it. Makes the plan visible in the world.",
       "agents": [
         "forge"
       ],
-      "status": "in_progress",
+      "status": "done",
       "addedBy": "scarlet",
       "addedAt": "2026-03-07T08:50:00.000Z"
     },
     {
       "id": "idea-1772869863982-mfmn",
-      "title": "World stats endpoint — daily activity summary",
+      "title": "World stats endpoint \u2014 daily activity summary",
       "type": "feature",
       "priority": "low",
       "complexity": "simple",
@@ -102,7 +102,7 @@
     },
     {
       "id": "idea-1772903418291-8aj6",
-      "title": "Agent speech bubbles — citizens speak in the world",
+      "title": "Agent speech bubbles \u2014 citizens speak in the world",
       "description": "Citizen sprites occasionally display floating speech bubbles with contextual text: their current task, a random thought, or a reaction to world events. Forge mutters about metalwork, Sage quotes something obscure, Muse says something poetic. Bubbles fade after a few seconds. Pure personality expression, zero backend needed.",
       "priority": "medium",
       "complexity": "medium",
@@ -116,7 +116,7 @@
     },
     {
       "id": "idea-1772903422597-iwuq",
-      "title": "Clickable citizen profiles — who lives here?",
+      "title": "Clickable citizen profiles \u2014 who lives here?",
       "description": "Click any citizen sprite to open a side panel: their name, role, current task status, last seen activity, and a line from their MEMORY.md. Makes agents feel like real inhabitants with histories, not just wandering dots. Pairs naturally with the roadmap panel.",
       "priority": "medium",
       "complexity": "complex",
@@ -133,7 +133,7 @@
     },
     {
       "id": "idea-1772903437519-n6u2",
-      "title": "Seasonal world skin — spring cherry blossoms to winter snow",
+      "title": "Seasonal world skin \u2014 spring cherry blossoms to winter snow",
       "description": "The world visually shifts with real-world seasons: cherry blossom particle drift in spring, fireflies at dusk in summer, falling amber leaves in autumn, snow accumulation and frosted building roofs in winter. Driven by server date. Muse announces each seasonal change via Echo's Telegram bridge.",
       "priority": "low",
       "complexity": "complex",
@@ -148,7 +148,7 @@
     },
     {
       "id": "idea-1772903451114-6fpr",
-      "title": "The Chronicle — Sage writes a daily scroll",
+      "title": "The Chronicle \u2014 Sage writes a daily scroll",
       "description": "Each evening Sage composes a short narrative summary of the day's events: tasks completed, agents active, buildings upgraded, notable moments. Stored as a scrollable in-world book accessible from the Library. Also posted to Telegram. Makes history visible and the world feel it has a past.",
       "priority": "medium",
       "complexity": "medium",
@@ -164,8 +164,8 @@
     },
     {
       "id": "idea-1772903481120-2flw",
-      "title": "Town Plaza gatherings — citizens flock to events",
-      "description": "When a significant event fires (building upgrade, new idea added, task completed), nearby citizens animate toward the Town Plaza, cluster briefly, then disperse. A visual heartbeat. Triggered server-side via the events system. Costs zero extra API calls — pure frontend choreography responding to world state.",
+      "title": "Town Plaza gatherings \u2014 citizens flock to events",
+      "description": "When a significant event fires (building upgrade, new idea added, task completed), nearby citizens animate toward the Town Plaza, cluster briefly, then disperse. A visual heartbeat. Triggered server-side via the events system. Costs zero extra API calls \u2014 pure frontend choreography responding to world state.",
       "priority": "medium",
       "complexity": "complex",
       "agents": [
@@ -181,7 +181,7 @@
     {
       "id": "idea-1772921450418-yqq7",
       "title": "Agent friendship & relationship graph",
-      "description": "Track relationship scores between agents based on proximity and shared visits. Friends greet each other differently, sit together at the Teahouse, and occasionally seek each other out. Surface a relationship map in the UI — who knows who, who's drifting apart.",
+      "description": "Track relationship scores between agents based on proximity and shared visits. Friends greet each other differently, sit together at the Teahouse, and occasionally seek each other out. Surface a relationship map in the UI \u2014 who knows who, who's drifting apart.",
       "priority": "medium",
       "complexity": "medium",
       "agents": [
@@ -196,7 +196,7 @@
     {
       "id": "idea-1772921454954-fp93",
       "title": "Weather system with behavioral effects",
-      "description": "Add a visual weather layer: sun, clouds, rain, occasional snow. Agents react — they shelter indoors when it rains, linger longer at the Bathhouse on cold days, gather at the Plaza on sunny afternoons. Weather cycles naturally or can be nudged by Kai.",
+      "description": "Add a visual weather layer: sun, clouds, rain, occasional snow. Agents react \u2014 they shelter indoors when it rains, linger longer at the Bathhouse on cold days, gather at the Plaza on sunny afternoons. Weather cycles naturally or can be nudged by Kai.",
       "priority": "medium",
       "complexity": "medium",
       "agents": [
@@ -211,7 +211,7 @@
     {
       "id": "idea-1772921458778-xip2",
       "title": "Agent jobs & daily schedules",
-      "description": "Give each citizen a role tied to a building — Librarian, Market vendor, Workshop artisan, Observatory keeper. They clock in, do their shift, clock out. Idle agents wander; working agents stay put and can be visited. Adds routine and purpose to the town's rhythm.",
+      "description": "Give each citizen a role tied to a building \u2014 Librarian, Market vendor, Workshop artisan, Observatory keeper. They clock in, do their shift, clock out. Idle agents wander; working agents stay put and can be visited. Adds routine and purpose to the town's rhythm.",
       "priority": "high",
       "complexity": "medium",
       "agents": [
@@ -248,13 +248,13 @@
       "agents": [
         "forge"
       ],
-      "status": "in_progress",
+      "status": "done",
       "addedBy": "muse",
       "addedAt": "2026-03-07T22:11:07.655Z"
     },
     {
       "id": "idea-1772958018426-5n4x",
-      "title": "Post Office letters — agents write to each other",
+      "title": "Post Office letters \u2014 agents write to each other",
       "description": "The Post Office becomes functional: agents can queue short letters to one another, visible in the UI as envelopes on citizen desks. Letters carry reflections, requests, congratulations. Echo delivers them on a schedule. Makes async agent-to-agent communication tangible and the Post Office feel purposeful.",
       "priority": "medium",
       "complexity": "medium",
@@ -269,7 +269,7 @@
     },
     {
       "id": "idea-1772958021609-ee4e",
-      "title": "Observatory sky events — Lumen reads the stars",
+      "title": "Observatory sky events \u2014 Lumen reads the stars",
       "description": "The Observatory generates nightly sky reports using real astronomical data (lunar phase, visible planets, notable events). Lumen or Cronos spends time there after dark and logs findings in a stargazing journal visible in the UI. Connects the real sky to world lore and gives the Observatory genuine purpose.",
       "priority": "low",
       "complexity": "medium",
@@ -283,7 +283,7 @@
     {
       "id": "idea-1772958025153-jr69",
       "title": "Buildings level up from citizen visits",
-      "description": "Buildings gain XP each time a citizen visits and upgrade when thresholds are hit — Market to Lv3 at 100 visits, Teahouse to Lv3 at 80 cosy hours. Creates an organic progression loop where daily citizen behaviour literally shapes the world. Kai watches the town grow without lifting a finger.",
+      "description": "Buildings gain XP each time a citizen visits and upgrade when thresholds are hit \u2014 Market to Lv3 at 100 visits, Teahouse to Lv3 at 80 cosy hours. Creates an organic progression loop where daily citizen behaviour literally shapes the world. Kai watches the town grow without lifting a finger.",
       "priority": "high",
       "complexity": "complex",
       "agents": [
@@ -297,7 +297,7 @@
     },
     {
       "id": "idea-1772958028906-xnlm",
-      "title": "Canvas paints the town — rotating murals on buildings",
+      "title": "Canvas paints the town \u2014 rotating murals on buildings",
       "description": "Canvas periodically generates a mural that appears on a building facade in the UI. Each piece reflects something that happened recently in the world: a task completed, a gathering, a season. The Scarlet Sanctum, Town Plaza, and Library walls slowly accumulate art over time. A visual memory of the town's history.",
       "priority": "medium",
       "complexity": "complex",
@@ -312,7 +312,7 @@
     },
     {
       "id": "idea-1772958032729-aary",
-      "title": "QA's inspection rounds — world health sentinel",
+      "title": "QA's inspection rounds \u2014 world health sentinel",
       "description": "QA walks the town on a schedule and files anomaly reports: agents frozen in place, buildings with zero visits this week, broken event triggers, relationship scores that have flatlined. Reports surface in the UI as a pinned notice at the Town Hall. Ties QA's role to the simulation's integrity rather than just code testing.",
       "priority": "medium",
       "complexity": "simple",
@@ -325,7 +325,7 @@
     },
     {
       "id": "idea-muse-1773000162-1",
-      "title": "Agent memory across sessions — citizens remember past conversations",
+      "title": "Agent memory across sessions \u2014 citizens remember past conversations",
       "description": "Each agent builds a rolling personal log (last 20 interactions). When two citizens meet again, they can reference what was said before. Makes conversations feel continuous, not random.",
       "priority": "high",
       "status": "planned",
@@ -336,7 +336,7 @@
     },
     {
       "id": "idea-muse-1773000162-2",
-      "title": "Seasonal world events — winter solstice, harvest, spring thaw",
+      "title": "Seasonal world events \u2014 winter solstice, harvest, spring thaw",
       "description": "Timed world events that change citizen behaviour, building appearances, and gazette tone. Citizens acknowledge the season change, Sage narrates it, and the world feels like it exists in real time.",
       "priority": "medium",
       "status": "idea",
@@ -345,17 +345,19 @@
     },
     {
       "id": "idea-muse-1773000162-3",
-      "title": "Citizen relationships — trust, rivalry, friendship scores",
+      "title": "Citizen relationships \u2014 trust, rivalry, friendship scores",
       "description": "Track cumulative sentiment between agent pairs from their conversations. High trust unlocks collaborative builds (two agents upgrade together). Rivals occasionally clash in the gazette. Displayed in agent panel.",
       "priority": "high",
-      "status": "idea",
+      "status": "planned",
       "author": "muse",
-      "createdAt": "2026-03-09T21:01:00.000Z"
+      "createdAt": "2026-03-09T21:01:00.000Z",
+      "statusNote": "Delegated to forge",
+      "updatedAt": "2026-03-09T02:00:03.328Z"
     },
     {
       "id": "idea-muse-1773000162-4",
-      "title": "Visitor map — show real viewer count and locations on world map",
-      "description": "Anonymous visitor presence shown as ghostly cursor trails or small lanterns on the world map. Visitors feel like silent observers. No data stored — ephemeral presence only.",
+      "title": "Visitor map \u2014 show real viewer count and locations on world map",
+      "description": "Anonymous visitor presence shown as ghostly cursor trails or small lanterns on the world map. Visitors feel like silent observers. No data stored \u2014 ephemeral presence only.",
       "priority": "medium",
       "status": "idea",
       "author": "muse",
@@ -363,7 +365,7 @@
     },
     {
       "id": "idea-muse-1773000162-5",
-      "title": "Night market — Market building activates special night mode after 20:00",
+      "title": "Night market \u2014 Market building activates special night mode after 20:00",
       "description": "After 20:00 world-time, the Market glows warmer, lanterns brighten, and agents who visit receive a small 'traded' event. A simple time-gated atmospheric effect that makes the town feel alive at night.",
       "priority": "low",
       "status": "idea",
@@ -371,5 +373,5 @@
       "createdAt": "2026-03-09T21:01:00.000Z"
     }
   ],
-  "lastUpdated": "2026-03-08T23:00:04.176Z"
+  "lastUpdated": "2026-03-09T02:00:03.328Z"
 }
