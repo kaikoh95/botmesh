@@ -124,6 +124,10 @@
     #loading-screen.fade-out {
       opacity: 0;
     }
+      #oracle-inbox { position: fixed; bottom: 0; left: 0; right: 0; display: flex; gap: 4px; padding: 6px 24px 8px; background: rgba(10,14,26,0.92); border-top: 1px solid #1a2030; z-index: 9999; backdrop-filter: blur(4px); }
+    #oracle-inbox input { flex: 1; background: #0e1220; border: 1px solid #2a3040; color: #e0d8c8; font-family: monospace; font-size: 13px; padding: 7px 12px; outline: none; border-radius: 2px; }
+    #oracle-inbox input:focus { border-color: #f0a030; }
+    #oracle-inbox button { background: #f0a030; color: #0a0e1a; border: none; font-size: 14px; padding: 4px 14px; cursor: pointer; font-family: monospace; border-radius: 2px; font-weight: bold; }
   </style>
 </head>
 <body>
@@ -313,5 +317,28 @@
   </script>
   <script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js"></script>
   <script type="module" src="src/main.js"></script>
+<div id="oracle-inbox">
+  <input id="oracle-input" type="text" placeholder="Send instruction to Scarlet..." maxlength="300" autocomplete="off" />
+  <button id="oracle-send">⚡ Send</button>
+</div>
+<script>
+(function() {
+  var input = document.getElementById("oracle-input");
+  var btn   = document.getElementById("oracle-send");
+  if (!input || !btn) return;
+  var send = function() {
+    var msg = input.value.trim();
+    if (!msg) return;
+    input.value = "";
+    fetch("https://api.kurokimachi.com/inbox", {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({ message: msg, from: "ui" })
+    }).catch(function(){});
+  };
+  input.addEventListener("keydown", function(e) { if (e.key === "Enter") send(); });
+  btn.addEventListener("click", send);
+})();
+</script>
 </body>
 </html>
