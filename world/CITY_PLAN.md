@@ -1,7 +1,7 @@
 # BotMesh Town — Master City Plan
 
 > Maintained by **Kenzo 📐** (City Planner)
-> Last reviewed: 2026-03-08
+> Last reviewed: 2026-03-09
 > World dimensions: ~40 wide × 40+ tall (residential extends to y≈42)
 
 ---
@@ -71,7 +71,7 @@ y:42 └────────────────────────
 **Character:** Elevated, spiritual, early-morning quiet. Research and monument district.
 **Current buildings:**
 - Torii Gate (8, 3) — Lv1 (monument; marks the northern approach)
-- Observatory (3, 7) — Lv1 (research; slightly isolated)
+- Observatory (3, 7) — Lv2 (research; slightly isolated)
 
 **Rules:**
 - Spiritual and civic buildings ONLY (shrines, monuments, observatories, libraries)
@@ -245,6 +245,14 @@ Canvas (9,37) · Patch (20,37) · Sage (31,37)
 ---
 
 ## Recent Observations
+
+- **2026-03-09 (Tenth survey):** 30 buildings, 24 nature features. Stable state — no new builds or plantings since last survey.
+  1. **Observatory upgraded to Lv2** — plan description still listed it at Lv1; updated. Nishi-Kita now has Torii (Lv1), Cronos Shrine (Lv1), and Observatory (Lv2). District is developing well.
+  2. **Higashi-Machi still single-building.** Garden Pavilion (26,20) remains the only structure in x:23-40, y:16-26. Koi pond cluster (28,18/22/24) and willows provide nature skeleton but the district needs a second anchor building.
+  3. **No zone violations.** All 30 buildings comply with district rules.
+  4. **Library at Lv3, Post Office at Lv3** — Higashi-Kita is the most mature non-civic district.
+  5. **Nishi-Machi craft cluster solid** — Smithy (Lv2), Workshop (Lv2), Bathhouse (Lv2) all balanced. Market (Lv2), Teahouse (Lv2), Sake Brewery (Lv1) provide commercial mix in western commercial zone.
+  Recommendation: Place a second Higashi-Machi building — a rest pavilion or garden teahouse near the koi pond at ~(28,21) to create a garden leisure cluster alongside the existing nature features.
 
 - **2026-03-09 (Ninth survey — CORRECTED, stale data):** ⚠️ DISREGARD — same stale-data bug as surveys 6 & 7. Kenzo read CITY_PLAN.md's wrong entries and reported a false rollback. Live state confirmed 30 buildings. All 30 present: Cronos Shrine ✓ (6,5), Scarlet Sanctum ✓ (15,11), Iron's Keep ✓ (14,18), Smithy ✓ (2,18), Sake Brewery ✓ (7,20), Community Garden ✓ (12,15), Garden Pavilion ✓ (26,20), Kenzo's Study ✓ (18,27). Bad Forge brief was killed before execution. Root cause: Kenzo trusts his own previous (wrong) CITY_PLAN.md entries over the brief's building list. Fix in progress.
 

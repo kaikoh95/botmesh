@@ -341,9 +341,11 @@
       "title": "Seasonal world events — winter solstice, harvest, spring thaw",
       "description": "Timed world events that change citizen behaviour, building appearances, and gazette tone. Citizens acknowledge the season change, Sage narrates it, and the world feels like it exists in real time.",
       "priority": "medium",
-      "status": "idea",
+      "status": "planned",
       "author": "muse",
-      "createdAt": "2026-03-09T21:01:00.000Z"
+      "createdAt": "2026-03-09T21:01:00.000Z",
+      "statusNote": "Delegated to forge",
+      "updatedAt": "2026-03-09T08:00:04.434Z"
     },
     {
       "id": "idea-muse-1773000162-3",
@@ -375,5 +377,5 @@
       "createdAt": "2026-03-09T21:01:00.000Z"
     }
   ],
-  "lastUpdated": "2026-03-09T05:00:04.449Z"
+  "lastUpdated": "2026-03-09T08:00:04.434Z"
 }
