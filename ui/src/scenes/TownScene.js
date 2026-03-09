@@ -30,7 +30,7 @@ export default class TownScene extends Phaser.Scene {
 
   preload() {
     // Suppress 404 errors for missing sprites — fallback rendering handles them gracefully
-    this.load.on('loaderror', () => {});
+    this.load.on('loaderror', (file) => { console.warn(`[Preload] failed: ${file.key}`); });
 
     // Cache-bust sprite URLs so browser never serves stale autumn/old sprites
     const v = `?v=${Date.now()}`;
@@ -722,7 +722,7 @@ export default class TownScene extends Phaser.Scene {
       this._refreshPaths(state.world.entities);
 
       for (const entity of state.world.entities) {
-        if (entity.entity === 'life' && entity.kind !== 'path') {
+        if (entity.entity === 'life' && entity.kind !== 'path' && entity.kind !== 'moat') {
           this.addLifeEntity(entity);
         } else if (entity.entity === 'building') {
           // Dynamic buildings — add if not already in state.buildings

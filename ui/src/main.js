@@ -583,10 +583,14 @@ async function init() {
               }
               break;
             case 'plant':
-              if (p.kind === 'path') {
-                // Path tile — refresh ground layer instead of spawning a sprite
+              if (p.kind === 'path' || p.kind === 'moat') {
+                // Path/moat tile — refresh ground layer instead of spawning a sprite
                 if (!scene.pathTiles) scene.pathTiles = new Set();
-                scene.pathTiles.add(`${Math.round(p.x)},${Math.round(p.y)}`);
+                if (p.kind === 'path') scene.pathTiles.add(`${Math.round(p.x)},${Math.round(p.y)}`);
+                if (p.kind === 'moat') {
+                  if (!scene.moatTiles) scene.moatTiles = new Set();
+                  scene.moatTiles.add(`${Math.round(p.x)},${Math.round(p.y)}`);
+                }
                 scene._drawGround(32, 28);
               } else {
                 scene.addLifeEntity(p);

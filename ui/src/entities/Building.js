@@ -22,7 +22,13 @@ const BUILDING_TEXTURE_MAP = {
 // Map building type → sprite texture base name (fallback when id not in map above)
 const BUILDING_TYPE_TEXTURE_MAP = {
   cottage:  'cottage',
-  monument: 'plaza',
+  monument: 'torii',
+  sanctum:  'sanctum',
+  shrine:   'shrine',
+  torii:    'torii',
+  keep:     'keep',
+  brewery:  'brewery',
+  garden:   'garden',
 };
 
 const BUILDING_COLORS = {
