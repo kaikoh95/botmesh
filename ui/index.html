@@ -124,10 +124,58 @@
     #loading-screen.fade-out {
       opacity: 0;
     }
-      #oracle-inbox { position: fixed; bottom: 0; left: 0; right: 0; display: flex; gap: 4px; padding: 6px 24px 8px; background: rgba(10,14,26,0.92); border-top: 1px solid #1a2030; z-index: 9999; backdrop-filter: blur(4px); }
-    #oracle-inbox input { flex: 1; background: #0e1220; border: 1px solid #2a3040; color: #e0d8c8; font-family: monospace; font-size: 13px; padding: 7px 12px; outline: none; border-radius: 2px; }
-    #oracle-inbox input:focus { border-color: #f0a030; }
-    #oracle-inbox button { background: #f0a030; color: #0a0e1a; border: none; font-size: 14px; padding: 4px 14px; cursor: pointer; font-family: monospace; border-radius: 2px; font-weight: bold; }
+    #oracle-inbox {
+      position: fixed; bottom: 0; left: 0; right: 0;
+      display: flex; align-items: center; gap: 8px;
+      padding: 8px 24px 10px;
+      background: linear-gradient(180deg, rgba(8,12,20,0.75) 0%, rgba(10,14,26,0.95) 100%);
+      border-top: 1px solid rgba(200,170,110,0.15);
+      z-index: 9999;
+      backdrop-filter: blur(8px);
+      box-shadow: 0 -4px 20px rgba(0,0,0,0.4);
+    }
+    #oracle-inbox::before {
+      content: '⛩';
+      font-size: 16px;
+      opacity: 0.4;
+      margin-right: 2px;
+    }
+    #oracle-inbox input {
+      flex: 1;
+      background: rgba(14,18,32,0.8);
+      border: 1px solid rgba(42,48,64,0.6);
+      color: #e0d8c8;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      padding: 8px 14px;
+      outline: none;
+      border-radius: 3px;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    #oracle-inbox input::placeholder { color: rgba(200,200,210,0.35); }
+    #oracle-inbox input:focus {
+      border-color: rgba(240,160,48,0.6);
+      box-shadow: 0 0 12px rgba(240,160,48,0.12), inset 0 0 4px rgba(240,160,48,0.05);
+    }
+    #oracle-inbox button {
+      background: linear-gradient(135deg, #f0a030 0%, #e89020 100%);
+      color: #0a0e1a;
+      border: none;
+      font-size: 13px;
+      padding: 8px 16px;
+      cursor: pointer;
+      font-family: 'Courier New', monospace;
+      font-weight: bold;
+      border-radius: 3px;
+      letter-spacing: 0.5px;
+      transition: background 0.15s, box-shadow 0.15s;
+      box-shadow: 0 2px 8px rgba(240,160,48,0.2);
+    }
+    #oracle-inbox button:hover {
+      background: linear-gradient(135deg, #ffb040 0%, #f0a030 100%);
+      box-shadow: 0 2px 12px rgba(240,160,48,0.35);
+    }
+    #oracle-inbox button:active { transform: translateY(1px); }
   </style>
 </head>
 <body>

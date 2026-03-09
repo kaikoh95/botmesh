@@ -193,6 +193,18 @@ export default class TownScene extends Phaser.Scene {
     // ── Snowfall ────────────────────────────────────────────────────────────
     this._initSnow();
 
+    // ── Frost sparkles — tiny glints on the snow surface ──────────────────
+    this._initFrostSparkles();
+
+    // ── Snow drift accents — small white mounds near buildings ─────────────
+    this._drawSnowDrifts();
+
+    // ── Path lanterns — warm glow points along main roads ─────────────────
+    this._drawPathLanterns();
+
+    // ── Fog layer — low mist drifting across the scene ────────────────────
+    this._initFog();
+
     // ── Grid toggle ────────────────────────────────────────────────────────
     this._gridVisible = true;
     window.botmeshToggleGrid = () => {
@@ -350,6 +362,174 @@ export default class TownScene extends Phaser.Scene {
       if (f.x < -10)       { f.x = W + 10; }
 
       f.gfx.setPosition(f.x, f.y);
+    }
+  }
+
+  _initFrostSparkles() {
+    // Tiny diamond glints scattered across the snow — twinkle in/out
+    this._frostSparkles = [];
+    const count = 40;
+    for (let i = 0; i < count; i++) {
+      // Random grid positions avoiding water/paths
+      const gx = Phaser.Math.Between(1, 38);
+      const gy = Phaser.Math.Between(1, 28);
+      if (this._isWater(gx, gy) || this._isPath(gx, gy)) continue;
+
+      const screen = this.gridToScreen(gx, gy);
+      // Offset within tile for variety
+      const ox = Phaser.Math.Between(-12, 12);
+      const oy = Phaser.Math.Between(-6, 6);
+
+      const g = this.add.graphics();
+      g.fillStyle(0xd0e8ff, 0.9);
+      // Tiny 4-point star shape
+      const s = Phaser.Math.FloatBetween(1.0, 2.0);
+      g.beginPath();
+      g.moveTo(0, -s * 1.5);
+      g.lineTo(s * 0.5, 0);
+      g.lineTo(0, s * 1.5);
+      g.lineTo(-s * 0.5, 0);
+      g.closePath();
+      g.fillPath();
+      g.setPosition(screen.x + ox, screen.y + oy);
+      g.setDepth(2);
+      g.setAlpha(0);
+
+      // Staggered twinkle tween
+      this.tweens.add({
+        targets: g,
+        alpha: { from: 0, to: Phaser.Math.FloatBetween(0.4, 0.9) },
+        duration: Phaser.Math.Between(1500, 3000),
+        delay: Phaser.Math.Between(0, 6000),
+        yoyo: true,
+        repeat: -1,
+        ease: 'Sine.easeInOut',
+      });
+      this._frostSparkles.push(g);
+    }
+  }
+
+  _drawPathLanterns() {
+    // Warm lantern glow points spaced along main roads
+    const lanternSpots = [
+      // E-W civic approach (y=16)
+      [5, 16], [10, 16], [15, 16], [25, 16], [30, 16],
+      // E-W main boulevard (y=22)
+      [5, 22], [10, 22], [15, 22], [25, 22], [30, 22],
+      // N-S spine (x=20)
+      [20, 10], [20, 14], [20, 18], [20, 22],
+      // Intersection highlights
+      [20, 16], [20, 23],
+    ];
+
+    for (const [lx, ly] of lanternSpots) {
+      const screen = this.gridToScreen(lx, ly);
+
+      // Lantern post (tiny)
+      const post = this.add.graphics();
+      post.fillStyle(0x555555, 0.8);
+      post.fillRect(-1, -10, 2, 10);
+      post.fillStyle(0x444444, 0.8);
+      post.fillRect(-3, -12, 6, 3);
+      post.setPosition(screen.x, screen.y);
+      post.setDepth(screen.y + 1);
+
+      // Warm ground glow pool
+      const glow = this.add.graphics();
+      glow.fillStyle(0xffaa44, 0.08);
+      glow.fillEllipse(0, 0, 40, 18);
+      glow.fillStyle(0xffcc66, 0.05);
+      glow.fillEllipse(0, 0, 22, 10);
+      // Tiny bright center (the "flame")
+      glow.fillStyle(0xffdd88, 0.5);
+      glow.fillCircle(0, -10, 2);
+      glow.setPosition(screen.x, screen.y);
+      glow.setDepth(screen.y);
+
+      // Flicker
+      this.tweens.add({
+        targets: glow,
+        alpha: { from: 0.7, to: 1.0 },
+        duration: Phaser.Math.Between(800, 1600),
+        yoyo: true,
+        repeat: -1,
+        ease: 'Sine.easeInOut',
+      });
+    }
+  }
+
+  _initFog() {
+    // Low-lying fog wisps that drift slowly across the scene
+    this._fogWisps = [];
+    const W = this.cameras.main.width || 900;
+    const H = this.cameras.main.height || 700;
+    const count = 8;
+
+    for (let i = 0; i < count; i++) {
+      const g = this.add.graphics();
+      const fogW = Phaser.Math.Between(120, 280);
+      const fogH = Phaser.Math.Between(12, 28);
+      g.fillStyle(0xc0d0e0, Phaser.Math.FloatBetween(0.02, 0.05));
+      g.fillEllipse(0, 0, fogW, fogH);
+      g.fillStyle(0xd0dde8, Phaser.Math.FloatBetween(0.01, 0.03));
+      g.fillEllipse(fogW * 0.2, 0, fogW * 0.5, fogH * 0.6);
+      g.setScrollFactor(0);
+      g.setDepth(8000); // above buildings, below snow
+
+      const wisp = {
+        gfx: g,
+        x: Phaser.Math.Between(-200, W + 200),
+        y: Phaser.Math.Between(H * 0.5, H * 0.85),
+        speed: Phaser.Math.FloatBetween(6, 18),
+        w: fogW,
+      };
+      g.setPosition(wisp.x, wisp.y);
+      this._fogWisps.push(wisp);
+    }
+  }
+
+  _updateFog(delta) {
+    if (!this._fogWisps) return;
+    const W = this.cameras.main.width || 900;
+    const dt = delta / 1000;
+
+    for (const w of this._fogWisps) {
+      w.x += w.speed * dt;
+      if (w.x > W + w.w) w.x = -w.w;
+      w.gfx.setPosition(w.x, w.y);
+    }
+  }
+
+  _drawSnowDrifts() {
+    // Small white mounds along the south/east edges of buildings
+    const g = this.add.graphics();
+    g.setDepth(1.5);
+
+    // Add drifts at deterministic positions near building zones
+    const driftSpots = [
+      // Near civic district
+      [16, 13], [17, 13], [22, 13], [23, 13],
+      // Near craft district
+      [16, 19], [17, 19], [22, 19], [23, 19],
+      // Near residential
+      [16, 25], [17, 25], [10, 14], [11, 14],
+      // Scattered accent drifts
+      [5, 5], [8, 10], [30, 8], [33, 16], [28, 20],
+      [3, 20], [35, 10], [12, 7], [26, 12], [7, 17],
+    ];
+
+    for (const [dx, dy] of driftSpots) {
+      if (this._isWater(dx, dy) || this._isPath(dx, dy)) continue;
+      const screen = this.gridToScreen(dx, dy);
+
+      // Soft white elliptical mound
+      const w = Phaser.Math.Between(10, 20);
+      const h = Phaser.Math.Between(4, 8);
+      g.fillStyle(0xc8d8e8, 0.2);
+      g.fillEllipse(screen.x, screen.y + 2, w, h);
+      // Brighter highlight on top
+      g.fillStyle(0xdce8f4, 0.15);
+      g.fillEllipse(screen.x, screen.y, w * 0.6, h * 0.5);
     }
   }
 
@@ -522,8 +702,18 @@ export default class TownScene extends Phaser.Scene {
       return slush[n % slush.length];
     }
     // Dark blue-grey snow — Shirakawa-go deep winter night, matches dark sky
+    // Occasional brighter patches suggest moonlit snow
     const blueSnow = [0x1e2838, 0x1c2636, 0x202a3a, 0x1a2434, 0x1e2a38, 0x1c2838, 0x202c3c];
-    return blueSnow[n];
+    const base = blueSnow[n];
+    // ~12% of tiles get a subtle moonlit brightening
+    const moonHash = (x * 31 + y * 47 + x * y * 3) % 17;
+    if (moonHash < 2) {
+      const r = ((base >> 16) & 0xff) + 8;
+      const g = ((base >> 8) & 0xff) + 10;
+      const b = (base & 0xff) + 14;
+      return (Math.min(r, 255) << 16) | (Math.min(g, 255) << 8) | Math.min(b, 255);
+    }
+    return base;
   }
 
   _isNearPath(x, y) {
@@ -794,6 +984,12 @@ export default class TownScene extends Phaser.Scene {
     const building = new Building(this, bData, pos.x, pos.y);
     this.buildings[bData.id] = building;
 
+    // Warm window light pool — golden glow on ground beneath building
+    this._addWindowGlow(bData, pos);
+
+    // Chimney smoke on taverns, teahouses, and select buildings
+    this._addChimneySmoke(bData, pos);
+
     // Scarlet Sanctum — no flash/pulse; static sprite
   }
 
@@ -820,6 +1016,70 @@ export default class TownScene extends Phaser.Scene {
       g.fillStyle(0xff6688, 1); g.fillRect(ox - 3, oy - 5, 2, 2);     // flower
       g.fillStyle(0xffaa22, 1); g.fillRect(ox + 1, oy - 6, 2, 2);     // flower
       g.fillStyle(0x44cc44, 1); g.fillRect(ox - 1, oy - 4, 2, 1);     // leaf
+    }
+  }
+
+  _addWindowGlow(bData, pos) {
+    // Warm golden light pool on ground — suggests light spilling from windows
+    const g = this.add.graphics();
+    const w = (bData.width || 3) * TILE_W * 0.35;
+    const h = (bData.height || 2) * TILE_H * 0.3;
+    // Offset to the right side of the building (where the window is)
+    const ox = pos.x + w * 0.4;
+    const oy = pos.y - 2;
+
+    g.fillStyle(0xffc060, 0.06);
+    g.fillEllipse(ox, oy, w, h);
+    g.fillStyle(0xffe0a0, 0.04);
+    g.fillEllipse(ox, oy, w * 0.5, h * 0.5);
+    g.setDepth(pos.y - 0.5);
+
+    // Gentle flicker
+    this.tweens.add({
+      targets: g,
+      alpha: { from: 0.8, to: 1.0 },
+      duration: Phaser.Math.Between(2000, 4000),
+      yoyo: true,
+      repeat: -1,
+      ease: 'Sine.easeInOut',
+    });
+  }
+
+  _addChimneySmoke(bData, pos) {
+    const smokeBuildings = ['tavern', 'teahouse', 'forge', 'workshop', 'bakery'];
+    const type = bData.type || bData.id || '';
+    if (!smokeBuildings.some(t => type.includes(t))) return;
+
+    // Create rising smoke particles
+    if (!this._smokeParticles) this._smokeParticles = [];
+    const smokeX = pos.x + Phaser.Math.Between(-8, 8);
+    const wallH = 30 + ((bData.level || 1) - 1) * 8;
+    const smokeBaseY = pos.y - wallH - 16;
+
+    for (let i = 0; i < 4; i++) {
+      const g = this.add.graphics();
+      g.fillStyle(0x8899aa, 0.3);
+      g.fillCircle(0, 0, Phaser.Math.Between(2, 4));
+      g.setPosition(smokeX, smokeBaseY);
+      g.setDepth(9000);
+
+      // Rising + fading smoke loop
+      const rise = () => {
+        g.setPosition(smokeX + Phaser.Math.Between(-3, 3), smokeBaseY);
+        g.setAlpha(0.3);
+        this.tweens.add({
+          targets: g,
+          y: smokeBaseY - Phaser.Math.Between(25, 45),
+          x: smokeX + Phaser.Math.Between(-12, 12),
+          alpha: 0,
+          duration: Phaser.Math.Between(2500, 4000),
+          delay: Phaser.Math.Between(0, 2000) + i * 800,
+          ease: 'Sine.easeOut',
+          onComplete: rise,
+        });
+      };
+      rise();
+      this._smokeParticles.push(g);
     }
   }
 
@@ -1536,5 +1796,6 @@ export default class TownScene extends Phaser.Scene {
 
   update(_time, delta) {
     this._updateSnow(delta);
+    this._updateFog(delta);
   }
 }

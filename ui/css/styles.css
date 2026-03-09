@@ -888,7 +888,7 @@ html, body {
 /* Zoom controls */
 #zoom-controls {
   position: fixed;
-  bottom: 16px;
+  bottom: 54px;
   left: 16px;
   z-index: 100;
   display: flex;

@@ -154,11 +154,48 @@ export default class Agent {
       repeat: -1,
       ease: 'Sine.easeInOut',
     });
+
+    // Start breath vapor loop (cold winter air)
+    this._startBreathVapor();
+  }
+
+  _startBreathVapor() {
+    if (this._breathTimer) return;
+    this._breathTimer = this.scene.time.addEvent({
+      delay: 3000,
+      loop: true,
+      callback: () => {
+        if (!this.online) return;
+        // Tiny white puff rising from head area
+        const g = this.scene.add.graphics();
+        g.fillStyle(0xc8dde8, 0.25);
+        g.fillCircle(0, 0, 2);
+        const startX = this.container.x + 4;
+        const startY = this.container.y + (this.hasSprite ? -48 : -28);
+        g.setPosition(startX, startY);
+        g.setDepth(this.container.depth + 1);
+
+        this.scene.tweens.add({
+          targets: g,
+          x: startX + Phaser.Math.Between(-6, 6),
+          y: startY - Phaser.Math.Between(8, 16),
+          alpha: 0,
+          scaleX: 2,
+          scaleY: 2,
+          duration: 1200,
+          ease: 'Sine.easeOut',
+          onComplete: () => g.destroy(),
+        });
+      },
+    });
   }
 
   moveTo(screenX, screenY, gridX, gridY) {
     this.gridX = gridX;
     this.gridY = gridY;
+
+    // Snow dust puff at departure point
+    this._spawnSnowDust(this.container.x, this.container.y);
 
     this.scene.tweens.add({
       targets: this.container,
@@ -170,6 +207,28 @@ export default class Agent {
         this.container.setDepth(this.container.y + 1000);
       }
     });
+  }
+
+  _spawnSnowDust(x, y) {
+    // 3 tiny white particles burst from feet
+    for (let i = 0; i < 3; i++) {
+      const g = this.scene.add.graphics();
+      g.fillStyle(0xc0d0e0, 0.3);
+      g.fillCircle(0, 0, Phaser.Math.Between(1, 2));
+      g.setPosition(x + Phaser.Math.Between(-4, 4), y);
+      g.setDepth(this.container.depth - 1);
+
+      this.scene.tweens.add({
+        targets: g,
+        x: x + Phaser.Math.Between(-10, 10),
+        y: y + Phaser.Math.Between(-4, 4),
+        alpha: 0,
+        duration: Phaser.Math.Between(400, 700),
+        delay: i * 80,
+        ease: 'Sine.easeOut',
+        onComplete: () => g.destroy(),
+      });
+    }
   }
 
   setDormant(isDormant) {
@@ -317,6 +376,7 @@ export default class Agent {
   destroy() {
     if (this.speechTimer) clearTimeout(this.speechTimer);
     if (this.bobTween) this.bobTween.remove();
+    if (this._breathTimer) this._breathTimer.remove();
     this.container.destroy();
   }
 }
