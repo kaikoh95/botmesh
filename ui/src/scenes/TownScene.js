@@ -604,9 +604,9 @@ export default class TownScene extends Phaser.Scene {
           const isBuilding = dx >= 0 && dx < bw && dy >= 0 && dy < bh;
           if (isBuilding) continue; // skip the building footprint itself
 
-          // Yard color — winter: snow-covered garden with warm ivory tones near the home
+          // Yard color — winter: cool snow-covered garden matching surrounding ground
           const isEven = (tx + ty) % 2 === 0;
-          const yardBase = lvl >= 3 ? 0xe8e0d0 : lvl >= 2 ? 0xe0d8c8 : 0xd8d0c0;
+          const yardBase = lvl >= 3 ? 0xc8d8e8 : lvl >= 2 ? 0xbcd0e0 : 0xb4c8d8;
           const yardColor = isEven ? yardBase + 0x080808 : yardBase;
 
           g.fillStyle(yardColor, 1.0);
@@ -619,7 +619,7 @@ export default class TownScene extends Phaser.Scene {
           g.fillPath();
 
           // Subtle border
-          g.lineStyle(1, 0x7a6040, 0.25);
+          g.lineStyle(1, 0x8090b0, 0.25);
           g.beginPath();
           g.moveTo(screen.x, screen.y - 16);
           g.lineTo(screen.x + 32, screen.y);
