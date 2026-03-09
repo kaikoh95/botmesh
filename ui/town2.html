@@ -143,6 +143,12 @@ class NegishimuraScene extends Phaser.Scene {
     this.addLanternFlicker(farmY);
     this.addKoiDrift(deepY);
     this.addFireflies(surfaceY);
+
+    // ── SSE: live event stream ──
+    this.surfaceY = surfaceY;
+    this.farmY = farmY;
+    this.deepY = deepY;
+    this.connectSSE();
   }
 
   // ── Iteration 2: Draw continuous side walls connecting floors ──
@@ -636,6 +642,185 @@ class NegishimuraScene extends Phaser.Scene {
         drawKoi(kx, ky);
       }
     });
+  }
+
+  // ── SSE connection ──
+  connectSSE() {
+    // Live indicator
+    this.liveDot = this.add.graphics();
+    this.liveText = this.add.text(22, H - 18, 'live', {
+      fontFamily: 'monospace', fontSize: '9px', color: '#ffffff'
+    }).setAlpha(0.7);
+    this.sseConnected = false;
+    this.drawLiveDot();
+
+    // Pulse the dot
+    this.time.addEvent({ delay: 800, loop: true, callback: () => {
+      if (this.sseConnected) {
+        this.liveDot.setAlpha(this.liveDot.alpha > 0.5 ? 0.4 : 1);
+      }
+    }});
+
+    this.startSSE();
+  }
+
+  drawLiveDot() {
+    this.liveDot.clear();
+    const color = this.sseConnected ? 0x40e040 : 0x808080;
+    this.liveDot.fillStyle(color, 1);
+    this.liveDot.fillCircle(12, H - 14, 4);
+  }
+
+  startSSE() {
+    try {
+      const es = new EventSource('https://api.kurokimachi.com/events');
+      es.onopen = () => {
+        this.sseConnected = true;
+        this.drawLiveDot();
+      };
+      es.onerror = () => {
+        this.sseConnected = false;
+        this.drawLiveDot();
+        es.close();
+        this.time.delayedCall(3000, () => this.startSSE());
+      };
+      es.onmessage = (e) => this.handleSSE(e);
+      es.addEventListener('message', (e) => this.handleSSE(e));
+      es.addEventListener('state:sync', (e) => this.handleSSE(e));
+      es.addEventListener('agent:speak', (e) => this.handleSSE(e));
+    } catch (err) {
+      this.time.delayedCall(3000, () => this.startSSE());
+    }
+  }
+
+  handleSSE(e) {
+    try {
+      const data = JSON.parse(e.data);
+      const type = data.type || data.event;
+      const agentId = data.agentId || (data.meta && data.meta.agentId);
+
+      if (type === 'agent:speak') {
+        this.onAgentSpeak(agentId);
+      }
+
+      // Check gazette inside state:sync
+      if (data.gazette && Array.isArray(data.gazette)) {
+        data.gazette.forEach(item => {
+          if (item.type === 'agent:speak') {
+            this.onAgentSpeak(item.agentId || (item.meta && item.meta.agentId));
+          }
+        });
+      }
+    } catch (err) { /* ignore parse errors */ }
+  }
+
+  onAgentSpeak(agentId) {
+    // Cherry petal burst on surface
+    this.spawnPetalBurst();
+    // Crop flash on farm
+    this.flashRandomCrop();
+
+    if (agentId === 'forge') {
+      this.sproutCrop();
+    }
+    if (agentId === 'sage' || agentId === 'lumen') {
+      this.waterRipple();
+    }
+  }
+
+  spawnPetalBurst() {
+    const floorH = (COLS + ROWS - 1) * (TILE_H / 2);
+    for (let i = 0; i < 5; i++) {
+      const petal = this.add.graphics();
+      petal.fillStyle(PAL.blossom, 0.9);
+      petal.fillEllipse(0, 0, 3, 2);
+      const startX = 140 + Math.random() * 200;
+      petal.setPosition(startX, this.surfaceY - 5);
+      this.tweens.add({
+        targets: petal,
+        x: startX + (Math.random() - 0.5) * 40,
+        y: this.surfaceY + floorH + 10,
+        alpha: { from: 0.9, to: 0 },
+        duration: 1500 + Math.random() * 1000,
+        delay: i * 80,
+        onComplete: () => petal.destroy()
+      });
+    }
+  }
+
+  flashRandomCrop() {
+    const c = Math.floor(Math.random() * COLS);
+    const r = Math.floor(Math.random() * 4);
+    if (c === 3) return; // skip path
+    const p = gridToScreen(c, r, this.farmY);
+    const flash = this.add.graphics();
+    flash.fillStyle(0xffffff, 0);
+    drawDiamond(flash, p.x, p.y, PAL.lantern, 0);
+
+    const obj = { alpha: 0 };
+    this.tweens.add({
+      targets: obj,
+      alpha: { from: 0, to: 1 },
+      duration: 150,
+      yoyo: true,
+      onUpdate: () => {
+        flash.clear();
+        drawDiamond(flash, p.x, p.y, PAL.lantern, obj.alpha * 0.5);
+      },
+      onComplete: () => flash.destroy()
+    });
+  }
+
+  sproutCrop() {
+    const c = Math.floor(Math.random() * COLS);
+    const r = Math.floor(Math.random() * 4);
+    if (c === 3) return;
+    const p = gridToScreen(c, r, this.farmY);
+    const sprout = this.add.graphics();
+    const maxH = 8;
+    const obj = { h: 0 };
+
+    this.tweens.add({
+      targets: obj,
+      h: { from: 0, to: maxH },
+      duration: 500,
+      onUpdate: () => {
+        sprout.clear();
+        sprout.fillStyle(PAL.crop, 0.9);
+        sprout.fillRect(p.x - 1, p.y - obj.h, 3, obj.h);
+      },
+      onComplete: () => {
+        this.time.delayedCall(2000, () => {
+          this.tweens.add({
+            targets: sprout,
+            alpha: 0,
+            duration: 500,
+            onComplete: () => sprout.destroy()
+          });
+        });
+      }
+    });
+  }
+
+  waterRipple() {
+    const poolCenter = gridToScreen(3, 2, this.deepY);
+    for (let i = 0; i < 3; i++) {
+      const circle = this.add.graphics();
+      const obj = { r: 4, alpha: 0.6 };
+      this.tweens.add({
+        targets: obj,
+        r: { from: 4, to: 40 },
+        alpha: { from: 0.6, to: 0 },
+        duration: 1500,
+        delay: i * 200,
+        onUpdate: () => {
+          circle.clear();
+          circle.lineStyle(1, PAL.shimmer, obj.alpha);
+          circle.strokeCircle(poolCenter.x, poolCenter.y, obj.r);
+        },
+        onComplete: () => circle.destroy()
+      });
+    }
   }
 
   // ── Iteration 5: Fireflies above surface ──

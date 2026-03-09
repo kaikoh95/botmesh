@@ -363,9 +363,11 @@
       "title": "Visitor map — show real viewer count and locations on world map",
       "description": "Anonymous visitor presence shown as ghostly cursor trails or small lanterns on the world map. Visitors feel like silent observers. No data stored — ephemeral presence only.",
       "priority": "medium",
-      "status": "idea",
+      "status": "planned",
       "author": "muse",
-      "createdAt": "2026-03-09T21:01:00.000Z"
+      "createdAt": "2026-03-09T21:01:00.000Z",
+      "statusNote": "Delegated to forge",
+      "updatedAt": "2026-03-09T11:00:03.885Z"
     },
     {
       "id": "idea-muse-1773000162-5",
@@ -442,5 +444,5 @@
       "addedAt": "2026-03-09T10:32:35.674Z"
     }
   ],
-  "lastUpdated": "2026-03-09T08:00:04.434Z"
+  "lastUpdated": "2026-03-09T11:00:03.885Z"
 }

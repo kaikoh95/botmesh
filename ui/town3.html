@@ -92,6 +92,9 @@ class TakamachiScene extends Phaser.Scene {
     this.drawCompositionPolish();
     this.drawHUD();
     this.startAnimations();
+
+    // ── SSE: live event stream ──
+    this.connectSSE();
   }
 
   // Iter 1: enhanced floor planks with grain, knots, and end lines
@@ -713,6 +716,248 @@ class TakamachiScene extends Phaser.Scene {
           this.drawNPCAt(this.npcGfx, npc);
         });
       }
+    });
+  }
+
+  // ── SSE connection ──
+  connectSSE() {
+    // Agent → room mapping
+    this.agentRoomMap = {
+      forge: 'workshop', iron: 'storage',
+      sage: 'library', lumen: 'library',
+      scarlet: 'tavern', mosaic: 'tavern', canvas: 'tavern', muse: 'tavern',
+      echo: 'tavern', cronos: 'tavern',
+      patch: 'library', qa: 'library', kenzo: 'library', planner: 'library',
+    };
+
+    // Room → lantern glow references (index into this.lanternGlows)
+    // Library sconce = index 0, Tavern sconces = 1,2, Storage = 3
+    this.roomLanterns = {
+      library: [0],
+      tavern: [1, 2],
+      storage: [3],
+      workshop: [], // forge glow handles this
+    };
+
+    // Room → NPC index mapping (approximate — first NPC per room)
+    this.roomNpcIndex = {
+      library: 0,   // scholar
+      tavern: 1,    // innkeeper (or patron=2)
+      storage: 3,   // worker
+      workshop: 4,  // smith
+    };
+
+    // Live indicator (bottom-right)
+    this.liveDot = this.add.graphics();
+    this.liveText = this.add.text(W - 38, H - 18, 'live', {
+      fontFamily: 'monospace', fontSize: '9px', color: '#ffffff'
+    }).setAlpha(0.7);
+    this.sseConnected = false;
+    this.drawLiveDot();
+
+    // Pulse the dot
+    this.time.addEvent({ delay: 800, loop: true, callback: () => {
+      if (this.sseConnected) {
+        this.liveDot.setAlpha(this.liveDot.alpha > 0.5 ? 0.4 : 1);
+      }
+    }});
+
+    // Last spoke ticker
+    this.lastSpokeText = this.add.text(140, 12, '', {
+      fontFamily: 'monospace', fontSize: '10px', color: '#a09080'
+    });
+
+    this.startSSE();
+  }
+
+  drawLiveDot() {
+    this.liveDot.clear();
+    const color = this.sseConnected ? 0x40e040 : 0x808080;
+    this.liveDot.fillStyle(color, 1);
+    this.liveDot.fillCircle(W - 48, H - 14, 4);
+  }
+
+  startSSE() {
+    try {
+      const es = new EventSource('https://api.kurokimachi.com/events');
+      es.onopen = () => {
+        this.sseConnected = true;
+        this.drawLiveDot();
+      };
+      es.onerror = () => {
+        this.sseConnected = false;
+        this.drawLiveDot();
+        es.close();
+        this.time.delayedCall(3000, () => this.startSSE());
+      };
+      es.onmessage = (e) => this.handleSSE(e);
+      es.addEventListener('message', (e) => this.handleSSE(e));
+      es.addEventListener('state:sync', (e) => this.handleSSE(e));
+      es.addEventListener('agent:speak', (e) => this.handleSSE(e));
+      es.addEventListener('agent:online', (e) => this.handleSSE(e));
+      es.addEventListener('agent:offline', (e) => this.handleSSE(e));
+    } catch (err) {
+      this.time.delayedCall(3000, () => this.startSSE());
+    }
+  }
+
+  handleSSE(e) {
+    try {
+      const data = JSON.parse(e.data);
+      const type = data.type || data.event;
+      const agentId = data.agentId || (data.meta && data.meta.agentId);
+      const message = data.content || (data.meta && data.meta.message) || '';
+
+      if (type === 'agent:speak' && agentId) {
+        this.onAgentSpeak(agentId, message);
+      }
+      if (type === 'agent:online' && agentId) {
+        this.onAgentOnline(agentId);
+      }
+      if (type === 'agent:offline' && agentId) {
+        this.onAgentOffline(agentId);
+      }
+
+      // Check gazette inside state:sync
+      if (data.gazette && Array.isArray(data.gazette)) {
+        data.gazette.forEach(item => {
+          const iType = item.type || item.event;
+          const iAgent = item.agentId || (item.meta && item.meta.agentId);
+          const iMsg = item.content || (item.meta && item.meta.message) || '';
+          if (iType === 'agent:speak' && iAgent) this.onAgentSpeak(iAgent, iMsg);
+          if (iType === 'agent:online' && iAgent) this.onAgentOnline(iAgent);
+          if (iType === 'agent:offline' && iAgent) this.onAgentOffline(iAgent);
+        });
+      }
+    } catch (err) { /* ignore parse errors */ }
+  }
+
+  getRoomForAgent(agentId) {
+    return this.agentRoomMap[agentId] || 'library';
+  }
+
+  onAgentSpeak(agentId, message) {
+    const room = this.getRoomForAgent(agentId);
+    const npcIdx = this.roomNpcIndex[room];
+
+    // 1. NPC bounce
+    if (npcIdx !== undefined && this.npcs[npcIdx]) {
+      const npc = this.npcs[npcIdx];
+      const origY = npc.y;
+      this.tweens.add({
+        targets: npc,
+        y: origY - 4,
+        duration: 100,
+        yoyo: true,
+        ease: 'Sine.easeOut'
+      });
+    }
+
+    // 2. Lantern flare
+    const lanternIndices = this.roomLanterns[room] || [];
+    lanternIndices.forEach(idx => {
+      if (this.lanternGlows[idx]) {
+        const lg = this.lanternGlows[idx];
+        const origAlpha = lg.baseAlpha;
+        lg.gfx.setAlpha(1);
+        this.time.delayedCall(800, () => {
+          lg.gfx.setAlpha(origAlpha);
+        });
+      }
+    });
+
+    // For workshop, flare forge glow
+    if (room === 'workshop' && this.forgeGlows[0]) {
+      this.forgeGlows[0].setAlpha(1);
+      this.time.delayedCall(800, () => {
+        this.forgeGlows[0].setAlpha(0.4);
+      });
+    }
+
+    // 3. Speech bubble above NPC
+    if (npcIdx !== undefined && this.npcs[npcIdx]) {
+      const npc = this.npcs[npcIdx];
+      this.showSpeechBubble(npc.x, npc.y - 16);
+    }
+
+    // 4. Update ticker
+    const truncMsg = message.length > 30 ? message.substring(0, 30) + '…' : message;
+    this.lastSpokeText.setText(`last: ${agentId} — ${truncMsg}`);
+  }
+
+  onAgentOnline(agentId) {
+    const room = this.getRoomForAgent(agentId);
+    const lanternIndices = this.roomLanterns[room] || [];
+    lanternIndices.forEach(idx => {
+      if (this.lanternGlows[idx]) {
+        const lg = this.lanternGlows[idx];
+        this.tweens.add({
+          targets: lg.gfx,
+          alpha: { from: 0.3, to: 1 },
+          duration: 500,
+          ease: 'Sine.easeIn'
+        });
+      }
+    });
+    if (room === 'workshop' && this.forgeGlows[0]) {
+      this.tweens.add({
+        targets: this.forgeGlows[0],
+        alpha: { from: 0.3, to: 1 },
+        duration: 500
+      });
+    }
+  }
+
+  onAgentOffline(agentId) {
+    const room = this.getRoomForAgent(agentId);
+    const lanternIndices = this.roomLanterns[room] || [];
+    lanternIndices.forEach(idx => {
+      if (this.lanternGlows[idx]) {
+        const lg = this.lanternGlows[idx];
+        this.tweens.add({
+          targets: lg.gfx,
+          alpha: { from: 1, to: 0.4 },
+          duration: 800,
+          ease: 'Sine.easeOut'
+        });
+      }
+    });
+    if (room === 'workshop' && this.forgeGlows[0]) {
+      this.tweens.add({
+        targets: this.forgeGlows[0],
+        alpha: { from: 1, to: 0.4 },
+        duration: 800
+      });
+    }
+  }
+
+  showSpeechBubble(x, y) {
+    const bubble = this.add.graphics();
+    // Rounded rect background
+    bubble.fillStyle(0xffffff, 0.9);
+    bubble.fillRoundedRect(x - 10, y - 6, 20, 12, 3);
+    // Three dots
+    bubble.fillStyle(0x555555, 1);
+    bubble.fillCircle(x - 4, y, 1.5);
+    bubble.fillCircle(x, y, 1.5);
+    bubble.fillCircle(x + 4, y, 1.5);
+    // Small triangle pointer
+    bubble.fillStyle(0xffffff, 0.9);
+    bubble.beginPath();
+    bubble.moveTo(x - 2, y + 6);
+    bubble.lineTo(x + 2, y + 6);
+    bubble.lineTo(x, y + 9);
+    bubble.closePath();
+    bubble.fillPath();
+
+    bubble.setAlpha(1);
+    this.time.delayedCall(2500, () => {
+      this.tweens.add({
+        targets: bubble,
+        alpha: 0,
+        duration: 300,
+        onComplete: () => bubble.destroy()
+      });
     });
   }
 
