@@ -102,7 +102,9 @@ function createRoutes(getState, sendCommand, HOME_LOCATIONS = {}, sseBroadcast =
         timestamp: new Date().toISOString(),
       }
     };
-    // Broadcast via hub command (hub expects action + params format)
+    // Broadcast directly via SSE so town scenes react immediately
+    if (sseBroadcast) sseBroadcast(event);
+    // Also send via hub command so WS-connected agents receive it
     sendCommand({ action: 'agent:speak', params: { agentId, message } });
     res.json({ ok: true });
   });
