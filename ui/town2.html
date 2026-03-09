@@ -8,10 +8,14 @@
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { background: #0e0e12; display: flex; justify-content: center; align-items: center; min-height: 100vh; overflow: hidden; }
     canvas { display: block; }
-      #oracle-inbox { position: fixed; bottom: 0; left: 0; right: 0; display: flex; gap: 4px; padding: 6px 24px 8px; background: #0a0e1a; border-top: 1px solid #1a2030; z-index: 9999; }
-    #oracle-inbox input { flex: 1; background: #0e1220; border: 1px solid #2a3040; color: #e0d8c8; font-family: monospace; font-size: 13px; padding: 7px 12px; outline: none; border-radius: 2px; }
-    #oracle-inbox input:focus { border-color: #f0a030; }
-    #oracle-inbox button { background: #f0a030; color: #0a0e1a; border: none; font-size: 14px; padding: 4px 14px; cursor: pointer; font-family: monospace; border-radius: 2px; font-weight: bold; }
+      /* ── v2 Iter 5: Inbox bar — underground stone aesthetic ── */
+      #oracle-inbox { position: fixed; bottom: 0; left: 0; right: 0; display: flex; gap: 6px; padding: 8px 24px 10px; background: linear-gradient(to bottom, #12161e, #0a0e16); border-top: 1px solid #2a3444; box-shadow: 0 -4px 16px rgba(0,0,0,0.5), inset 0 1px 0 rgba(80,120,160,0.06); z-index: 9999; }
+    #oracle-inbox input { flex: 1; background: #0c1018; border: 1px solid #2a3444; color: #d0caba; font-family: monospace; font-size: 13px; padding: 7px 12px; outline: none; border-radius: 3px; box-shadow: inset 0 1px 4px rgba(0,0,0,0.3); transition: border-color 0.2s, box-shadow 0.2s; }
+    #oracle-inbox input:focus { border-color: #f0a030; box-shadow: inset 0 1px 4px rgba(0,0,0,0.3), 0 0 8px rgba(240,160,48,0.15); }
+    #oracle-inbox input::placeholder { color: #4a5060; }
+    #oracle-inbox button { background: linear-gradient(to bottom, #f0a030, #d08820); color: #0a0e1a; border: none; font-size: 14px; padding: 5px 16px; cursor: pointer; font-family: monospace; border-radius: 3px; font-weight: bold; box-shadow: 0 1px 4px rgba(240,160,48,0.2); transition: background 0.15s; }
+    #oracle-inbox button:hover { background: linear-gradient(to bottom, #ffb840, #e09828); }
+    #oracle-inbox button:active { transform: translateY(1px); }
   </style>
   <script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js"></script>
 </head>
@@ -33,6 +37,13 @@ const PAL = {
   wallStone: 0x1e2228, wallCrack: 0x2a2e38,
   farmPath: 0x8a6040,
   rootTendril: 0x8b5e3c,
+  // v2 palette additions
+  streamDeep: 0x1e4870, streamLight: 0x3a6a98,
+  moss: 0x4a7a2a, flower1: 0xe8c040, flower2: 0xd06080,
+  stalactite: 0x3a3e4a, dripBlue: 0x5090c0,
+  poolDeep: 0x182848, poolMid: 0x204060, poolShallow: 0x2a5880,
+  caustic: 0x60a8d0, mushroom: 0xc8a870, mushroomCap: 0xa07840,
+  fungusGlow: 0x90d080,
 };
 
 const originX = W / 2;
@@ -147,6 +158,8 @@ class NegishimuraScene extends Phaser.Scene {
     this.addLanternFlicker(farmY);
     this.addKoiDrift(deepY);
     this.addFireflies(surfaceY);
+    this.addCausticShift(deepY);
+    this.addDripAnimation(farmY, deepY);
 
     // ── SSE: live event stream ──
     this.surfaceY = surfaceY;
@@ -247,6 +260,26 @@ class NegishimuraScene extends Phaser.Scene {
         g.fillStyle(0x2a2e38, 0.3);
         g.fillRect(leftX, bandY, bottomX - leftX, 2);
       }
+
+      // ── v2 Iter 2: Stalactites hanging from farm-deep wall ──
+      const stalPositions = [0.1, 0.25, 0.4, 0.55, 0.7, 0.85];
+      for (let i = 0; i < stalPositions.length; i++) {
+        const sx = leftX + (bottomX - leftX) * stalPositions[i];
+        const sy = upperBottomY + 4;
+        const stalH = 10 + (i % 3) * 5;
+        const stalW = 2 + (i % 2);
+        g.fillStyle(PAL.stalactite, 0.7);
+        g.beginPath();
+        g.moveTo(sx - stalW, sy);
+        g.lineTo(sx + stalW, sy);
+        g.lineTo(sx + stalW * 0.3, sy + stalH);
+        g.lineTo(sx - stalW * 0.3, sy + stalH);
+        g.closePath();
+        g.fillPath();
+        // Drip highlight
+        g.fillStyle(PAL.dripBlue, 0.3);
+        g.fillCircle(sx, sy + stalH + 1, 1);
+      }
     }
   }
 
@@ -309,6 +342,36 @@ class NegishimuraScene extends Phaser.Scene {
           drawDiamond(g, p.x, p.y, (c + r) % 2 === 0 ? PAL.grass1 : PAL.grass2);
         }
         drawDiamondOutline(g, p.x, p.y);
+      }
+    }
+
+    // ── v2 Iter 1: Stream depth + grass texture ──
+    // Stream depth shading — darker center band
+    for (const [c, r] of stream) {
+      const p = gridToScreen(c, r, fy);
+      drawDiamond(g, p.x, p.y, PAL.streamDeep, 0.4);
+      // Light edge shimmer
+      g.fillStyle(PAL.streamLight, 0.15);
+      g.fillEllipse(p.x - 6, p.y - 2, 8, 3);
+      g.fillEllipse(p.x + 8, p.y + 1, 6, 2);
+    }
+
+    // Grass texture — tiny dots and moss patches
+    for (let r2 = 0; r2 < ROWS; r2++) {
+      for (let c2 = 0; c2 < COLS; c2++) {
+        if (isStream(c2, r2) || isHouse(c2, r2)) continue;
+        const p = gridToScreen(c2, r2, fy);
+        // Subtle grass blades
+        g.fillStyle(PAL.moss, 0.2);
+        const seed = c2 * 7 + r2 * 13;
+        g.fillRect(p.x + (seed % 11) - 5, p.y - 2, 1, 3);
+        g.fillRect(p.x - (seed % 9) + 3, p.y + 1, 1, 2);
+        // Occasional wildflower
+        if ((c2 + r2) % 3 === 0 && c2 !== 4 && c2 !== 5) {
+          const fc = (c2 * 3 + r2) % 2 === 0 ? PAL.flower1 : PAL.flower2;
+          g.fillStyle(fc, 0.7);
+          g.fillCircle(p.x + (seed % 7) - 3, p.y - 1, 1.2);
+        }
       }
     }
 
@@ -431,6 +494,58 @@ class NegishimuraScene extends Phaser.Scene {
       }
     }
 
+    // ── v2 Iter 4: Mushroom clusters along edges ──
+    const mushroomSpots = [[0,0],[0,3],[1,4],[6,0],[6,4],[5,4]];
+    for (const [mc, mr] of mushroomSpots) {
+      if (mc < COLS && mr < ROWS) {
+        const mp = gridToScreen(mc, mr, fy);
+        for (let m = 0; m < 2; m++) {
+          const mx = mp.x + (m === 0 ? -4 : 5);
+          const my = mp.y + (m === 0 ? -1 : 1);
+          // Stem
+          g.fillStyle(PAL.mushroom, 0.8);
+          g.fillRect(mx - 1, my - 4, 2, 4);
+          // Cap
+          g.fillStyle(PAL.mushroomCap, 0.85);
+          g.fillEllipse(mx, my - 5, 5, 3);
+        }
+      }
+    }
+
+    // ── v2 Iter 4: Glowing fungi along path edges ──
+    const fungiSpots = [[2,1],[4,3],[2,4]];
+    for (const [fc, fr] of fungiSpots) {
+      const fp = gridToScreen(fc, fr, fy);
+      g.fillStyle(PAL.fungusGlow, 0.15);
+      g.fillCircle(fp.x + 8, fp.y, 12);
+      g.fillStyle(PAL.fungusGlow, 0.6);
+      g.fillCircle(fp.x + 8, fp.y - 1, 2);
+      g.fillCircle(fp.x + 5, fp.y + 2, 1.5);
+    }
+
+    // ── v2 Iter 4: Small tool props — bucket at [1,2], hoe at [5,3] ──
+    const bucketP = gridToScreen(1, 2, fy);
+    g.fillStyle(0x8a6a40, 0.8);
+    g.fillRect(bucketP.x - 3, bucketP.y - 5, 6, 5);
+    g.lineStyle(0.8, 0x6a4a20, 0.6);
+    g.strokeRect(bucketP.x - 3, bucketP.y - 5, 6, 5);
+    // Handle
+    g.lineStyle(0.8, 0x6a4a20, 0.5);
+    g.beginPath();
+    g.moveTo(bucketP.x - 2, bucketP.y - 5);
+    g.lineTo(bucketP.x, bucketP.y - 8);
+    g.lineTo(bucketP.x + 2, bucketP.y - 5);
+    g.strokePath();
+
+    const hoeP = gridToScreen(5, 3, fy);
+    g.lineStyle(1, 0x6b4226, 0.7);
+    g.beginPath();
+    g.moveTo(hoeP.x - 2, hoeP.y - 10);
+    g.lineTo(hoeP.x + 4, hoeP.y + 2);
+    g.strokePath();
+    g.fillStyle(0x808080, 0.6);
+    g.fillRect(hoeP.x - 4, hoeP.y - 12, 5, 3);
+
     // ── Iteration 3: Proper lantern shape at [3,2] ──
     const lp = gridToScreen(3, 2, fy);
     // Post
@@ -505,17 +620,39 @@ class NegishimuraScene extends Phaser.Scene {
     const poolTiles = [];
     for (let c = 1; c <= 5; c++) for (let r = 1; r <= 3; r++) poolTiles.push([c,r]);
     const isPool = (c,r) => poolTiles.some(p => p[0]===c && p[1]===r);
+    // Center of pool for depth gradient
+    const poolCX = 3, poolCY = 2;
 
     for (let r = 0; r < ROWS; r++) {
       for (let c = 0; c < COLS; c++) {
         const p = gridToScreen(c, r, fy);
         if (isPool(c, r)) {
-          drawDiamond(g, p.x, p.y, PAL.water);
+          // ── v2 Iter 3: Depth gradient — darker toward center ──
+          const dist = Math.abs(c - poolCX) + Math.abs(r - poolCY);
+          const depthColor = dist === 0 ? PAL.poolDeep : dist === 1 ? PAL.poolMid : PAL.poolShallow;
+          drawDiamond(g, p.x, p.y, depthColor);
+          // Caustic light pattern overlay
+          const seed = c * 11 + r * 7;
+          g.fillStyle(PAL.caustic, 0.08 + (seed % 5) * 0.02);
+          g.fillEllipse(p.x + (seed % 9) - 4, p.y + (seed % 5) - 2, 6, 3);
+          g.fillStyle(PAL.caustic, 0.06);
+          g.fillEllipse(p.x - (seed % 7) + 2, p.y + (seed % 3), 4, 2);
         } else {
           drawDiamond(g, p.x, p.y, PAL.stone);
           const adjPool = isPool(c-1,r)||isPool(c+1,r)||isPool(c,r-1)||isPool(c,r+1);
           if (adjPool) {
             drawDiamond(g, p.x, p.y, 0x3a4050);
+            // ── v2 Iter 3: Wet stone sheen on pool-adjacent tiles ──
+            g.fillStyle(PAL.dripBlue, 0.08);
+            g.fillEllipse(p.x, p.y, TILE_W * 0.6, TILE_H * 0.4);
+          }
+          // Stone texture — hairline cracks
+          if (!adjPool) {
+            g.lineStyle(0.5, 0x1a1e28, 0.3);
+            g.beginPath();
+            g.moveTo(p.x - 5, p.y);
+            g.lineTo(p.x + 3, p.y + 2);
+            g.strokePath();
           }
         }
         drawDiamondOutline(g, p.x, p.y);
@@ -646,6 +783,67 @@ class NegishimuraScene extends Phaser.Scene {
         drawKoi(kx, ky);
       }
     });
+  }
+
+  // ── v2 Iter 3: Animated caustic light shift on pool ──
+  addCausticShift(deepY) {
+    const causticOverlay = this.add.graphics();
+    const poolTiles = [];
+    for (let c = 1; c <= 5; c++) for (let r = 1; r <= 3; r++) poolTiles.push([c, r]);
+
+    const drawCaustics = (phase) => {
+      causticOverlay.clear();
+      for (const [c, r] of poolTiles) {
+        const p = gridToScreen(c, r, deepY);
+        const ox = Math.sin(phase + c * 1.3) * 5;
+        const oy = Math.cos(phase + r * 1.7) * 3;
+        causticOverlay.fillStyle(PAL.caustic, 0.06 + Math.sin(phase + c + r) * 0.03);
+        causticOverlay.fillEllipse(p.x + ox, p.y + oy, 7, 4);
+        causticOverlay.fillStyle(PAL.caustic, 0.04);
+        causticOverlay.fillEllipse(p.x - ox * 0.7, p.y - oy * 0.5, 5, 3);
+      }
+    };
+
+    const obj = { phase: 0 };
+    this.tweens.add({
+      targets: obj,
+      phase: { from: 0, to: Math.PI * 2 },
+      duration: 6000,
+      repeat: -1,
+      ease: 'Linear',
+      onUpdate: () => drawCaustics(obj.phase)
+    });
+  }
+
+  // ── v2 Iter 2: Water drip animation between farm and deep ──
+  addDripAnimation(farmY, deepY) {
+    const farmBottom = gridToScreen(3, ROWS - 1, farmY).y + TILE_H / 2;
+    const deepTop = gridToScreen(3, 0, deepY).y - TILE_H / 2;
+    const dripZone = deepTop - farmBottom;
+    const leftX = gridToScreen(0, ROWS - 1, farmY).x;
+    const rightX = gridToScreen(COLS - 1, 0, farmY).x;
+
+    for (let i = 0; i < 3; i++) {
+      const drip = this.add.graphics();
+      drip.fillStyle(PAL.dripBlue, 0.6);
+      drip.fillCircle(0, 0, 1.2);
+
+      const dx = leftX + 30 + (rightX - leftX - 60) * (i / 2);
+      drip.setPosition(dx, farmBottom + 20);
+
+      this.tweens.add({
+        targets: drip,
+        y: farmBottom + 20 + dripZone * 0.6,
+        alpha: { from: 0.6, to: 0 },
+        duration: 2000 + i * 400,
+        delay: i * 1200,
+        repeat: -1,
+        ease: 'Quad.easeIn',
+        onRepeat: () => {
+          drip.setPosition(dx + (Math.random() - 0.5) * 10, farmBottom + 20);
+        }
+      });
+    }
   }
 
   // ── SSE connection ──
