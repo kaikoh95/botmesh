@@ -38,6 +38,43 @@ const WORKER = path.join(__dirname, 'botmesh-worker.js');
 const BOTMESH = '/home/kai/projects/botmesh';
 const ROADMAP = path.join(BOTMESH, 'roadmap.json');
 
+// ─── Forge brief safety validation ──────────────────────────────────────────
+// Polls for /tmp/forge-brief.md after planner writes it, then validates
+// recommended coordinates against live state to prevent duplicate placements.
+function validateForgeBrief() {
+  return new Promise((resolve) => {
+    let checks = 0;
+    const interval = setInterval(() => {
+      checks++;
+      if (!fs.existsSync('/tmp/forge-brief.md')) {
+        if (checks >= 30) { clearInterval(interval); resolve(); } // 60s timeout
+        return;
+      }
+      clearInterval(interval);
+      try {
+        const brief = fs.readFileSync('/tmp/forge-brief.md', 'utf8');
+        const coordMatch = brief.match(/\((\d+)\s*,\s*(\d+)\)/);
+        if (!coordMatch) { resolve(); return; }
+        const bx = parseInt(coordMatch[1]), by = parseInt(coordMatch[2]);
+        const state = JSON.parse(execSync('curl -s http://localhost:3002/state', { timeout: 5000 }).toString());
+        const buildings = state.buildings || {};
+        for (const [id, b] of Object.entries(buildings)) {
+          const w = b.width || 3, h = b.height || 2;
+          if (bx >= b.x && bx < b.x + w && by >= b.y && by < b.y + h) {
+            console.log(`[Iron] ⚔️ BLOCKED forge-brief: coords (${bx},${by}) collide with ${id} at (${b.x},${b.y}) ${w}×${h}`);
+            fs.unlinkSync('/tmp/forge-brief.md');
+            resolve(); return;
+          }
+        }
+        console.log(`[Iron] ✓ forge-brief coords (${bx},${by}) clear — no collision`);
+      } catch (e) {
+        console.log(`[Iron] brief validation error: ${e.message}`);
+      }
+      resolve();
+    }, 2000);
+  });
+}
+
 // ─── Auth token for write endpoints ──────────────────────────────────────────
 function loadSpeakToken() {
   try {
@@ -602,6 +639,9 @@ curl -s -X POST ${STATE_URL}/agents/planner/speak \\
 \`\`\`
 
 Short review. Don't overthink it. One observation. One recommendation. Done.`, { timeout: 300, reason: 'city planning review before next Forge build cycle' });
+
+      // Validate brief coordinates against live state before Forge consumes it
+      validateForgeBrief();
 
       return false; // always re-run next cycle
     }
