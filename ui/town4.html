@@ -16,6 +16,10 @@
   <script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js"></script>
 </head>
 <body>
+<div id="oracle-inbox">
+  <input id="oracle-input" type="text" placeholder="Send instruction to the Oracle..." maxlength="300" autocomplete="off" />
+  <button id="oracle-send">⚡ Send</button>
+</div>
 <script>
 const W = 620, H = 830;
 
@@ -809,9 +813,5 @@ new Phaser.Game({
   }
 });
 </script>
-<div id="oracle-inbox">
-  <input id="oracle-input" type="text" placeholder="Send instruction to the Oracle..." maxlength="300" autocomplete="off" />
-  <button id="oracle-send">⚡ Send</button>
-</div>
 </body>
 </html>
