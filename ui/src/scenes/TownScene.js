@@ -61,7 +61,7 @@ export default class TownScene extends Phaser.Scene {
       'brewery-l1',
       'smithy-l1','smithy-l2',
       'garden-l1',
-      'pavilion-l1',
+      'pavilion-l1','pavilion-l2',
     ];
     for (const f of buildingFiles) {
       this.load.image(`building-${f}`, `assets/buildings/${f}.png${v}`);
@@ -680,8 +680,37 @@ export default class TownScene extends Phaser.Scene {
       this.applyMurals(state.murals);
     }
 
+    // Apply cottage personality props — decorations based on agent workCount
+    this.applyCottageProps(state.agents);
+
     if (state.time?.period) {
       this.setTime(state.time.period);
+    }
+  }
+
+  /**
+   * Apply personality props to all agent cottages based on workCount.
+   * Each cottage_{agentId}_home gets decorated with agent-specific items.
+   */
+  applyCottageProps(agents) {
+    if (!agents) return;
+    for (const [agentId, agent] of Object.entries(agents)) {
+      const homeId = `${agentId}_home`;
+      const building = this.buildings[homeId];
+      if (building) {
+        building.setProps(agentId, agent.workCount || 0);
+      }
+    }
+  }
+
+  /**
+   * Update props for a single agent's cottage (called on live work:complete events).
+   */
+  updateCottageProps(agentId, workCount) {
+    const homeId = `${agentId}_home`;
+    const building = this.buildings[homeId];
+    if (building) {
+      building.setProps(agentId, workCount);
     }
   }
 
