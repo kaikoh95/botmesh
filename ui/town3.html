@@ -55,6 +55,15 @@ const NPC_COLORS = {
   smith: { shirt: 0x3a3a3a, hair: 0x1a0e04 },
 };
 
+// Seeded RNG for deterministic grain/knots
+function seededRandom(seed) {
+  let s = seed;
+  return function() {
+    s = (s * 16807 + 0) % 2147483647;
+    return (s - 1) / 2147483646;
+  };
+}
+
 function roomPos(col, row) {
   return {
     x: GRID_X + col * (ROOM_W + WALL_T),
@@ -67,65 +76,53 @@ class TakamachiScene extends Phaser.Scene {
 
   create() {
     this.lanternGlows = [];
-    this.ambientGlows = [];
     this.forgeGlows = [];
     this.npcs = [];
-    this.dustMotes = [];
     this.pageRect = null;
+    this.dustMotes = [];
+    this.emberGlow = null;
 
+    // Iter 5: draw exterior first (behind everything)
+    this.drawExterior();
     this.drawAllRooms();
+    // Iter 3: room atmosphere layers
+    this.drawAtmosphere();
     this.drawWallsAndDoors();
-    this.drawVignette();
+    // Iter 5: moonlight and vignette (on top of walls)
+    this.drawCompositionPolish();
     this.drawHUD();
     this.startAnimations();
   }
 
-  // ── Iteration 2: floor planks with texture lines & aging ──
-  drawFloorPlanks(g, x, y, w, h, c1, c2, plankH) {
+  // Iter 1: enhanced floor planks with grain, knots, and end lines
+  drawFloorPlanks(g, x, y, w, h, c1, c2, plankH, roomSeed) {
     plankH = plankH || 12;
+    const rng = seededRandom(roomSeed || 42);
     for (let py = 0; py < h; py += plankH) {
-      const row = Math.floor(py / plankH);
-      const c = (row % 2 === 0) ? c1 : c2;
-      const alpha = (row % 3 === 0) ? 0.92 : 1;
-      g.fillStyle(c, alpha);
+      const c = (Math.floor(py / plankH) % 2 === 0) ? c1 : c2;
+      g.fillStyle(c, 1);
       g.fillRect(x, y + py, w, Math.min(plankH, h - py));
-      // thin dark separation line between plank rows
-      g.fillStyle(0x000000, 0.19);
+      // plank separation line
+      g.fillStyle(0x000000, 0.08);
       g.fillRect(x, y + py + plankH - 1, w, 1);
+      // Iter 1: wood highlight along top edge
+      g.fillStyle(0xffffff, 0.15);
+      g.fillRect(x, y + py, w, 1);
+      // Iter 1: plank end lines (vertical joints)
+      const numJoints = 2 + Math.floor(rng() * 3);
+      for (let j = 0; j < numJoints; j++) {
+        const jx = x + 30 + Math.floor(rng() * (w - 60));
+        g.fillStyle(0x3a2208, 0.3);
+        g.fillRect(jx, y + py, 1, Math.min(plankH, h - py));
+      }
     }
-  }
-
-  // ── Iteration 2: rugs ──
-  drawRug(g, x, y, w, h, color) {
-    g.fillStyle(color, 0.85);
-    g.fillRect(x, y, w, h);
-    // lighter border
-    const bdr = (color === 0x8a1818) ? 0xba3838 : 0x3858ba;
-    g.lineStyle(1, bdr, 0.7);
-    g.strokeRect(x + 1, y + 1, w - 2, h - 2);
-  }
-
-  // ── Iteration 2: storage dirt dots ──
-  drawDirtDots(g, x, y, w, h) {
-    for (let i = 0; i < 18; i++) {
-      const dx = x + 10 + Math.random() * (w - 20);
-      const dy = y + 10 + Math.random() * (h - 20);
-      g.fillStyle(0x3a2808, 0.4);
-      g.fillCircle(dx, dy, 1 + Math.random());
-    }
-  }
-
-  // ── Iteration 2: workshop scorch marks & metal shavings ──
-  drawScorchAndShavings(g, forgeX, forgeY, anvilX, anvilY) {
-    // scorch marks near forge
-    g.fillStyle(0x1a0a04, 0.6);
-    g.fillEllipse(forgeX, forgeY + 20, 30, 10);
-    g.fillEllipse(forgeX - 12, forgeY + 14, 16, 8);
-    g.fillEllipse(forgeX + 15, forgeY + 18, 20, 7);
-    // metal shavings near anvil
-    for (let i = 0; i < 10; i++) {
-      g.fillStyle(0x8a8a9a, 0.5);
-      g.fillCircle(anvilX + (Math.random() - 0.5) * 30, anvilY + (Math.random() - 0.5) * 20, 0.8);
+    // Iter 1: knot details (3-4 per room)
+    const numKnots = 3 + Math.floor(rng() * 2);
+    for (let k = 0; k < numKnots; k++) {
+      const kx = x + 10 + Math.floor(rng() * (w - 20));
+      const ky = y + 10 + Math.floor(rng() * (h - 20));
+      g.fillStyle(0x4a2e10, 0.4);
+      g.fillEllipse(kx, ky, 2, 2);
     }
   }
 
@@ -167,172 +164,86 @@ class TakamachiScene extends Phaser.Scene {
     g.lineBetween(x + s, y, x, y + s);
   }
 
-  // ── Iteration 3: enhanced NPC drawing with feet, shadow, props ──
-  drawNPC(g, cx, cy, colors, type) {
-    const stocky = (type === 'smith');
-    const seated = (type === 'patron');
-    const hunched = (type === 'worker');
-    const w = stocky ? 12 : 8;
-    const h = stocky ? 14 : (seated ? 10 : 12);
-
-    // shadow under feet
-    g.fillStyle(0x000000, 0.3);
-    g.fillEllipse(cx, cy + h / 2 + 2, w + 4, 5);
-
+  drawNPC(g, cx, cy, colors, stocky) {
+    const w = stocky ? 10 : 8;
+    const h = stocky ? 14 : 12;
+    // Iter 4: shadow ellipse beneath NPC
+    g.fillStyle(0x0a0605, 0.25);
+    g.fillEllipse(cx, cy + h / 2 + 1, 6, 2);
     // body
-    if (hunched) {
-      // tilted body for worker — draw as parallelogram approximation
-      g.fillStyle(colors.shirt || colors.robe, 1);
-      g.fillRect(cx - w / 2 - 1, cy - h / 2 + 3, w, h - 3);
-    } else {
-      g.fillStyle(colors.shirt || colors.robe, 1);
-      g.fillRect(cx - w / 2, cy - h / 2 + 3, w, h - 3);
-    }
-
-    // apron overlay (innkeeper white stripe)
+    g.fillStyle(colors.shirt || colors.robe, 1);
+    g.fillRect(cx - w / 2, cy - h / 2 + 3, w, h - 3);
+    // apron overlay
     if (colors.apron) {
       g.fillStyle(colors.apron, 1);
       g.fillRect(cx - w / 2 + 1, cy - h / 2 + 5, w - 2, h - 6);
     }
-    // smith leather apron
-    if (type === 'smith') {
-      g.fillStyle(0x6a3020, 1);
-      g.fillRect(cx - w / 2 + 1, cy - h / 2 + 6, w - 2, h - 7);
-    }
-    // innkeeper brown pants
-    if (type === 'innkeeper') {
-      g.fillStyle(0x5a3a18, 1);
-      g.fillRect(cx - w / 2, cy + 2, w, 5);
-    }
-
-    // feet dots
-    g.fillStyle(0x3a2010, 1);
-    g.fillCircle(cx - 2, cy + h / 2 + 1, 1.5);
-    g.fillCircle(cx + 2, cy + h / 2 + 1, 1.5);
-
     // head
     g.fillStyle(PAL.skin, 1);
     g.fillCircle(cx, cy - h / 2 + 2, 4);
-    if (type === 'scholar') {
-      // white head (bald/white-haired)
-      g.fillStyle(0xd0d0d0, 1);
-      g.fillRect(cx - 3, cy - h / 2 - 2, 6, 3);
-    } else {
-      // hair
-      g.fillStyle(colors.hair, 1);
-      g.fillRect(cx - 3, cy - h / 2 - 2, 6, 3);
-    }
-
-    // scholar holds open book
-    if (type === 'scholar') {
-      g.fillStyle(0xf0e8d0, 1);
-      g.fillRect(cx - 6, cy, 12, 4);
-      g.fillStyle(0x000000, 0.3);
-      g.fillRect(cx, cy, 1, 4);
-    }
-    // patron seated — already smaller h
-    // worker hunched posture marker
-    if (hunched) {
-      g.fillStyle(colors.shirt, 0.5);
-      g.fillRect(cx - w / 2 + w, cy - h / 2 + 5, 2, 4);
-    }
-
-    return { x: cx, y: cy, ox: cx, oy: cy, w, h, timer: Math.random() * 4000, dx: 0, dy: 0, type: type || 'generic' };
+    // hair
+    g.fillStyle(colors.hair, 1);
+    g.fillRect(cx - 3, cy - h / 2 - 2, 6, 3);
+    return { x: cx, y: cy, ox: cx, oy: cy, w, h, timer: Math.random() * 4000, dx: 0, dy: 0 };
   }
 
-  drawLanternGlow(x, y, r, intensity) {
+  // Iter 2: wall-mounted sconce with radial floor glow
+  drawWallSconce(x, y, radius, intensity, lit) {
     const gfx = this.add.graphics();
-    gfx.fillStyle(PAL.lantern, 1);
-    gfx.fillCircle(x, y, 3);
-    const glow = this.add.graphics();
-    glow.fillStyle(PAL.lantern, 0.15);
-    glow.fillCircle(x, y, r || 40);
-    glow.fillStyle(PAL.lantern, 0.08);
-    glow.fillCircle(x, y, (r || 40) * 1.5);
-    this.lanternGlows.push({ gfx: glow, baseAlpha: intensity || 0.6, phase: Math.random() * Math.PI * 2 });
-    return glow;
+    // Bracket on wall
+    gfx.fillStyle(0x5a4020, 1);
+    gfx.fillRect(x - 3, y - 2, 6, 4);
+    // Vertical arm
+    gfx.fillStyle(0x4a3018, 1);
+    gfx.fillRect(x - 1, y + 2, 2, 4);
+
+    if (lit) {
+      // Flame ellipse
+      gfx.fillStyle(0xf0c040, 1);
+      gfx.fillEllipse(x, y + 7, 3, 4);
+      gfx.fillStyle(0xffe080, 0.8);
+      gfx.fillEllipse(x, y + 6, 2, 2);
+
+      // Radial floor glow — concentric ellipses
+      const glow = this.add.graphics();
+      const r = radius || 35;
+      glow.fillStyle(PAL.lantern, 0.03);
+      glow.fillEllipse(x, y + 10, r * 2, r * 1.4);
+      glow.fillStyle(PAL.lantern, 0.06);
+      glow.fillEllipse(x, y + 10, r * 1.4, r * 1.0);
+      glow.fillStyle(PAL.lantern, 0.10);
+      glow.fillEllipse(x, y + 10, r * 0.9, r * 0.6);
+      glow.fillStyle(PAL.lantern, 0.15);
+      glow.fillEllipse(x, y + 10, r * 0.5, r * 0.35);
+      this.lanternGlows.push({ gfx: glow, baseAlpha: intensity || 0.6, phase: Math.random() * Math.PI * 2 });
+    } else {
+      // Unlit sconce
+      gfx.fillStyle(0x2a1a0a, 0.6);
+      gfx.fillEllipse(x, y + 7, 2, 3);
+    }
   }
 
-  // ── Iteration 1: ambient light pools per room ──
-  drawAmbientGlow(x, y, radius, alpha, color) {
-    const glow = this.add.graphics();
-    glow.fillStyle(color, alpha);
-    glow.fillCircle(x, y, radius);
-    glow.fillStyle(color, alpha * 0.5);
-    glow.fillCircle(x, y, radius * 1.4);
-    this.ambientGlows.push({ gfx: glow, baseAlpha: 1.0, phase: Math.random() * Math.PI * 2 });
-    return glow;
-  }
+  // Iter 5: exterior cobblestone/earth around the inn
+  drawExterior() {
+    const g = this.add.graphics();
+    const outerX = GRID_X - WALL_T - 8;
+    const outerY = GRID_Y - WALL_T - 8;
+    const outerW = 2 * ROOM_W + WALL_T + 2 * WALL_T + 16;
+    const outerH = 2 * ROOM_H + WALL_T + 2 * WALL_T + 16;
 
-  // ── Iteration 5: wall corner shadows ──
-  drawCornerShadows(g, rx, ry, rw, rh) {
-    const cs = 18;
-    g.fillStyle(0x1a0a04, 0.25);
-    // top-left
-    g.fillTriangle(rx, ry, rx + cs, ry, rx, ry + cs);
-    // top-right
-    g.fillTriangle(rx + rw, ry, rx + rw - cs, ry, rx + rw, ry + cs);
-    // bottom-left
-    g.fillTriangle(rx, ry + rh, rx + cs, ry + rh, rx, ry + rh - cs);
-    // bottom-right
-    g.fillTriangle(rx + rw, ry + rh, rx + rw - cs, ry + rh, rx + rw, ry + rh - cs);
-  }
+    // Dark earth base
+    g.fillStyle(0x1a1008, 1);
+    g.fillRect(outerX, outerY, outerW, outerH);
 
-  // ── Iteration 4: globe on desk ──
-  drawGlobe(g, cx, cy, r) {
-    g.fillStyle(0x3a5a3a, 0.8);
-    g.fillCircle(cx, cy, r);
-    g.lineStyle(1, 0x2a4a2a, 0.9);
-    g.strokeCircle(cx, cy, r);
-    // lines on globe
-    g.lineBetween(cx - r, cy, cx + r, cy);
-    g.lineBetween(cx, cy - r, cx, cy + r);
-  }
-
-  // ── Iteration 4: candle with flame ──
-  drawCandle(g, cx, cy) {
-    g.fillStyle(0xe0d8c0, 1);
-    g.fillRect(cx - 1, cy, 3, 8);
-    g.fillStyle(0xf0a030, 0.9);
-    g.fillCircle(cx + 0.5, cy - 1, 2);
-    g.fillStyle(0xffe060, 0.7);
-    g.fillCircle(cx + 0.5, cy - 1, 1);
-  }
-
-  // ── Iteration 4: hourglass ──
-  drawHourglass(g, cx, cy) {
-    g.lineStyle(1, 0x8a7a4a, 1);
-    // top triangle
-    g.fillStyle(0xd0b070, 0.6);
-    g.fillTriangle(cx - 4, cy - 5, cx + 4, cy - 5, cx, cy);
-    // bottom triangle
-    g.fillStyle(0xd0b070, 0.9);
-    g.fillTriangle(cx - 4, cy + 5, cx + 4, cy + 5, cx, cy);
-    // frame
-    g.lineBetween(cx - 5, cy - 6, cx + 5, cy - 6);
-    g.lineBetween(cx - 5, cy + 6, cx + 5, cy + 6);
-  }
-
-  // ── Iteration 4: mug on table ──
-  drawMug(g, x, y) {
-    g.fillStyle(0x6a4a2a, 1);
-    g.fillRect(x, y, 5, 6);
-    // handle
-    g.lineStyle(1, 0x5a3a1a, 1);
-    g.lineBetween(x + 5, y + 1, x + 7, y + 1);
-    g.lineBetween(x + 7, y + 1, x + 7, y + 4);
-    g.lineBetween(x + 7, y + 4, x + 5, y + 4);
-  }
-
-  // ── Iteration 4: horseshoe ──
-  drawHorseshoe(g, cx, cy) {
-    g.lineStyle(2, 0x6a6a6a, 1);
-    g.beginPath();
-    g.arc(cx, cy, 5, Math.PI, 0, false);
-    g.strokePath();
-    // legs
-    g.lineBetween(cx - 5, cy, cx - 5, cy + 4);
-    g.lineBetween(cx + 5, cy, cx + 5, cy + 4);
+    // Subtle tile/cobblestone lines
+    const tileSize = 10;
+    g.lineStyle(1, 0x221408, 0.5);
+    for (let ty = outerY; ty < outerY + outerH; ty += tileSize) {
+      g.lineBetween(outerX, ty, outerX + outerW, ty);
+    }
+    for (let tx = outerX; tx < outerX + outerW; tx += tileSize) {
+      g.lineBetween(tx, outerY, tx, outerY + outerH);
+    }
   }
 
   drawAllRooms() {
@@ -340,13 +251,8 @@ class TakamachiScene extends Phaser.Scene {
 
     // ─── LIBRARY (top-left) ───
     const lib = roomPos(0, 0);
-    this.drawFloorPlanks(g, lib.x, lib.y, ROOM_W, ROOM_H, PAL.floor1, PAL.floor2, 12);
-    // Iteration 2: rugs
-    this.drawRug(g, lib.x + 60, lib.y + 150, 35, 25, 0x8a1818);
-    this.drawRug(g, lib.x + 130, lib.y + 60, 28, 20, 0x18388a);
-    // Iteration 5: corner shadows
-    this.drawCornerShadows(g, lib.x, lib.y, ROOM_W, ROOM_H);
-    // shadow corners (original)
+    this.drawFloorPlanks(g, lib.x, lib.y, ROOM_W, ROOM_H, PAL.floor1, PAL.floor2, 12, 101);
+    // shadow corners
     g.fillStyle(PAL.shadow, 0.3);
     g.fillRect(lib.x, lib.y, 30, 20);
     g.fillRect(lib.x, lib.y + ROOM_H - 20, 30, 20);
@@ -368,33 +274,20 @@ class TakamachiScene extends Phaser.Scene {
     pageGfx.fillStyle(0xf0e8d0, 1);
     pageGfx.fillRect(this.pageRect.x, this.pageRect.y, this.pageRect.w, this.pageRect.h);
     this.pageGraphics = pageGfx;
-    // Iteration 4: globe on desk
-    this.drawGlobe(g, lib.x + 86, lib.y + 107, 5);
-    // Iteration 4: candle
-    this.drawCandle(g, lib.x + 120, lib.y + 104);
-    // Iteration 4: scattered paper sheets near desk
-    g.fillStyle(0xf0e8d0, 0.7);
-    g.fillRect(lib.x + 75, lib.y + 135, 6, 5);
-    g.fillRect(lib.x + 135, lib.y + 112, 5, 4);
-    g.fillRect(lib.x + 68, lib.y + 110, 5, 6);
-    // Iteration 4: hourglass near bookshelf
-    this.drawHourglass(g, lib.x + 12, lib.y + 145);
-    // Lantern top-right corner
-    this.drawLanternGlow(lib.x + ROOM_W - 20, lib.y + 20, 45, 0.6);
-    // Iteration 1: amber glow pool — library
-    this.drawAmbientGlow(lib.x + ROOM_W - 20, lib.y + 20, 60, 0.12, 0xf0a030);
-    // Iteration 3: Scholar NPC (white-haired, holds book)
-    const scholar = this.drawNPC(g, lib.x + 105, lib.y + 90, NPC_COLORS.scholar, 'scholar');
+    // Iter 2: wall sconce top-right corner
+    this.drawWallSconce(lib.x + ROOM_W - 20, lib.y + 10, 40, 0.6, true);
+    // Iter 4: Scholar NPC with book in hands
+    const scholar = this.drawNPC(g, lib.x + 105, lib.y + 90, NPC_COLORS.scholar);
+    // Tiny book in hands
+    g.fillStyle(0xf0e8d0, 1);
+    g.fillRect(lib.x + 108, lib.y + 92, 5, 4);
+    g.fillStyle(0x8a2020, 1);
+    g.fillRect(lib.x + 108, lib.y + 92, 5, 1);
     this.npcs.push({ ...scholar, bounds: { x: lib.x + 30, y: lib.y + 30, w: ROOM_W - 50, h: ROOM_H - 50 } });
 
     // ─── TAVERN (top-right) ───
     const tav = roomPos(1, 0);
-    this.drawFloorPlanks(g, tav.x, tav.y, ROOM_W, ROOM_H, PAL.floorWarm1, PAL.floorWarm2, 12);
-    // Iteration 2: rugs
-    this.drawRug(g, tav.x + 30, tav.y + 160, 40, 22, 0x8a1818);
-    this.drawRug(g, tav.x + 100, tav.y + 170, 30, 18, 0x18388a);
-    // Iteration 5: corner shadows
-    this.drawCornerShadows(g, tav.x, tav.y, ROOM_W, ROOM_H);
+    this.drawFloorPlanks(g, tav.x, tav.y, ROOM_W, ROOM_H, PAL.floorWarm1, PAL.floorWarm2, 12, 202);
     g.fillStyle(PAL.shadow, 0.25);
     g.fillRect(tav.x + ROOM_W - 30, tav.y, 30, 20);
     // Counter along north wall
@@ -406,20 +299,6 @@ class TakamachiScene extends Phaser.Scene {
     this.drawBarrel(g, tav.x + 40, tav.y + 18, 8);
     this.drawBarrel(g, tav.x + 60, tav.y + 16, 8);
     this.drawBarrel(g, tav.x + 80, tav.y + 18, 8);
-    // Iteration 4: hanging sign above counter
-    this.add.text(tav.x + 95, tav.y + 30, '\u{1F37A} Ale 2G', {
-      fontFamily: 'monospace', fontSize: '7px', color: '#e0d0b0'
-    });
-    // Iteration 4: chalkboard menu on wall
-    g.fillStyle(0x1a2a1a, 1);
-    g.fillRect(tav.x + ROOM_W - 40, tav.y + 135, 28, 36);
-    g.lineStyle(1, 0x4a4a3a, 0.8);
-    g.strokeRect(tav.x + ROOM_W - 40, tav.y + 135, 28, 36);
-    // chalk lines
-    g.lineStyle(1, 0xc0c0b0, 0.5);
-    for (let li = 0; li < 4; li++) {
-      g.lineBetween(tav.x + ROOM_W - 36, tav.y + 142 + li * 7, tav.x + ROOM_W - 18, tav.y + 142 + li * 7);
-    }
     // Round tables with stools
     const tables = [
       { cx: tav.x + 60, cy: tav.y + 100 },
@@ -436,10 +315,6 @@ class TakamachiScene extends Phaser.Scene {
         g.fillCircle(t.cx + o[0], t.cy + o[1], 4);
       });
     });
-    // Iteration 4: mugs on tables
-    this.drawMug(g, tav.x + 55, tav.y + 96);
-    this.drawMug(g, tav.x + 64, tav.y + 98);
-    this.drawMug(g, tav.x + 135, tav.y + 126);
     // East wall shelves with bottles
     g.fillStyle(PAL.bookshelf, 1);
     g.fillRect(tav.x + ROOM_W - 22, tav.y + 40, 16, 80);
@@ -453,30 +328,34 @@ class TakamachiScene extends Phaser.Scene {
         g.fillRect(tav.x + ROOM_W - 20 + bx, tav.y + 40 + by + 2, 3, 2);
       }
     }
-    // Lanterns
-    this.drawLanternGlow(tav.x + 50, tav.y + 60, 50, 0.5);
-    this.drawLanternGlow(tav.x + 150, tav.y + 80, 45, 0.55);
-    // Iteration 1: TWO amber glow pools — tavern
-    this.drawAmbientGlow(tav.x + 60, tav.y + 100, 50, 0.15, 0xf0a030);
-    this.drawAmbientGlow(tav.x + 140, tav.y + 130, 50, 0.15, 0xf0a030);
-    // Iteration 3: Innkeeper NPC (apron, brown pants, behind counter)
-    const innkeeper = this.drawNPC(g, tav.x + 110, tav.y + 38, NPC_COLORS.innkeeper, 'innkeeper');
+    // Iter 2: two sconces on east wall
+    this.drawWallSconce(tav.x + ROOM_W - 12, tav.y + 50, 45, 0.5, true);
+    this.drawWallSconce(tav.x + ROOM_W - 12, tav.y + 100, 40, 0.55, true);
+    // Iter 4: Innkeeper NPC with mug
+    const innkeeper = this.drawNPC(g, tav.x + 110, tav.y + 38, NPC_COLORS.innkeeper);
+    // Mug in hand
+    g.fillStyle(0x6a4a2a, 1);
+    g.fillCircle(tav.x + 115, tav.y + 42, 2);
+    g.fillStyle(0xd0b080, 0.8);
+    g.fillCircle(tav.x + 115, tav.y + 41, 1);
     this.npcs.push({ ...innkeeper, bounds: { x: tav.x + 30, y: tav.y + 30, w: ROOM_W - 60, h: 30 } });
-    // Iteration 3: Patron NPC (green tunic, seated)
-    const patron = this.drawNPC(g, tav.x + 60, tav.y + 85, NPC_COLORS.patron, 'patron');
+    // Iter 4: Patron NPC — seated posture (shorter, wider)
+    const patron = this.drawNPC(g, tav.x + 60, tav.y + 85, NPC_COLORS.patron);
+    // Seated width extension
+    g.fillStyle(NPC_COLORS.patron.shirt, 1);
+    g.fillRect(tav.x + 55, tav.y + 87, 10, 4);
     this.npcs.push({ ...patron, bounds: { x: tav.x + 30, y: tav.y + 50, w: ROOM_W - 60, h: ROOM_H - 80 } });
 
     // ─── STORAGE (bottom-left) ───
     const sto = roomPos(0, 1);
-    this.drawFloorPlanks(g, sto.x, sto.y, ROOM_W, ROOM_H, PAL.floorDark1, PAL.floorDark2, 14);
+    this.drawFloorPlanks(g, sto.x, sto.y, ROOM_W, ROOM_H, PAL.floorDark1, PAL.floorDark2, 14, 303);
     g.fillStyle(PAL.shadow, 0.35);
     g.fillRect(sto.x, sto.y, ROOM_W, ROOM_H);
     g.fillStyle(PAL.shadow, 0.15);
     g.fillRect(sto.x, sto.y, ROOM_W, ROOM_H);
-    // Iteration 2: dirt/dust dots
-    this.drawDirtDots(g, sto.x, sto.y, ROOM_W, ROOM_H);
-    // Iteration 5: corner shadows
-    this.drawCornerShadows(g, sto.x, sto.y, ROOM_W, ROOM_H);
+    // Iter 1: extra dark worn overlay for storage
+    g.fillStyle(0x0a0605, 0.15);
+    g.fillRect(sto.x, sto.y, ROOM_W, ROOM_H);
     // Barrels 3×2 grid
     for (let r = 0; r < 2; r++) {
       for (let c = 0; c < 3; c++) {
@@ -493,50 +372,17 @@ class TakamachiScene extends Phaser.Scene {
     g.fillCircle(sto.x + 38, sto.y + ROOM_H - 25, 6);
     g.fillStyle(0x5a3a20, 1);
     g.fillCircle(sto.x + ROOM_W - 25, sto.y + ROOM_H - 35, 8);
-    // Iteration 4: hanging sausage/food from ceiling
-    const foods = [
-      { x: sto.x + 60, len: 20 },
-      { x: sto.x + 80, len: 16 },
-      { x: sto.x + 120, len: 22 },
-    ];
-    foods.forEach(f => {
-      g.lineStyle(1, 0x5a3a1a, 0.7);
-      g.lineBetween(f.x, sto.y + 4, f.x, sto.y + 4 + f.len);
-      g.fillStyle(0x8a3020, 0.8);
-      g.fillEllipse(f.x, sto.y + 4 + f.len + 4, 4, 6);
-    });
-    // Iteration 4: cobweb in corner
-    g.lineStyle(1, 0x8a8a8a, 0.4);
-    g.lineBetween(sto.x + ROOM_W - 2, sto.y + 2, sto.x + ROOM_W - 20, sto.y + 2);
-    g.lineBetween(sto.x + ROOM_W - 2, sto.y + 2, sto.x + ROOM_W - 2, sto.y + 20);
-    g.beginPath();
-    g.arc(sto.x + ROOM_W - 2, sto.y + 2, 18, 0.5 * Math.PI, Math.PI, false);
-    g.strokePath();
-    g.beginPath();
-    g.arc(sto.x + ROOM_W - 2, sto.y + 2, 12, 0.5 * Math.PI, Math.PI, false);
-    g.strokePath();
-    // Iteration 4: key ring on wall
-    g.lineStyle(1, 0x8a8a6a, 0.7);
-    g.strokeCircle(sto.x + 15, sto.y + 100, 5);
-    g.fillStyle(0x6a6a4a, 0.6);
-    g.fillCircle(sto.x + 12, sto.y + 104, 2);
-    g.fillCircle(sto.x + 18, sto.y + 104, 2);
-    g.fillCircle(sto.x + 15, sto.y + 106, 2);
-    // Dim lantern
-    this.drawLanternGlow(sto.x + ROOM_W - 25, sto.y + 20, 30, 0.35);
-    // Iteration 1: dim cool glow — storage
-    this.drawAmbientGlow(sto.x + ROOM_W - 25, sto.y + 20, 40, 0.08, 0xd08020);
-    // Iteration 3: Worker NPC (grey, hunched)
-    const worker = this.drawNPC(g, sto.x + 100, sto.y + 140, NPC_COLORS.worker, 'worker');
+    // Iter 2: dim sconce, smaller glow
+    this.drawWallSconce(sto.x + ROOM_W - 25, sto.y + 10, 22, 0.35, true);
+    // Iter 4: Worker NPC — slightly hunched (y+1), with small crate nearby
+    const worker = this.drawNPC(g, sto.x + 100, sto.y + 141, NPC_COLORS.worker);
+    // Small crate near worker
+    this.drawCrate(g, sto.x + 112, sto.y + 145, 10);
     this.npcs.push({ ...worker, bounds: { x: sto.x + 20, y: sto.y + 20, w: ROOM_W - 40, h: ROOM_H - 40 } });
 
     // ─── WORKSHOP (bottom-right) ───
     const wrk = roomPos(1, 1);
-    this.drawFloorPlanks(g, wrk.x, wrk.y, ROOM_W, ROOM_H, PAL.floorStone1, PAL.floorStone2, 14);
-    // Iteration 2: scorch marks & metal shavings
-    this.drawScorchAndShavings(g, wrk.x + 90, wrk.y + 75, wrk.x + 90, wrk.y + 55);
-    // Iteration 5: corner shadows
-    this.drawCornerShadows(g, wrk.x, wrk.y, ROOM_W, ROOM_H);
+    this.drawFloorPlanks(g, wrk.x, wrk.y, ROOM_W, ROOM_H, PAL.floorStone1, PAL.floorStone2, 14, 404);
     // Forge/anvil
     g.fillStyle(0x2a2a2a, 1);
     g.fillRect(wrk.x + 70, wrk.y + 60, 40, 30);
@@ -554,20 +400,6 @@ class TakamachiScene extends Phaser.Scene {
     forgeGlow.fillStyle(0xff6030, 0.5);
     forgeGlow.fillCircle(wrk.x + 90, wrk.y + 65, 10);
     this.forgeGlows.push(forgeGlow);
-    // Iteration 1: RED-ORANGE glow from forge
-    this.drawAmbientGlow(wrk.x + 90, wrk.y + 70, 70, 0.20, 0xe04010);
-    // Iteration 4: bucket near anvil
-    g.fillStyle(0x5a5a5a, 0.8);
-    g.fillRect(wrk.x + 50, wrk.y + 82, 12, 10);
-    g.fillRect(wrk.x + 48, wrk.y + 81, 16, 2);
-    g.lineStyle(1, 0x4a4a4a, 0.8);
-    g.lineBetween(wrk.x + 50, wrk.y + 80, wrk.x + 56, wrk.y + 76);
-    g.lineBetween(wrk.x + 62, wrk.y + 80, wrk.x + 56, wrk.y + 76);
-    // Iteration 4: bellows near forge
-    g.fillStyle(0x6a4a2a, 0.8);
-    g.fillEllipse(wrk.x + 125, wrk.y + 72, 12, 8);
-    g.fillStyle(0x5a3a1a, 1);
-    g.fillRect(wrk.x + 131, wrk.y + 69, 8, 3);
     // Tool wall (north)
     g.fillStyle(PAL.wallInner, 1);
     g.fillRect(wrk.x + 20, wrk.y + 6, ROOM_W - 40, 18);
@@ -576,7 +408,6 @@ class TakamachiScene extends Phaser.Scene {
     g.lineBetween(wrk.x + 40, wrk.y + 10, wrk.x + 40, wrk.y + 22);
     g.fillStyle(0x5a5a5a, 1);
     g.fillRect(wrk.x + 35, wrk.y + 9, 10, 5);
-    g.lineStyle(2, 0x6a6a6a, 1);
     g.lineBetween(wrk.x + 70, wrk.y + 10, wrk.x + 68, wrk.y + 22);
     g.lineBetween(wrk.x + 74, wrk.y + 10, wrk.x + 76, wrk.y + 22);
     g.lineBetween(wrk.x + 100, wrk.y + 10, wrk.x + 100, wrk.y + 22);
@@ -585,9 +416,6 @@ class TakamachiScene extends Phaser.Scene {
     g.lineStyle(2, 0x6a6a6a, 1);
     g.lineBetween(wrk.x + 130, wrk.y + 10, wrk.x + 150, wrk.y + 10);
     g.lineBetween(wrk.x + 130, wrk.y + 10, wrk.x + 130, wrk.y + 20);
-    // Iteration 4: horseshoes on tool wall
-    this.drawHorseshoe(g, wrk.x + 55, wrk.y + 14);
-    this.drawHorseshoe(g, wrk.x + 115, wrk.y + 14);
     // Workbench along south
     g.fillStyle(PAL.table, 1);
     g.fillRect(wrk.x + 15, wrk.y + ROOM_H - 40, ROOM_W - 30, 24);
@@ -601,13 +429,100 @@ class TakamachiScene extends Phaser.Scene {
     g.fillStyle(0xaa6a2a, 1);
     g.fillRect(wrk.x + 90, wrk.y + ROOM_H - 36, 12, 5);
     g.fillRect(wrk.x + 120, wrk.y + ROOM_H - 37, 6, 4);
-    // Lantern
-    this.drawLanternGlow(wrk.x + 20, wrk.y + 100, 35, 0.4);
-    // Iteration 3: Blacksmith NPC (stocky, leather apron)
-    const smith = this.drawNPC(g, wrk.x + 90, wrk.y + 100, NPC_COLORS.smith, 'smith');
+    // Iter 2: unlit sconce in workshop (forge dominates)
+    this.drawWallSconce(wrk.x + 20, wrk.y + 90, 35, 0.4, false);
+    // Iter 4: Blacksmith NPC — wider/stockier with dark apron overlay
+    const smith = this.drawNPC(g, wrk.x + 90, wrk.y + 100, NPC_COLORS.smith, true);
+    // Dark apron on front
+    g.fillStyle(0x1a1208, 0.7);
+    g.fillRect(wrk.x + 86, wrk.y + 97, 8, 8);
     this.npcs.push({ ...smith, bounds: { x: wrk.x + 40, y: wrk.y + 40, w: 80, h: 80 } });
 
     this.mainGfx = g;
+  }
+
+  // Iter 3: room atmosphere effects
+  drawAtmosphere() {
+    const lib = roomPos(0, 0);
+    const tav = roomPos(1, 0);
+    const sto = roomPos(0, 1);
+    const wrk = roomPos(1, 1);
+
+    // Library: dust motes (animated in startAnimations)
+    for (let i = 0; i < 8; i++) {
+      const mote = this.add.graphics();
+      const mx = lib.x + 30 + Math.random() * (ROOM_W - 60);
+      const my = lib.y + 30 + Math.random() * (ROOM_H - 60);
+      mote.fillStyle(0xffffff, 0.3);
+      mote.fillRect(0, 0, 1, 1);
+      mote.setPosition(mx, my);
+      this.dustMotes.push({
+        gfx: mote,
+        startX: mx,
+        startY: my,
+        delay: i * 750,
+        roomY: lib.y,
+        roomH: ROOM_H
+      });
+    }
+
+    // Tavern: warm haze overlay
+    const tavHaze = this.add.graphics();
+    tavHaze.fillStyle(0xf0a030, 0.04);
+    tavHaze.fillRect(tav.x, tav.y, ROOM_W, ROOM_H);
+
+    // Storage: cobwebs in top corners
+    const cobG = this.add.graphics();
+    cobG.lineStyle(1, 0x6a5a40, 0.5);
+    // Top-left corner cobweb
+    cobG.lineBetween(sto.x + 2, sto.y + 2, sto.x + 20, sto.y + 12);
+    cobG.lineBetween(sto.x + 2, sto.y + 2, sto.x + 15, sto.y + 18);
+    cobG.lineBetween(sto.x + 2, sto.y + 2, sto.x + 10, sto.y + 22);
+    cobG.lineBetween(sto.x + 20, sto.y + 12, sto.x + 15, sto.y + 18);
+    // Top-right corner cobweb
+    cobG.lineBetween(sto.x + ROOM_W - 2, sto.y + 2, sto.x + ROOM_W - 20, sto.y + 14);
+    cobG.lineBetween(sto.x + ROOM_W - 2, sto.y + 2, sto.x + ROOM_W - 16, sto.y + 20);
+    cobG.lineBetween(sto.x + ROOM_W - 2, sto.y + 2, sto.x + ROOM_W - 10, sto.y + 18);
+    cobG.lineBetween(sto.x + ROOM_W - 20, sto.y + 14, sto.x + ROOM_W - 16, sto.y + 20);
+
+    // Workshop: ember glow on floor near forge (animated)
+    this.emberGlow = this.add.graphics();
+    this.emberGlowPos = { x: wrk.x + 90, y: wrk.y + 95 };
+    this.redrawEmberGlow(0.15);
+  }
+
+  redrawEmberGlow(alpha) {
+    this.emberGlow.clear();
+    const pos = this.emberGlowPos;
+    this.emberGlow.fillStyle(0xe04010, alpha);
+    this.emberGlow.fillEllipse(pos.x, pos.y, 30, 18);
+    this.emberGlow.fillStyle(0xff6020, alpha * 0.6);
+    this.emberGlow.fillEllipse(pos.x, pos.y, 16, 10);
+  }
+
+  // Iter 5: moonlight, vignette, wall gradient
+  drawCompositionPolish() {
+    const g = this.add.graphics();
+    const outerX = GRID_X - WALL_T;
+    const outerY = GRID_Y - WALL_T;
+    const outerW = 2 * ROOM_W + WALL_T + 2 * WALL_T;
+
+    // Moonlight edge along top outer wall
+    g.fillStyle(0x8090b0, 0.3);
+    g.fillRect(outerX, outerY - 2, outerW, 2);
+
+    // Cool→warm gradient on outer wall top face
+    g.fillStyle(0x6080a0, 0.08);
+    g.fillRect(outerX, outerY - WALL_T / 2, outerW, WALL_T / 2);
+
+    // Vignette: dark rects in room corners for volumetric lighting feel
+    const rooms = [roomPos(0, 0), roomPos(1, 0), roomPos(0, 1), roomPos(1, 1)];
+    rooms.forEach(r => {
+      g.fillStyle(0x0a0605, 0.12);
+      g.fillRect(r.x, r.y, 25, 20);
+      g.fillStyle(0x0a0605, 0.12);
+      g.fillRect(r.x + ROOM_W - 25, r.y + ROOM_H - 20, 25, 20);
+    });
   }
 
   drawWallsAndDoors() {
@@ -624,33 +539,37 @@ class TakamachiScene extends Phaser.Scene {
     });
 
     // Doorway: Library ↔ Tavern
-    const doorLT = { x: rooms[0].x + ROOM_W, y: rooms[0].y + (ROOM_H - DOOR_W) / 2 };
+    const doorLT = {
+      x: rooms[0].x + ROOM_W,
+      y: rooms[0].y + (ROOM_H - DOOR_W) / 2
+    };
     this.drawDoorway(g, doorLT.x - WALL_T / 2 - 2, doorLT.y, WALL_T + 4, DOOR_W, 'vertical');
 
     // Doorway: Storage ↔ Workshop
-    const doorSW = { x: rooms[2].x + ROOM_W, y: rooms[2].y + (ROOM_H - DOOR_W) / 2 };
+    const doorSW = {
+      x: rooms[2].x + ROOM_W,
+      y: rooms[2].y + (ROOM_H - DOOR_W) / 2
+    };
     this.drawDoorway(g, doorSW.x - WALL_T / 2 - 2, doorSW.y, WALL_T + 4, DOOR_W, 'vertical');
 
     // Doorway: Library ↔ Storage
-    const doorLS = { x: rooms[0].x + (ROOM_W - DOOR_W) / 2, y: rooms[0].y + ROOM_H };
+    const doorLS = {
+      x: rooms[0].x + (ROOM_W - DOOR_W) / 2,
+      y: rooms[0].y + ROOM_H
+    };
     this.drawDoorway(g, doorLS.x, doorLS.y - WALL_T / 2 - 2, DOOR_W, WALL_T + 4, 'horizontal');
 
     // Doorway: Tavern ↔ Workshop
-    const doorTW = { x: rooms[1].x + (ROOM_W - DOOR_W) / 2, y: rooms[1].y + ROOM_H };
+    const doorTW = {
+      x: rooms[1].x + (ROOM_W - DOOR_W) / 2,
+      y: rooms[1].y + ROOM_H
+    };
     this.drawDoorway(g, doorTW.x, doorTW.y - WALL_T / 2 - 2, DOOR_W, WALL_T + 4, 'horizontal');
   }
 
   drawDoorway(g, x, y, w, h, orientation) {
     g.fillStyle(PAL.floor1, 1);
     g.fillRect(x, y, w, h);
-
-    // Iteration 5: brighter threshold strip
-    g.fillStyle(0xffffff, 0.08);
-    if (orientation === 'vertical') {
-      g.fillRect(x + w / 2 - 1, y, 2, h);
-    } else {
-      g.fillRect(x, y + h / 2 - 1, w, 2);
-    }
 
     const chamfer = 6;
     g.lineStyle(2, PAL.wallInner, 1);
@@ -675,56 +594,40 @@ class TakamachiScene extends Phaser.Scene {
     g.fillRect(x + 2, y + 2, w - 4, h - 4);
   }
 
-  // ── Iteration 5: cinematic vignette ──
-  drawVignette() {
-    const vig = this.add.graphics();
-    // radial vignette — multiple concentric rectangles with increasing alpha
-    const steps = 8;
-    for (let i = 0; i < steps; i++) {
-      const t = i / steps;
-      const alpha = t * t * 0.35;
-      const margin = (1 - t) * 0.35;
-      vig.fillStyle(0x0d0a07, alpha);
-      vig.fillRect(0, 0, W * margin, H);
-      vig.fillRect(W - W * margin, 0, W * margin, H);
-      vig.fillRect(0, 0, W, H * margin);
-      vig.fillRect(0, H - H * margin, W, H * margin);
-    }
-  }
-
   drawHUD() {
     const g = this.add.graphics();
     g.fillStyle(PAL.hudBg, 0.5);
     g.fillRect(0, 0, W, 30);
     g.fillStyle(PAL.wall, 0.6);
     g.fillRect(0, 29, W, 1);
+    // Iter 5: subtle amber bottom border
+    g.fillStyle(0xf0a030, 0.25);
+    g.fillRect(0, 30, W, 1);
 
-    this.add.text(12, 7, '\u{1F3E0} Takamachi Inn \u2014 Year 1, Autumn', {
-      fontFamily: 'monospace', fontSize: '12px', color: '#e0d0b0'
+    this.add.text(12, 7, '🏠 Takamachi Inn — Year 1, Autumn', {
+      fontFamily: 'monospace',
+      fontSize: '12px',
+      color: '#e0d0b0'
     });
 
-    this.add.text(W - 80, 7, '\u{1F4B0} 1,240G', {
-      fontFamily: 'monospace', fontSize: '12px', color: '#f0a030'
+    this.add.text(W - 80, 7, '💰 1,240G', {
+      fontFamily: 'monospace',
+      fontSize: '12px',
+      color: '#f0a030'
     });
   }
 
   startAnimations() {
-    // Lantern pulse (also drives ambient glow pools — Iteration 1)
+    // Lantern pulse
     this.time.addEvent({
       delay: 50,
       loop: true,
       callback: () => {
         const t = this.time.now;
-        this.lanternGlows.forEach(lg => {
+        this.lanternGlows.forEach((lg, i) => {
           const phase = lg.phase + t * 0.002;
           const alpha = lg.baseAlpha + Math.sin(phase) * 0.2;
           lg.gfx.setAlpha(Math.max(0.1, Math.min(1, alpha)));
-        });
-        // ambient glow pools pulse in sync
-        this.ambientGlows.forEach(ag => {
-          const phase = ag.phase + t * 0.002;
-          const alpha = ag.baseAlpha + Math.sin(phase) * 0.15;
-          ag.gfx.setAlpha(Math.max(0.3, Math.min(1, alpha)));
         });
       }
     });
@@ -753,46 +656,35 @@ class TakamachiScene extends Phaser.Scene {
       }
     });
 
-    // ── Iteration 5: dust motes in library & tavern ──
-    const lib = roomPos(0, 0);
-    const tav = roomPos(1, 0);
-    const dustAreas = [
-      { x: lib.x + 40, y: lib.y + 40, w: ROOM_W - 60, h: ROOM_H - 60 },
-      { x: lib.x + 100, y: lib.y + 60, w: 60, h: 80 },
-      { x: lib.x + 150, y: lib.y + 30, w: 30, h: 50 },
-      { x: tav.x + 40, y: tav.y + 50, w: ROOM_W - 60, h: ROOM_H - 80 },
-      { x: tav.x + 80, y: tav.y + 70, w: 60, h: 60 },
-    ];
-    for (let i = 0; i < 6; i++) {
-      const area = dustAreas[i % dustAreas.length];
-      this.dustMotes.push({
-        x: area.x + Math.random() * area.w,
-        y: area.y + Math.random() * area.h,
-        phase: Math.random() * Math.PI * 2,
-        speed: 0.0005 + Math.random() * 0.0008,
-        driftX: (Math.random() - 0.5) * 0.05,
-        driftY: -0.02 - Math.random() * 0.02,
-        area: area,
-      });
-    }
-    this.dustGfx = this.add.graphics();
+    // Iter 3: dust mote animation (library) — 6s cycle, drifting upward
     this.time.addEvent({
-      delay: 60,
+      delay: 100,
       loop: true,
       callback: () => {
-        this.dustGfx.clear();
         const t = this.time.now;
-        this.dustMotes.forEach(d => {
-          d.x += d.driftX;
-          d.y += d.driftY;
-          // wrap within area
-          if (d.y < d.area.y) d.y = d.area.y + d.area.h;
-          if (d.x < d.area.x) d.x = d.area.x + d.area.w;
-          if (d.x > d.area.x + d.area.w) d.x = d.area.x;
-          const alpha = Math.max(0, (Math.sin(t * d.speed + d.phase) + 1) * 0.25);
-          this.dustGfx.fillStyle(0xffffff, alpha);
-          this.dustGfx.fillCircle(d.x, d.y, 0.8);
+        this.dustMotes.forEach(m => {
+          const cycle = 6000;
+          const elapsed = (t + m.delay) % cycle;
+          const progress = elapsed / cycle;
+          const dy = -progress * 40;
+          const dx = Math.sin(progress * Math.PI * 2) * 5;
+          const alpha = 0.3 * (1 - progress);
+          m.gfx.setPosition(m.startX + dx, m.startY + dy);
+          m.gfx.setAlpha(alpha);
         });
+      }
+    });
+
+    // Iter 3: ember glow pulse (workshop) — 600ms cycle
+    this.time.addEvent({
+      delay: 50,
+      loop: true,
+      callback: () => {
+        const t = this.time.now;
+        const cycle = 600;
+        const progress = (t % cycle) / cycle;
+        const alpha = 0.1 + 0.15 * Math.sin(progress * Math.PI * 2) * 0.5 + 0.075;
+        this.redrawEmberGlow(alpha);
       }
     });
 
@@ -802,8 +694,9 @@ class TakamachiScene extends Phaser.Scene {
       delay: 100,
       loop: true,
       callback: () => {
+        const t = this.time.now;
         this.npcGfx.clear();
-        this.npcs.forEach(npc => {
+        this.npcs.forEach((npc, i) => {
           npc.timer -= 100;
           if (npc.timer <= 0) {
             npc.dx = (Math.random() - 0.5) * 0.3;
@@ -826,57 +719,23 @@ class TakamachiScene extends Phaser.Scene {
   drawNPCAt(g, npc) {
     const cx = npc.x, cy = npc.y;
     const w = npc.w, h = npc.h;
-    const origColors = this.getNPCOrigColors(npc);
-
-    // shadow under feet
-    g.fillStyle(0x000000, 0.3);
-    g.fillEllipse(cx, cy + h / 2 + 2, w + 4, 5);
-
+    // Iter 4: shadow ellipse
+    g.fillStyle(0x0a0605, 0.25);
+    g.fillEllipse(cx, cy + h / 2 + 1, 6, 2);
     // body
-    if (npc.type === 'worker') {
-      g.fillStyle(origColors.body, 1);
-      g.fillRect(cx - w / 2 - 1, cy - h / 2 + 3, w, h - 3);
-    } else {
-      g.fillStyle(origColors.body, 1);
-      g.fillRect(cx - w / 2, cy - h / 2 + 3, w, h - 3);
-    }
+    const origColors = this.getNPCOrigColors(npc);
+    g.fillStyle(origColors.body, 1);
+    g.fillRect(cx - w / 2, cy - h / 2 + 3, w, h - 3);
     if (origColors.apron) {
       g.fillStyle(origColors.apron, 1);
       g.fillRect(cx - w / 2 + 1, cy - h / 2 + 5, w - 2, h - 6);
     }
-    // smith leather apron
-    if (npc.type === 'smith') {
-      g.fillStyle(0x6a3020, 1);
-      g.fillRect(cx - w / 2 + 1, cy - h / 2 + 6, w - 2, h - 7);
-    }
-    // innkeeper brown pants
-    if (npc.type === 'innkeeper') {
-      g.fillStyle(0x5a3a18, 1);
-      g.fillRect(cx - w / 2, cy + 2, w, 5);
-    }
-
-    // feet
-    g.fillStyle(0x3a2010, 1);
-    g.fillCircle(cx - 2, cy + h / 2 + 1, 1.5);
-    g.fillCircle(cx + 2, cy + h / 2 + 1, 1.5);
-
     // head
     g.fillStyle(PAL.skin, 1);
     g.fillCircle(cx, cy - h / 2 + 2, 4);
-    if (npc.type === 'scholar') {
-      g.fillStyle(0xd0d0d0, 1);
-    } else {
-      g.fillStyle(origColors.hair, 1);
-    }
+    // hair
+    g.fillStyle(origColors.hair, 1);
     g.fillRect(cx - 3, cy - h / 2 - 2, 6, 3);
-
-    // scholar holds open book
-    if (npc.type === 'scholar') {
-      g.fillStyle(0xf0e8d0, 1);
-      g.fillRect(cx - 6, cy, 12, 4);
-      g.fillStyle(0x000000, 0.3);
-      g.fillRect(cx, cy, 1, 4);
-    }
   }
 
   getNPCOrigColors(npc) {
