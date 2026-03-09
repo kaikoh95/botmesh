@@ -246,6 +246,13 @@ Canvas (9,37) · Patch (20,37) · Sage (31,37)
 
 ## Recent Observations
 
+- **2026-03-09 (Fourth survey):** 29 buildings, 23 nature features. Stable state — no new builds or plantings since last survey.
+  1. **Post Office level stable at Lv3** — corruption appears resolved. No re-inflation detected this cycle.
+  2. **Willow at (25,20) confirmed** — previous recommendation executed. Higashi-Machi anchoring begun.
+  3. **Eastern void (x:23-40, y:16-26) still has zero buildings.** Willow (25,20), koi pond (28,18), and sakura (22,22) provide nature skeleton, but the zone needs a first structure to become a real district. Proposed: plant sakura near koi pond (~28,22) to create a garden cluster, then place a garden pavilion or tea garden at (26,20) as Higashi-Machi's founding building.
+  4. **No zone violations.** All 29 buildings comply with district rules. Iron's Keep boundary straddle (noted survey 2) unchanged — tolerable.
+  Recommendation: Create garden cluster near koi pond, then place Higashi-Machi's first building — a garden pavilion at (26,20).
+
 - **2026-03-09 (Third survey):** 29 buildings, 23 nature features. Two issues found:
   1. **Post Office Lv13 — recurring data corruption.** Was corrected to Lv3 on first survey today, but has re-inflated to Lv13. Needs persistent fix in seed.json — likely a write-back bug overwrites the correction. Flag for Scarlet.
   2. **Kenzo's Study placed at (18,27)** — plan specified (38,27) at far-east Row 1 for survey vantage. Actual placement is mid-row at x=18, between Iron (14,27) and the spine road. Acceptable but closer to civic center than intended. Updating plan to reflect actual position.

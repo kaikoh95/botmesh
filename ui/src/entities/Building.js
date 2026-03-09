@@ -102,9 +102,9 @@ export default class Building {
     return this.baseColor;
   }
 
-  // Truncate name to max 13 chars to prevent label overflow at 11px Press Start 2P
+  // Truncate name to max 20 chars — use smaller font rather than aggressive truncation
   _shortName() {
-    const MAX = 13;
+    const MAX = 20;
     return this.name.length > MAX ? this.name.slice(0, MAX - 1) + '…' : this.name;
   }
 

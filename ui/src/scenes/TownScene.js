@@ -46,7 +46,7 @@ export default class TownScene extends Phaser.Scene {
       'bathhouse-l1','bathhouse-l2',
       'cottage-l1','cottage-l2','cottage-l3',
       'keep-l1','keep-l2',
-      'library-l1','library-l2',
+      'library-l1','library-l2','library-l3',
       'market-l1','market-l2',
       'observatory-l1','observatory-l2',
       'plaza-l1','plaza-l2',
@@ -59,7 +59,7 @@ export default class TownScene extends Phaser.Scene {
       'well-l1',
       'workshop-l1','workshop-l2',
       'brewery-l1',
-      'smithy-l1',
+      'smithy-l1','smithy-l2',
       'garden-l1',
     ];
     for (const f of buildingFiles) {
@@ -509,12 +509,10 @@ export default class TownScene extends Phaser.Scene {
   }
 
   _grassColor(x, y) {
-    // WINTER — Zone-aware snow coloring (Shirakawa-go / onsen town aesthetic):
-    // - Near paths: grey slush from foot traffic — snow melted, dark stone showing
-    // - Residential zone: warm ivory snow — lived-in, faint yellow from lamp glow
-    // - Open civic/cultural area: clean crisp blue-white snow
+    // WINTER — Uniform crisp snow across all zones (Shirakawa-go aesthetic)
+    // - Near paths: grey slush from foot traffic
+    // - Everywhere else: cool blue-white snow
     const nearPath = this._isNearPath(x, y);
-    const inResidential = y >= 22;
     const n = Math.abs((x * 7 + y * 13 + x * y) % 7);
 
     if (nearPath) {
@@ -522,12 +520,7 @@ export default class TownScene extends Phaser.Scene {
       const slush = [0x7a8090, 0x6e7480, 0x828898, 0x747a8a, 0x788090];
       return slush[n % slush.length];
     }
-    if (inResidential) {
-      // Residential: warm ivory snow — lamp glow, footprints, life
-      const ivorySnow = [0x9a9488, 0xa09a8e, 0x98908a, 0x9c9690, 0x968e84, 0xa0988c, 0x928e84];
-      return ivorySnow[n];
-    }
-    // Civic/cultural: crisp blue-white snow, clean and undisturbed
+    // Crisp blue-white snow, clean and undisturbed — same palette everywhere
     const blueSnow = [0x8294aa, 0x7e90a6, 0x8098ac, 0x7a8ea4, 0x7e92a8, 0x7a8ea0, 0x8296ac];
     return blueSnow[n];
   }

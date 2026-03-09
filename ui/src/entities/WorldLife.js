@@ -136,19 +136,19 @@ export default class WorldLife {
         const pos = scene.gridToScreen(tx, ty);
         const crane = scene.add.image(pos.x, pos.y, 'life-crane').setOrigin(0.5, 1).setDepth(pos.y);
         crane.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
-        crane.setScale(0.12);
+        crane.setScale(0.04);
         this.elements.push(crane);
         // Gentle bob animation
         scene.tweens.add({ targets: crane, y: crane.y - 2, duration: 2000, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' });
       }
     }
 
-    // Deer — wanders near trees
+    // Deer — wanders near trees (small fauna, ~1/4 building height)
     if (scene.textures.exists('life-deer')) {
       const pos = scene.gridToScreen(27, 22);
       const deer = scene.add.image(pos.x, pos.y, 'life-deer').setOrigin(0.5, 1).setDepth(pos.y);
       deer.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
-      deer.setScale(0.12);
+      deer.setScale(0.04);
       this.elements.push(deer);
       this.animatedElements.push({ sprite: deer, type: 'wander', baseX: pos.x, baseY: pos.y });
     }
@@ -161,7 +161,7 @@ export default class WorldLife {
         const pos = scene.gridToScreen(tx, ty);
         const bf = scene.add.image(pos.x, pos.y - 20, 'life-butterfly').setOrigin(0.5, 0.5).setDepth(pos.y + 10);
         bf.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
-        bf.setScale(0.08);
+        bf.setScale(0.03);
         this.elements.push(bf);
         // Drift in a small circle
         scene.tweens.add({
@@ -202,7 +202,7 @@ export default class WorldLife {
         .setDepth(pos.y + 20)
         .setAlpha(0);
       ff.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
-      ff.setScale(0.15);
+      ff.setScale(0.03);
       this.elements.push(ff);
       // Twinkle in/out
       scene.tweens.add({
