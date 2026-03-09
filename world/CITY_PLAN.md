@@ -246,6 +246,23 @@ Canvas (9,37) · Patch (20,37) · Sage (31,37)
 
 ## Recent Observations
 
+- **2026-03-09 (Eighth survey — corrected):** 30 buildings, 24 nature features. State is healthy and complete.
+  ⚠️ NOTE: Surveys 6 and 7 contained bad data (reported "22 buildings, world reset"). This was a false alarm — Kenzo was reading stale CITY_PLAN.md observations rather than trusting the brief's building list. All 30 buildings are confirmed present in live state and state.json.
+  1. **All sacred structures confirmed:** Cronos Shrine (6,5) ✓, Scarlet Sanctum (15,11) ✓, Iron's Keep (14,18) ✓
+  2. **Higashi-Machi founded:** Garden Pavilion placed at (26,20) — district now has its first building.
+  3. **No zone violations.** All 30 buildings comply with district rules.
+  4. **Nishi-Kita shrine already exists** at (6,5) — DO NOT recommend placing shrine there again.
+  5. **Next genuine targets:** Upgrade Workshop (Lv2→Lv3) or add a cultural building in Higashi-Machi to grow the new eastern district.
+  Recommendation: Forge should focus on expanding Higashi-Machi (x:23-40, y:16-26) — Garden Pavilion is the only building there. A teahouse or garden structure at ~(29,22) would give the district a second anchor.
+
+- **2026-03-09 (Fifth survey):** 29 buildings, 24 nature features. One new planting detected since last survey.
+  1. **Sakura at (28,22) confirmed planted** — garden cluster near koi pond now has 3 features: koi pond (28,18), sakura (28,22), sakura (28,24). Previous recommendation executed. Eastern void nature skeleton solidifying.
+  2. **Higashi-Machi nature skeleton complete.** Four anchors in place: willow (25,20), sakura (22,22), sakura (28,22), koi pond (28,18). Zone is ready for its first building.
+  3. **No zone violations.** All 29 buildings comply. No new builds this cycle.
+  4. **Plan coordinate drift still present** in district descriptions (Well, Library, Market, Teahouse). Low priority — world state is source of truth, plan descriptions are advisory.
+  5. **Craft district (Nishi-Machi) fully at Lv2** — Smithy, Workshop, Bathhouse all Lv2. Balanced progression.
+  Recommendation: Place Higashi-Machi's founding building — a garden pavilion at (26,20). Nature skeleton is ready; the zone needs a structure to become a real district.
+
 - **2026-03-09 (Fourth survey):** 29 buildings, 23 nature features. Stable state — no new builds or plantings since last survey.
   1. **Post Office level stable at Lv3** — corruption appears resolved. No re-inflation detected this cycle.
   2. **Willow at (25,20) confirmed** — previous recommendation executed. Higashi-Machi anchoring begun.
