@@ -393,13 +393,13 @@ class OracleChamberScene extends Phaser.Scene {
     const wrap = canvas.parentElement || document.body;
 
     const form = document.createElement('div');
-    form.style.cssText = 'position:absolute;bottom:0;left:0;right:0;display:flex;gap:4px;padding:6px 24px 8px;background:#0a0e1a;z-index:10;';
+    form.style.cssText = 'position:fixed;bottom:0;left:0;right:0;display:flex;gap:4px;padding:6px 24px 8px;background:#0a0e1a;border-top:1px solid #1a2030;z-index:9999;';
 
     const input = document.createElement('input');
     input.type = 'text';
     input.placeholder = 'Send instruction to the Oracle...';
     input.maxLength = 300;
-    input.style.cssText = 'flex:1;background:#0e1220;border:1px solid #2a3040;color:#e0d8c8;font-family:monospace;font-size:12px;padding:6px 10px;outline:none;border-radius:2px;';
+    input.style.cssText = 'flex:1;background:#0e1220;border:1px solid #2a3040;color:#e0d8c8;font-family:monospace;font-size:13px;padding:7px 12px;outline:none;border-radius:2px;';
     input.addEventListener('focus', () => input.style.borderColor = '#f0a030');
     input.addEventListener('blur', () => input.style.borderColor = '#2a3040');
 
@@ -423,8 +423,7 @@ class OracleChamberScene extends Phaser.Scene {
 
     form.appendChild(input);
     form.appendChild(btn);
-    wrap.style.position = 'relative';
-    wrap.appendChild(form);
+    document.body.appendChild(form);
   }
 
   // ── Iter 2: Candle flicker animation ──
