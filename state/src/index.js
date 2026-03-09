@@ -116,8 +116,10 @@ function getState() {
 // Merge two entity arrays — state layer entries win on id conflict
 function mergeEntities(hubEntities, stateEntities) {
   const map = {};
-  for (const e of (hubEntities  || [])) map[e.id] = e;
-  for (const e of (stateEntities|| [])) map[e.id] = e; // state wins
+  // Filter out building records — they belong in buildings{}, not entities[]
+  const isNotBuilding = e => e.entity !== 'building';
+  for (const e of (hubEntities  || []).filter(isNotBuilding)) map[e.id] = e;
+  for (const e of (stateEntities|| []).filter(isNotBuilding)) map[e.id] = e; // state wins
   return Object.values(map);
 }
 
@@ -324,6 +326,52 @@ function applyEvent(event) {
           state.murals.push(mural);
           // Keep last 50 murals to prevent unbounded growth
           if (state.murals.length > 50) state.murals = state.murals.slice(-50);
+          break;
+        }
+        case 'move': {
+          if (entity !== 'building') break;
+          const moveBldg = (state.buildings || {})[entityId];
+          if (!moveBldg) {
+            console.warn(`[State] world:mutate move REJECTED — building "${entityId}" not found`);
+            break;
+          }
+          const mx = payload.x, my = payload.y;
+          const mw = moveBldg.width || 3, mh = moveBldg.height || 2;
+          // Collision check — new footprint must not overlap any other building
+          const moveClash = Object.entries(state.buildings || {}).find(([bid, b]) => {
+            if (bid === entityId) return false;
+            const bx2 = b.x + (b.width||3) - 1, by2 = b.y + (b.height||2) - 1;
+            const mx2 = mx + mw - 1, my2 = my + mh - 1;
+            return mx <= bx2 && mx2 >= b.x && my <= by2 && my2 >= b.y;
+          });
+          if (moveClash) {
+            console.warn(`[State] world:mutate move REJECTED — ${entityId} at (${mx},${my}) overlaps ${moveClash[0]} at (${moveClash[1].x},${moveClash[1].y})`);
+            addGazetteEntry(event);
+            break;
+          }
+          // Apply the move
+          moveBldg.x = mx;
+          moveBldg.y = my;
+          moveBldg.movedBy = payload.movedBy || 'unknown';
+          moveBldg.movedAt = new Date().toISOString();
+          // Sync world.entities[] if present
+          const moveWe = (state.world?.entities || []).find(e => e.id === entityId);
+          if (moveWe) {
+            moveWe.x = mx;
+            moveWe.y = my;
+          }
+          // Auto-expand world bounds if needed
+          const mx2bound = mx + mw + 5;
+          const my2bound = my + mh + 5;
+          if (mx2bound > (state.world.width || 80)) {
+            state.world.width = mx2bound;
+            console.log(`[State] World width expanded to ${mx2bound} to fit moved ${entityId}`);
+          }
+          if (my2bound > (state.world.height || 80)) {
+            state.world.height = my2bound;
+            console.log(`[State] World height expanded to ${my2bound} to fit moved ${entityId}`);
+          }
+          console.log(`[State] Building ${entityId} moved to (${mx},${my}) by ${moveBldg.movedBy}`);
           break;
         }
         case 'remove':
