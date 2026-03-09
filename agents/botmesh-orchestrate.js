@@ -137,7 +137,7 @@ const TASKS = [
     id: 'gazette-daily-stats',
     title: 'Daily stats panel in Gazette header',
     owner: 'forge',
-    brief: 'Add a stats row to the Gazette header showing: messages today, agents online, buildings at max level. Read from /state endpoint.',
+    brief: 'The Gazette header has no live activity summary. Visitors cannot see at a glance how active the world is. Success: the Gazette header displays current metrics (messages today, agents online, upgraded buildings) pulled from live state.',
     done: () => {
       try {
         const code = fs.readFileSync(`${BOTMESH}/ui/src/main.js`, 'utf8');
@@ -217,7 +217,7 @@ const TASKS = [
     id: 'building-activity-glow',
     title: 'Buildings glow when an agent is inside',
     owner: 'forge',
-    brief: 'In Building.js, when agent:work start fires for a building, brighten the building sprite tint. On work-done or agent exit, restore to normal.',
+    brief: 'Buildings that have agents working inside them should visually indicate activity. Currently there is no visual feedback when an agent is present in a building. Success: a subtle visual difference (tint, glow, or animation) distinguishes occupied vs empty buildings.',
     done: () => {
       try {
         const code = fs.readFileSync(`${BOTMESH}/ui/src/entities/Building.js`, 'utf8');
@@ -256,7 +256,7 @@ const TASKS = [
     id: 'forge-sprite',
     title: 'Generate Forge pixel art sprite',
     owner: 'canvas',
-    brief: 'Generate Forge pixel art sprite: stocky male craftsman, short dark hair, leather tool belt, craftsman hakama, work boots, chibi RPG style matching the existing character roster.',
+    brief: 'Forge has no visual representation in the world. Every other citizen has a pixel art sprite but Forge is missing one. Success: a pixel art sprite for Forge exists that matches the chibi RPG aesthetic of the existing character roster and reflects his builder/craftsman identity.',
     done: () => fs.existsSync(`${BOTMESH}/ui/assets/sprites/forge.png`),
     run: async () => {
       scarletSays('Canvas, we need Forge\'s pixel art sprite — craftsman aesthetic, stocky build, tool belt, hakama.');
@@ -319,7 +319,7 @@ print('Forge sprite saved')
     id: 'building-activity-glow',
     title: 'Buildings glow when an agent is inside',
     owner: 'forge',
-    brief: 'In Building.js setWorking(), set a warm yellow tint on the sprite when occupied. Clear tint when no workers remain.',
+    brief: 'Buildings that have agents working inside them should visually indicate activity. Currently there is no visual feedback when an agent is present in a building. Success: a subtle visual difference (tint, glow, or animation) distinguishes occupied vs empty buildings.',
     done: () => {
       try {
         const code = fs.readFileSync(`${BOTMESH}/ui/src/entities/Building.js`, 'utf8');
@@ -352,7 +352,7 @@ print('Forge sprite saved')
     id: 'world-life-expand',
     title: 'Expand world life — plant more nature as population grows',
     owner: 'scarlet',
-    brief: 'Emit world:mutate plant events for sakura, bamboo, and zen sprites to fill out the world. Space them in different zones.',
+    brief: 'The world feels sparse and lifeless outside of buildings. As population grows, the environment should reflect vitality with natural elements. Success: nature entities (trees, ponds, gardens) are placed across the map to create visual variety and district identity.',
     done: () => {
       try {
         const state = JSON.parse(fs.readFileSync(`${BOTMESH}/world/state.json`, 'utf8'));
@@ -754,7 +754,7 @@ Make your decision. Do it. Narrate it. One thing. That's all.`, { timeout: 600, 
     id: 'muse-ideation',
     title: 'Muse generates new roadmap ideas',
     owner: 'muse',
-    brief: 'Replenish roadmap ideas.',
+    brief: 'The roadmap is running low on pending ideas. Without fresh ideas, the world stagnates between build cycles. Success: the roadmap has at least 3 pending ideas that reflect the current state of the world and its growth trajectory.',
     done: () => {
       // Skip if roadmap already has 3+ pending ideas
       try {
@@ -831,7 +831,7 @@ Add 3–5 ideas. Make them interesting. Go.`, { timeout: 300, reason: 'generate 
     id: 'mosaic-sprite-check',
     title: 'Mosaic reviews world for missing sprites',
     owner: 'mosaic',
-    brief: 'Check if any buildings need sprites.',
+    brief: 'New buildings may exist in world state without corresponding pixel art sprites, causing 404s or placeholder rendering. Success: every building in world state has a matching sprite file on disk and is wired into the texture map.',
     done: () => false,
     run: async () => {
       const SPRITE_DIR = path.join(__dirname, '../ui/assets/buildings');
@@ -1184,9 +1184,15 @@ function runVisualQAMode() {
   const onlineAgents = Object.values(stateData.agents || {}).filter(a => a.online);
   const STATE_URL = 'https://api.kurokimachi.com';
 
+  // ── RALPH+BMAD: Canvas inspects only — files briefs for the right agent ──
   spawnSession('canvas', `# Canvas 🖼️ — Visual QA Check
 
 Your job: verify kurokimachi.com is rendering correctly for visitors. You are the visual inspector.
+
+## RALPH RULE — READ THIS FIRST
+You do NOT fix things yourself. You INSPECT and REPORT.
+If you find a failure, write a BMAD brief to \`/tmp/patch-brief.md\` and wake the appropriate agent.
+Do NOT edit code, restart services, or commit fixes. That is Patch's job.
 
 ## What to check
 
@@ -1204,7 +1210,7 @@ for f in bathhouse-l1 cottage-l1 cottage-l2 cottage-l3 keep-l1 library-l1 market
   echo "$code $f"
 done
 \`\`\`
-Any non-200 = missing sprite that needs to be fixed.
+Any non-200 = missing sprite that needs to be reported.
 
 **3. Sprite manifest in TownScene.js matches disk**
 \`\`\`bash
@@ -1234,16 +1240,39 @@ Should match or be close to those numbers.
 curl -s -X POST ${STATE_URL}/agents/canvas/speak \\
   -H "Authorization: Bearer ${SPEAK_TOKEN}" \\
   -H "Content-Type: application/json" \\
-  -d '{"message":"YOUR REPORT — what passed, what failed, what you fixed or queued"}'
+  -d '{"message":"YOUR REPORT — what passed, what failed, what briefs you filed"}'
 \`\`\`
 
-## If you find failures
-- Sprite missing from disk → wake Mosaic, queue generation
-- Sprite in preload but 404 → remove from TownScene.js manifest, \`pm2 restart ui\`
-- SSE not working → check \`pm2 logs state\`, restart if crashed
-- State count wrong → investigate, fix, restart relevant service
+## If you find failures — FILE A BRIEF, do not fix
+Write a BMAD brief for each failure to \`/tmp/patch-brief.md\`:
+\`\`\`
+# Patch Brief — from Canvas 🖼️ (Visual QA)
+Date: <ISO date>
+Source: visual QA check
 
-Commit any fixes: \`cd /home/kai/projects/botmesh && git add -A && git commit -m "🔍 Canvas visual QA: <what you fixed>" && git push origin main\`
+## Problem
+<what failed and why>
+
+## What success looks like
+<the expected healthy state>
+
+## Evidence
+<actual error/response observed>
+
+## Constraints
+- Do not restart pm2 processes unless logs confirm a crash loop
+- Check git log for recent changes that might have caused this
+\`\`\`
+
+Then wake Patch:
+\`\`\`bash
+curl -s -X POST http://localhost:3002/agents/patch/wake -H "Content-Type: application/json" -d '{"task":"Visual QA failure — read /tmp/patch-brief.md"}'
+\`\`\`
+
+For sprite issues, wake Mosaic instead:
+\`\`\`bash
+curl -s -X POST http://localhost:3002/agents/mosaic/wake -H "Content-Type: application/json" -d '{"task":"Missing sprite — read /tmp/patch-brief.md"}'
+\`\`\`
 
 Be brief. This is a check, not a build task.`, { timeout: 300, reason: 'visual QA — render health + sprites + SSE' });
 

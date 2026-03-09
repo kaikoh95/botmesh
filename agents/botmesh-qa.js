@@ -285,69 +285,51 @@ async function main() {
 
   if (failures.length > 0) {
     const summary = failures.map(f => `❌ ${f.name}: ${f.reason}`).join('\n');
-    const msg = `QA Report — ${failures.length} issue(s) found:\n${summary}`;
+    const evidence = failures.map(f => `- ${f.name}: ${f.reason}`).join('\n');
 
-    console.log('[QA] Issues found — notifying world...');
-    await notifyHub(msg);
+    // ── RALPH+BMAD: File a structured brief for Patch ──────────────────────
+    const brief = `# Patch Brief — from QA 🔍
+Date: ${new Date().toISOString()}
+Source: automated QA check
 
-    // Also register a task for Patch/Forge to investigate
+## Problem
+${failures.length} health check(s) failed:
+${failures.map(f => `- **${f.name}** failed: ${f.reason}`).join('\n')}
+
+## What success looks like
+All QA checks pass — every service/endpoint returns a healthy response.
+
+## Evidence
+${evidence}
+
+## Constraints
+- Do not restart pm2 processes unless logs confirm a crash loop
+- Check git log for recent changes that might have caused this
+- Do not fix things inline — investigate root cause first
+`;
+
     try {
-      const registry = require('./task-registry');
-      registry.createTask({
-        type: 'qa-failure',
-        title: `QA: ${failures.length} check(s) failed`,
-        owner: 'patch',
-        brief: msg,
-        origin: 'kai',
-      });
+      fs.writeFileSync('/tmp/patch-brief.md', brief);
+      console.log('[QA] BMAD brief written to /tmp/patch-brief.md');
     } catch (e) {
-      console.error('[QA] task-registry error:', e.message);
+      console.error('[QA] Failed to write brief:', e.message);
     }
 
-    // Spawn Patch as an auto-fixer
+    // Narrate the failure via speak endpoint
+    console.log('[QA] Issues found — narrating via speak endpoint...');
+    const speakMsg = `QA found ${failures.length} issue(s):\\n${failures.map(f => `❌ ${f.name}: ${f.reason}`).join('\\n')}\\nBrief filed for Patch.`;
     try {
-      const { spawnSession } = require('./spawn-session');
-      const envSource = fs.readFileSync('/home/kai/projects/botmesh/.botmesh.env', 'utf8');
-      const getEnv = (k) => { const m = envSource.match(new RegExp(`^${k}=(.+)$`, 'm')); return m ? m[1].trim() : ''; };
-      const STATE_URL = getEnv('BOTMESH_API_URL') || 'https://api.kurokimachi.com';
-      const SPEAK_TOKEN = getEnv('BOTMESH_SPEAK_TOKEN') || '';
-
-      spawnSession('patch', `# Patch 🔧 — Auto-fix QA Failures
-
-QA found ${failures.length} issue(s) that need fixing:
-
-${failures.map(f => `## ❌ ${f.name}\n${f.reason}`).join('\n\n')}
-
-## Your job
-Investigate each failure, find the root cause, and fix it.
-
-For sprite manifest issues: update the preload list in \`/home/kai/projects/botmesh/ui/src/scenes/TownScene.js\`
-For import issues: fix the import path in the relevant JS file
-For walk ticker issues: check \`/home/kai/projects/botmesh/state/src/index.js\` walk ticker code
-
-After fixing, run QA manually to verify:
-\`\`\`bash
-source /home/kai/projects/botmesh/.botmesh.env
-node /home/kai/projects/botmesh/agents/botmesh-qa.js
-\`\`\`
-
-Narrate what you found and fixed:
-\`\`\`bash
-curl -s -X POST ${STATE_URL}/agents/patch/speak \\
-  -H "Authorization: Bearer ${SPEAK_TOKEN}" \\
-  -H "Content-Type: application/json" \\
-  -d '{"message":"YOUR MESSAGE"}'
-\`\`\`
-
-Commit your fix:
-\`\`\`bash
-cd /home/kai/projects/botmesh && git add -A && git commit -m "🔧 Patch: <what you fixed>" && git push origin main
-\`\`\`
-
-Then \`pm2 restart\` whatever services you changed.`);
-      console.log('[QA] Patch session queued for auto-fix');
+      execSync(`curl -s -X POST https://api.kurokimachi.com/agents/qa/speak -H "Authorization: Bearer cf32979009820158ebe185497d772c255428744d9c2bc8a09e0693a759706c18" -H "Content-Type: application/json" -d '{"message":"${speakMsg.replace(/'/g, "'\\''")}"}'`, { timeout: 8000 });
     } catch (e) {
-      console.error('[QA] Failed to spawn Patch session:', e.message);
+      console.error('[QA] speak failed:', e.message);
+    }
+
+    // Wake Patch to read the brief
+    try {
+      execSync('curl -s -X POST http://localhost:3002/agents/patch/wake -H "Content-Type: application/json" -d \'{"task":"QA failure — read /tmp/patch-brief.md"}\'', { timeout: 5000 });
+      console.log('[QA] Patch woken to handle brief');
+    } catch (e) {
+      console.error('[QA] Failed to wake Patch:', e.message);
     }
 
     process.exit(1);
