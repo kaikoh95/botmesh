@@ -15,17 +15,20 @@
 <script>
 const TILE_W = 48, TILE_H = 24;
 const COLS = 7, ROWS = 5;
-const W = 480, H = 640;
+const W = 480, H = 700;
 
 const PAL = {
   grass1: 0x5a8a3c, grass2: 0x6a9a4a, path: 0x8a7a60,
-  blossom: 0xf0b0c0, roofBrown: 0x8b6914, houseWall: 0xd4a870,
+  blossom: 0xf0b0c0, roofClay: 0xa05020, roofSlate: 0x4a3828,
+  houseLeft: 0x6b4226, houseRight: 0x7a4e30, windowAmber: 0xf0a030,
   earth1: 0x5c3a1e, earth2: 0x7a4e2a, crop: 0x3a7a30,
   cropYellow: 0x8a9a20, rootVeg: 0xe06020,
   stone: 0x2a3040, water: 0x2a5880, shimmer: 0x4a8ab0,
   lantern: 0xf0a030,
-  wallDark: 0x4a2e0e, wallLight: 0x6b4226,
-  wallStone: 0x1a1e2a, wallCrack: 0x2a2e3a,
+  wallDark: 0x4a2e0e, wallDark2: 0x3a2208, wallLight: 0x6b4226,
+  wallStone: 0x1e2228, wallCrack: 0x2a2e38,
+  farmPath: 0x8a6040,
+  rootTendril: 0x8b5e3c,
 };
 
 const originX = W / 2;
@@ -37,8 +40,8 @@ function gridToScreen(col, row, floorY) {
   };
 }
 
-function drawDiamond(g, cx, cy, color) {
-  g.fillStyle(color, 1);
+function drawDiamond(g, cx, cy, color, alpha) {
+  g.fillStyle(color, alpha !== undefined ? alpha : 1);
   g.beginPath();
   g.moveTo(cx, cy - TILE_H / 2);
   g.lineTo(cx + TILE_W / 2, cy);
@@ -59,37 +62,224 @@ function drawDiamondOutline(g, cx, cy) {
   g.strokePath();
 }
 
+// Get floor edge points for wall drawing
+function getFloorEdges(fy) {
+  const topLeft = gridToScreen(0, 0, fy);
+  const topRight = gridToScreen(COLS - 1, 0, fy);
+  const bottomLeft = gridToScreen(0, ROWS - 1, fy);
+  const bottom = gridToScreen(COLS - 1, ROWS - 1, fy);
+  const left = gridToScreen(0, ROWS - 1, fy);
+  const right = gridToScreen(COLS - 1, 0, fy);
+  return { topLeft, topRight, bottomLeft, bottom, left, right };
+}
+
 class NegishimuraScene extends Phaser.Scene {
   create() {
     const g = this.add.graphics();
-    const surfaceY = 70;
-    const surfaceWallH = 40;
-    const farmY = surfaceY + (COLS + ROWS - 1) * (TILE_H / 2) + surfaceWallH + 10;
-    const farmWallH = 80;
-    const deepY = farmY + (COLS + ROWS - 1) * (TILE_H / 2) + farmWallH + 10;
-    const deepWallH = 60;
 
-    // ── Title ──
-    this.add.text(W / 2, 24, '根岸村 · Negishimura', {
-      fontFamily: 'monospace', fontSize: '14px', color: '#ffffff', align: 'center'
+    // Vertically centre the 3 floors
+    const surfaceY = 60;
+    const floorGridH = (COLS + ROWS - 1) * (TILE_H / 2); // ~120px
+    const gapBetweenFloors = 8; // small gap, walls fill it
+
+    const surfaceBottom = surfaceY + floorGridH;
+    const surfaceToFarmWallH = 55;
+    const farmY = surfaceBottom + surfaceToFarmWallH + gapBetweenFloors;
+
+    const farmBottom = farmY + floorGridH;
+    const farmToDeepWallH = 70;
+    const deepY = farmBottom + farmToDeepWallH + gapBetweenFloors;
+
+    // ── Iteration 5: Sky/atmosphere gradient above surface ──
+    g.fillStyle(0x0a1428, 0.4);
+    g.fillRect(0, 0, W, surfaceY - 5);
+    // subtle gradient bands
+    g.fillStyle(0x0a1428, 0.25);
+    g.fillRect(0, surfaceY - 5, W, 20);
+
+    // ── Iteration 5: Title with glow ──
+    // Shadow layers for glow effect
+    const titleY = 26;
+    this.add.text(W / 2, titleY, '根岸村 · Negishimura', {
+      fontFamily: 'monospace', fontSize: '18px', color: '#8090b0',
+      align: 'center', shadow: { offsetX: 0, offsetY: 0, color: '#4060a0', blur: 12, fill: true }
     }).setOrigin(0.5);
+    this.add.text(W / 2, titleY, '根岸村 · Negishimura', {
+      fontFamily: 'monospace', fontSize: '18px', color: '#d0d8e8', align: 'center'
+    }).setOrigin(0.5);
+
+    // ── Iteration 2: Connecting wall — surface to farm ──
+    this.drawConnectingWall(g, surfaceY, farmY, 'surface-farm');
 
     // ── Surface floor ──
     this.drawSurfaceFloor(g, surfaceY);
-    this.drawWall(g, surfaceY, surfaceWallH, 'surface');
+    // Small wall band under surface floor
+    this.drawFloorEdgeWall(g, surfaceY, 12, 'surface');
+
+    // ── Iteration 2: Connecting wall — farm to deep ──
+    this.drawConnectingWall(g, farmY, deepY, 'farm-deep');
 
     // ── Farm floor ──
     this.drawFarmFloor(g, farmY);
-    this.drawWall(g, farmY, farmWallH, 'farm');
+    // Small wall band under farm
+    this.drawFloorEdgeWall(g, farmY, 12, 'farm');
 
     // ── Deep floor ──
     this.drawDeepFloor(g, deepY);
-    this.drawWall(g, deepY, deepWallH, 'deep');
+    this.drawFloorEdgeWall(g, deepY, 18, 'deep');
 
-    // ── Animations ──
-    this.addWaterPulse(deepY);
+    // ── Iteration 3: Lantern glow overlays (drawn after farm tiles) ──
+    this.drawLanternGlowTiles(g, farmY);
+
+    // ── Iteration 3: Root tendrils along farm floor bottom ──
+    this.drawRootTendrils(g, farmY);
+
+    // ── Iteration 5: Fallen petals ON grass tiles ──
+    this.drawFallenPetals(g, surfaceY);
+
+    // ── Iteration 4: Animations ──
     this.addPetalDrift(surfaceY);
+    this.addWaterSparkles(deepY);
     this.addLanternFlicker(farmY);
+    this.addKoiDrift(deepY);
+    this.addFireflies(surfaceY);
+  }
+
+  // ── Iteration 2: Draw continuous side walls connecting floors ──
+  drawConnectingWall(g, upperFloorY, lowerFloorY, type) {
+    const upperEdges = getFloorEdges(upperFloorY);
+    const lowerEdges = getFloorEdges(lowerFloorY);
+
+    // The wall spans from the bottom edge of upper floor to the top edge of lower floor
+    const upperBottomY = upperEdges.bottom.y + TILE_H / 2;
+    const lowerTopLeftY = lowerEdges.topLeft.y - TILE_H / 2;
+    const wallH = lowerTopLeftY - upperBottomY + 12;
+
+    const leftX = upperEdges.left.x;
+    const bottomX = upperEdges.bottom.x;
+    const rightX = upperEdges.right.x;
+
+    if (type === 'surface-farm') {
+      // Left face — dark earth
+      g.fillStyle(PAL.wallDark, 1);
+      g.beginPath();
+      g.moveTo(leftX, upperBottomY);
+      g.lineTo(bottomX, upperEdges.bottom.y + TILE_H / 2);
+      g.lineTo(bottomX, upperEdges.bottom.y + TILE_H / 2 + wallH);
+      g.lineTo(leftX, upperBottomY + wallH);
+      g.closePath();
+      g.fillPath();
+
+      // Right face — slightly lighter earth
+      g.fillStyle(PAL.wallDark2, 1);
+      g.beginPath();
+      g.moveTo(bottomX, upperEdges.bottom.y + TILE_H / 2);
+      g.lineTo(rightX, upperEdges.right.y + TILE_H / 2);
+      g.lineTo(rightX, upperEdges.right.y + TILE_H / 2 + wallH);
+      g.lineTo(bottomX, upperEdges.bottom.y + TILE_H / 2 + wallH);
+      g.closePath();
+      g.fillPath();
+
+      // Earth layer bands
+      for (let i = 0; i < 4; i++) {
+        const bandY = upperBottomY + 12 + i * (wallH / 5);
+        const colors = [0x5c3a1e, 0x4a2e0e, 0x3a2208, 0x2e1a06];
+        g.fillStyle(colors[i], 0.4);
+        g.fillRect(leftX, bandY, bottomX - leftX, wallH / 6);
+      }
+
+      // Root lines dangling
+      g.lineStyle(1, 0x3a7a30, 0.25);
+      for (let i = 0; i < 6; i++) {
+        const rx = leftX + 20 + i * 30;
+        const ry = upperBottomY + 8;
+        g.beginPath();
+        g.moveTo(rx, ry);
+        g.lineTo(rx + 4, ry + 15 + Math.sin(i) * 8);
+        g.lineTo(rx - 2, ry + 28 + Math.cos(i) * 6);
+        g.strokePath();
+      }
+    } else {
+      // farm-deep: stone transition
+      g.fillStyle(PAL.wallStone, 1);
+      g.beginPath();
+      g.moveTo(leftX, upperBottomY);
+      g.lineTo(bottomX, upperEdges.bottom.y + TILE_H / 2);
+      g.lineTo(bottomX, upperEdges.bottom.y + TILE_H / 2 + wallH);
+      g.lineTo(leftX, upperBottomY + wallH);
+      g.closePath();
+      g.fillPath();
+
+      g.fillStyle(0x222838, 1);
+      g.beginPath();
+      g.moveTo(bottomX, upperEdges.bottom.y + TILE_H / 2);
+      g.lineTo(rightX, upperEdges.right.y + TILE_H / 2);
+      g.lineTo(rightX, upperEdges.right.y + TILE_H / 2 + wallH);
+      g.lineTo(bottomX, upperEdges.bottom.y + TILE_H / 2 + wallH);
+      g.closePath();
+      g.fillPath();
+
+      // Crack lines
+      g.lineStyle(1, PAL.wallCrack, 0.5);
+      for (let i = 0; i < 5; i++) {
+        const cy = upperBottomY + 10 + i * (wallH / 6);
+        const cx = leftX + 15 + (i % 3) * 25;
+        g.beginPath();
+        g.moveTo(cx, cy);
+        g.lineTo(cx + 30 + (i % 2) * 20, cy + 2);
+        g.lineTo(cx + 40 + (i % 3) * 15, cy + 6);
+        g.strokePath();
+      }
+
+      // Stone layer bands
+      for (let i = 0; i < 3; i++) {
+        const bandY = upperBottomY + wallH * 0.2 + i * (wallH / 4);
+        g.fillStyle(0x2a2e38, 0.3);
+        g.fillRect(leftX, bandY, bottomX - leftX, 2);
+      }
+    }
+  }
+
+  // Small decorative wall band right under a floor
+  drawFloorEdgeWall(g, fy, wallH, type) {
+    const left = gridToScreen(0, ROWS - 1, fy);
+    const bottom = gridToScreen(COLS - 1, ROWS - 1, fy);
+    const right = gridToScreen(COLS - 1, 0, fy);
+
+    const leftColor = type === 'deep' ? PAL.wallStone : PAL.wallDark;
+    const rightColor = type === 'deep' ? 0x222838 : PAL.wallLight;
+
+    // Left face
+    g.fillStyle(leftColor, 1);
+    g.beginPath();
+    g.moveTo(left.x, left.y + TILE_H / 2);
+    g.lineTo(bottom.x, bottom.y + TILE_H / 2);
+    g.lineTo(bottom.x, bottom.y + TILE_H / 2 + wallH);
+    g.lineTo(left.x, left.y + TILE_H / 2 + wallH);
+    g.closePath();
+    g.fillPath();
+
+    // Right face
+    g.fillStyle(rightColor, 1);
+    g.beginPath();
+    g.moveTo(bottom.x, bottom.y + TILE_H / 2);
+    g.lineTo(right.x, right.y + TILE_H / 2);
+    g.lineTo(right.x, right.y + TILE_H / 2 + wallH);
+    g.lineTo(bottom.x, bottom.y + TILE_H / 2 + wallH);
+    g.closePath();
+    g.fillPath();
+
+    // Surface: grass topsoil stripe
+    if (type === 'surface') {
+      g.fillStyle(PAL.grass1, 0.3);
+      g.beginPath();
+      g.moveTo(left.x, left.y + TILE_H / 2);
+      g.lineTo(bottom.x, bottom.y + TILE_H / 2);
+      g.lineTo(bottom.x, bottom.y + TILE_H / 2 + 6);
+      g.lineTo(left.x, left.y + TILE_H / 2 + 6);
+      g.closePath();
+      g.fillPath();
+    }
   }
 
   drawSurfaceFloor(g, fy) {
@@ -112,47 +302,77 @@ class NegishimuraScene extends Phaser.Scene {
       }
     }
 
-    // House
-    const hp = gridToScreen(4.5, 1.5, fy);
-    // front wall
-    g.fillStyle(PAL.houseWall, 1);
-    g.fillRect(hp.x - 18, hp.y - 26, 36, 20);
-    // side wall (darker)
-    g.fillStyle(0xb89060, 1);
-    g.beginPath();
-    g.moveTo(hp.x + 18, hp.y - 26);
-    g.lineTo(hp.x + 30, hp.y - 20);
-    g.lineTo(hp.x + 30, hp.y);
-    g.lineTo(hp.x + 18, hp.y - 6);
-    g.closePath();
-    g.fillPath();
-    // roof
-    g.fillStyle(PAL.roofBrown, 1);
-    g.beginPath();
-    g.moveTo(hp.x, hp.y - 40);
-    g.lineTo(hp.x + 24, hp.y - 26);
-    g.lineTo(hp.x + 34, hp.y - 20);
-    g.lineTo(hp.x + 10, hp.y - 6);
-    g.lineTo(hp.x - 22, hp.y - 20);
-    g.lineTo(hp.x - 22, hp.y - 26);
-    g.closePath();
-    g.fillPath();
+    // ── Iteration 1: Proper isometric house ──
+    this.drawIsometricHouse(g, fy);
 
     // Cherry blossom trees
     this.drawTree(g, gridToScreen(1, 1, fy));
     this.drawTree(g, gridToScreen(6, 3, fy));
+  }
 
-    // Fallen petals on nearby tiles
-    const petalTiles = [[0,1],[1,0],[2,1],[1,2],[5,3],[6,2],[5,4]];
-    for (const [c, r] of petalTiles) {
-      if (c < COLS && r < ROWS) {
-        const p = gridToScreen(c, r, fy);
-        for (let i = 0; i < 3; i++) {
-          g.fillStyle(PAL.blossom, 0.7);
-          g.fillCircle(p.x + (Math.random()-0.5)*20, p.y + (Math.random()-0.5)*8, 1.5);
-        }
-      }
-    }
+  // ── Iteration 1: Proper isometric house ──
+  drawIsometricHouse(g, fy) {
+    // House occupies tiles [4,1],[5,1],[4,2],[5,2] — center at 4.5, 1.5
+    const hp = gridToScreen(4.5, 1.5, fy);
+    const bw = 38; // base width
+    const bh = 24; // base height (visible wall)
+    const roofH = 14;
+
+    // Left wall (darker)
+    g.fillStyle(PAL.houseLeft, 1);
+    g.beginPath();
+    g.moveTo(hp.x - bw/2, hp.y - bh);
+    g.lineTo(hp.x, hp.y - bh + 10);
+    g.lineTo(hp.x, hp.y + 2);
+    g.lineTo(hp.x - bw/2, hp.y - 8);
+    g.closePath();
+    g.fillPath();
+
+    // Right wall (medium shade)
+    g.fillStyle(PAL.houseRight, 1);
+    g.beginPath();
+    g.moveTo(hp.x, hp.y - bh + 10);
+    g.lineTo(hp.x + bw/2, hp.y - bh);
+    g.lineTo(hp.x + bw/2, hp.y - 8);
+    g.lineTo(hp.x, hp.y + 2);
+    g.closePath();
+    g.fillPath();
+
+    // Windows on left wall (amber glow)
+    g.fillStyle(PAL.windowAmber, 0.9);
+    g.fillRect(hp.x - 14, hp.y - bh + 6, 5, 5);
+    g.fillRect(hp.x - 6, hp.y - bh + 10, 4, 4);
+
+    // Windows on right wall
+    g.fillStyle(PAL.windowAmber, 0.85);
+    g.fillRect(hp.x + 6, hp.y - bh + 6, 5, 5);
+    g.fillRect(hp.x + 14, hp.y - bh + 10, 4, 4);
+
+    // Roof (isometric diamond top face) — warm clay
+    g.fillStyle(PAL.roofClay, 1);
+    g.beginPath();
+    g.moveTo(hp.x, hp.y - bh - roofH);       // top
+    g.lineTo(hp.x + bw/2 + 4, hp.y - bh + 2);  // right
+    g.lineTo(hp.x, hp.y - bh + roofH - 2);      // bottom
+    g.lineTo(hp.x - bw/2 - 4, hp.y - bh + 2);   // left
+    g.closePath();
+    g.fillPath();
+
+    // Roof edge highlight
+    g.lineStyle(1, 0x803010, 0.6);
+    g.beginPath();
+    g.moveTo(hp.x, hp.y - bh - roofH);
+    g.lineTo(hp.x + bw/2 + 4, hp.y - bh + 2);
+    g.lineTo(hp.x, hp.y - bh + roofH - 2);
+    g.lineTo(hp.x - bw/2 - 4, hp.y - bh + 2);
+    g.closePath();
+    g.strokePath();
+
+    // Chimney nub
+    g.fillStyle(0x5a3a20, 1);
+    g.fillRect(hp.x + 8, hp.y - bh - roofH - 2, 5, 8);
+    g.fillStyle(0x4a2a18, 1);
+    g.fillRect(hp.x + 7, hp.y - bh - roofH - 4, 7, 3);
   }
 
   drawTree(g, pos) {
@@ -175,7 +395,8 @@ class NegishimuraScene extends Phaser.Scene {
         const p = gridToScreen(c, r, fy);
         const isPath = c === 3;
         if (isPath) {
-          drawDiamond(g, p.x, p.y, PAL.path);
+          // Iteration 3: lighter path
+          drawDiamond(g, p.x, p.y, PAL.farmPath);
         } else {
           drawDiamond(g, p.x, p.y, (c + r) % 2 === 0 ? PAL.earth1 : PAL.earth2);
         }
@@ -186,13 +407,11 @@ class NegishimuraScene extends Phaser.Scene {
           const cropColors = [PAL.crop, PAL.cropYellow, PAL.crop, PAL.rootVeg];
           const color = cropColors[r];
           if (r === 3) {
-            // root vegetables - small dots
             for (let i = 0; i < 3; i++) {
               g.fillStyle(color, 0.9);
               g.fillCircle(p.x + (i-1)*8, p.y, 2.5);
             }
           } else {
-            // leafy crops - small rects
             for (let i = 0; i < 4; i++) {
               g.fillStyle(color, 0.9);
               g.fillRect(p.x - 10 + i * 6, p.y - 3, 3, 6);
@@ -202,17 +421,74 @@ class NegishimuraScene extends Phaser.Scene {
       }
     }
 
-    // Lantern at [3,2]
+    // ── Iteration 3: Proper lantern shape at [3,2] ──
     const lp = gridToScreen(3, 2, fy);
+    // Post
     g.fillStyle(0x6b4226, 1);
-    g.fillRect(lp.x - 1, lp.y - 14, 2, 10);
+    g.fillRect(lp.x - 1, lp.y - 16, 2, 12);
+    // Lantern body
     g.fillStyle(PAL.lantern, 1);
-    g.fillRect(lp.x - 4, lp.y - 18, 8, 6);
-    // glow
-    g.fillStyle(PAL.lantern, 0.08);
-    g.fillCircle(lp.x, lp.y, 40);
-    g.fillStyle(PAL.lantern, 0.05);
-    g.fillCircle(lp.x, lp.y, 60);
+    g.fillRect(lp.x - 5, lp.y - 22, 10, 8);
+    // Glow cap (bright top)
+    g.fillStyle(0xffcc44, 0.9);
+    g.fillRect(lp.x - 6, lp.y - 24, 12, 3);
+    // Base cap
+    g.fillStyle(0x6b4226, 1);
+    g.fillRect(lp.x - 6, lp.y - 14, 12, 2);
+    // Base glow circle (soft)
+    g.fillStyle(PAL.lantern, 0.06);
+    g.fillCircle(lp.x, lp.y, 50);
+  }
+
+  // ── Iteration 3: Amber glow overlays on adjacent tiles ──
+  drawLanternGlowTiles(g, fy) {
+    // Lantern is at [3,2]. Glow the 8 surrounding tiles + self
+    const glowTiles = [
+      [2,1,0.15],[3,1,0.22],[4,1,0.15],
+      [2,2,0.20],           [4,2,0.20],
+      [2,3,0.15],[3,3,0.22],[4,3,0.15],
+      [3,2,0.25], // self — brightest
+    ];
+    for (const [c, r, a] of glowTiles) {
+      if (c >= 0 && c < COLS && r >= 0 && r < ROWS) {
+        const p = gridToScreen(c, r, fy);
+        drawDiamond(g, p.x, p.y, PAL.lantern, a);
+      }
+    }
+  }
+
+  // ── Iteration 3: Root tendrils along farm floor bottom edge ──
+  drawRootTendrils(g, fy) {
+    const bottomEdgeY = gridToScreen(3, ROWS - 1, fy).y + TILE_H / 2;
+    const leftX = gridToScreen(0, ROWS - 1, fy).x;
+    const rightX = gridToScreen(COLS - 1, ROWS - 1, fy).x;
+
+    g.lineStyle(1.5, PAL.rootTendril, 0.5);
+    const rootPositions = [0.15, 0.3, 0.5, 0.65, 0.85];
+    for (let i = 0; i < rootPositions.length; i++) {
+      const rx = leftX + (rightX - leftX) * rootPositions[i];
+      const ry = bottomEdgeY - 2;
+      g.beginPath();
+      g.moveTo(rx, ry);
+      g.lineTo(rx + (i % 2 === 0 ? 3 : -3), ry + 8);
+      g.lineTo(rx + (i % 2 === 0 ? -2 : 4), ry + 16);
+      g.lineTo(rx + (i % 2 === 0 ? 1 : -1), ry + 22);
+      g.strokePath();
+    }
+  }
+
+  // ── Iteration 5: Static fallen petals on grass ──
+  drawFallenPetals(g, fy) {
+    const petalTiles = [[0,0],[0,2],[1,0],[2,1],[1,3],[2,0],[5,3],[6,2],[5,4],[6,4],[0,4]];
+    for (const [c, r] of petalTiles) {
+      if (c < COLS && r < ROWS) {
+        const p = gridToScreen(c, r, fy);
+        for (let i = 0; i < 2; i++) {
+          g.fillStyle(PAL.blossom, 0.55);
+          g.fillCircle(p.x + (Math.sin(c*7+i*3)-0.5)*16, p.y + (Math.cos(r*5+i*2)-0.5)*6, 1.5);
+        }
+      }
+    }
   }
 
   drawDeepFloor(g, fy) {
@@ -227,7 +503,6 @@ class NegishimuraScene extends Phaser.Scene {
           drawDiamond(g, p.x, p.y, PAL.water);
         } else {
           drawDiamond(g, p.x, p.y, PAL.stone);
-          // stone rim around pool
           const adjPool = isPool(c-1,r)||isPool(c+1,r)||isPool(c,r-1)||isPool(c,r+1);
           if (adjPool) {
             drawDiamond(g, p.x, p.y, 0x3a4050);
@@ -236,145 +511,166 @@ class NegishimuraScene extends Phaser.Scene {
         drawDiamondOutline(g, p.x, p.y);
       }
     }
-
-    // Koi fish
-    const koi = gridToScreen(3, 2, fy);
-    g.fillStyle(0xe06020, 0.9);
-    g.fillEllipse(koi.x + 4, koi.y - 1, 10, 5);
-    g.fillStyle(0xf0f0f0, 0.8);
-    g.fillEllipse(koi.x + 9, koi.y - 1, 4, 3);
   }
 
-  drawWall(g, fy, wallH, type) {
-    // Compute the bottom edge of the floor's isometric grid
-    // Left corner: gridToScreen(0, ROWS-1)
-    // Right corner: gridToScreen(COLS-1, 0)
-    // Bottom corner: gridToScreen(COLS-1, ROWS-1)
-    const left = gridToScreen(0, ROWS - 1, fy);
-    const bottom = gridToScreen(COLS - 1, ROWS - 1, fy);
-    const right = gridToScreen(COLS - 1, 0, fy);
-
-    // Draw wall as a parallelogram under the bottom-left edge and bottom-right edge
-    // Left wall face (under left→bottom edge)
-    if (type === 'surface') {
-      g.fillStyle(PAL.wallDark, 1);
-    } else if (type === 'farm') {
-      g.fillStyle(PAL.wallDark, 1);
-    } else {
-      g.fillStyle(PAL.wallStone, 1);
-    }
-
-    // Left face
-    g.beginPath();
-    g.moveTo(left.x, left.y + TILE_H / 2);
-    g.lineTo(bottom.x, bottom.y + TILE_H / 2);
-    g.lineTo(bottom.x, bottom.y + TILE_H / 2 + wallH);
-    g.lineTo(left.x, left.y + TILE_H / 2 + wallH);
-    g.closePath();
-    g.fillPath();
-
-    // Right face (slightly lighter)
-    const rightColor = type === 'deep' ? 0x222838 : PAL.wallLight;
-    g.fillStyle(rightColor, 1);
-    g.beginPath();
-    g.moveTo(bottom.x, bottom.y + TILE_H / 2);
-    g.lineTo(right.x, right.y + TILE_H / 2);
-    g.lineTo(right.x, right.y + TILE_H / 2 + wallH);
-    g.lineTo(bottom.x, bottom.y + TILE_H / 2 + wallH);
-    g.closePath();
-    g.fillPath();
-
-    // Detail lines
-    if (type === 'farm') {
-      // Root lines
-      g.lineStyle(1, 0x3a7a30, 0.3);
-      for (let i = 0; i < 5; i++) {
-        const yOff = 15 + i * 14;
-        const lx = left.x + 10 + i * 20;
-        g.beginPath();
-        g.moveTo(lx, left.y + TILE_H / 2 + yOff);
-        g.lineTo(lx + 8, left.y + TILE_H / 2 + yOff + 10);
-        g.lineTo(lx + 3, left.y + TILE_H / 2 + yOff + 18);
-        g.strokePath();
-      }
-    } else if (type === 'deep') {
-      // Crack lines
-      g.lineStyle(1, PAL.wallCrack, 0.5);
-      for (let i = 0; i < 3; i++) {
-        const yOff = 12 + i * 18;
-        g.beginPath();
-        g.moveTo(left.x + 20, left.y + TILE_H / 2 + yOff);
-        g.lineTo(left.x + 80, left.y + TILE_H / 2 + yOff);
-        g.strokePath();
-      }
-    } else {
-      // Surface: grass/topsoil stripe
-      g.fillStyle(PAL.grass1, 0.3);
-      g.beginPath();
-      g.moveTo(left.x, left.y + TILE_H / 2);
-      g.lineTo(bottom.x, bottom.y + TILE_H / 2);
-      g.lineTo(bottom.x, bottom.y + TILE_H / 2 + 8);
-      g.lineTo(left.x, left.y + TILE_H / 2 + 8);
-      g.closePath();
-      g.fillPath();
-    }
-  }
-
-  addWaterPulse(deepY) {
-    const glow = this.add.graphics();
-    const poolCenter = gridToScreen(3, 2, deepY);
-    glow.fillStyle(PAL.shimmer, 0.15);
-    glow.fillEllipse(poolCenter.x, poolCenter.y, 80, 30);
-
-    this.tweens.add({
-      targets: glow,
-      alpha: { from: 0.4, to: 1 },
-      duration: 3000,
-      yoyo: true,
-      repeat: -1,
-      ease: 'Sine.easeInOut'
-    });
-  }
-
+  // ── Iteration 4: Petal drift — 8 petals drifting downward across surface ──
   addPetalDrift(surfaceY) {
-    for (let i = 0; i < 6; i++) {
+    const floorH = (COLS + ROWS - 1) * (TILE_H / 2);
+    for (let i = 0; i < 8; i++) {
       const petal = this.add.graphics();
       petal.fillStyle(PAL.blossom, 0.8);
       petal.fillEllipse(0, 0, 3, 2);
 
-      const startX = 160 + Math.random() * 160;
-      const startY = surfaceY + Math.random() * 40;
+      const startX = 140 + Math.random() * 200;
+      const startY = surfaceY - 10 + Math.random() * 20;
       petal.setPosition(startX, startY);
 
       this.tweens.add({
         targets: petal,
-        x: startX + 30 + Math.random() * 40,
-        y: startY + 60 + Math.random() * 40,
-        alpha: { from: 0.9, to: 0 },
-        duration: 4000 + Math.random() * 3000,
-        delay: i * 800,
+        x: startX + 20 + Math.random() * 30,
+        y: surfaceY + floorH + 10,
+        alpha: { from: 0.85, to: 0.2 },
+        duration: 5000 + Math.random() * 3000,
+        delay: i * 600,
         repeat: -1,
         onRepeat: () => {
-          petal.setPosition(160 + Math.random() * 160, surfaceY + Math.random() * 20);
+          petal.setPosition(140 + Math.random() * 200, surfaceY - 10 + Math.random() * 10);
         }
       });
     }
   }
 
-  addLanternFlicker(farmY) {
-    const glow = this.add.graphics();
-    const lp = gridToScreen(3, 2, farmY);
-    glow.fillStyle(PAL.lantern, 0.12);
-    glow.fillCircle(lp.x, lp.y, 50);
+  // ── Iteration 4: Water sparkles — tiny white dots fading in/out ──
+  addWaterSparkles(deepY) {
+    for (let i = 0; i < 4; i++) {
+      const sparkle = this.add.graphics();
+      sparkle.fillStyle(0xffffff, 1);
+      sparkle.fillCircle(0, 0, 1.5);
 
+      const poolCenter = gridToScreen(3, 2, deepY);
+      const sx = poolCenter.x + (Math.random() - 0.5) * 60;
+      const sy = poolCenter.y + (Math.random() - 0.5) * 20;
+      sparkle.setPosition(sx, sy);
+      sparkle.setAlpha(0);
+
+      this.tweens.add({
+        targets: sparkle,
+        alpha: { from: 0, to: 0.6 },
+        duration: 1200 + Math.random() * 800,
+        delay: i * 700,
+        yoyo: true,
+        repeat: -1,
+        hold: 200,
+        ease: 'Sine.easeInOut',
+        onRepeat: () => {
+          const nx = poolCenter.x + (Math.random() - 0.5) * 60;
+          const ny = poolCenter.y + (Math.random() - 0.5) * 20;
+          sparkle.setPosition(nx, ny);
+        }
+      });
+    }
+  }
+
+  // ── Iteration 4: Lantern flicker — amber glow tiles pulse ──
+  addLanternFlicker(farmY) {
+    const glowOverlay = this.add.graphics();
+    const glowTiles = [
+      [2,1,0.12],[3,1,0.18],[4,1,0.12],
+      [2,2,0.16],           [4,2,0.16],
+      [2,3,0.12],[3,3,0.18],[4,3,0.12],
+      [3,2,0.20],
+    ];
+
+    const drawGlow = (alpha) => {
+      glowOverlay.clear();
+      for (const [c, r, baseA] of glowTiles) {
+        if (c >= 0 && c < COLS && r >= 0 && r < ROWS) {
+          const p = gridToScreen(c, r, farmY);
+          drawDiamond(glowOverlay, p.x, p.y, PAL.lantern, baseA * alpha);
+        }
+      }
+    };
+
+    drawGlow(1);
+
+    // Pulse alpha between 0.6 and 1.1 (clamped via base alpha)
+    const pulseObj = { val: 1 };
     this.tweens.add({
-      targets: glow,
-      alpha: { from: 0.8, to: 1 },
-      duration: 800,
+      targets: pulseObj,
+      val: { from: 0.6, to: 1.1 },
+      duration: 900,
       yoyo: true,
       repeat: -1,
-      ease: 'Sine.easeInOut'
+      ease: 'Sine.easeInOut',
+      onUpdate: () => { drawGlow(pulseObj.val); }
     });
+  }
+
+  // ── Iteration 4: Koi fish slow oval drift ──
+  addKoiDrift(deepY) {
+    const poolCenter = gridToScreen(3, 2, deepY);
+    const koi = this.add.graphics();
+
+    const drawKoi = (x, y) => {
+      koi.clear();
+      // body
+      koi.fillStyle(0xe06020, 0.9);
+      koi.fillEllipse(x, y, 10, 5);
+      // tail
+      koi.fillStyle(0xf0f0f0, 0.8);
+      koi.fillEllipse(x + 5, y, 4, 3);
+    };
+
+    drawKoi(poolCenter.x, poolCenter.y);
+
+    const pathObj = { angle: 0 };
+    this.tweens.add({
+      targets: pathObj,
+      angle: { from: 0, to: Math.PI * 2 },
+      duration: 8000,
+      repeat: -1,
+      ease: 'Linear',
+      onUpdate: () => {
+        const kx = poolCenter.x + Math.cos(pathObj.angle) * 22;
+        const ky = poolCenter.y + Math.sin(pathObj.angle) * 8;
+        drawKoi(kx, ky);
+      }
+    });
+  }
+
+  // ── Iteration 5: Fireflies above surface ──
+  addFireflies(surfaceY) {
+    for (let i = 0; i < 3; i++) {
+      const ff = this.add.graphics();
+      ff.fillStyle(0xffffcc, 1);
+      ff.fillCircle(0, 0, 1.5);
+
+      const sx = 160 + Math.random() * 160;
+      const sy = surfaceY - 20 + Math.random() * 30;
+      ff.setPosition(sx, sy);
+
+      // Gentle float
+      this.tweens.add({
+        targets: ff,
+        x: sx + (Math.random() - 0.5) * 40,
+        y: sy + (Math.random() - 0.5) * 20,
+        duration: 3000 + Math.random() * 2000,
+        yoyo: true,
+        repeat: -1,
+        ease: 'Sine.easeInOut'
+      });
+
+      // Alpha pulse
+      this.tweens.add({
+        targets: ff,
+        alpha: { from: 0.15, to: 0.7 },
+        duration: 1500 + Math.random() * 1000,
+        delay: i * 500,
+        yoyo: true,
+        repeat: -1,
+        ease: 'Sine.easeInOut'
+      });
+    }
   }
 }
 
