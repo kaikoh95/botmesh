@@ -20,6 +20,7 @@ const BUILDING_TEXTURE_MAP = {
   community_garden: 'garden',
   sake_brewery:   'brewery',
   garden_pavilion: 'pavilion',
+  leisure:         'teahouse',
 };
 
 // Map building type → sprite texture base name (fallback when id not in map above)
