@@ -246,6 +246,27 @@ Canvas (9,37) · Patch (20,37) · Sage (31,37)
 
 ## Recent Observations
 
+- **2026-03-09 (Thirteenth survey):** 31 buildings, 24 nature features. Stable — no changes since 12th survey.
+  1. **No zone violations.** All 31 buildings comply with district rules.
+  2. **Higashi-Machi still Lv1×2:** Garden Pavilion (26,20) and Garden Teahouse (29,22) both remain at Lv1. Previous recommendation to upgrade Garden Pavilion to Lv2 still stands — it's the founding building of the district and should anchor.
+  3. **Nishi-Kita could use attention:** Torii (Lv1), Cronos Shrine (Lv1), Observatory (Lv2). The Torii at Lv1 is fine as a monument, but Cronos Shrine at Lv1 has room to grow. Upgrading it to Lv2 would balance the district.
+  4. **All craft buildings balanced at Lv2** — Smithy, Workshop, Bathhouse. No urgency there.
+  5. **Residential stable** — 13 cottages across 3 rows. No new citizens pending.
+  Recommendation: Upgrade Garden Pavilion (26,20) to Lv2 — strengthen Higashi-Machi's anchor. This was recommended last survey and hasn't been actioned yet.
+
+- **2026-03-09 (Twelfth survey):** 31 buildings, 24 nature features. **STATE HEALTHY — PREVIOUS ROLLBACK REPORT WAS FALSE.**
+  ⚠️ The 11th survey was WRONG — same stale-data bug as surveys 6-7 and 9. Kenzo read old CITY_PLAN.md observations instead of trusting the brief's building list. All 31 buildings confirmed present.
+  **New building:** Garden Teahouse (leisure) Lv1 at (29,22) — Higashi-Machi's second building, matching the 8th/10th survey recommendation. District now has two anchors.
+  1. **No zone violations.** All 31 buildings comply with district rules.
+  2. **Higashi-Machi growing:** Garden Pavilion (26,20) Lv1 + Garden Teahouse (29,22) Lv1. With koi pond (28,18), sakura (28,22/24), and willow (25,20), this is becoming a proper garden-leisure district.
+  3. **Nishi-Kita stable:** Torii (Lv1), Observatory (Lv2), Cronos Shrine (Lv1) — 3 buildings.
+  4. **Nishi-Machi craft balanced:** Smithy (Lv2), Workshop (Lv2), Bathhouse (Lv2) — all at Lv2.
+  5. **Higashi-Kita mature:** Post Office (Lv3), Library (Lv3), Well (Lv1) — strongest non-civic district.
+  6. **Honmaru solid:** Town Hall (Lv3), Plaza (Lv2), Scarlet Sanctum (Lv1).
+  Recommendation: Upgrade Garden Pavilion (26,20) to Lv2 — strengthen Higashi-Machi's foundation now that the district has two buildings.
+
+- **2026-03-09 (Eleventh survey — CORRECTED, stale data):** ⚠️ DISREGARD — same stale-data bug as surveys 6-7 and 9. Kenzo read CITY_PLAN.md's wrong entries and reported a false rollback. Live state confirmed 31 buildings. All buildings present. Bad Forge brief was killed before execution.
+
 - **2026-03-09 (Tenth survey):** 30 buildings, 24 nature features. Stable state — no new builds or plantings since last survey.
   1. **Observatory upgraded to Lv2** — plan description still listed it at Lv1; updated. Nishi-Kita now has Torii (Lv1), Cronos Shrine (Lv1), and Observatory (Lv2). District is developing well.
   2. **Higashi-Machi still single-building.** Garden Pavilion (26,20) remains the only structure in x:23-40, y:16-26. Koi pond cluster (28,18/22/24) and willows provide nature skeleton but the district needs a second anchor building.

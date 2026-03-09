@@ -63,13 +63,16 @@ class ShukubamachiScene extends Phaser.Scene {
   create() {
     const g = this.add.graphics();
 
-    // Title
-    this.add.text(W / 2, 22, '宿場町 · Shukubamachi', {
-      fontFamily: 'monospace', fontSize: '16px', color: '#8090b0',
-      shadow: { offsetX: 0, offsetY: 0, color: '#4060a0', blur: 10, fill: true }
+    // Iteration 5: Title with glow + subtitle
+    this.add.text(W / 2, 18, '宿場町 · Shukubamachi', {
+      fontFamily: 'monospace', fontSize: '18px', color: '#8090b0',
+      shadow: { offsetX: 0, offsetY: 0, color: '#4060a0', blur: 12, fill: true }
     }).setOrigin(0.5);
-    this.add.text(W / 2, 22, '宿場町 · Shukubamachi', {
-      fontFamily: 'monospace', fontSize: '16px', color: '#d0d8e8'
+    this.add.text(W / 2, 18, '宿場町 · Shukubamachi', {
+      fontFamily: 'monospace', fontSize: '18px', color: '#d0d8e8'
+    }).setOrigin(0.5);
+    this.add.text(W / 2, 35, 'inn-town waystation', {
+      fontFamily: 'monospace', fontSize: '10px', color: '#506080', letterSpacing: 2
     }).setOrigin(0.5);
 
     // Draw outer walls background (fill entire building footprint)
@@ -94,8 +97,27 @@ class ShukubamachiScene extends Phaser.Scene {
     // Draw outer wall border
     this.drawOuterWallBorder(g, bx, by, bw, bh);
 
+    // Iteration 5: Exterior windows
+    this.drawExteriorWindows(g);
+
     // Lighting overlays
     this.drawLighting(g);
+
+    // Iteration 5: Room labels (tiny, subtle)
+    const roomLabels = [
+      { col: 0, row: 0, text: '書庫', ox: 80, oy: 108 },  // Library
+      { col: 1, row: 0, text: '廊下', ox: 80, oy: 108 },  // Hallway
+      { col: 2, row: 0, text: '酒場', ox: 80, oy: 108 },  // Tavern
+      { col: 0, row: 1, text: '倉庫', ox: 80, oy: 108 },  // Storage
+      { col: 1, row: 1, text: '井戸', ox: 80, oy: 108 },  // Well
+      { col: 2, row: 1, text: '台所', ox: 80, oy: 108 },  // Kitchen
+    ];
+    for (const rl of roomLabels) {
+      const { x, y } = roomOrigin(rl.col, rl.row);
+      this.add.text(x + rl.ox, y + rl.oy, rl.text, {
+        fontFamily: 'monospace', fontSize: '8px', color: '#ffffff', alpha: 0.15
+      }).setOrigin(0.5).setAlpha(0.15);
+    }
 
     // Characters
     this.drawCharacters(g);
@@ -119,6 +141,13 @@ class ShukubamachiScene extends Phaser.Scene {
         const ph = Math.min(plankH, h - py);
         g.fillRect(ox + px, oy + py, pw, ph);
       }
+      // Iteration 3: Wood grain lines — subtle horizontal lines within each plank row
+      g.lineStyle(1, 0x000000, 0.06);
+      g.lineBetween(ox, oy + py + 3, ox + w, oy + py + 3);
+      g.lineBetween(ox, oy + py + 6, ox + w, oy + py + 6);
+      // Plank seam
+      g.lineStyle(1, 0x000000, 0.10);
+      g.lineBetween(ox, oy + py, ox + w, oy + py);
     }
   }
 
@@ -160,6 +189,9 @@ class ShukubamachiScene extends Phaser.Scene {
       for (let b = 0; b < 4; b++) {
         g.fillStyle(bookColors[(i + b) % 5], 0.9);
         g.fillRect(bx + 2 + b * 4, y + 5, 3, 8);
+        // Iteration 2: Book title marks (tiny horizontal line on spine)
+        g.fillStyle(0xd0c0a0, 0.4);
+        g.fillRect(bx + 2 + b * 4, y + 7, 2, 1);
       }
     }
 
@@ -303,6 +335,15 @@ class ShukubamachiScene extends Phaser.Scene {
       g.lineBetween(x + cx + 7, y + cy - 7, x + cx - 7, y + cy + 7);
     }
 
+    // Iteration 2: Barrel labels — tiny marks on each barrel
+    for (const [bx, by] of barrelPositions) {
+      g.fillStyle(0xd0c0a0, 0.5);
+      g.fillRect(x + bx - 3, y + by - 5, 6, 4);
+      g.lineStyle(1, 0x4a3020, 0.3);
+      g.lineBetween(x + bx - 2, y + by - 4, x + bx + 2, y + by - 4);
+      g.lineBetween(x + bx - 1, y + by - 2, x + bx + 1, y + by - 2);
+    }
+
     // Small chest
     g.fillStyle(PAL.chest, 1);
     g.fillRect(x + 55, y + 85, 18, 12);
@@ -372,6 +413,22 @@ class ShukubamachiScene extends Phaser.Scene {
     g.lineStyle(1, 0x8a7a50, 0.5);
     g.strokeRect(x + 30, y + ROOM_H - 18, 14, 10);
 
+    // Iteration 2: Food on counter — fish, vegetables, bowl
+    // Fish
+    g.fillStyle(0x8090a0, 0.8);
+    g.fillEllipse(x + 55, y + ROOM_H - 13, 10, 4);
+    g.fillStyle(0x7080a0, 0.6);
+    g.fillEllipse(x + 60, y + ROOM_H - 13, 4, 3);
+    // Vegetables (small green circles)
+    g.fillStyle(0x509030, 0.8);
+    g.fillCircle(x + 75, y + ROOM_H - 14, 3);
+    g.fillCircle(x + 81, y + ROOM_H - 13, 2.5);
+    // Bowl
+    g.fillStyle(0x6a5030, 0.9);
+    g.fillCircle(x + 20, y + ROOM_H - 13, 5);
+    g.fillStyle(0xc0a060, 0.5);
+    g.fillCircle(x + 20, y + ROOM_H - 13, 3);
+
     // Pots and pans
     const potPositions = [[22, 35], [40, 30], [55, 38]];
     for (const [px, py] of potPositions) {
@@ -396,6 +453,40 @@ class ShukubamachiScene extends Phaser.Scene {
   }
 
   // ── Wall helpers ──
+  // Iteration 1: Octagonal doorway trim — chamfer corners with diagonal cuts
+  drawDoorwayTrim(g, dx, dy, isVertical) {
+    const CH = 6; // chamfer size
+    g.fillStyle(0x4a3020, 1);
+    if (isVertical) {
+      // Top-left chamfer
+      g.beginPath(); g.moveTo(dx, dy); g.lineTo(dx + CH, dy); g.lineTo(dx, dy + CH); g.closePath(); g.fillPath();
+      // Top-right chamfer
+      g.beginPath(); g.moveTo(dx + WALL_INNER, dy); g.lineTo(dx + WALL_INNER - CH, dy); g.lineTo(dx + WALL_INNER, dy + CH); g.closePath(); g.fillPath();
+      // Bottom-left chamfer
+      g.beginPath(); g.moveTo(dx, dy + DOOR_W); g.lineTo(dx + CH, dy + DOOR_W); g.lineTo(dx, dy + DOOR_W - CH); g.closePath(); g.fillPath();
+      // Bottom-right chamfer
+      g.beginPath(); g.moveTo(dx + WALL_INNER, dy + DOOR_W); g.lineTo(dx + WALL_INNER - CH, dy + DOOR_W); g.lineTo(dx + WALL_INNER, dy + DOOR_W - CH); g.closePath(); g.fillPath();
+    } else {
+      // Left-top chamfer
+      g.beginPath(); g.moveTo(dx, dy); g.lineTo(dx, dy + WALL_INNER); g.lineTo(dx + CH, dy); g.closePath(); g.fillPath();
+      // Left-bottom chamfer
+      g.beginPath(); g.moveTo(dx, dy + WALL_INNER); g.lineTo(dx + CH, dy + WALL_INNER); g.lineTo(dx, dy); g.closePath(); g.fillPath();
+      // Right-top chamfer
+      g.beginPath(); g.moveTo(dx + DOOR_W, dy); g.lineTo(dx + DOOR_W, dy + WALL_INNER); g.lineTo(dx + DOOR_W - CH, dy); g.closePath(); g.fillPath();
+      // Right-bottom chamfer
+      g.beginPath(); g.moveTo(dx + DOOR_W, dy + WALL_INNER); g.lineTo(dx + DOOR_W - CH, dy + WALL_INNER); g.lineTo(dx + DOOR_W, dy); g.closePath(); g.fillPath();
+    }
+    // Trim outline
+    g.lineStyle(1, 0x5a4030, 0.6);
+    if (isVertical) {
+      g.lineBetween(dx, dy + CH, dx, dy + DOOR_W - CH);
+      g.lineBetween(dx + WALL_INNER, dy + CH, dx + WALL_INNER, dy + DOOR_W - CH);
+    } else {
+      g.lineBetween(dx + CH, dy, dx + DOOR_W - CH, dy);
+      g.lineBetween(dx + CH, dy + WALL_INNER, dx + DOOR_W - CH, dy + WALL_INNER);
+    }
+  }
+
   drawInnerWalls(g) {
     // Vertical inner walls (between columns)
     for (let col = 0; col < 2; col++) {
@@ -416,6 +507,9 @@ class ShukubamachiScene extends Phaser.Scene {
         // Threshold
         g.fillStyle(PAL.threshold, 1);
         g.fillRect(wx, doorY, WALL_INNER, DOOR_W);
+
+        // Iteration 1: Octagonal doorway trim
+        this.drawDoorwayTrim(g, wx, doorY, true);
       }
     }
 
@@ -434,6 +528,9 @@ class ShukubamachiScene extends Phaser.Scene {
       // Threshold
       g.fillStyle(PAL.threshold, 1);
       g.fillRect(doorX, wy, DOOR_W, WALL_INNER);
+
+      // Iteration 1: Octagonal doorway trim
+      this.drawDoorwayTrim(g, doorX, wy, false);
     }
   }
 
@@ -443,6 +540,83 @@ class ShukubamachiScene extends Phaser.Scene {
     // Outer edge highlight
     g.lineStyle(1, 0x1a0e06, 1);
     g.strokeRect(bx, by, bw, bh);
+
+    // Iteration 4: Drop shadows below south-facing walls (horizontal inner walls)
+    g.lineStyle(2, 0x000000, 0.15);
+    for (let col = 0; col < 3; col++) {
+      const r1 = roomOrigin(col, 0);
+      const wy = r1.y + ROOM_H + WALL_INNER;
+      g.lineBetween(r1.x, wy, r1.x + ROOM_W, wy);
+    }
+    // Shadow below outer top wall
+    g.lineStyle(2, 0x000000, 0.12);
+    for (let col = 0; col < 3; col++) {
+      const r0 = roomOrigin(col, 0);
+      g.lineBetween(r0.x, r0.y, r0.x + ROOM_W, r0.y);
+    }
+    // Shadow below vertical inner walls (east side)
+    for (let col = 0; col < 2; col++) {
+      for (let row = 0; row < 2; row++) {
+        const r1 = roomOrigin(col, row);
+        const wx = r1.x + ROOM_W + WALL_INNER;
+        g.lineBetween(wx, r1.y, wx, r1.y + ROOM_H);
+      }
+    }
+  }
+
+  // Iteration 5: Exterior windows — small night-sky blue rectangles on outer walls
+  drawExteriorWindows(g) {
+    // Top row rooms — windows on top outer wall
+    for (let col = 0; col < 3; col++) {
+      const { x, y } = roomOrigin(col, 0);
+      const wy = y - WALL_OUTER;
+      // 2 windows per room
+      for (let w = 0; w < 2; w++) {
+        const wx = x + 25 + w * 50;
+        g.fillStyle(0x1a2a4a, 1);
+        g.fillRect(wx, wy + 1, 12, WALL_OUTER - 2);
+        // Star dots
+        g.fillStyle(0x8090c0, 0.6);
+        g.fillCircle(wx + 4, wy + 3, 1);
+        g.fillCircle(wx + 9, wy + 5, 0.8);
+      }
+    }
+    // Bottom row rooms — windows on bottom outer wall
+    for (let col = 0; col < 3; col++) {
+      const { x, y } = roomOrigin(col, 1);
+      const wy = y + ROOM_H;
+      for (let w = 0; w < 2; w++) {
+        const wx = x + 25 + w * 50;
+        g.fillStyle(0x1a2a4a, 1);
+        g.fillRect(wx, wy + 1, 12, WALL_OUTER - 2);
+        g.fillStyle(0x8090c0, 0.5);
+        g.fillCircle(wx + 6, wy + 4, 1);
+      }
+    }
+    // Left column — windows on left outer wall
+    for (let row = 0; row < 2; row++) {
+      const { x, y } = roomOrigin(0, row);
+      const wx = x - WALL_OUTER;
+      for (let w = 0; w < 2; w++) {
+        const wy = y + 25 + w * 50;
+        g.fillStyle(0x1a2a4a, 1);
+        g.fillRect(wx + 1, wy, WALL_OUTER - 2, 12);
+        g.fillStyle(0x8090c0, 0.5);
+        g.fillCircle(wx + 4, wy + 6, 1);
+      }
+    }
+    // Right column — windows on right outer wall
+    for (let row = 0; row < 2; row++) {
+      const { x, y } = roomOrigin(2, row);
+      const wx = x + ROOM_W;
+      for (let w = 0; w < 2; w++) {
+        const wy = y + 25 + w * 50;
+        g.fillStyle(0x1a2a4a, 1);
+        g.fillRect(wx + 1, wy, WALL_OUTER - 2, 12);
+        g.fillStyle(0x8090c0, 0.5);
+        g.fillCircle(wx + 4, wy + 6, 1);
+      }
+    }
   }
 
   drawWallLantern(g, lx, ly) {

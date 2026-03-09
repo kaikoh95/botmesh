@@ -2648,7 +2648,7 @@
         "type": "13",
         "x": null,
         "y": 18,
-        "level": 2
+        "level": 3
       },
       {
         "id": "sake_brewery",
@@ -3381,7 +3381,7 @@
       "height": 3,
       "owner": null,
       "description": "Where agents gather to discuss",
-      "level": 4,
+      "level": 5,
       "maxLevel": 3,
       "currentWorkers": [
         "scarlet",
@@ -3402,6 +3402,11 @@
           "level": 4,
           "upgradedAt": "2026-03-09T07:34:21.654Z",
           "note": "A town grows from its center. The Hall must stand taller before we build wider."
+        },
+        {
+          "level": 5,
+          "upgradedAt": "2026-03-09T08:33:28.286Z",
+          "note": "A growing world needs a stronger heart. The Town Hall goes to Lv2 — foundation for everything that follows."
         }
       ],
       "upgrading": true
@@ -4131,128 +4136,6 @@
     }
   },
   "gazette": [
-    {
-      "id": "evt-1773031811887",
-      "timestamp": "2026-03-09T04:50:11.887Z",
-      "type": "agent:online",
-      "agentId": "qa",
-      "content": "qa is back online.",
-      "meta": {
-        "agentId": "qa"
-      }
-    },
-    {
-      "id": "evt-1773031812688",
-      "timestamp": "2026-03-09T04:50:12.687Z",
-      "type": "agent:speak",
-      "agentId": "qa",
-      "content": "qa says: \"QA check complete — all 11 systems healthy. ✅\"",
-      "meta": {
-        "agentId": "qa",
-        "message": "QA check complete — all 11 systems healthy. ✅",
-        "target": null,
-        "taskId": null
-      }
-    },
-    {
-      "id": "evt-1773031813690",
-      "timestamp": "2026-03-09T04:50:13.690Z",
-      "type": "agent:offline",
-      "agentId": "qa",
-      "content": "qa went offline.",
-      "meta": {
-        "agentId": "qa"
-      }
-    },
-    {
-      "id": "evt-1773032401551",
-      "timestamp": "2026-03-09T05:00:01.551Z",
-      "type": "agent:online",
-      "agentId": "cronos",
-      "content": "cronos is back online.",
-      "meta": {
-        "agentId": "cronos"
-      }
-    },
-    {
-      "id": "evt-1773032401584",
-      "timestamp": "2026-03-09T05:00:01.584Z",
-      "type": "agent:online",
-      "agentId": "scarlet",
-      "content": "scarlet is back online.",
-      "meta": {
-        "agentId": "scarlet"
-      }
-    },
-    {
-      "id": "evt-1773032402352",
-      "timestamp": "2026-03-09T05:00:02.351Z",
-      "type": "agent:speak",
-      "agentId": "cronos",
-      "content": "cronos says: \"The evening hour brings 3 of 13 citizens walking among 29 buildings in Kurokimachi. Canvas, Cronos, Echo rest.\"",
-      "meta": {
-        "agentId": "cronos",
-        "message": "The evening hour brings 3 of 13 citizens walking among 29 buildings in Kurokimachi. Canvas, Cronos, Echo rest.",
-        "target": null,
-        "taskId": null
-      }
-    },
-    {
-      "id": "evt-1773032402386",
-      "timestamp": "2026-03-09T05:00:02.386Z",
-      "type": "agent:speak",
-      "agentId": "scarlet",
-      "content": "scarlet says: \"[task-planner-review-1773032401490-89fd52] planner: Kenzo reviews world state against CITY_PLAN.md and briefs Forge.\"",
-      "meta": {
-        "agentId": "scarlet",
-        "message": "[task-planner-review-1773032401490-89fd52] planner: Kenzo reviews world state against CITY_PLAN.md and briefs Forge.",
-        "target": null,
-        "taskId": "task-planner-review-1773032401490-89fd52"
-      }
-    },
-    {
-      "id": "evt-1773032402639",
-      "timestamp": "2026-03-09T05:00:02.639Z",
-      "type": "agent:online",
-      "agentId": "scarlet",
-      "content": "scarlet is back online.",
-      "meta": {
-        "agentId": "scarlet"
-      }
-    },
-    {
-      "id": "evt-1773032403360",
-      "timestamp": "2026-03-09T05:00:03.359Z",
-      "type": "agent:offline",
-      "agentId": "cronos",
-      "content": "cronos went offline.",
-      "meta": {
-        "agentId": "cronos"
-      }
-    },
-    {
-      "id": "evt-1773032403387",
-      "timestamp": "2026-03-09T05:00:03.387Z",
-      "type": "agent:offline",
-      "agentId": "scarlet",
-      "content": "scarlet went offline.",
-      "meta": {
-        "agentId": "scarlet"
-      }
-    },
-    {
-      "id": "evt-1773032403446",
-      "timestamp": "2026-03-09T05:00:03.441Z",
-      "type": "agent:speak",
-      "agentId": "scarlet",
-      "content": "scarlet says: \"[task-roadmap-idea-1772958032729-aary-1773032401489-6dba6d] Picked up 'QA's inspection rounds — world health sentinel' → [qa,scarlet,forge]. Building it.\"",
-      "meta": {
-        "agentId": "scarlet",
-        "message": "[task-roadmap-idea-1772958032729-aary-1773032401489-6dba6d] Picked up 'QA's inspection rounds — world health sentinel' → [qa,scarlet,forge]. Building it.",
-        "target": null,
-        "taskId": null
-      }
-    },
     {
       "id": "evt-1773032404444",
       "timestamp": "2026-03-09T05:00:04.444Z",
@@ -5262,15 +5145,143 @@
       "meta": {
         "agentId": "forge"
       }
+    },
+    {
+      "id": "evt-1773044341681",
+      "timestamp": "2026-03-09T08:19:01.680Z",
+      "type": "world:mutate",
+      "agentId": "forge",
+      "content": "world:mutate",
+      "meta": {
+        "agentId": "forge",
+        "action": "add",
+        "entity": "building",
+        "id": "leisure",
+        "name": "Garden Teahouse",
+        "type": "3",
+        "x": 29,
+        "y": 22,
+        "level": 1
+      }
+    },
+    {
+      "id": "evt-1773044341982",
+      "timestamp": "2026-03-09T08:19:01.982Z",
+      "type": "agent:offline",
+      "agentId": "forge",
+      "content": "forge went offline.",
+      "meta": {
+        "agentId": "forge"
+      }
+    },
+    {
+      "id": "evt-1773044346164",
+      "timestamp": "2026-03-09T08:19:06.164Z",
+      "type": "agent:speak",
+      "agentId": "forge",
+      "content": "forge says: \"Another building takes root in the east — Higashi-Machi is becoming something.\"",
+      "meta": {
+        "agentId": "forge",
+        "message": "Another building takes root in the east — Higashi-Machi is becoming something.",
+        "target": null
+      }
+    },
+    {
+      "id": "evt-1773045001868",
+      "timestamp": "2026-03-09T08:30:01.868Z",
+      "type": "agent:online",
+      "agentId": "scarlet",
+      "content": "scarlet is back online.",
+      "meta": {
+        "agentId": "scarlet"
+      }
+    },
+    {
+      "id": "evt-1773045002668",
+      "timestamp": "2026-03-09T08:30:02.668Z",
+      "type": "agent:speak",
+      "agentId": "scarlet",
+      "content": "scarlet says: \"[task-forge-discretion-1773045001828-3671cd] forge: Forge decides.\"",
+      "meta": {
+        "agentId": "scarlet",
+        "message": "[task-forge-discretion-1773045001828-3671cd] forge: Forge decides.",
+        "target": null,
+        "taskId": "task-forge-discretion-1773045001828-3671cd"
+      }
+    },
+    {
+      "id": "evt-1773045003671",
+      "timestamp": "2026-03-09T08:30:03.670Z",
+      "type": "agent:offline",
+      "agentId": "scarlet",
+      "content": "scarlet went offline.",
+      "meta": {
+        "agentId": "scarlet"
+      }
+    },
+    {
+      "id": "evt-1773045016441",
+      "timestamp": "2026-03-09T08:30:16.441Z",
+      "type": "agent:online",
+      "agentId": "qa",
+      "content": "qa is back online.",
+      "meta": {
+        "agentId": "qa"
+      }
+    },
+    {
+      "id": "evt-1773045017245",
+      "timestamp": "2026-03-09T08:30:17.245Z",
+      "type": "agent:speak",
+      "agentId": "qa",
+      "content": "qa says: \"QA check complete — all 11 systems healthy. ✅\"",
+      "meta": {
+        "agentId": "qa",
+        "message": "QA check complete — all 11 systems healthy. ✅",
+        "target": null,
+        "taskId": null
+      }
+    },
+    {
+      "id": "evt-1773045018247",
+      "timestamp": "2026-03-09T08:30:18.247Z",
+      "type": "agent:offline",
+      "agentId": "qa",
+      "content": "qa went offline.",
+      "meta": {
+        "agentId": "qa"
+      }
+    },
+    {
+      "id": "evt-1773045204106",
+      "timestamp": "2026-03-09T08:33:24.106Z",
+      "type": "agent:speak",
+      "agentId": "scarlet",
+      "content": "scarlet says: \"The snow covers every path equally, but only a fool thinks that makes them all worth taking.\"",
+      "meta": {
+        "agentId": "scarlet",
+        "message": "The snow covers every path equally, but only a fool thinks that makes them all worth taking.",
+        "target": null
+      }
+    },
+    {
+      "id": "evt-1773045207484",
+      "timestamp": "2026-03-09T08:33:27.483Z",
+      "type": "agent:online",
+      "agentId": "forge",
+      "content": "forge is back online.",
+      "meta": {
+        "agentId": "forge"
+      }
     }
   ],
   "time": {
     "date": "2026-03-09",
     "hour": 21,
-    "minute": 18,
+    "minute": 32,
     "timezone": "Pacific/Auckland",
     "period": "evening",
-    "wallclock": "2026-03-09T08:18:38.085Z"
+    "wallclock": "2026-03-09T08:32:38.089Z"
   },
   "entities": [],
   "murals": [
