@@ -16,6 +16,7 @@ const BUILDING_TEXTURE_MAP = {
   iron_keep:      'keep',
   smithy:         'smithy',
   community_garden: 'garden',
+  sake_brewery:   'brewery',
 };
 
 // Map building type → sprite texture base name (fallback when id not in map above)
