@@ -571,67 +571,8 @@ export default class TownScene extends Phaser.Scene {
     );
     // Redraw ground layer with new path data
     this._drawGround(this.mapW || 80, this.mapH || 80);
-    // Draw yards on dedicated layer above ground
-    this._drawYards(this._lastBuildings || {});
   }
 
-  _drawYards(buildings) {
-    if (!buildings) return;
-    // Own dedicated graphics layer — depth 1 sits above ground (depth 0)
-    if (this._yardsGraphics) { this._yardsGraphics.destroy(); this._yardsGraphics = null; }
-    const g = this.add.graphics();
-    g.setDepth(1);
-    this._yardsGraphics = g;
-
-    for (const [id, b] of Object.entries(buildings)) {
-      if (b.type !== 'cottage' && !id.includes('_home')) continue;
-
-      const bx = b.x ?? 0;
-      const by = b.y ?? 0;
-      const bw = b.w ?? 2;
-      const bh = b.h ?? 2;
-      const lvl = b.level ?? 1;
-
-      // Yard extends 1+ tiles around the building in each direction
-      const yardPad = 1 + Math.floor(lvl / 2); // bigger house = bigger yard
-
-      for (let dy = -yardPad; dy < bh + yardPad; dy++) {
-        for (let dx = -yardPad; dx < bw + yardPad; dx++) {
-          const tx = bx + dx;
-          const ty = by + dy;
-          if (this._isPath(tx, ty)) continue; // don't overwrite roads
-
-          const screen = this.gridToScreen(tx, ty);
-          const isBuilding = dx >= 0 && dx < bw && dy >= 0 && dy < bh;
-          if (isBuilding) continue; // skip the building footprint itself
-
-          // Yard color — winter: cool snow-covered garden matching surrounding ground
-          const isEven = (tx + ty) % 2 === 0;
-          const yardBase = lvl >= 3 ? 0xc8d8e8 : lvl >= 2 ? 0xbcd0e0 : 0xb4c8d8;
-          const yardColor = isEven ? yardBase + 0x080808 : yardBase;
-
-          g.fillStyle(yardColor, 1.0);
-          g.beginPath();
-          g.moveTo(screen.x, screen.y - 16);
-          g.lineTo(screen.x + 32, screen.y);
-          g.lineTo(screen.x, screen.y + 16);
-          g.lineTo(screen.x - 32, screen.y);
-          g.closePath();
-          g.fillPath();
-
-          // Subtle border
-          g.lineStyle(1, 0x8090b0, 0.25);
-          g.beginPath();
-          g.moveTo(screen.x, screen.y - 16);
-          g.lineTo(screen.x + 32, screen.y);
-          g.lineTo(screen.x, screen.y + 16);
-          g.lineTo(screen.x - 32, screen.y);
-          g.closePath();
-          g.strokePath();
-        }
-      }
-    }
-  }
 
   gridToScreen(gridX, gridY) {
     const screenX = this.originX + (gridX - gridY) * (TILE_W / 2);
