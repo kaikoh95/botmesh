@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>宿場町 · Shukubamachi</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: #0a0a0a; display: flex; justify-content: center; align-items: center; min-height: 100vh; overflow: hidden; }
+    canvas { display: block; }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js"></script>
+</head>
+<body>
+<script>
+const W = 600, H = 600;
+const ROOM_W = 120, ROOM_H = 120;
+const WALL_OUTER = 8, WALL_INNER = 6;
+const DOOR_W = 32;
+
+const PAL = {
+  outerWall: 0x2a1a0e,
+  innerWall: 0x3a2010,
+  floor1: 0x8b5e2a,
+  floor2: 0x7a5020,
+  threshold: 0x6b4020,
+  stone: 0x5a5048,
+  stoneTile: 0x4a4840,
+  rug: 0x6b3020,
+  rugBorder: 0x4a1810,
+  bookshelf: 0x2a1a0e,
+  desk: 0x3a2010,
+  bar: 0x4a2e0a,
+  barrel: 0x6b4020,
+  crate: 0x7a5030,
+  chest: 0x5a3a1e,
+  chestGold: 0xd0a030,
+  water: 0x2a5880,
+  rope: 0x8b7050,
+  fireplace: 0x3a1a0a,
+  counter: 0x4a2e0a,
+  pot: 0x4a3020,
+  lanternAmber: 0xf0c060,
+  charInnkeeper: 0x8b6040,
+  charScholar: 0x4a6080,
+  charCook: 0xc0a060,
+  charCustomer: 0x6a5040,
+  charGuard: 0x4a4860,
+};
+
+// Grid layout: 3 cols x 2 rows, offset to centre
+const GRID_X = (W - ROOM_W * 3 - WALL_OUTER * 2 - WALL_INNER * 2) / 2 + WALL_OUTER;
+const GRID_Y = 50; // room for title
+
+function roomOrigin(col, row) {
+  return {
+    x: GRID_X + col * (ROOM_W + WALL_INNER),
+    y: GRID_Y + row * (ROOM_H + WALL_INNER)
+  };
+}
+
+class ShukubamachiScene extends Phaser.Scene {
+  create() {
+    const g = this.add.graphics();
+
+    // Title
+    this.add.text(W / 2, 22, '宿場町 · Shukubamachi', {
+      fontFamily: 'monospace', fontSize: '16px', color: '#8090b0',
+      shadow: { offsetX: 0, offsetY: 0, color: '#4060a0', blur: 10, fill: true }
+    }).setOrigin(0.5);
+    this.add.text(W / 2, 22, '宿場町 · Shukubamachi', {
+      fontFamily: 'monospace', fontSize: '16px', color: '#d0d8e8'
+    }).setOrigin(0.5);
+
+    // Draw outer walls background (fill entire building footprint)
+    const bx = GRID_X - WALL_OUTER;
+    const by = GRID_Y - WALL_OUTER;
+    const bw = ROOM_W * 3 + WALL_INNER * 2 + WALL_OUTER * 2;
+    const bh = ROOM_H * 2 + WALL_INNER + WALL_OUTER * 2;
+    g.fillStyle(PAL.outerWall, 1);
+    g.fillRect(bx, by, bw, bh);
+
+    // Draw rooms
+    this.drawLibrary(g);
+    this.drawHallway(g);
+    this.drawTavern(g);
+    this.drawStorage(g);
+    this.drawWell(g);
+    this.drawKitchen(g);
+
+    // Draw inner walls (on top of rooms, with doorway gaps)
+    this.drawInnerWalls(g);
+
+    // Draw outer wall border
+    this.drawOuterWallBorder(g, bx, by, bw, bh);
+
+    // Lighting overlays
+    this.drawLighting(g);
+
+    // Characters
+    this.drawCharacters(g);
+
+    // Animations
+    this.addFireplaceFlicker();
+    this.addTavernLanternPulse();
+    this.addWellShimmer();
+    this.addCharacterBob();
+    this.addDustMotes();
+  }
+
+  // ── Floor drawing helpers ──
+  drawWoodFloor(g, ox, oy, w, h) {
+    const plankH = 8;
+    for (let py = 0; py < h; py += plankH) {
+      for (let px = 0; px < w; px += 16) {
+        const color = ((py / plankH + Math.floor(px / 16)) % 2 === 0) ? PAL.floor1 : PAL.floor2;
+        g.fillStyle(color, 1);
+        const pw = Math.min(16, w - px);
+        const ph = Math.min(plankH, h - py);
+        g.fillRect(ox + px, oy + py, pw, ph);
+      }
+    }
+  }
+
+  drawStoneFloor(g, ox, oy, w, h) {
+    const tileSize = 12;
+    for (let py = 0; py < h; py += tileSize) {
+      for (let px = 0; px < w; px += tileSize) {
+        const color = ((py / tileSize + Math.floor(px / tileSize)) % 2 === 0) ? PAL.stone : PAL.stoneTile;
+        g.fillStyle(color, 1);
+        const pw = Math.min(tileSize, w - px);
+        const ph = Math.min(tileSize, h - py);
+        g.fillRect(ox + px, oy + py, pw, ph);
+        // subtle tile line
+        g.lineStyle(1, 0x000000, 0.12);
+        g.strokeRect(ox + px, oy + py, pw, ph);
+      }
+    }
+  }
+
+  // ── LIBRARY (top-left) ──
+  drawLibrary(g) {
+    const { x, y } = roomOrigin(0, 0);
+    this.drawWoodFloor(g, x, y, ROOM_W, ROOM_H);
+
+    // Rug
+    g.fillStyle(PAL.rug, 1);
+    g.fillRect(x + 35, y + 50, 50, 35);
+    g.lineStyle(1, PAL.rugBorder, 0.8);
+    g.strokeRect(x + 35, y + 50, 50, 35);
+    g.strokeRect(x + 37, y + 52, 46, 31);
+
+    // Bookshelves along top wall
+    for (let i = 0; i < 5; i++) {
+      const bx = x + 6 + i * 22;
+      g.fillStyle(PAL.bookshelf, 1);
+      g.fillRect(bx, y + 4, 18, 10);
+      // Book spines
+      const bookColors = [0xb03030, 0x3050a0, 0x308030, 0xa06030, 0x6030a0];
+      for (let b = 0; b < 4; b++) {
+        g.fillStyle(bookColors[(i + b) % 5], 0.9);
+        g.fillRect(bx + 2 + b * 4, y + 5, 3, 8);
+      }
+    }
+
+    // Bookshelves along left wall
+    for (let i = 0; i < 4; i++) {
+      const by = y + 18 + i * 22;
+      g.fillStyle(PAL.bookshelf, 1);
+      g.fillRect(x + 4, by, 10, 18);
+      const bookColors = [0xa03030, 0x3060a0, 0x308030, 0x906030];
+      for (let b = 0; b < 3; b++) {
+        g.fillStyle(bookColors[(i + b) % 4], 0.9);
+        g.fillRect(x + 5, by + 2 + b * 5, 8, 4);
+      }
+    }
+
+    // Reading desk
+    g.fillStyle(PAL.desk, 1);
+    g.fillRect(x + 50, y + 30, 24, 16);
+    // Open book on desk
+    g.fillStyle(0xe8e0d0, 0.9);
+    g.fillRect(x + 54, y + 33, 8, 10);
+    g.fillRect(x + 63, y + 33, 8, 10);
+    // Spine line
+    g.lineStyle(1, 0x6b4020, 0.6);
+    g.lineBetween(x + 62, y + 33, x + 62, y + 43);
+    // Text lines
+    g.lineStyle(1, 0x8a7a60, 0.4);
+    for (let l = 0; l < 3; l++) {
+      g.lineBetween(x + 55, y + 35 + l * 3, x + 61, y + 35 + l * 3);
+      g.lineBetween(x + 64, y + 35 + l * 3, x + 70, y + 35 + l * 3);
+    }
+
+    // Amber wall lantern (top-right corner of room)
+    this.drawWallLantern(g, x + ROOM_W - 14, y + 8);
+  }
+
+  // ── HALLWAY (top-centre) ──
+  drawHallway(g) {
+    const { x, y } = roomOrigin(1, 0);
+    this.drawStoneFloor(g, x, y, ROOM_W, ROOM_H);
+
+    // Notice board on left wall area
+    g.fillStyle(0x3a2a18, 1);
+    g.fillRect(x + 8, y + 20, 20, 28);
+    g.lineStyle(1, 0x2a1a0e, 0.8);
+    g.strokeRect(x + 8, y + 20, 20, 28);
+    // Paper notices
+    g.fillStyle(0xd8d0c0, 0.7);
+    g.fillRect(x + 11, y + 23, 7, 8);
+    g.fillRect(x + 20, y + 23, 6, 10);
+    g.fillRect(x + 11, y + 33, 8, 7);
+    // Text lines on notices
+    g.lineStyle(1, 0x4a4040, 0.3);
+    g.lineBetween(x + 12, y + 25, x + 17, y + 25);
+    g.lineBetween(x + 12, y + 27, x + 16, y + 27);
+    g.lineBetween(x + 21, y + 25, x + 25, y + 25);
+
+    // Central lantern (on floor, larger)
+    g.fillStyle(PAL.lanternAmber, 0.08);
+    g.fillCircle(x + ROOM_W / 2, y + ROOM_H / 2, 35);
+    this.drawWallLantern(g, x + ROOM_W / 2 - 4, y + ROOM_H / 2 - 4);
+  }
+
+  // ── TAVERN (top-right) ──
+  drawTavern(g) {
+    const { x, y } = roomOrigin(2, 0);
+    this.drawWoodFloor(g, x, y, ROOM_W, ROOM_H);
+
+    // Long bar counter along top wall
+    g.fillStyle(PAL.bar, 1);
+    g.fillRect(x + 8, y + 6, ROOM_W - 16, 14);
+    // Bar top highlight
+    g.fillStyle(0x5a3810, 1);
+    g.fillRect(x + 8, y + 6, ROOM_W - 16, 3);
+
+    // 3 barrels underneath bar
+    for (let i = 0; i < 3; i++) {
+      const bx = x + 20 + i * 30;
+      g.fillStyle(PAL.barrel, 0.9);
+      g.fillCircle(bx, y + 24, 7);
+      g.lineStyle(1, 0x4a2e0a, 0.6);
+      g.strokeCircle(bx, y + 24, 7);
+      // Barrel bands
+      g.lineStyle(1, 0x8a6a30, 0.5);
+      g.lineBetween(bx - 6, y + 22, bx + 6, y + 22);
+      g.lineBetween(bx - 6, y + 26, bx + 6, y + 26);
+    }
+
+    // 2 tables with chairs
+    for (let t = 0; t < 2; t++) {
+      const tx = x + 25 + t * 50;
+      const ty = y + 60 + t * 15;
+      // Table
+      g.fillStyle(0x5a3818, 1);
+      g.fillRect(tx - 10, ty - 8, 20, 16);
+      g.lineStyle(1, 0x3a2010, 0.5);
+      g.strokeRect(tx - 10, ty - 8, 20, 16);
+      // Chairs
+      g.fillStyle(0x4a2a10, 0.9);
+      g.fillRect(tx - 16, ty - 4, 5, 8);
+      g.fillRect(tx + 11, ty - 4, 5, 8);
+    }
+
+    // Hanging lanterns (2)
+    this.tavernLanternPositions = [
+      { x: x + 35, y: y + 45 },
+      { x: x + 85, y: y + 50 }
+    ];
+    for (const lp of this.tavernLanternPositions) {
+      this.drawHangingLantern(g, lp.x, lp.y);
+    }
+  }
+
+  // ── STORAGE (bottom-left) ──
+  drawStorage(g) {
+    const { x, y } = roomOrigin(0, 1);
+    this.drawWoodFloor(g, x, y, ROOM_W, ROOM_H);
+
+    // Stacked barrels
+    const barrelPositions = [[20, 25], [35, 20], [20, 42], [30, 55], [18, 68]];
+    for (const [bx, by] of barrelPositions) {
+      g.fillStyle(PAL.barrel, 0.9);
+      g.fillCircle(x + bx, y + by, 8);
+      g.lineStyle(1, 0x4a2e0a, 0.5);
+      g.strokeCircle(x + bx, y + by, 8);
+      g.lineStyle(1, 0x8a6a30, 0.4);
+      g.lineBetween(x + bx - 7, y + by - 2, x + bx + 7, y + by - 2);
+      g.lineBetween(x + bx - 7, y + by + 2, x + bx + 7, y + by + 2);
+    }
+
+    // Crates with X cross
+    const cratePositions = [[65, 20], [85, 25], [70, 42], [90, 50], [80, 70]];
+    for (const [cx, cy] of cratePositions) {
+      g.fillStyle(PAL.crate, 1);
+      g.fillRect(x + cx - 8, y + cy - 8, 16, 16);
+      g.lineStyle(1, 0x5a3818, 0.6);
+      g.strokeRect(x + cx - 8, y + cy - 8, 16, 16);
+      // X cross
+      g.lineStyle(1, 0x5a3818, 0.4);
+      g.lineBetween(x + cx - 7, y + cy - 7, x + cx + 7, y + cy + 7);
+      g.lineBetween(x + cx + 7, y + cy - 7, x + cx - 7, y + cy + 7);
+    }
+
+    // Small chest
+    g.fillStyle(PAL.chest, 1);
+    g.fillRect(x + 55, y + 85, 18, 12);
+    g.lineStyle(1, 0x3a2010, 0.7);
+    g.strokeRect(x + 55, y + 85, 18, 12);
+    // Gold latch
+    g.fillStyle(PAL.chestGold, 1);
+    g.fillCircle(x + 64, y + 91, 2);
+  }
+
+  // ── WELL (bottom-centre) ──
+  drawWell(g) {
+    const { x, y } = roomOrigin(1, 1);
+    this.drawStoneFloor(g, x, y, ROOM_W, ROOM_H);
+
+    // Well structure — circular stone rim
+    const cx = x + ROOM_W / 2;
+    const cy = y + ROOM_H / 2;
+
+    // Stone rim (outer)
+    g.fillStyle(0x3a3028, 1);
+    g.fillCircle(cx, cy, 22);
+    // Inner dark (water)
+    g.fillStyle(PAL.water, 1);
+    g.fillCircle(cx, cy, 16);
+
+    // Store well centre for shimmer animation
+    this.wellCenter = { x: cx, y: cy };
+
+    // Stone rim detail
+    g.lineStyle(2, 0x2a2018, 0.6);
+    g.strokeCircle(cx, cy, 22);
+    g.lineStyle(1, 0x4a4030, 0.4);
+    g.strokeCircle(cx, cy, 19);
+
+    // Rope
+    g.lineStyle(2, PAL.rope, 0.8);
+    g.lineBetween(cx, cy - 16, cx + 20, cy - 30);
+    g.lineBetween(cx + 20, cy - 30, cx + 22, cy - 28);
+
+    // Bucket
+    g.fillStyle(0x6b5030, 1);
+    g.fillRect(cx + 16, cy - 30, 10, 8);
+    g.lineStyle(1, 0x8a7050, 0.6);
+    g.strokeRect(cx + 16, cy - 30, 10, 8);
+    // Bucket handle
+    g.lineStyle(1, 0x8a7050, 0.5);
+    g.beginPath();
+    g.arc(cx + 21, cy - 32, 5, Math.PI, 0, false);
+    g.strokePath();
+  }
+
+  // ── KITCHEN (bottom-right) ──
+  drawKitchen(g) {
+    const { x, y } = roomOrigin(2, 1);
+    this.drawWoodFloor(g, x, y, ROOM_W, ROOM_H);
+
+    // Cooking counter along bottom wall
+    g.fillStyle(PAL.counter, 1);
+    g.fillRect(x + 10, y + ROOM_H - 20, ROOM_W - 20, 14);
+    g.fillStyle(0x5a3810, 1);
+    g.fillRect(x + 10, y + ROOM_H - 20, ROOM_W - 20, 3);
+
+    // Cutting board on counter
+    g.fillStyle(0xc0a870, 0.9);
+    g.fillRect(x + 30, y + ROOM_H - 18, 14, 10);
+    g.lineStyle(1, 0x8a7a50, 0.5);
+    g.strokeRect(x + 30, y + ROOM_H - 18, 14, 10);
+
+    // Pots and pans
+    const potPositions = [[22, 35], [40, 30], [55, 38]];
+    for (const [px, py] of potPositions) {
+      g.fillStyle(PAL.pot, 0.9);
+      g.fillCircle(x + px, y + py, 5);
+      g.lineStyle(1, 0x3a2010, 0.5);
+      g.strokeCircle(x + px, y + py, 5);
+      // Handle
+      g.lineStyle(1, 0x5a4020, 0.6);
+      g.lineBetween(x + px + 4, y + py, x + px + 9, y + py - 2);
+    }
+
+    // Fireplace on right wall
+    this.fireplacePos = { x: x + ROOM_W - 18, y: y + 30 };
+    g.fillStyle(PAL.fireplace, 1);
+    g.fillRect(x + ROOM_W - 22, y + 20, 18, 28);
+    // Fire glow
+    g.fillStyle(0xf08020, 0.9);
+    g.fillRect(x + ROOM_W - 18, y + 28, 10, 12);
+    g.fillStyle(0xf0c040, 0.7);
+    g.fillRect(x + ROOM_W - 16, y + 32, 6, 6);
+  }
+
+  // ── Wall helpers ──
+  drawInnerWalls(g) {
+    // Vertical inner walls (between columns)
+    for (let col = 0; col < 2; col++) {
+      for (let row = 0; row < 2; row++) {
+        const r1 = roomOrigin(col, row);
+        const wx = r1.x + ROOM_W;
+        const wy = r1.y;
+
+        // Doorway in middle of each wall
+        const doorY = wy + (ROOM_H - DOOR_W) / 2;
+
+        g.fillStyle(PAL.innerWall, 1);
+        // Top part
+        g.fillRect(wx, wy, WALL_INNER, doorY - wy);
+        // Bottom part
+        g.fillRect(wx, doorY + DOOR_W, WALL_INNER, wy + ROOM_H - doorY - DOOR_W);
+
+        // Threshold
+        g.fillStyle(PAL.threshold, 1);
+        g.fillRect(wx, doorY, WALL_INNER, DOOR_W);
+      }
+    }
+
+    // Horizontal inner wall (between rows)
+    for (let col = 0; col < 3; col++) {
+      const r1 = roomOrigin(col, 0);
+      const wx = r1.x;
+      const wy = r1.y + ROOM_H;
+
+      const doorX = wx + (ROOM_W - DOOR_W) / 2;
+
+      g.fillStyle(PAL.innerWall, 1);
+      g.fillRect(wx, wy, doorX - wx, WALL_INNER);
+      g.fillRect(doorX + DOOR_W, wy, wx + ROOM_W - doorX - DOOR_W, WALL_INNER);
+
+      // Threshold
+      g.fillStyle(PAL.threshold, 1);
+      g.fillRect(doorX, wy, DOOR_W, WALL_INNER);
+    }
+  }
+
+  drawOuterWallBorder(g, bx, by, bw, bh) {
+    g.lineStyle(WALL_OUTER, PAL.outerWall, 1);
+    g.strokeRect(bx + WALL_OUTER / 2, by + WALL_OUTER / 2, bw - WALL_OUTER, bh - WALL_OUTER);
+    // Outer edge highlight
+    g.lineStyle(1, 0x1a0e06, 1);
+    g.strokeRect(bx, by, bw, bh);
+  }
+
+  drawWallLantern(g, lx, ly) {
+    // Bracket
+    g.fillStyle(0x4a3020, 1);
+    g.fillRect(lx, ly, 8, 3);
+    // Lantern body
+    g.fillStyle(PAL.lanternAmber, 0.9);
+    g.fillRect(lx + 1, ly + 3, 6, 8);
+    // Glow
+    g.fillStyle(PAL.lanternAmber, 0.06);
+    g.fillCircle(lx + 4, ly + 7, 30);
+  }
+
+  drawHangingLantern(g, lx, ly) {
+    // Chain/rope
+    g.lineStyle(1, 0x6a5030, 0.6);
+    g.lineBetween(lx, ly - 10, lx, ly);
+    // Body
+    g.fillStyle(PAL.lanternAmber, 0.9);
+    g.fillRect(lx - 4, ly, 8, 10);
+    g.fillStyle(0xd0a040, 1);
+    g.fillRect(lx - 5, ly - 1, 10, 2);
+    g.fillRect(lx - 5, ly + 10, 10, 2);
+    // Glow
+    g.fillStyle(PAL.lanternAmber, 0.08);
+    g.fillCircle(lx, ly + 5, 30);
+  }
+
+  // ── Lighting overlays ──
+  drawLighting(g) {
+    const rooms = [
+      { col: 0, row: 0, color: 0xf0c060, alpha: 0.08 },  // Library
+      { col: 2, row: 0, color: 0xf08020, alpha: 0.12 },  // Tavern
+      { col: 2, row: 1, color: 0xf06020, alpha: 0.10 },  // Kitchen
+      { col: 1, row: 0, color: 0x6080b0, alpha: 0.05 },  // Hallway
+      { col: 1, row: 1, color: 0x6080b0, alpha: 0.05 },  // Well
+      // Storage: no tint
+    ];
+
+    for (const r of rooms) {
+      const { x, y } = roomOrigin(r.col, r.row);
+      g.fillStyle(r.color, r.alpha);
+      g.fillRect(x, y, ROOM_W, ROOM_H);
+    }
+  }
+
+  // ── Characters ──
+  drawCharacters(g) {
+    this.characters = [];
+
+    const charDefs = [
+      { col: 2, row: 0, ox: 50, oy: 14, color: PAL.charInnkeeper, name: 'innkeeper' },
+      { col: 0, row: 0, ox: 58, oy: 34, color: PAL.charScholar, name: 'scholar' },
+      { col: 2, row: 1, ox: 80, oy: 38, color: PAL.charCook, name: 'cook' },
+      { col: 2, row: 0, ox: 28, oy: 65, color: PAL.charCustomer, name: 'customer' },
+      { col: 1, row: 0, ox: 60, oy: 85, color: PAL.charGuard, name: 'guard' },
+    ];
+
+    for (const cd of charDefs) {
+      const { x, y } = roomOrigin(cd.col, cd.row);
+      const cx = x + cd.ox;
+      const cy = y + cd.oy;
+      const charG = this.add.graphics();
+      // Body
+      charG.fillStyle(cd.color, 1);
+      charG.fillRect(-3, 0, 6, 10);
+      // Head
+      charG.fillStyle(0xd0a878, 1);
+      charG.fillCircle(0, -2, 3);
+      charG.setPosition(cx, cy);
+      this.characters.push(charG);
+    }
+  }
+
+  // ── Animations ──
+  addFireplaceFlicker() {
+    const fp = this.fireplacePos;
+    const fireGlow = this.add.graphics();
+    const drawFire = (alpha) => {
+      fireGlow.clear();
+      fireGlow.fillStyle(0xf06020, alpha * 0.10);
+      const { x, y } = roomOrigin(2, 1);
+      fireGlow.fillRect(x, y, ROOM_W, ROOM_H);
+    };
+    drawFire(1);
+    const pulse = { val: 1 };
+    this.tweens.add({
+      targets: pulse,
+      val: { from: 0.8, to: 1.0 },
+      duration: 600,
+      yoyo: true,
+      repeat: -1,
+      ease: 'Sine.easeInOut',
+      onUpdate: () => drawFire(pulse.val)
+    });
+  }
+
+  addTavernLanternPulse() {
+    if (!this.tavernLanternPositions) return;
+    const glow = this.add.graphics();
+    const drawGlow = (alpha) => {
+      glow.clear();
+      for (const lp of this.tavernLanternPositions) {
+        glow.fillStyle(PAL.lanternAmber, alpha);
+        glow.fillCircle(lp.x, lp.y + 5, 30);
+      }
+    };
+    drawGlow(0.10);
+    const pulse = { val: 0.10 };
+    this.tweens.add({
+      targets: pulse,
+      val: { from: 0.10, to: 0.18 },
+      duration: 1200,
+      yoyo: true,
+      repeat: -1,
+      ease: 'Sine.easeInOut',
+      onUpdate: () => drawGlow(pulse.val)
+    });
+  }
+
+  addWellShimmer() {
+    if (!this.wellCenter) return;
+    const shimmer = this.add.graphics();
+    const drawShimmer = (alpha) => {
+      shimmer.clear();
+      shimmer.fillStyle(0x4a8ab0, alpha);
+      shimmer.fillCircle(this.wellCenter.x, this.wellCenter.y, 14);
+    };
+    drawShimmer(0.2);
+    const pulse = { val: 0.2 };
+    this.tweens.add({
+      targets: pulse,
+      val: { from: 0.15, to: 0.35 },
+      duration: 1500,
+      yoyo: true,
+      repeat: -1,
+      ease: 'Sine.easeInOut',
+      onUpdate: () => drawShimmer(pulse.val)
+    });
+  }
+
+  addCharacterBob() {
+    if (!this.characters) return;
+    this.characters.forEach((c, i) => {
+      this.tweens.add({
+        targets: c,
+        y: c.y + 1,
+        duration: 2000,
+        delay: i * 400,
+        yoyo: true,
+        repeat: -1,
+        ease: 'Sine.easeInOut'
+      });
+    });
+  }
+
+  addDustMotes() {
+    const { x, y } = roomOrigin(0, 0);
+    for (let i = 0; i < 4; i++) {
+      const mote = this.add.graphics();
+      mote.fillStyle(0xffffff, 1);
+      mote.fillCircle(0, 0, 1);
+
+      const sx = x + 20 + Math.random() * 80;
+      const sy = y + 10 + Math.random() * 40;
+      mote.setPosition(sx, sy);
+      mote.setAlpha(0.15);
+
+      this.tweens.add({
+        targets: mote,
+        y: sy + 60 + Math.random() * 30,
+        x: sx + (Math.random() - 0.5) * 20,
+        alpha: { from: 0.3, to: 0.05 },
+        duration: 6000 + Math.random() * 3000,
+        delay: i * 1500,
+        repeat: -1,
+        onRepeat: () => {
+          mote.setPosition(x + 20 + Math.random() * 80, y + 10 + Math.random() * 20);
+        }
+      });
+    }
+  }
+}
+
+new Phaser.Game({
+  type: Phaser.AUTO,
+  width: W,
+  height: H,
+  backgroundColor: '#0a0a0a',
+  scene: ShukubamachiScene,
+  scale: {
+    mode: Phaser.Scale.FIT,
+    autoCenter: Phaser.Scale.CENTER_BOTH,
+    max: { width: W, height: H }
+  }
+});
+</script>
+</body>
+</html>
