@@ -8,10 +8,13 @@
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { background: #0d0a07; display: flex; justify-content: center; align-items: center; min-height: 100vh; overflow: hidden; }
     canvas { display: block; }
-      #oracle-inbox { position: fixed; bottom: 0; left: 0; right: 0; display: flex; gap: 4px; padding: 6px 24px 8px; background: #0a0e1a; border-top: 1px solid #1a2030; z-index: 9999; }
-    #oracle-inbox input { flex: 1; background: #0e1220; border: 1px solid #2a3040; color: #e0d8c8; font-family: monospace; font-size: 13px; padding: 7px 12px; outline: none; border-radius: 2px; }
-    #oracle-inbox input:focus { border-color: #f0a030; }
-    #oracle-inbox button { background: #f0a030; color: #0a0e1a; border: none; font-size: 14px; padding: 4px 14px; cursor: pointer; font-family: monospace; border-radius: 2px; font-weight: bold; }
+      #oracle-inbox { position: fixed; bottom: 0; left: 0; right: 0; display: flex; gap: 6px; padding: 8px 24px 10px; background: linear-gradient(180deg, #1a1008, #0d0a07); border-top: 2px solid #3a2810; box-shadow: 0 -2px 8px rgba(0,0,0,0.4); z-index: 9999; }
+    #oracle-label { color: #6a5a40; font-family: monospace; font-size: 10px; align-self: center; white-space: nowrap; letter-spacing: 1px; }
+    #oracle-inbox input { flex: 1; background: #1a1208; border: 1px solid #3a2810; color: #e0d8c8; font-family: monospace; font-size: 13px; padding: 7px 12px; outline: none; border-radius: 3px; }
+    #oracle-inbox input::placeholder { color: #6a5a40; }
+    #oracle-inbox input:focus { border-color: #f0a030; box-shadow: 0 0 6px rgba(240,160,48,0.25); }
+    #oracle-inbox button { background: linear-gradient(180deg, #f0a030, #d08820); color: #1a0e04; border: 1px solid #a06818; font-size: 14px; padding: 4px 14px; cursor: pointer; font-family: monospace; border-radius: 3px; font-weight: bold; text-shadow: 0 1px 0 rgba(255,255,255,0.2); }
+    #oracle-inbox button:hover { background: linear-gradient(180deg, #ffc050, #e09828); }
   </style>
   <script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js"></script>
 </head>
@@ -188,6 +191,10 @@ class TakamachiScene extends Phaser.Scene {
     // head
     g.fillStyle(PAL.skin, 1);
     g.fillCircle(cx, cy - h / 2 + 2, 4);
+    // Iter 7: eyes
+    g.fillStyle(0x1a1010, 1);
+    g.fillRect(cx - 2, cy - h / 2 + 1, 1, 1);
+    g.fillRect(cx + 1, cy - h / 2 + 1, 1, 1);
     // hair
     g.fillStyle(colors.hair, 1);
     g.fillRect(cx - 3, cy - h / 2 - 2, 6, 3);
@@ -263,10 +270,34 @@ class TakamachiScene extends Phaser.Scene {
     g.fillStyle(PAL.shadow, 0.3);
     g.fillRect(lib.x, lib.y, 30, 20);
     g.fillRect(lib.x, lib.y + ROOM_H - 20, 30, 20);
+    // Iter 6: reading rug under desk area
+    g.fillStyle(0x6a2828, 0.35);
+    g.fillRect(lib.x + 65, lib.y + 85, 80, 60);
+    g.fillStyle(0x8a3838, 0.25);
+    g.fillRect(lib.x + 68, lib.y + 88, 74, 54);
+    g.fillStyle(0x5a1818, 0.2);
+    g.fillRect(lib.x + 71, lib.y + 91, 68, 48);
+    // rug fringe top/bottom
+    g.fillStyle(0x9a4848, 0.3);
+    for (let fx = 0; fx < 80; fx += 4) {
+      g.fillRect(lib.x + 65 + fx, lib.y + 85, 2, 2);
+      g.fillRect(lib.x + 65 + fx, lib.y + 143, 2, 2);
+    }
     // North wall bookshelf
     this.drawBookshelf(g, lib.x + 8, lib.y + 4, ROOM_W - 16, 24);
     // West wall bookshelf
     this.drawBookshelf(g, lib.x + 4, lib.y + 30, 20, ROOM_H - 60);
+    // Iter 6: small side table with inkwell
+    g.fillStyle(PAL.table, 1);
+    g.fillRect(lib.x + 40, lib.y + 140, 18, 14);
+    g.fillStyle(PAL.tableLeg, 1);
+    g.fillRect(lib.x + 41, lib.y + 153, 2, 3);
+    g.fillRect(lib.x + 55, lib.y + 153, 2, 3);
+    // inkwell
+    g.fillStyle(0x1a1a2a, 1);
+    g.fillCircle(lib.x + 49, lib.y + 145, 3);
+    g.fillStyle(0x0a0a1a, 1);
+    g.fillCircle(lib.x + 49, lib.y + 145, 2);
     // Reading desk
     g.fillStyle(PAL.table, 1);
     g.fillRect(lib.x + 80, lib.y + 100, 50, 30);
@@ -283,6 +314,8 @@ class TakamachiScene extends Phaser.Scene {
     this.pageGraphics = pageGfx;
     // Iter 2: wall sconce top-right corner
     this.drawWallSconce(lib.x + ROOM_W - 20, lib.y + 10, 40, 0.6, true);
+    // Iter 6: second sconce on south wall for warmth
+    this.drawWallSconce(lib.x + 50, lib.y + ROOM_H - 12, 30, 0.4, true);
     // Iter 4: Scholar NPC with book in hands
     const scholar = this.drawNPC(g, lib.x + 105, lib.y + 90, NPC_COLORS.scholar);
     // Tiny book in hands
@@ -290,6 +323,11 @@ class TakamachiScene extends Phaser.Scene {
     g.fillRect(lib.x + 108, lib.y + 92, 5, 4);
     g.fillStyle(0x8a2020, 1);
     g.fillRect(lib.x + 108, lib.y + 92, 5, 1);
+    // Iter 7: scholar glasses
+    g.lineStyle(1, 0xc0c0c0, 0.7);
+    g.strokeCircle(lib.x + 104, lib.y + 83, 2);
+    g.strokeCircle(lib.x + 108, lib.y + 83, 2);
+    g.lineBetween(lib.x + 106, lib.y + 83, lib.x + 106, lib.y + 83);
     this.npcs.push({ ...scholar, bounds: { x: lib.x + 30, y: lib.y + 30, w: ROOM_W - 50, h: ROOM_H - 50 } });
 
     // ─── TAVERN (top-right) ───
@@ -297,25 +335,68 @@ class TakamachiScene extends Phaser.Scene {
     this.drawFloorPlanks(g, tav.x, tav.y, ROOM_W, ROOM_H, PAL.floorWarm1, PAL.floorWarm2, 12, 202);
     g.fillStyle(PAL.shadow, 0.25);
     g.fillRect(tav.x + ROOM_W - 30, tav.y, 30, 20);
+    // Iter 6: fireplace on west wall
+    g.fillStyle(0x3a2a1a, 1);
+    g.fillRect(tav.x + 4, tav.y + 80, 22, 36);
+    g.fillStyle(0x2a1a0a, 1);
+    g.fillRect(tav.x + 6, tav.y + 84, 18, 28);
+    // fireplace opening
+    g.fillStyle(0x0a0604, 1);
+    g.fillRect(tav.x + 8, tav.y + 90, 14, 18);
+    // mantle
+    g.fillStyle(0x5a3a1a, 1);
+    g.fillRect(tav.x + 2, tav.y + 78, 26, 4);
+    // fire glow inside
+    const fireGlow = this.add.graphics();
+    fireGlow.fillStyle(0xe04010, 0.6);
+    fireGlow.fillEllipse(tav.x + 15, tav.y + 102, 8, 6);
+    fireGlow.fillStyle(0xf08020, 0.4);
+    fireGlow.fillEllipse(tav.x + 15, tav.y + 100, 6, 4);
+    fireGlow.fillStyle(0xffc040, 0.3);
+    fireGlow.fillEllipse(tav.x + 15, tav.y + 98, 4, 3);
+    this.forgeGlows.push(fireGlow);
+    // fireplace warm radiance on floor
+    const fpGlow = this.add.graphics();
+    fpGlow.fillStyle(0xf0a030, 0.06);
+    fpGlow.fillEllipse(tav.x + 40, tav.y + 100, 60, 40);
+    fpGlow.fillStyle(0xf0a030, 0.08);
+    fpGlow.fillEllipse(tav.x + 30, tav.y + 100, 35, 25);
+    this.lanternGlows.push({ gfx: fpGlow, baseAlpha: 0.5, phase: Math.random() * Math.PI * 2 });
     // Counter along north wall
     g.fillStyle(PAL.barrel, 1);
     g.fillRect(tav.x + 20, tav.y + 8, ROOM_W - 40, 18);
     g.fillStyle(PAL.wallDark, 1);
     g.fillRect(tav.x + 20, tav.y + 8, ROOM_W - 40, 2);
+    // Iter 8: counter top highlight
+    g.fillStyle(0xffffff, 0.06);
+    g.fillRect(tav.x + 20, tav.y + 8, ROOM_W - 40, 1);
     // Barrels behind counter
     this.drawBarrel(g, tav.x + 40, tav.y + 18, 8);
     this.drawBarrel(g, tav.x + 60, tav.y + 16, 8);
     this.drawBarrel(g, tav.x + 80, tav.y + 18, 8);
+    // Iter 7: mugs on counter
+    g.fillStyle(0x6a4a2a, 1);
+    g.fillRect(tav.x + 100, tav.y + 11, 4, 5);
+    g.fillRect(tav.x + 120, tav.y + 12, 4, 5);
+    g.fillStyle(0xd0b080, 0.6);
+    g.fillRect(tav.x + 101, tav.y + 11, 2, 2);
+    g.fillRect(tav.x + 121, tav.y + 12, 2, 2);
     // Round tables with stools
     const tables = [
       { cx: tav.x + 60, cy: tav.y + 100 },
       { cx: tav.x + 140, cy: tav.y + 130 }
     ];
     tables.forEach(t => {
+      // Iter 8: table shadow
+      g.fillStyle(0x0a0605, 0.15);
+      g.fillEllipse(t.cx, t.cy + 2, 16, 8);
       g.fillStyle(PAL.table, 1);
       g.fillCircle(t.cx, t.cy, 14);
       g.lineStyle(1, PAL.tableLeg, 1);
       g.strokeCircle(t.cx, t.cy, 14);
+      // Iter 8: table top highlight
+      g.fillStyle(0xffffff, 0.05);
+      g.fillEllipse(t.cx - 2, t.cy - 3, 8, 5);
       const offsets = [[-18, 0], [18, 0], [0, -18], [0, 18]];
       offsets.forEach(o => {
         g.fillStyle(PAL.bookshelf, 1);
@@ -345,12 +426,20 @@ class TakamachiScene extends Phaser.Scene {
     g.fillCircle(tav.x + 115, tav.y + 42, 2);
     g.fillStyle(0xd0b080, 0.8);
     g.fillCircle(tav.x + 115, tav.y + 41, 1);
+    // Iter 7: innkeeper headband
+    g.fillStyle(0xc04040, 0.8);
+    g.fillRect(tav.x + 107, tav.y + 30, 6, 2);
     this.npcs.push({ ...innkeeper, bounds: { x: tav.x + 30, y: tav.y + 30, w: ROOM_W - 60, h: 30 } });
     // Iter 4: Patron NPC — seated posture (shorter, wider)
     const patron = this.drawNPC(g, tav.x + 60, tav.y + 85, NPC_COLORS.patron);
     // Seated width extension
     g.fillStyle(NPC_COLORS.patron.shirt, 1);
     g.fillRect(tav.x + 55, tav.y + 87, 10, 4);
+    // Iter 7: mug next to patron on table
+    g.fillStyle(0x6a4a2a, 1);
+    g.fillRect(tav.x + 68, tav.y + 93, 4, 5);
+    g.fillStyle(0xd0b060, 0.7);
+    g.fillRect(tav.x + 69, tav.y + 93, 2, 2);
     this.npcs.push({ ...patron, bounds: { x: tav.x + 30, y: tav.y + 50, w: ROOM_W - 60, h: ROOM_H - 80 } });
 
     // ─── STORAGE (bottom-left) ───
@@ -363,9 +452,17 @@ class TakamachiScene extends Phaser.Scene {
     // Iter 1: extra dark worn overlay for storage
     g.fillStyle(0x0a0605, 0.15);
     g.fillRect(sto.x, sto.y, ROOM_W, ROOM_H);
+    // Iter 6: scuff marks on floor (worn paths)
+    g.fillStyle(0x3a2810, 0.2);
+    g.fillRect(sto.x + 80, sto.y + 20, 40, ROOM_H - 40);
+    g.fillStyle(0x3a2810, 0.15);
+    g.fillRect(sto.x + 20, sto.y + 100, ROOM_W - 40, 20);
     // Barrels 3×2 grid
     for (let r = 0; r < 2; r++) {
       for (let c = 0; c < 3; c++) {
+        // Iter 8: barrel shadow
+        g.fillStyle(0x0a0605, 0.15);
+        g.fillEllipse(sto.x + 30 + c * 30, sto.y + 52 + r * 30, 12, 4);
         this.drawBarrel(g, sto.x + 30 + c * 30, sto.y + 50 + r * 30, 11);
       }
     }
@@ -373,23 +470,66 @@ class TakamachiScene extends Phaser.Scene {
     this.drawCrate(g, sto.x + 130, sto.y + 40, 18);
     this.drawCrate(g, sto.x + 150, sto.y + 38, 16);
     this.drawCrate(g, sto.x + 138, sto.y + 58, 14);
+    // Iter 6: rope coil near crates
+    g.lineStyle(2, 0x8a7a5a, 0.5);
+    g.strokeCircle(sto.x + 165, sto.y + 65, 6);
+    g.strokeCircle(sto.x + 165, sto.y + 65, 4);
+    g.lineStyle(1, 0x7a6a4a, 0.4);
+    g.lineBetween(sto.x + 170, sto.y + 62, sto.x + 178, sto.y + 55);
     // Pots near walls
     g.fillStyle(0x6a4a30, 1);
     g.fillCircle(sto.x + 20, sto.y + ROOM_H - 30, 7);
     g.fillCircle(sto.x + 38, sto.y + ROOM_H - 25, 6);
     g.fillStyle(0x5a3a20, 1);
     g.fillCircle(sto.x + ROOM_W - 25, sto.y + ROOM_H - 35, 8);
+    // Iter 6: sack near south wall
+    g.fillStyle(0x7a6a50, 1);
+    g.fillEllipse(sto.x + 70, sto.y + ROOM_H - 20, 10, 7);
+    g.fillStyle(0x6a5a40, 1);
+    g.fillEllipse(sto.x + 70, sto.y + ROOM_H - 24, 8, 4);
+    // tie
+    g.fillStyle(0x5a4a30, 1);
+    g.fillRect(sto.x + 69, sto.y + ROOM_H - 28, 2, 3);
     // Iter 2: dim sconce, smaller glow
     this.drawWallSconce(sto.x + ROOM_W - 25, sto.y + 10, 22, 0.35, true);
     // Iter 4: Worker NPC — slightly hunched (y+1), with small crate nearby
     const worker = this.drawNPC(g, sto.x + 100, sto.y + 141, NPC_COLORS.worker);
     // Small crate near worker
     this.drawCrate(g, sto.x + 112, sto.y + 145, 10);
+    // Iter 7: worker gloves (darker hands)
+    g.fillStyle(0x4a3a28, 0.8);
+    g.fillRect(sto.x + 104, sto.y + 145, 3, 3);
     this.npcs.push({ ...worker, bounds: { x: sto.x + 20, y: sto.y + 20, w: ROOM_W - 40, h: ROOM_H - 40 } });
 
     // ─── WORKSHOP (bottom-right) ───
     const wrk = roomPos(1, 1);
     this.drawFloorPlanks(g, wrk.x, wrk.y, ROOM_W, ROOM_H, PAL.floorStone1, PAL.floorStone2, 14, 404);
+    // Iter 6: soot stains near forge area
+    g.fillStyle(0x1a1410, 0.25);
+    g.fillEllipse(wrk.x + 90, wrk.y + 90, 50, 30);
+    g.fillStyle(0x0a0a08, 0.15);
+    g.fillEllipse(wrk.x + 85, wrk.y + 80, 30, 20);
+    // Iter 6: water bucket near forge
+    g.fillStyle(0x4a3a28, 1);
+    g.fillEllipse(wrk.x + 140, wrk.y + 70, 8, 6);
+    g.fillStyle(0x3a6a8a, 0.6);
+    g.fillEllipse(wrk.x + 140, wrk.y + 69, 6, 4);
+    g.lineStyle(1, 0x3a2a18, 1);
+    g.strokeEllipse(wrk.x + 140, wrk.y + 70, 8, 6);
+    // bucket handle
+    g.lineStyle(1, 0x5a5a5a, 0.6);
+    g.lineBetween(wrk.x + 134, wrk.y + 68, wrk.x + 140, wrk.y + 63);
+    g.lineBetween(wrk.x + 146, wrk.y + 68, wrk.x + 140, wrk.y + 63);
+    // Iter 6: coal pile near forge
+    g.fillStyle(0x1a1818, 1);
+    g.fillEllipse(wrk.x + 55, wrk.y + 72, 12, 7);
+    g.fillStyle(0x2a2828, 1);
+    g.fillEllipse(wrk.x + 55, wrk.y + 70, 8, 5);
+    // individual coals
+    g.fillStyle(0x101010, 1);
+    g.fillCircle(wrk.x + 52, wrk.y + 73, 2);
+    g.fillCircle(wrk.x + 58, wrk.y + 74, 2);
+    g.fillCircle(wrk.x + 55, wrk.y + 69, 2);
     // Forge/anvil
     g.fillStyle(0x2a2a2a, 1);
     g.fillRect(wrk.x + 70, wrk.y + 60, 40, 30);
@@ -398,6 +538,9 @@ class TakamachiScene extends Phaser.Scene {
     // Anvil top
     g.fillStyle(0x4a4a4a, 1);
     g.fillRect(wrk.x + 78, wrk.y + 55, 24, 10);
+    // Iter 8: anvil highlight
+    g.fillStyle(0xffffff, 0.08);
+    g.fillRect(wrk.x + 78, wrk.y + 55, 24, 2);
     // Forge glow
     const forgeGlow = this.add.graphics();
     forgeGlow.fillStyle(PAL.forgeGlow, 0.2);
@@ -443,6 +586,11 @@ class TakamachiScene extends Phaser.Scene {
     // Dark apron on front
     g.fillStyle(0x1a1208, 0.7);
     g.fillRect(wrk.x + 86, wrk.y + 97, 8, 8);
+    // Iter 7: hammer in smith's hand
+    g.fillStyle(0x5a5a5a, 1);
+    g.fillRect(wrk.x + 95, wrk.y + 100, 3, 6);
+    g.fillStyle(0x7a7a7a, 1);
+    g.fillRect(wrk.x + 93, wrk.y + 99, 7, 3);
     this.npcs.push({ ...smith, bounds: { x: wrk.x + 40, y: wrk.y + 40, w: 80, h: 80 } });
 
     this.mainGfx = g;
@@ -507,7 +655,7 @@ class TakamachiScene extends Phaser.Scene {
     this.emberGlow.fillEllipse(pos.x, pos.y, 16, 10);
   }
 
-  // Iter 5: moonlight, vignette, wall gradient
+  // Iter 5+8+10: moonlight, vignette, wall gradient, doorway spill, labels
   drawCompositionPolish() {
     const g = this.add.graphics();
     const outerX = GRID_X - WALL_T;
@@ -530,6 +678,45 @@ class TakamachiScene extends Phaser.Scene {
       g.fillStyle(0x0a0605, 0.12);
       g.fillRect(r.x + ROOM_W - 25, r.y + ROOM_H - 20, 25, 20);
     });
+
+    // Iter 8: doorway light spill — warm glow bleeding through doorways
+    const doorPositions = [
+      // Library↔Tavern (vertical)
+      { x: rooms[0].x + ROOM_W, y: rooms[0].y + (ROOM_H - DOOR_W) / 2 + DOOR_W / 2 },
+      // Storage↔Workshop (vertical)
+      { x: rooms[2].x + ROOM_W, y: rooms[2].y + (ROOM_H - DOOR_W) / 2 + DOOR_W / 2 },
+      // Library↔Storage (horizontal)
+      { x: rooms[0].x + ROOM_W / 2, y: rooms[0].y + ROOM_H },
+      // Tavern↔Workshop (horizontal)
+      { x: rooms[1].x + ROOM_W / 2, y: rooms[1].y + ROOM_H },
+    ];
+    doorPositions.forEach(d => {
+      g.fillStyle(0xf0a030, 0.04);
+      g.fillEllipse(d.x, d.y, 25, 20);
+    });
+
+    // Iter 10: room name labels (subtle, bottom-right of each room)
+    const roomLabels = ['Library', 'Tavern', 'Storage', 'Workshop'];
+    rooms.forEach((r, i) => {
+      this.add.text(r.x + ROOM_W - 8, r.y + ROOM_H - 12, roomLabels[i], {
+        fontFamily: 'monospace',
+        fontSize: '7px',
+        color: '#5a4a30'
+      }).setOrigin(1, 0.5).setAlpha(0.6);
+    });
+
+    // Iter 10: inn nameplate on exterior (above building)
+    const nameX = GRID_X + ROOM_W;
+    const nameY = GRID_Y - WALL_T - 16;
+    g.fillStyle(0x3a2010, 1);
+    g.fillRoundedRect(nameX - 50, nameY - 6, 100, 14, 2);
+    g.fillStyle(0x2a1808, 1);
+    g.fillRoundedRect(nameX - 48, nameY - 4, 96, 10, 1);
+    this.add.text(nameX, nameY + 1, '高町旅館', {
+      fontFamily: 'monospace',
+      fontSize: '8px',
+      color: '#d0b070'
+    }).setOrigin(0.5);
   }
 
   drawWallsAndDoors() {
@@ -735,11 +922,11 @@ class TakamachiScene extends Phaser.Scene {
     };
 
     // Room → lantern glow references (index into this.lanternGlows)
-    // Library sconce = index 0, Tavern sconces = 1,2, Storage = 3
+    // Library sconces = 0,1, Tavern fireplace+sconces = 2,3,4, Storage = 5
     this.roomLanterns = {
-      library: [0],
-      tavern: [1, 2],
-      storage: [3],
+      library: [0, 1],
+      tavern: [2, 3, 4],
+      storage: [5],
       workshop: [], // forge glow handles this
     };
 
@@ -844,16 +1031,26 @@ class TakamachiScene extends Phaser.Scene {
     const room = this.getRoomForAgent(agentId);
     const npcIdx = this.roomNpcIndex[room];
 
-    // 1. NPC bounce
+    // 1. Iter 9: NPC squash-stretch bounce
     if (npcIdx !== undefined && this.npcs[npcIdx]) {
       const npc = this.npcs[npcIdx];
       const origY = npc.y;
       this.tweens.add({
         targets: npc,
-        y: origY - 4,
-        duration: 100,
+        y: origY - 6,
+        duration: 120,
         yoyo: true,
-        ease: 'Sine.easeOut'
+        ease: 'Back.easeOut',
+        onComplete: () => {
+          // subtle settle
+          this.tweens.add({
+            targets: npc,
+            y: origY - 2,
+            duration: 80,
+            yoyo: true,
+            ease: 'Sine.easeInOut'
+          });
+        }
       });
     }
 
@@ -864,8 +1061,11 @@ class TakamachiScene extends Phaser.Scene {
         const lg = this.lanternGlows[idx];
         const origAlpha = lg.baseAlpha;
         lg.gfx.setAlpha(1);
-        this.time.delayedCall(800, () => {
-          lg.gfx.setAlpha(origAlpha);
+        this.tweens.add({
+          targets: lg.gfx,
+          alpha: origAlpha,
+          duration: 1200,
+          ease: 'Sine.easeOut'
         });
       }
     });
@@ -873,20 +1073,45 @@ class TakamachiScene extends Phaser.Scene {
     // For workshop, flare forge glow
     if (room === 'workshop' && this.forgeGlows[0]) {
       this.forgeGlows[0].setAlpha(1);
-      this.time.delayedCall(800, () => {
-        this.forgeGlows[0].setAlpha(0.4);
+      this.tweens.add({
+        targets: this.forgeGlows[0],
+        alpha: 0.4,
+        duration: 1200,
+        ease: 'Sine.easeOut'
       });
     }
 
-    // 3. Speech bubble above NPC
+    // Iter 9: room warm flash overlay
+    const rPos = this.getRoomPos(room);
+    if (rPos) {
+      const flash = this.add.graphics();
+      flash.fillStyle(0xf0a030, 0.08);
+      flash.fillRect(rPos.x, rPos.y, ROOM_W, ROOM_H);
+      flash.setAlpha(1);
+      this.tweens.add({
+        targets: flash,
+        alpha: 0,
+        duration: 1500,
+        ease: 'Sine.easeOut',
+        onComplete: () => flash.destroy()
+      });
+    }
+
+    // 3. Iter 9: speech bubble with agent name
     if (npcIdx !== undefined && this.npcs[npcIdx]) {
       const npc = this.npcs[npcIdx];
-      this.showSpeechBubble(npc.x, npc.y - 16);
+      this.showSpeechBubble(npc.x, npc.y - 16, agentId);
     }
 
     // 4. Update ticker
-    const truncMsg = message.length > 30 ? message.substring(0, 30) + '…' : message;
+    const truncMsg = message.length > 30 ? message.substring(0, 30) + '...' : message;
     this.lastSpokeText.setText(`last: ${agentId} — ${truncMsg}`);
+  }
+
+  // Iter 9: helper to get room position by name
+  getRoomPos(room) {
+    const map = { library: roomPos(0, 0), tavern: roomPos(1, 0), storage: roomPos(0, 1), workshop: roomPos(1, 1) };
+    return map[room];
   }
 
   onAgentOnline(agentId) {
@@ -935,32 +1160,48 @@ class TakamachiScene extends Phaser.Scene {
     }
   }
 
-  showSpeechBubble(x, y) {
+  showSpeechBubble(x, y, agentName) {
+    const label = agentName ? agentName.substring(0, 8) : '...';
+    const textW = label.length * 5.5 + 8;
+    const bubbleW = Math.max(22, textW);
+    const bubbleH = 14;
+
     const bubble = this.add.graphics();
-    // Rounded rect background
-    bubble.fillStyle(0xffffff, 0.9);
-    bubble.fillRoundedRect(x - 10, y - 6, 20, 12, 3);
-    // Three dots
-    bubble.fillStyle(0x555555, 1);
-    bubble.fillCircle(x - 4, y, 1.5);
-    bubble.fillCircle(x, y, 1.5);
-    bubble.fillCircle(x + 4, y, 1.5);
+    // Iter 9: warm-tinted rounded rect
+    bubble.fillStyle(0xfff8e8, 0.92);
+    bubble.fillRoundedRect(x - bubbleW / 2, y - bubbleH / 2, bubbleW, bubbleH, 4);
+    // subtle border
+    bubble.lineStyle(1, 0xd0b080, 0.5);
+    bubble.strokeRoundedRect(x - bubbleW / 2, y - bubbleH / 2, bubbleW, bubbleH, 4);
     // Small triangle pointer
-    bubble.fillStyle(0xffffff, 0.9);
+    bubble.fillStyle(0xfff8e8, 0.92);
     bubble.beginPath();
-    bubble.moveTo(x - 2, y + 6);
-    bubble.lineTo(x + 2, y + 6);
-    bubble.lineTo(x, y + 9);
+    bubble.moveTo(x - 3, y + bubbleH / 2);
+    bubble.lineTo(x + 3, y + bubbleH / 2);
+    bubble.lineTo(x, y + bubbleH / 2 + 4);
     bubble.closePath();
     bubble.fillPath();
 
-    bubble.setAlpha(1);
-    this.time.delayedCall(2500, () => {
+    // Agent name text
+    const txt = this.add.text(x, y - 1, label, {
+      fontFamily: 'monospace',
+      fontSize: '8px',
+      color: '#4a3a20'
+    }).setOrigin(0.5);
+
+    // Iter 9: pop-in scale
+    bubble.setScale(0.3);
+    txt.setScale(0.3);
+    this.tweens.add({ targets: [bubble, txt], scaleX: 1, scaleY: 1, duration: 150, ease: 'Back.easeOut' });
+
+    this.time.delayedCall(3000, () => {
       this.tweens.add({
-        targets: bubble,
+        targets: [bubble, txt],
         alpha: 0,
-        duration: 300,
-        onComplete: () => bubble.destroy()
+        y: '-=5',
+        duration: 400,
+        ease: 'Sine.easeIn',
+        onComplete: () => { bubble.destroy(); txt.destroy(); }
       });
     });
   }
@@ -982,6 +1223,10 @@ class TakamachiScene extends Phaser.Scene {
     // head
     g.fillStyle(PAL.skin, 1);
     g.fillCircle(cx, cy - h / 2 + 2, 4);
+    // Iter 7: eyes
+    g.fillStyle(0x1a1010, 1);
+    g.fillRect(cx - 2, cy - h / 2 + 1, 1, 1);
+    g.fillRect(cx + 1, cy - h / 2 + 1, 1, 1);
     // hair
     g.fillStyle(origColors.hair, 1);
     g.fillRect(cx - 3, cy - h / 2 - 2, 6, 3);
@@ -1014,7 +1259,8 @@ new Phaser.Game({
 });
 </script>
 <div id="oracle-inbox">
-  <input id="oracle-input" type="text" placeholder="Send instruction to the Oracle..." maxlength="300" autocomplete="off" />
+  <span id="oracle-label">ORACLE</span>
+  <input id="oracle-input" type="text" placeholder="Whisper to the Oracle..." maxlength="300" autocomplete="off" />
   <button id="oracle-send">⚡ Send</button>
 </div>
 <script>
