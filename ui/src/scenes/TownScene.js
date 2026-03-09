@@ -32,10 +32,13 @@ export default class TownScene extends Phaser.Scene {
     // Suppress 404 errors for missing sprites — fallback rendering handles them gracefully
     this.load.on('loaderror', () => {});
 
+    // Cache-bust sprite URLs so browser never serves stale autumn/old sprites
+    const v = `?v=${Date.now()}`;
+
     // Character sprites
     const spriteAgents = ['scarlet', 'lumen', 'canvas', 'forge', 'sage', 'echo', 'iron', 'cronos', 'mosaic', 'patch', 'muse', 'planner', 'qa'];
     for (const id of spriteAgents) {
-      this.load.image(`agent-${id}`, `assets/sprites/${id}.png`);
+      this.load.image(`agent-${id}`, `assets/sprites/${id}.png${v}`);
     }
 
     // Building sprites — exact manifest of what exists on disk (no speculative loads)
@@ -60,17 +63,17 @@ export default class TownScene extends Phaser.Scene {
       'garden-l1',
     ];
     for (const f of buildingFiles) {
-      this.load.image(`building-${f}`, `assets/buildings/${f}.png`);
+      this.load.image(`building-${f}`, `assets/buildings/${f}.png${v}`);
     }
 
     // World life sprites
     const lifeSprites = ['sakura', 'bamboo', 'zen', 'koipond', 'deer', 'crane', 'firefly', 'butterfly', 'willow', 'lamp', 'pine'];
     for (const name of lifeSprites) {
-      this.load.image(`life-${name}`, `assets/sprites/life/${name}.png`);
+      this.load.image(`life-${name}`, `assets/sprites/life/${name}.png${v}`);
     }
 
     // Ground tile sprites
-    this.load.image('tile-path', 'assets/buildings/path-tile.png');
+    this.load.image('tile-path', `assets/buildings/path-tile.png${v}`);
   }
 
   create() {

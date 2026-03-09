@@ -7,6 +7,7 @@ export function createGame(container) {
       parent: container,
       width: window.innerWidth,
       height: window.innerHeight,
+      transparent: false,
       backgroundColor: '#080c14',
       pixelArt: true,
       roundPixels: true,
