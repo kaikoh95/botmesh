@@ -408,9 +408,9 @@ export default class TownScene extends Phaser.Scene {
         } else {
           baseColor = this._grassColor(x, y);
           if (even) {
-            const r = ((baseColor >> 16) & 0xff) + 22;
-            const g2 = ((baseColor >> 8) & 0xff) + 24;
-            const b2 = (baseColor & 0xff) + 32;
+            const r = ((baseColor >> 16) & 0xff) + 6;
+            const g2 = ((baseColor >> 8) & 0xff) + 7;
+            const b2 = (baseColor & 0xff) + 10;
             baseColor = (Math.min(r,255) << 16) | (Math.min(g2,255) << 8) | Math.min(b2,255);
           }
         }
@@ -517,12 +517,12 @@ export default class TownScene extends Phaser.Scene {
     const n = Math.abs((x * 7 + y * 13 + x * y) % 7);
 
     if (nearPath) {
-      // Grey slush near roads — foot traffic melts snow, reveals dark stone
-      const slush = [0x7a8090, 0x6e7480, 0x828898, 0x747a8a, 0x788090];
+      // Grey slush near roads — dark stone underfoot, subtle texture
+      const slush = [0x2a2e38, 0x262a34, 0x2e3240, 0x28303c, 0x2c3040];
       return slush[n % slush.length];
     }
-    // Crisp blue-white snow, clean and undisturbed — same palette everywhere
-    const blueSnow = [0x8294aa, 0x7e90a6, 0x8098ac, 0x7a8ea4, 0x7e92a8, 0x7a8ea0, 0x8296ac];
+    // Dark blue-grey snow — Shirakawa-go deep winter night, matches dark sky
+    const blueSnow = [0x1e2838, 0x1c2636, 0x202a3a, 0x1a2434, 0x1e2a38, 0x1c2838, 0x202c3c];
     return blueSnow[n];
   }
 
