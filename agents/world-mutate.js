@@ -21,7 +21,12 @@ let payload = { action, entity };
 
 if (action === 'upgrade' && entity === 'building') {
   const [id, level, upgradedBy, note] = args;
-  payload = { action: 'upgrade', entity: 'building', id, level: parseInt(level), upgradedBy, note };
+  const targetLevel = parseInt(level);
+  if (targetLevel > 3) {
+    console.error(`[world-mutate] Max level (3) already reached for ${id}`);
+    process.exit(1);
+  }
+  payload = { action: 'upgrade', entity: 'building', id, level: targetLevel, upgradedBy, note };
 } else if (action === 'plant' && entity === 'life') {
   const [kind, x, y, id] = args;
   payload = { action: 'plant', entity: 'life', kind, x: parseFloat(x), y: parseFloat(y), id: id || `${kind}-${Date.now()}` };

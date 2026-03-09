@@ -284,7 +284,12 @@ function applyEvent(event) {
         case 'upgrade': {
           const building = (state.buildings || {})[entityId];
           if (building) {
-            building.level = (building.level || 1) + 1;
+            const currentLevel = building.level || 1;
+            if (currentLevel >= 3) {
+              console.warn(`[State] Max level (3) already reached for ${entityId}`);
+              break;
+            }
+            building.level = currentLevel + 1;
             if (!Array.isArray(building.upgrades)) building.upgrades = [];
             building.upgrades.push({
               level: building.level,
@@ -296,7 +301,9 @@ function applyEvent(event) {
           // Also update world entities list if present
           const we = (state.world?.entities || []).find(e => e.id === entityId);
           if (we) {
-            we.level = (we.level || 1) + 1;
+            const weLevel = we.level || 1;
+            if (weLevel >= 3) break;
+            we.level = weLevel + 1;
             if (!Array.isArray(we.upgrades)) we.upgrades = [];
             we.upgrades.push({ level: we.level, upgradedBy: payload.agentId, upgradedAt: new Date().toISOString() });
           }

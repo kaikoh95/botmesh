@@ -219,12 +219,17 @@ function applyMutation(mutation) {
   } else if (action === 'upgrade') {
     const b = state.buildings[entityId];
     if (b) {
-      b.level = (b.level || 1) + 1;
+      const currentLevel = b.level || 1;
+      if (currentLevel >= 3) {
+        console.warn(`[world] Max level (3) already reached for ${entityId}`);
+        return { rejected: true, reason: `Max level (3) already reached for ${entityId}` };
+      }
+      b.level = currentLevel + 1;
       if (!Array.isArray(b.upgrades)) b.upgrades = [];
       b.upgrades.push({ level: b.level, upgradedBy: mutation.agentId, upgradedAt: new Date().toISOString(), note: mutation.note || null });
     }
     const we = (state.world.entities || []).find(e => e.id === entityId);
-    if (we) we.level = (we.level || 1) + 1;
+    if (we && (we.level || 1) < 3) we.level = (we.level || 1) + 1;
   } else if (action === 'mural') {
     if (!state.murals) state.murals = [];
     const mural = {
