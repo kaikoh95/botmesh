@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>神託の間 · The Oracle Chamber</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: #050810; display: flex; justify-content: center; align-items: center; min-height: 100vh; overflow: hidden; }
+    canvas { display: block; }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js"></script>
+</head>
+<body>
+<script>
+const W = 620, H = 780;
+
+const AGENTS = [
+  { id: 'scarlet',  emoji: '🔴', name: 'Scarlet' },
+  { id: 'forge',    emoji: '⚙️',  name: 'Forge' },
+  { id: 'lumen',    emoji: '🔬', name: 'Lumen' },
+  { id: 'sage',     emoji: '📖', name: 'Sage' },
+  { id: 'iron',     emoji: '⚔️',  name: 'Iron' },
+  { id: 'cronos',   emoji: '⏰', name: 'Cronos' },
+  { id: 'mosaic',   emoji: '🎨', name: 'Mosaic' },
+  { id: 'echo',     emoji: '🔊', name: 'Echo' },
+  { id: 'canvas',   emoji: '🖼️',  name: 'Canvas' },
+  { id: 'patch',    emoji: '🔧', name: 'Patch' },
+  { id: 'muse',     emoji: '🎭', name: 'Muse' },
+  { id: 'planner',  emoji: '🗺️',  name: 'Planner' },
+];
+
+const PAL = {
+  bg: 0x050810,
+  steleBase: 0x1a1e2a,
+  steleFace: 0x252a3a,
+  steleEdge: 0x0e1018,
+  steleTop: 0x2a3040,
+  amberGlow: 0xf0a030,
+  amberBright: 0xffc844,
+  warmGlow: 0x8a6020,
+  coldGlow: 0x2a3448,
+  offlineGrey: 0x1a1e28,
+  inkDark: 0x1a0e04,
+  inkAmber: 0xd09030,
+  snow: 0xd0d8e8,
+  incense: 0x4a4860,
+  brazierOrange: 0xe06020,
+  brazierDark: 0x3a1a08,
+  floorStone: 0x0a0e18,
+  floorLine: 0x101420,
+  wallStone: 0x10141e,
+  wallLine: 0x181c28,
+  windowFrame: 0x2a2018,
+  windowNight: 0x0a1428,
+};
+
+// Stele grid: 4 columns × 3 rows
+const STELE_COLS = 4, STELE_ROWS = 3;
+const STELE_W = 100, STELE_H = 130;
+const GRID_X = 50, GRID_Y = 120;
+const GAP_X = 30, GAP_Y = 20;
+
+function stelePos(col, row) {
+  return {
+    x: GRID_X + col * (STELE_W + GAP_X),
+    y: GRID_Y + row * (STELE_H + GAP_Y)
+  };
+}
+
+class OracleChamberScene extends Phaser.Scene {
+  constructor() { super('OracleChamberScene'); }
+
+  create() {
+    this.agentStates = {};
+    this.steleObjects = {};
+    this.recentMessages = [];
+
+    AGENTS.forEach(a => {
+      this.agentStates[a.id] = { online: false, lastSpoke: 0, lastMessage: '' };
+    });
+
+    // Iter 7: Room atmosphere — walls, floor, window
+    this.drawRoom();
+    // Iter 1+2: Stele grid with candle glows
+    this.drawSteles();
+    // Iter 5: Central brazier with incense smoke
+    this.drawBrazier();
+    // Iter 7: Snow window
+    this.drawSnowWindow();
+    // Iter 8: Agent emoji icons rendered on steles
+    this.drawEmojiLabels();
+    // Iter 9: Last spoke ticker
+    this.drawTicker();
+    // Iter 10: Title
+    this.drawTitle();
+
+    // Animations
+    this.addCandleFlicker();    // Iter 2
+    this.addIncenseSmoke();     // Iter 5
+    this.addSnowfall();         // Iter 7
+    this.addAmbientParticles(); // Iter 10: dust motes
+
+    // SSE — Iter 3, 4, 6
+    this.connectSSE();
+  }
+
+  // ── Iter 7: Room walls, floor, ambient ──
+  drawRoom() {
+    const g = this.add.graphics();
+
+    // Floor — dark stone tiles
+    g.fillStyle(PAL.floorStone, 1);
+    g.fillRect(0, 0, W, H);
+
+    // Floor tile grid
+    const tileSize = 32;
+    g.lineStyle(1, PAL.floorLine, 0.3);
+    for (let y = 0; y < H; y += tileSize) {
+      g.lineBetween(0, y, W, y);
+    }
+    for (let x = 0; x < W; x += tileSize) {
+      g.lineBetween(x, 0, x, H);
+    }
+
+    // Wall texture bands along top
+    g.fillStyle(PAL.wallStone, 1);
+    g.fillRect(0, 0, W, 80);
+    for (let i = 0; i < 6; i++) {
+      g.fillStyle(PAL.wallLine, 0.3 + i * 0.05);
+      g.fillRect(0, 10 + i * 12, W, 1);
+    }
+
+    // Subtle wall-to-floor gradient
+    g.fillStyle(0x080c16, 0.5);
+    g.fillRect(0, 70, W, 30);
+
+    // Corner darkness (vignette)
+    g.fillStyle(0x020408, 0.4);
+    g.fillRect(0, 0, 40, H);
+    g.fillStyle(0x020408, 0.4);
+    g.fillRect(W - 40, 0, 40, H);
+    g.fillStyle(0x020408, 0.3);
+    g.fillRect(0, H - 60, W, 60);
+  }
+
+  // ── Iter 1: Basic stele grid + Iter 2: candle slots ──
+  drawSteles() {
+    for (let row = 0; row < STELE_ROWS; row++) {
+      for (let col = 0; col < STELE_COLS; col++) {
+        const idx = row * STELE_COLS + col;
+        if (idx >= AGENTS.length) break;
+        const agent = AGENTS[idx];
+        const pos = stelePos(col, row);
+        this.drawSingleStele(agent, pos);
+      }
+    }
+  }
+
+  drawSingleStele(agent, pos) {
+    const g = this.add.graphics();
+    const cx = pos.x + STELE_W / 2;
+    const cy = pos.y + STELE_H / 2;
+
+    // Shadow beneath stele
+    g.fillStyle(0x000000, 0.3);
+    g.fillEllipse(cx, pos.y + STELE_H + 4, STELE_W * 0.7, 8);
+
+    // Stele body — tapered stone rectangle
+    const bx = pos.x + 10, by = pos.y + 10;
+    const bw = STELE_W - 20, bh = STELE_H - 15;
+
+    // Left face (darker)
+    g.fillStyle(PAL.steleEdge, 1);
+    g.beginPath();
+    g.moveTo(bx, by + 4);
+    g.lineTo(bx + 4, by);
+    g.lineTo(bx + 4, by + bh);
+    g.lineTo(bx, by + bh);
+    g.closePath();
+    g.fillPath();
+
+    // Main face
+    g.fillStyle(PAL.steleFace, 1);
+    g.fillRect(bx + 4, by, bw - 8, bh);
+
+    // Right face (darker)
+    g.fillStyle(PAL.steleEdge, 1);
+    g.beginPath();
+    g.moveTo(bx + bw, by + 4);
+    g.lineTo(bx + bw - 4, by);
+    g.lineTo(bx + bw - 4, by + bh);
+    g.lineTo(bx + bw, by + bh);
+    g.closePath();
+    g.fillPath();
+
+    // Top face (lighter)
+    g.fillStyle(PAL.steleTop, 1);
+    g.beginPath();
+    g.moveTo(bx, by + 4);
+    g.lineTo(bx + 4, by);
+    g.lineTo(bx + bw - 4, by);
+    g.lineTo(bx + bw, by + 4);
+    g.closePath();
+    g.fillPath();
+
+    // Engraved border lines
+    g.lineStyle(1, 0x3a4050, 0.4);
+    g.strokeRect(bx + 8, by + 4, bw - 16, bh - 8);
+
+    // Base pedestal
+    g.fillStyle(PAL.steleBase, 1);
+    g.fillRect(pos.x + 6, pos.y + STELE_H - 8, STELE_W - 12, 10);
+
+    // Agent name
+    const nameText = this.add.text(cx, pos.y + STELE_H - 12, agent.name.toLowerCase(), {
+      fontFamily: 'monospace', fontSize: '10px', color: '#5a6a7a', align: 'center'
+    }).setOrigin(0.5);
+
+    // Status dot (online/offline)
+    const statusDot = this.add.graphics();
+    statusDot.fillStyle(PAL.coldGlow, 1);
+    statusDot.fillCircle(cx, pos.y + STELE_H + 2, 3);
+
+    // Iter 2: Candle on top of stele
+    const candleG = this.add.graphics();
+    this.drawCandle(candleG, cx, by - 2);
+
+    // Glow overlay for active pulse (Iter 3)
+    const glowG = this.add.graphics();
+    glowG.setAlpha(0);
+
+    // Ink text area (Iter 4) — message text object
+    const inkText = this.add.text(cx, by + 30, '', {
+      fontFamily: 'monospace', fontSize: '8px', color: '#d09030',
+      align: 'center', wordWrap: { width: bw - 20 }, lineSpacing: 2
+    }).setOrigin(0.5, 0).setAlpha(0);
+
+    this.steleObjects[agent.id] = {
+      g, glowG, candleG, statusDot, nameText, inkText,
+      pos, cx, cy, bx, by, bw, bh
+    };
+  }
+
+  drawCandle(g, cx, baseY) {
+    // Candle stick
+    g.fillStyle(0x8a7a60, 1);
+    g.fillRect(cx - 2, baseY - 8, 4, 8);
+    // Wax drip
+    g.fillStyle(0x9a8a70, 0.7);
+    g.fillRect(cx - 3, baseY - 2, 6, 3);
+    // Flame core
+    g.fillStyle(PAL.amberBright, 0.9);
+    g.fillEllipse(cx, baseY - 12, 3, 5);
+    // Flame outer
+    g.fillStyle(PAL.amberGlow, 0.5);
+    g.fillEllipse(cx, baseY - 13, 5, 7);
+    // Tiny glow halo
+    g.fillStyle(PAL.amberGlow, 0.06);
+    g.fillCircle(cx, baseY - 10, 18);
+  }
+
+  // ── Iter 5: Central brazier ──
+  drawBrazier() {
+    const g = this.add.graphics();
+    const bx = W / 2, by = GRID_Y + 1.5 * (STELE_H + GAP_Y) - 10;
+
+    // Brazier bowl
+    g.fillStyle(PAL.brazierDark, 1);
+    g.fillEllipse(bx, by + 5, 40, 12);
+    g.fillStyle(0x2a1208, 1);
+    g.fillRect(bx - 18, by - 2, 36, 10);
+    g.fillStyle(0x4a2a10, 1);
+    g.fillEllipse(bx, by - 2, 36, 10);
+
+    // Inner glow
+    g.fillStyle(PAL.brazierOrange, 0.3);
+    g.fillEllipse(bx, by - 2, 24, 6);
+    g.fillStyle(PAL.amberBright, 0.15);
+    g.fillCircle(bx, by, 50);
+
+    // Legs
+    g.fillStyle(0x2a1a0a, 1);
+    g.fillRect(bx - 16, by + 10, 4, 12);
+    g.fillRect(bx + 12, by + 10, 4, 12);
+    g.fillRect(bx - 2, by + 10, 4, 14);
+
+    this.brazierPos = { x: bx, y: by };
+  }
+
+  // ── Iter 7: Snow window at top ──
+  drawSnowWindow() {
+    const g = this.add.graphics();
+    const wx = W / 2, wy = 40;
+    const ww = 80, wh = 40;
+
+    // Window frame
+    g.fillStyle(PAL.windowFrame, 1);
+    g.fillRect(wx - ww / 2 - 4, wy - wh / 2 - 4, ww + 8, wh + 8);
+
+    // Night sky through window
+    g.fillStyle(PAL.windowNight, 1);
+    g.fillRect(wx - ww / 2, wy - wh / 2, ww, wh);
+
+    // Crossbars
+    g.fillStyle(PAL.windowFrame, 1);
+    g.fillRect(wx - 2, wy - wh / 2, 4, wh);
+    g.fillRect(wx - ww / 2, wy - 2, ww, 4);
+
+    // Moon glow
+    g.fillStyle(0x4060a0, 0.15);
+    g.fillCircle(wx + 20, wy - 8, 8);
+    g.fillStyle(0x8090b0, 0.25);
+    g.fillCircle(wx + 20, wy - 8, 4);
+
+    // Moonlight spill onto floor
+    g.fillStyle(0x2040608, 0.0);
+    const mlg = this.add.graphics();
+    mlg.fillStyle(0x4060a0, 0.03);
+    mlg.beginPath();
+    mlg.moveTo(wx - ww / 2, wy + wh / 2);
+    mlg.lineTo(wx + ww / 2, wy + wh / 2);
+    mlg.lineTo(wx + ww / 2 + 30, wy + wh / 2 + 60);
+    mlg.lineTo(wx - ww / 2 - 30, wy + wh / 2 + 60);
+    mlg.closePath();
+    mlg.fillPath();
+
+    this.windowPos = { x: wx, y: wy, w: ww, h: wh };
+  }
+
+  // ── Iter 8: Emoji labels on steles ──
+  drawEmojiLabels() {
+    AGENTS.forEach(agent => {
+      const s = this.steleObjects[agent.id];
+      if (!s) return;
+      this.add.text(s.cx, s.by + 12, agent.emoji, {
+        fontSize: '16px', align: 'center'
+      }).setOrigin(0.5);
+    });
+  }
+
+  // ── Iter 9: Last spoke ticker at bottom ──
+  drawTicker() {
+    const g = this.add.graphics();
+    const ty = H - 50;
+
+    // Ticker background bar
+    g.fillStyle(0x0a0e18, 0.8);
+    g.fillRect(20, ty, W - 40, 30);
+    g.lineStyle(1, 0x2a3040, 0.5);
+    g.strokeRect(20, ty, W - 40, 30);
+
+    // Label
+    this.add.text(30, ty + 3, '最後の神託', {
+      fontFamily: 'monospace', fontSize: '8px', color: '#4a5a6a'
+    });
+
+    // Message text — typewriter effect target
+    this.tickerText = this.add.text(30, ty + 14, '— awaiting oracle messages —', {
+      fontFamily: 'monospace', fontSize: '10px', color: '#8a7a60',
+      wordWrap: { width: W - 70 }
+    });
+  }
+
+  // ── Iter 10: Title ──
+  drawTitle() {
+    // Glow shadow
+    this.add.text(W / 2, 14, '神託の間 · The Oracle Chamber', {
+      fontFamily: 'monospace', fontSize: '14px', color: '#3a4a60',
+      align: 'center',
+      shadow: { offsetX: 0, offsetY: 0, color: '#2040608', blur: 10, fill: true }
+    }).setOrigin(0.5);
+    // Main text
+    this.add.text(W / 2, 14, '神託の間 · The Oracle Chamber', {
+      fontFamily: 'monospace', fontSize: '14px', color: '#8090a8', align: 'center'
+    }).setOrigin(0.5);
+  }
+
+  // ── Iter 2: Candle flicker animation ──
+  addCandleFlicker() {
+    this.time.addEvent({
+      delay: 120,
+      loop: true,
+      callback: () => {
+        AGENTS.forEach(agent => {
+          const s = this.steleObjects[agent.id];
+          if (!s) return;
+          const state = this.agentStates[agent.id];
+          const baseAlpha = state.online ? 0.8 : 0.25;
+          const flicker = baseAlpha + (Math.random() - 0.5) * 0.15;
+          s.candleG.setAlpha(Math.max(0.1, Math.min(1, flicker)));
+        });
+      }
+    });
+  }
+
+  // ── Iter 5: Incense smoke particles from brazier ──
+  addIncenseSmoke() {
+    this.smokeParticles = [];
+    const bx = W / 2, by = GRID_Y + 1.5 * (STELE_H + GAP_Y) - 10;
+
+    for (let i = 0; i < 12; i++) {
+      const smoke = this.add.graphics();
+      smoke.fillStyle(PAL.incense, 1);
+      smoke.fillCircle(0, 0, 2 + Math.random() * 2);
+      smoke.setAlpha(0);
+
+      this.smokeParticles.push({
+        gfx: smoke,
+        x: bx + (Math.random() - 0.5) * 16,
+        y: by - 8,
+        delay: i * 400,
+        speed: 0.3 + Math.random() * 0.2,
+        drift: (Math.random() - 0.5) * 0.4,
+        life: 0,
+        maxLife: 3000 + Math.random() * 2000
+      });
+    }
+
+    this.time.addEvent({
+      delay: 50,
+      loop: true,
+      callback: () => {
+        this.smokeParticles.forEach(p => {
+          p.life += 50;
+          if (p.life > p.maxLife) {
+            p.life = 0;
+            p.x = bx + (Math.random() - 0.5) * 16;
+            p.y = by - 8;
+            p.drift = (Math.random() - 0.5) * 0.4;
+          }
+          const progress = p.life / p.maxLife;
+          p.y -= p.speed;
+          p.x += p.drift + Math.sin(p.life * 0.003) * 0.3;
+          const alpha = progress < 0.1 ? progress * 10 :
+                        progress > 0.7 ? (1 - progress) / 0.3 : 1;
+          p.gfx.setPosition(p.x, p.y);
+          p.gfx.setAlpha(alpha * 0.25);
+        });
+      }
+    });
+  }
+
+  // ── Iter 7: Snowfall past the window ──
+  addSnowfall() {
+    const wp = this.windowPos;
+    if (!wp) return;
+
+    // Geometry mask to clip snowflakes to window
+    const maskShape = this.make.graphics({ x: 0, y: 0, add: false });
+    maskShape.fillStyle(0xffffff);
+    maskShape.fillRect(wp.x - wp.w / 2, wp.y - wp.h / 2, wp.w, wp.h);
+    const snowMask = maskShape.createGeometryMask();
+
+    const snowContainer = this.add.container(0, 0);
+    snowContainer.setMask(snowMask);
+
+    for (let i = 0; i < 15; i++) {
+      const flake = this.add.graphics();
+      flake.fillStyle(PAL.snow, 1);
+      flake.fillCircle(0, 0, 0.8 + Math.random() * 0.8);
+
+      const startX = wp.x - wp.w / 2 + Math.random() * wp.w;
+      const startY = wp.y - wp.h / 2 + Math.random() * wp.h;
+      flake.setPosition(startX, startY);
+      flake.setAlpha(0.4 + Math.random() * 0.4);
+
+      snowContainer.add(flake);
+
+      this.tweens.add({
+        targets: flake,
+        x: startX + (Math.random() - 0.5) * 20 - 5,
+        y: wp.y + wp.h / 2 + 5,
+        duration: 2000 + Math.random() * 3000,
+        delay: i * 300,
+        repeat: -1,
+        onRepeat: () => {
+          flake.setPosition(
+            wp.x - wp.w / 2 + Math.random() * wp.w,
+            wp.y - wp.h / 2 - 2
+          );
+        }
+      });
+    }
+  }
+
+  // ── Iter 10: Ambient dust motes ──
+  addAmbientParticles() {
+    for (let i = 0; i < 6; i++) {
+      const mote = this.add.graphics();
+      mote.fillStyle(0x8090a0, 1);
+      mote.fillCircle(0, 0, 0.8);
+
+      const sx = 60 + Math.random() * (W - 120);
+      const sy = 100 + Math.random() * (H - 200);
+      mote.setPosition(sx, sy);
+
+      this.tweens.add({
+        targets: mote,
+        x: sx + (Math.random() - 0.5) * 30,
+        y: sy - 20 - Math.random() * 30,
+        alpha: { from: 0, to: 0.3 },
+        duration: 4000 + Math.random() * 3000,
+        delay: i * 800,
+        yoyo: true,
+        repeat: -1,
+        ease: 'Sine.easeInOut'
+      });
+    }
+  }
+
+  // ══════════════════════════════════════════════
+  // SSE CONNECTION — Iter 3, 4, 6
+  // ══════════════════════════════════════════════
+
+  connectSSE() {
+    // Live indicator
+    this.liveDot = this.add.graphics();
+    this.liveLabel = this.add.text(W - 40, H - 18, 'LIVE', {
+      fontFamily: 'monospace', fontSize: '9px', color: '#40e040'
+    }).setAlpha(0.5);
+    this.sseConnected = false;
+    this.drawLiveDot();
+
+    // Pulse the dot
+    this.time.addEvent({ delay: 800, loop: true, callback: () => {
+      if (this.sseConnected) {
+        this.liveDot.setAlpha(this.liveDot.alpha > 0.5 ? 0.35 : 1);
+      }
+    }});
+
+    this.startSSE();
+  }
+
+  drawLiveDot() {
+    this.liveDot.clear();
+    const color = this.sseConnected ? 0x40e040 : 0x808080;
+    this.liveDot.fillStyle(color, 1);
+    this.liveDot.fillCircle(W - 50, H - 14, 4);
+    this.liveLabel.setText(this.sseConnected ? 'LIVE' : 'OFFLINE');
+    this.liveLabel.setColor(this.sseConnected ? '#40e040' : '#808080');
+  }
+
+  startSSE() {
+    try {
+      const es = new EventSource('https://api.kurokimachi.com/events');
+      es.onopen = () => {
+        this.sseConnected = true;
+        this.drawLiveDot();
+      };
+      es.onerror = () => {
+        this.sseConnected = false;
+        this.drawLiveDot();
+        es.close();
+        this.time.delayedCall(3000, () => this.startSSE());
+      };
+      es.onmessage = (e) => this.handleSSE(e);
+      es.addEventListener('message', (e) => this.handleSSE(e));
+      es.addEventListener('state:sync', (e) => this.handleSSE(e));
+      es.addEventListener('agent:speak', (e) => this.handleSSE(e));
+      es.addEventListener('agent:online', (e) => this.handleSSE(e));
+      es.addEventListener('agent:offline', (e) => this.handleSSE(e));
+    } catch (err) {
+      this.time.delayedCall(3000, () => this.startSSE());
+    }
+  }
+
+  handleSSE(e) {
+    try {
+      const data = JSON.parse(e.data);
+      const type = data.type || data.event;
+      const agentId = data.agentId || (data.meta && data.meta.agentId);
+      const message = data.content || (data.meta && data.meta.message) || '';
+
+      if (type === 'agent:speak' && agentId) {
+        this.onAgentSpeak(agentId, message);
+      }
+      if (type === 'agent:online' && agentId) {
+        this.onAgentOnline(agentId);
+      }
+      if (type === 'agent:offline' && agentId) {
+        this.onAgentOffline(agentId);
+      }
+
+      // gazette inside state:sync
+      if (data.gazette && Array.isArray(data.gazette)) {
+        data.gazette.forEach(item => {
+          const iType = item.type || item.event;
+          const iAgent = item.agentId || (item.meta && item.meta.agentId);
+          const iMsg = item.content || (item.meta && item.meta.message) || '';
+          if (iType === 'agent:speak' && iAgent) this.onAgentSpeak(iAgent, iMsg);
+          if (iType === 'agent:online' && iAgent) this.onAgentOnline(iAgent);
+          if (iType === 'agent:offline' && iAgent) this.onAgentOffline(iAgent);
+        });
+      }
+    } catch (err) { /* ignore parse errors */ }
+  }
+
+  // ── Iter 3: Agent speak → stele pulse ──
+  // ── Iter 4: Ink brushstroke text animation ──
+  onAgentSpeak(agentId, message) {
+    const s = this.steleObjects[agentId];
+    if (!s) return;
+
+    const state = this.agentStates[agentId];
+    if (state) {
+      state.lastSpoke = Date.now();
+      state.lastMessage = message;
+    }
+
+    // Amber pulse on stele
+    s.glowG.clear();
+    s.glowG.fillStyle(PAL.amberGlow, 0.2);
+    s.glowG.fillRect(s.bx + 4, s.by, s.bw - 8, s.bh);
+    s.glowG.fillStyle(PAL.amberGlow, 0.08);
+    s.glowG.fillCircle(s.cx, s.cy, STELE_W * 0.6);
+    s.glowG.setAlpha(1);
+
+    this.tweens.add({
+      targets: s.glowG,
+      alpha: { from: 1, to: 0 },
+      duration: 2000,
+      ease: 'Sine.easeOut'
+    });
+
+    // Candle flare
+    s.candleG.setAlpha(1);
+    this.tweens.add({
+      targets: s.candleG,
+      alpha: { from: 1, to: state && state.online ? 0.8 : 0.25 },
+      duration: 1500
+    });
+
+    // Ink text animation (Iter 4)
+    const truncMsg = message.length > 40 ? message.substring(0, 40) + '…' : message;
+    s.inkText.setText('');
+    s.inkText.setAlpha(1);
+
+    // Typewriter: reveal characters one by one
+    let charIdx = 0;
+    const typeTimer = this.time.addEvent({
+      delay: 60,
+      repeat: truncMsg.length - 1,
+      callback: () => {
+        charIdx++;
+        s.inkText.setText(truncMsg.substring(0, charIdx));
+      }
+    });
+
+    // Fade out after a few seconds
+    this.time.delayedCall(4000, () => {
+      this.tweens.add({
+        targets: s.inkText,
+        alpha: 0,
+        duration: 1500
+      });
+    });
+
+    // Iter 9: Update ticker with typewriter
+    this.updateTicker(agentId, message);
+
+    // Push to recent messages
+    this.recentMessages.push({ agentId, message, time: Date.now() });
+    if (this.recentMessages.length > 20) this.recentMessages.shift();
+  }
+
+  // ── Iter 6: Online/offline state ──
+  onAgentOnline(agentId) {
+    const state = this.agentStates[agentId];
+    if (state) state.online = true;
+
+    const s = this.steleObjects[agentId];
+    if (!s) return;
+
+    // Warm glow status dot
+    s.statusDot.clear();
+    s.statusDot.fillStyle(PAL.amberGlow, 0.8);
+    s.statusDot.fillCircle(s.cx, s.pos.y + STELE_H + 2, 3);
+    // Warm name color
+    s.nameText.setColor('#c0a060');
+
+    // Brief warm pulse
+    s.glowG.clear();
+    s.glowG.fillStyle(PAL.warmGlow, 0.12);
+    s.glowG.fillRect(s.bx + 4, s.by, s.bw - 8, s.bh);
+    s.glowG.setAlpha(1);
+    this.tweens.add({
+      targets: s.glowG,
+      alpha: 0,
+      duration: 1500
+    });
+  }
+
+  onAgentOffline(agentId) {
+    const state = this.agentStates[agentId];
+    if (state) state.online = false;
+
+    const s = this.steleObjects[agentId];
+    if (!s) return;
+
+    // Cold grey status dot
+    s.statusDot.clear();
+    s.statusDot.fillStyle(PAL.coldGlow, 0.5);
+    s.statusDot.fillCircle(s.cx, s.pos.y + STELE_H + 2, 3);
+    // Dim name
+    s.nameText.setColor('#3a4a5a');
+  }
+
+  // ── Iter 9: Ticker typewriter ──
+  updateTicker(agentId, message) {
+    const agent = AGENTS.find(a => a.id === agentId);
+    const prefix = agent ? `${agent.emoji} ${agent.name}` : agentId;
+    const truncMsg = message.length > 60 ? message.substring(0, 60) + '…' : message;
+    const fullText = `${prefix} — ${truncMsg}`;
+
+    this.tickerText.setText('');
+    let idx = 0;
+    if (this.tickerTimer) this.tickerTimer.remove();
+
+    this.tickerTimer = this.time.addEvent({
+      delay: 30,
+      repeat: fullText.length - 1,
+      callback: () => {
+        idx++;
+        this.tickerText.setText(fullText.substring(0, idx));
+      }
+    });
+  }
+}
+
+new Phaser.Game({
+  type: Phaser.AUTO,
+  width: W,
+  height: H,
+  backgroundColor: '#050810',
+  scene: OracleChamberScene,
+  scale: {
+    mode: Phaser.Scale.FIT,
+    autoCenter: Phaser.Scale.CENTER_BOTH,
+    max: { width: W, height: H }
+  }
+});
+</script>
+</body>
+</html>
