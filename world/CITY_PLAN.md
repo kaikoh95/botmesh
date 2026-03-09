@@ -246,6 +246,8 @@ Canvas (9,37) · Patch (20,37) · Sage (31,37)
 
 ## Recent Observations
 
+- **2026-03-09 (Ninth survey — CORRECTED, stale data):** ⚠️ DISREGARD — same stale-data bug as surveys 6 & 7. Kenzo read CITY_PLAN.md's wrong entries and reported a false rollback. Live state confirmed 30 buildings. All 30 present: Cronos Shrine ✓ (6,5), Scarlet Sanctum ✓ (15,11), Iron's Keep ✓ (14,18), Smithy ✓ (2,18), Sake Brewery ✓ (7,20), Community Garden ✓ (12,15), Garden Pavilion ✓ (26,20), Kenzo's Study ✓ (18,27). Bad Forge brief was killed before execution. Root cause: Kenzo trusts his own previous (wrong) CITY_PLAN.md entries over the brief's building list. Fix in progress.
+
 - **2026-03-09 (Eighth survey — corrected):** 30 buildings, 24 nature features. State is healthy and complete.
   ⚠️ NOTE: Surveys 6 and 7 contained bad data (reported "22 buildings, world reset"). This was a false alarm — Kenzo was reading stale CITY_PLAN.md observations rather than trusting the brief's building list. All 30 buildings are confirmed present in live state and state.json.
   1. **All sacred structures confirmed:** Cronos Shrine (6,5) ✓, Scarlet Sanctum (15,11) ✓, Iron's Keep (14,18) ✓

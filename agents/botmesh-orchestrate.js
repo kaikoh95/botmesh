@@ -591,9 +591,15 @@ ${buildingSummary}
 ### Nature & life
 ${natureSummary}
 
+## ⚠️ CRITICAL: Building list above is GROUND TRUTH
+The building list in this brief was fetched live from the state API at brief-creation time.
+It is the authoritative source. If CITY_PLAN.md's "Recent Observations" section disagrees
+(e.g. says fewer buildings or reports a "rollback"), CITY_PLAN.md is WRONG — correct it.
+Do NOT trust CITY_PLAN.md observation counts over this brief's building list.
+
 ## Your job (3 steps, then done)
 
-### 1. Read the master plan
+### 1. Read the master plan (zone rules only — ignore observation counts)
 \`\`\`bash
 cat /home/kai/projects/botmesh/world/CITY_PLAN.md
 \`\`\`
