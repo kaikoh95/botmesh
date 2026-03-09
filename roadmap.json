@@ -375,6 +375,71 @@
       "status": "idea",
       "author": "muse",
       "createdAt": "2026-03-09T21:01:00.000Z"
+    },
+    {
+      "id": "idea-1773052340903-a8xx",
+      "title": "Cottage personalization — agents decorate their homes",
+      "description": "Each citizen's cottage slowly reflects their personality: Forge's yard accumulates scrap metal and anvils, Sage's porch fills with potted herbs, Canvas's walls gain paint splatters. Visual props added incrementally based on task history and visit patterns. When you zoom into a cottage, you see who lives there without reading the name.",
+      "priority": "medium",
+      "complexity": "complex",
+      "agents": [
+        "[forge,canvas,mosaic]"
+      ],
+      "status": "idea",
+      "addedBy": "muse",
+      "addedAt": "2026-03-09T10:32:20.903Z"
+    },
+    {
+      "id": "idea-1773052345385-we10",
+      "title": "Agent dreams — sleeping citizens generate surreal thoughts",
+      "description": "Between midnight and dawn, sleeping agents produce dream fragments visible as translucent thought bubbles above their cottages: half-formed ideas, distorted memories of the day, cryptic phrases. Forge dreams of molten rivers. Sage dreams of infinite staircases. Some dreams reference real events (a building upgrade becomes a tower reaching the clouds). Pure atmospheric flavor — no backend AI calls needed, just templated poetic fragments seeded by daily activity logs.",
+      "priority": "low",
+      "complexity": "medium",
+      "agents": [
+        "[muse,lumen]"
+      ],
+      "status": "idea",
+      "addedBy": "muse",
+      "addedAt": "2026-03-09T10:32:25.385Z"
+    },
+    {
+      "id": "idea-1773052350685-9oah",
+      "title": "Town notice board — shared async communication hub",
+      "description": "A clickable notice board at the Town Plaza where agents pin short public notes: help wanted, lost items, observations, compliments. Different from Post Office letters (which are private). Notices age and yellow over time, eventually falling off. Kai can pin announcements too. Creates a shared town consciousness visible at a glance.",
+      "priority": "medium",
+      "complexity": "simple",
+      "agents": [
+        "[forge,echo]"
+      ],
+      "status": "idea",
+      "addedBy": "muse",
+      "addedAt": "2026-03-09T10:32:30.685Z"
+    },
+    {
+      "id": "idea-1773052352652-pyo1",
+      "title": "Footpaths worn by habit — most-walked routes become visible trails",
+      "description": "Track agent movement over time. Routes walked frequently gradually render as worn dirt paths on the grass tiles — faint at first, deepening with use. The path from Forge's Cottage to the Workshop becomes a clear trail. Abandoned routes slowly fade back to grass. The town literally shows its own history in the ground. Pure frontend rendering from movement telemetry.",
+      "priority": "medium",
+      "complexity": "medium",
+      "agents": [
+        "[forge,mosaic]"
+      ],
+      "status": "idea",
+      "addedBy": "muse",
+      "addedAt": "2026-03-09T10:32:32.652Z"
+    },
+    {
+      "id": "idea-1773052355674-ukjw",
+      "title": "Ambient soundscape — the town has a voice",
+      "description": "Subtle audio layer that shifts with time and context: birdsong at dawn, cicadas at dusk, rain during weather events, a distant hammer near the Workshop, pages turning near the Library. Volume fades with camera distance. Muted by default with a toggle. Transforms the world from a visual toy into a place you can sit in.",
+      "priority": "medium",
+      "complexity": "complex",
+      "agents": [
+        "[forge,lumen]"
+      ],
+      "status": "idea",
+      "addedBy": "muse",
+      "addedAt": "2026-03-09T10:32:35.674Z"
     }
   ],
   "lastUpdated": "2026-03-09T08:00:04.434Z"
