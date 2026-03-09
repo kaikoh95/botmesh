@@ -652,6 +652,13 @@ async function init() {
               building.upgrading = building.currentWorkers.length > 0;
             }
             scene.agentExitBuilding(p.agentId, p.buildingId);
+            // Update cottage props — agent just completed work, may unlock a new decoration
+            const agent = currentAgents[p.agentId];
+            if (agent) {
+              if (!agent.workCount) agent.workCount = 0;
+              agent.workCount++;
+              scene.updateCottageProps(p.agentId, agent.workCount);
+            }
           }
           break;
         }

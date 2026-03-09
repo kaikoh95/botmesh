@@ -1,3 +1,5 @@
+import { getPropsForAgent, getPropSlots, propCountForWork } from './CottageProps.js';
+
 // Map building id → sprite texture base name
 const BUILDING_TEXTURE_MAP = {
   town_hall:      'townhall',
@@ -542,9 +544,54 @@ export default class Building {
     }
   }
 
+  // ─── COTTAGE PROPS ──────────────────────────────────────────────────────────
+  // Personality-specific decorations drawn around agent cottages
+
+  setProps(agentId, workCount) {
+    if (this.type !== 'cottage') return;
+    if (!agentId) return;
+
+    // Clear existing props
+    this._clearProps();
+
+    const count = propCountForWork(workCount, this.level);
+    if (count <= 0) return;
+
+    const defs = getPropsForAgent(agentId);
+    const slots = getPropSlots();
+
+    // Scale prop positions to match building display size
+    let scaleX = 1, scaleY = 1;
+    if (this.spriteImg) {
+      scaleX = this.spriteImg.displayWidth / 180; // normalize to reference size
+      scaleY = scaleX;
+    }
+
+    this._propGraphics = [];
+    for (let i = 0; i < count && i < slots.length && i < defs.length; i++) {
+      const slot = slots[i];
+      const def = defs[i];
+      const g = this.scene.add.graphics();
+      const px = slot.x * scaleX;
+      const py = slot.y * scaleY;
+      def.draw(g, px, py);
+      // Props go behind the building label but at ground level
+      this.container.add(g);
+      this._propGraphics.push(g);
+    }
+  }
+
+  _clearProps() {
+    if (this._propGraphics) {
+      for (const g of this._propGraphics) g.destroy();
+      this._propGraphics = null;
+    }
+  }
+
   destroy() {
     this.hideUpgradeSign();
     this._removeGlowOutline();
+    this._clearProps();
     if (this.glowTween) this.glowTween.remove();
     if (this._damageTween) this._damageTween.remove();
     if (this._dmgTween) this._dmgTween.remove();

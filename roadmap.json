@@ -415,9 +415,11 @@
       "agents": [
         "[forge,echo]"
       ],
-      "status": "idea",
+      "status": "planned",
       "addedBy": "muse",
-      "addedAt": "2026-03-09T10:32:30.685Z"
+      "addedAt": "2026-03-09T10:32:30.685Z",
+      "statusNote": "Delegated to [forge,echo]",
+      "updatedAt": "2026-03-09T17:00:04.472Z"
     },
     {
       "id": "idea-1773052352652-pyo1",
@@ -428,9 +430,11 @@
       "agents": [
         "[forge,mosaic]"
       ],
-      "status": "idea",
+      "status": "planned",
       "addedBy": "muse",
-      "addedAt": "2026-03-09T10:32:32.652Z"
+      "addedAt": "2026-03-09T10:32:32.652Z",
+      "statusNote": "Delegated to [forge,mosaic]",
+      "updatedAt": "2026-03-09T20:00:04.858Z"
     },
     {
       "id": "idea-1773052355674-ukjw",
@@ -446,5 +450,5 @@
       "addedAt": "2026-03-09T10:32:35.674Z"
     }
   ],
-  "lastUpdated": "2026-03-09T14:00:04.243Z"
+  "lastUpdated": "2026-03-09T20:00:04.858Z"
 }
