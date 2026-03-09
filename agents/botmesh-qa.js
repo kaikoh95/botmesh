@@ -284,8 +284,64 @@ async function main() {
   });
 
   if (failures.length > 0) {
-    const summary = failures.map(f => `❌ ${f.name}: ${f.reason}`).join('\n');
-    const evidence = failures.map(f => `- ${f.name}: ${f.reason}`).join('\n');
+    // ── AUTO-HEAL: restart core services before filing a brief ─────────────
+    const autoFixable = {
+      'Hub TCP :3001': 'hub',
+      'State layer': 'state',
+      'UI HTML :3003': 'ui',
+    };
+    const healed = [];
+    const remainingFailures = [];
+
+    for (const f of failures) {
+      const pm2Name = autoFixable[f.name];
+      if (pm2Name) {
+        console.log(`[QA] Auto-healing: pm2 restart ${pm2Name}...`);
+        try {
+          execSync(`pm2 restart ${pm2Name}`, { timeout: 10000 });
+        } catch (e) {
+          console.error(`[QA] pm2 restart ${pm2Name} failed:`, e.message);
+        }
+        // Wait 3 seconds then re-check
+        await new Promise(r => setTimeout(r, 3000));
+        let recovered = false;
+        if (pm2Name === 'hub') {
+          recovered = await checkTCP('localhost', 3001);
+        } else if (pm2Name === 'state') {
+          try { const r = await fetchJSON(`${STATE_LOCAL}/state`); recovered = r.status === 200; } catch {}
+        } else if (pm2Name === 'ui') {
+          try { const r = await fetchText(`${UI_LOCAL}/`); recovered = r.status === 200; } catch {}
+        }
+        if (recovered) {
+          console.log(`[QA] ✅ ${pm2Name} recovered after restart`);
+          healed.push(f.name);
+        } else {
+          console.log(`[QA] ❌ ${pm2Name} still down after restart`);
+          remainingFailures.push(f);
+        }
+      } else {
+        remainingFailures.push(f);
+      }
+    }
+
+    if (healed.length > 0) {
+      console.log(`[QA] Self-healed ${healed.length} service(s): ${healed.join(', ')}`);
+      // Narrate the self-heal
+      const healMsg = `QA self-healed ${healed.length} service(s): ${healed.join(', ')}. Back online.`;
+      try {
+        execSync(`curl -s -X POST https://api.kurokimachi.com/agents/qa/speak -H "Authorization: Bearer cf32979009820158ebe185497d772c255428744d9c2bc8a09e0693a759706c18" -H "Content-Type: application/json" -d '{"message":"${healMsg.replace(/'/g, "'\\''")}"}'`, { timeout: 8000 });
+      } catch {}
+    }
+
+    // If all failures were auto-healed, exit clean
+    if (remainingFailures.length === 0) {
+      console.log('[QA] All issues self-healed ✅');
+      process.exit(0);
+    }
+
+    // Continue with remaining failures only
+    const summary = remainingFailures.map(f => `❌ ${f.name}: ${f.reason}`).join('\n');
+    const evidence = remainingFailures.map(f => `- ${f.name}: ${f.reason}`).join('\n');
 
     // ── RALPH+BMAD: File a structured brief for Patch ──────────────────────
     const brief = `# Patch Brief — from QA 🔍
@@ -293,8 +349,8 @@ Date: ${new Date().toISOString()}
 Source: automated QA check
 
 ## Problem
-${failures.length} health check(s) failed:
-${failures.map(f => `- **${f.name}** failed: ${f.reason}`).join('\n')}
+${remainingFailures.length} health check(s) failed:
+${remainingFailures.map(f => `- **${f.name}** failed: ${f.reason}`).join('\n')}
 
 ## What success looks like
 All QA checks pass — every service/endpoint returns a healthy response.
@@ -317,7 +373,7 @@ ${evidence}
 
     // Narrate the failure via speak endpoint
     console.log('[QA] Issues found — narrating via speak endpoint...');
-    const speakMsg = `QA found ${failures.length} issue(s):\\n${failures.map(f => `❌ ${f.name}: ${f.reason}`).join('\\n')}\\nBrief filed for Patch.`;
+    const speakMsg = `QA found ${remainingFailures.length} issue(s):\\n${remainingFailures.map(f => `❌ ${f.name}: ${f.reason}`).join('\\n')}\\nBrief filed for Patch.`;
     try {
       execSync(`curl -s -X POST https://api.kurokimachi.com/agents/qa/speak -H "Authorization: Bearer cf32979009820158ebe185497d772c255428744d9c2bc8a09e0693a759706c18" -H "Content-Type: application/json" -d '{"message":"${speakMsg.replace(/'/g, "'\\''")}"}'`, { timeout: 8000 });
     } catch (e) {

@@ -7,6 +7,7 @@ UI_URL="https://kurokimachi.com"
 KAI_CHAT_ID="${KAI_CHAT_ID}"
 BOT_TOKEN="${TELEGRAM_BOT_TOKEN}"
 ALERTS=()
+TIMESTAMP=$(date '+%Y-%m-%d %H:%M')
 
 # ── 1. Uptime check ──────────────────────────────────────────────────────────
 UI_STATUS=$(curl -s -o /dev/null -w "%{http_code}" --max-time 10 "$UI_URL" 2>/dev/null)
@@ -14,7 +15,7 @@ API_STATUS=$(curl -s -o /dev/null -w "%{http_code}" --max-time 10 "$TUNNEL_URL/s
 [ "$UI_STATUS" != "200" ] && ALERTS+=("🔴 kurokimachi.com DOWN (HTTP $UI_STATUS)")
 [ "$API_STATUS" != "200" ] && ALERTS+=("🔴 api.kurokimachi.com DOWN (HTTP $API_STATUS)")
 
-# ── 2. pm2 process health ────────────────────────────────────────────────────
+# ── 2. pm2 process health (auto-restart if not online) ──────────────────────
 for svc in hub state ui echo-bridge tunnel-ui tunnel-api; do
   STATUS=$(node -e "
     const { execSync } = require('child_process');
@@ -25,7 +26,30 @@ for svc in hub state ui echo-bridge tunnel-ui tunnel-api; do
       console.log(p ? p.pm2_env.status : 'missing');
     } catch(e) { console.log('error'); }
   " 2>/dev/null)
-  [ "$STATUS" != "online" ] && ALERTS+=("⚠️ pm2 process '$svc' is $STATUS (expected: online)")
+  if [ "$STATUS" != "online" ] && [ "$STATUS" != "missing" ]; then
+    # Auto-restart crashed process
+    echo "[$TIMESTAMP] AUTO-RESTART: $svc was $STATUS — restarting..." >> /tmp/infra-health.log
+    pm2 restart "$svc" 2>/dev/null
+    sleep 2
+    # Re-check after restart
+    NEW_STATUS=$(node -e "
+      const { execSync } = require('child_process');
+      try {
+        const out = execSync('pm2 jlist', { encoding: 'utf8' });
+        const procs = JSON.parse(out);
+        const p = procs.find(p => p.name === '$svc');
+        console.log(p ? p.pm2_env.status : 'missing');
+      } catch(e) { console.log('error'); }
+    " 2>/dev/null)
+    if [ "$NEW_STATUS" = "online" ]; then
+      echo "[$TIMESTAMP] AUTO-RESTART: $svc recovered ✅" >> /tmp/infra-health.log
+      ALERTS+=("🔄 pm2 '$svc' was $STATUS — auto-restarted successfully ✅")
+    else
+      ALERTS+=("🔴 pm2 '$svc' is $NEW_STATUS after restart attempt (was $STATUS)")
+    fi
+  elif [ "$STATUS" = "missing" ]; then
+    ALERTS+=("⚠️ pm2 process '$svc' is $STATUS (expected: online)")
+  fi
 done
 
 # ── 3. Tunnel connectivity ───────────────────────────────────────────────────
@@ -71,7 +95,6 @@ if [ "$HOUR" = "09" ]; then
 fi
 
 # ── Report ───────────────────────────────────────────────────────────────────
-TIMESTAMP=$(date '+%Y-%m-%d %H:%M')
 if [ ${#ALERTS[@]} -eq 0 ]; then
   echo "[$TIMESTAMP] infra OK — ui=$UI_STATUS api=$API_STATUS disk=${DISK_PCT}% mem=${MEM_AVAIL}MB api_rt=${API_MS}ms" >> /tmp/infra-health.log
 else
