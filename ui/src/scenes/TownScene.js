@@ -76,20 +76,12 @@ export default class TownScene extends Phaser.Scene {
   create() {
     this.cameras.main.setBackgroundColor('#080c14'); // deep midnight blue — no purple bleed
 
-    // Solid backdrop fills entire viewport — prevents transparent checkerboard
-    // showing beyond tile boundaries on any zoom/pan/mobile viewport
-    const cam = this.cameras.main;
-    const backdrop = this.add.graphics();
-    backdrop.fillStyle(0x080c14, 1);
-    backdrop.fillRect(0, 0, cam.width || 1200, cam.height || 900);
+    // Solid backdrop fills entire viewport — prevents transparent checkerboard.
+    // Oversized rectangle with scrollFactor(0) covers any viewport/zoom/resize.
+    const backdrop = this.add.rectangle(0, 0, 8000, 8000, 0x080c14);
+    backdrop.setOrigin(0, 0);
     backdrop.setScrollFactor(0);
     backdrop.setDepth(-9999);
-    // Keep backdrop covering viewport even after resize
-    this.scale.on('resize', (gameSize) => {
-      backdrop.clear();
-      backdrop.fillStyle(0x080c14, 1);
-      backdrop.fillRect(0, 0, gameSize.width, gameSize.height);
-    });
 
     this.mapW = 80;
     this.mapH = 80;
