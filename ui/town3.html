@@ -3,802 +3,551 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>宿場町 · Shukubamachi</title>
+  <title>高町旅館 · Takamachi Inn</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { background: #0a0a0a; display: flex; justify-content: center; align-items: center; min-height: 100vh; overflow: hidden; }
+    body { background: #0d0a07; display: flex; justify-content: center; align-items: center; min-height: 100vh; overflow: hidden; }
     canvas { display: block; }
   </style>
   <script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js"></script>
 </head>
 <body>
 <script>
-const W = 600, H = 600;
-const ROOM_W = 120, ROOM_H = 120;
-const WALL_OUTER = 8, WALL_INNER = 6;
-const DOOR_W = 32;
+const W = 600, H = 700;
+const WALL_T = 10;
+const DOOR_W = 40;
+const ROOM_W = 200, ROOM_H = 220;
+const GRID_X = 90, GRID_Y = 60;
+const GAP = WALL_T;
 
 const PAL = {
-  outerWall: 0x2a1a0e,
-  innerWall: 0x3a2010,
-  floor1: 0x8b5e2a,
-  floor2: 0x7a5020,
-  threshold: 0x6b4020,
-  stone: 0x5a5048,
-  stoneTile: 0x4a4840,
-  rug: 0x6b3020,
-  rugBorder: 0x4a1810,
-  bookshelf: 0x2a1a0e,
-  desk: 0x3a2010,
-  bar: 0x4a2e0a,
-  barrel: 0x6b4020,
-  crate: 0x7a5030,
-  chest: 0x5a3a1e,
-  chestGold: 0xd0a030,
-  water: 0x2a5880,
-  rope: 0x8b7050,
-  fireplace: 0x3a1a0a,
-  counter: 0x4a2e0a,
-  pot: 0x4a3020,
-  lanternAmber: 0xf0c060,
-  charInnkeeper: 0x8b6040,
-  charScholar: 0x4a6080,
-  charCook: 0xc0a060,
-  charCustomer: 0x6a5040,
-  charGuard: 0x4a4860,
+  bg: 0x0d0a07,
+  wall: 0x3a2010,
+  wallDark: 0x2a1808,
+  wallInner: 0x4a2e18,
+  floor1: 0x7a4e28,
+  floor2: 0x8b5e30,
+  floor3: 0x6b3e20,
+  floorWarm1: 0x8b5e30,
+  floorWarm2: 0x9a6e3a,
+  floorDark1: 0x5c3818,
+  floorDark2: 0x6b4520,
+  floorStone1: 0x4a3828,
+  floorStone2: 0x5a4838,
+  shadow: 0x1a0e04,
+  lantern: 0xf0a030,
+  bookshelf: 0x5c3a18,
+  barrel: 0x6b4226,
+  barrelRing: 0x3a2a10,
+  table: 0x8b6030,
+  tableLeg: 0x5c3a18,
+  skin: 0xe8b878,
+  forgeGlow: 0xe05020,
+  hudBg: 0x0d0a07,
 };
 
-// Grid layout: 3 cols x 2 rows, offset to centre
-const GRID_X = (W - ROOM_W * 3 - WALL_OUTER * 2 - WALL_INNER * 2) / 2 + WALL_OUTER;
-const GRID_Y = 50; // room for title
+const BOOK_COLORS = [0x4a6a8a, 0x8a2020, 0x2a6a3a, 0x7a5a18, 0x6a3a6a, 0x3a5a7a, 0x9a5a2a, 0x5a2a4a];
+const NPC_COLORS = {
+  scholar: { robe: 0x2a2040, hair: 0x3a2010 },
+  innkeeper: { shirt: 0x8a4020, apron: 0xd0c0a0, hair: 0x1a1010 },
+  patron: { shirt: 0x4a6a3a, hair: 0x6a3a10 },
+  worker: { shirt: 0x5a4a3a, hair: 0x2a1808 },
+  smith: { shirt: 0x3a3a3a, hair: 0x1a0e04 },
+};
 
-function roomOrigin(col, row) {
+function roomPos(col, row) {
   return {
-    x: GRID_X + col * (ROOM_W + WALL_INNER),
-    y: GRID_Y + row * (ROOM_H + WALL_INNER)
+    x: GRID_X + col * (ROOM_W + WALL_T),
+    y: GRID_Y + row * (ROOM_H + WALL_T)
   };
 }
 
-class ShukubamachiScene extends Phaser.Scene {
+class TakamachiScene extends Phaser.Scene {
+  constructor() { super('TakamachiScene'); }
+
   create() {
+    this.lanternGlows = [];
+    this.forgeGlows = [];
+    this.npcs = [];
+    this.pageRect = null;
+
+    this.drawAllRooms();
+    this.drawWallsAndDoors();
+    this.drawHUD();
+    this.startAnimations();
+  }
+
+  drawFloorPlanks(g, x, y, w, h, c1, c2, plankH) {
+    plankH = plankH || 12;
+    for (let py = 0; py < h; py += plankH) {
+      const c = (Math.floor(py / plankH) % 2 === 0) ? c1 : c2;
+      g.fillStyle(c, 1);
+      g.fillRect(x, y + py, w, Math.min(plankH, h - py));
+      // plank line
+      g.fillStyle(0x000000, 0.08);
+      g.fillRect(x, y + py + plankH - 1, w, 1);
+    }
+  }
+
+  drawBookshelf(g, x, y, w, h) {
+    g.fillStyle(PAL.bookshelf, 1);
+    g.fillRect(x, y, w, h);
+    // shelf lines
+    const shelfH = 12;
+    for (let sy = 0; sy < h; sy += shelfH) {
+      g.fillStyle(PAL.wallDark, 1);
+      g.fillRect(x, y + sy, w, 1);
+      // books
+      let bx = x + 2;
+      while (bx < x + w - 8) {
+        const bw = 4 + Math.floor(Math.random() * 4);
+        const bh = 8 + Math.floor(Math.random() * 3);
+        const bc = BOOK_COLORS[Math.floor(Math.random() * BOOK_COLORS.length)];
+        g.fillStyle(bc, 1);
+        g.fillRect(bx, y + sy + (shelfH - bh), bw, bh);
+        bx += bw + 1;
+      }
+    }
+  }
+
+  drawBarrel(g, cx, cy, r) {
+    r = r || 10;
+    g.fillStyle(PAL.barrel, 1);
+    g.fillCircle(cx, cy, r);
+    g.lineStyle(1, PAL.barrelRing, 1);
+    g.strokeCircle(cx, cy, r);
+    g.strokeCircle(cx, cy, r * 0.6);
+  }
+
+  drawCrate(g, x, y, s) {
+    s = s || 16;
+    g.fillStyle(PAL.table, 1);
+    g.fillRect(x, y, s, s);
+    g.lineStyle(1, PAL.bookshelf, 1);
+    g.strokeRect(x, y, s, s);
+    g.lineBetween(x, y, x + s, y + s);
+    g.lineBetween(x + s, y, x, y + s);
+  }
+
+  drawNPC(g, cx, cy, colors, stocky) {
+    const w = stocky ? 10 : 8;
+    const h = stocky ? 14 : 12;
+    // body
+    g.fillStyle(colors.shirt || colors.robe, 1);
+    g.fillRect(cx - w / 2, cy - h / 2 + 3, w, h - 3);
+    // apron overlay
+    if (colors.apron) {
+      g.fillStyle(colors.apron, 1);
+      g.fillRect(cx - w / 2 + 1, cy - h / 2 + 5, w - 2, h - 6);
+    }
+    // head
+    g.fillStyle(PAL.skin, 1);
+    g.fillCircle(cx, cy - h / 2 + 2, 4);
+    // hair
+    g.fillStyle(colors.hair, 1);
+    g.fillRect(cx - 3, cy - h / 2 - 2, 6, 3);
+    return { x: cx, y: cy, ox: cx, oy: cy, w, h, timer: Math.random() * 4000, dx: 0, dy: 0 };
+  }
+
+  drawLanternGlow(x, y, r, intensity) {
+    const gfx = this.add.graphics();
+    gfx.fillStyle(PAL.lantern, 1);
+    gfx.fillCircle(x, y, 3);
+    const glow = this.add.graphics();
+    glow.fillStyle(PAL.lantern, 0.15);
+    glow.fillCircle(x, y, r || 40);
+    glow.fillStyle(PAL.lantern, 0.08);
+    glow.fillCircle(x, y, (r || 40) * 1.5);
+    this.lanternGlows.push({ gfx: glow, baseAlpha: intensity || 0.6, phase: Math.random() * Math.PI * 2 });
+    return glow;
+  }
+
+  drawAllRooms() {
     const g = this.add.graphics();
 
-    // Iteration 5: Title with glow + subtitle
-    this.add.text(W / 2, 18, '宿場町 · Shukubamachi', {
-      fontFamily: 'monospace', fontSize: '18px', color: '#8090b0',
-      shadow: { offsetX: 0, offsetY: 0, color: '#4060a0', blur: 12, fill: true }
-    }).setOrigin(0.5);
-    this.add.text(W / 2, 18, '宿場町 · Shukubamachi', {
-      fontFamily: 'monospace', fontSize: '18px', color: '#d0d8e8'
-    }).setOrigin(0.5);
-    this.add.text(W / 2, 35, 'inn-town waystation', {
-      fontFamily: 'monospace', fontSize: '10px', color: '#506080', letterSpacing: 2
-    }).setOrigin(0.5);
-
-    // Draw outer walls background (fill entire building footprint)
-    const bx = GRID_X - WALL_OUTER;
-    const by = GRID_Y - WALL_OUTER;
-    const bw = ROOM_W * 3 + WALL_INNER * 2 + WALL_OUTER * 2;
-    const bh = ROOM_H * 2 + WALL_INNER + WALL_OUTER * 2;
-    g.fillStyle(PAL.outerWall, 1);
-    g.fillRect(bx, by, bw, bh);
-
-    // Draw rooms
-    this.drawLibrary(g);
-    this.drawHallway(g);
-    this.drawTavern(g);
-    this.drawStorage(g);
-    this.drawWell(g);
-    this.drawKitchen(g);
-
-    // Draw inner walls (on top of rooms, with doorway gaps)
-    this.drawInnerWalls(g);
-
-    // Draw outer wall border
-    this.drawOuterWallBorder(g, bx, by, bw, bh);
-
-    // Iteration 5: Exterior windows
-    this.drawExteriorWindows(g);
-
-    // Lighting overlays
-    this.drawLighting(g);
-
-    // Iteration 5: Room labels (tiny, subtle)
-    const roomLabels = [
-      { col: 0, row: 0, text: '書庫', ox: 80, oy: 108 },  // Library
-      { col: 1, row: 0, text: '廊下', ox: 80, oy: 108 },  // Hallway
-      { col: 2, row: 0, text: '酒場', ox: 80, oy: 108 },  // Tavern
-      { col: 0, row: 1, text: '倉庫', ox: 80, oy: 108 },  // Storage
-      { col: 1, row: 1, text: '井戸', ox: 80, oy: 108 },  // Well
-      { col: 2, row: 1, text: '台所', ox: 80, oy: 108 },  // Kitchen
-    ];
-    for (const rl of roomLabels) {
-      const { x, y } = roomOrigin(rl.col, rl.row);
-      this.add.text(x + rl.ox, y + rl.oy, rl.text, {
-        fontFamily: 'monospace', fontSize: '8px', color: '#ffffff', alpha: 0.15
-      }).setOrigin(0.5).setAlpha(0.15);
-    }
-
-    // Characters
-    this.drawCharacters(g);
-
-    // Animations
-    this.addFireplaceFlicker();
-    this.addTavernLanternPulse();
-    this.addWellShimmer();
-    this.addCharacterBob();
-    this.addDustMotes();
-  }
-
-  // ── Floor drawing helpers ──
-  drawWoodFloor(g, ox, oy, w, h) {
-    const plankH = 8;
-    for (let py = 0; py < h; py += plankH) {
-      for (let px = 0; px < w; px += 16) {
-        const color = ((py / plankH + Math.floor(px / 16)) % 2 === 0) ? PAL.floor1 : PAL.floor2;
-        g.fillStyle(color, 1);
-        const pw = Math.min(16, w - px);
-        const ph = Math.min(plankH, h - py);
-        g.fillRect(ox + px, oy + py, pw, ph);
-      }
-      // Iteration 3: Wood grain lines — subtle horizontal lines within each plank row
-      g.lineStyle(1, 0x000000, 0.06);
-      g.lineBetween(ox, oy + py + 3, ox + w, oy + py + 3);
-      g.lineBetween(ox, oy + py + 6, ox + w, oy + py + 6);
-      // Plank seam
-      g.lineStyle(1, 0x000000, 0.10);
-      g.lineBetween(ox, oy + py, ox + w, oy + py);
-    }
-  }
-
-  drawStoneFloor(g, ox, oy, w, h) {
-    const tileSize = 12;
-    for (let py = 0; py < h; py += tileSize) {
-      for (let px = 0; px < w; px += tileSize) {
-        const color = ((py / tileSize + Math.floor(px / tileSize)) % 2 === 0) ? PAL.stone : PAL.stoneTile;
-        g.fillStyle(color, 1);
-        const pw = Math.min(tileSize, w - px);
-        const ph = Math.min(tileSize, h - py);
-        g.fillRect(ox + px, oy + py, pw, ph);
-        // subtle tile line
-        g.lineStyle(1, 0x000000, 0.12);
-        g.strokeRect(ox + px, oy + py, pw, ph);
-      }
-    }
-  }
-
-  // ── LIBRARY (top-left) ──
-  drawLibrary(g) {
-    const { x, y } = roomOrigin(0, 0);
-    this.drawWoodFloor(g, x, y, ROOM_W, ROOM_H);
-
-    // Rug
-    g.fillStyle(PAL.rug, 1);
-    g.fillRect(x + 35, y + 50, 50, 35);
-    g.lineStyle(1, PAL.rugBorder, 0.8);
-    g.strokeRect(x + 35, y + 50, 50, 35);
-    g.strokeRect(x + 37, y + 52, 46, 31);
-
-    // Bookshelves along top wall
-    for (let i = 0; i < 5; i++) {
-      const bx = x + 6 + i * 22;
-      g.fillStyle(PAL.bookshelf, 1);
-      g.fillRect(bx, y + 4, 18, 10);
-      // Book spines
-      const bookColors = [0xb03030, 0x3050a0, 0x308030, 0xa06030, 0x6030a0];
-      for (let b = 0; b < 4; b++) {
-        g.fillStyle(bookColors[(i + b) % 5], 0.9);
-        g.fillRect(bx + 2 + b * 4, y + 5, 3, 8);
-        // Iteration 2: Book title marks (tiny horizontal line on spine)
-        g.fillStyle(0xd0c0a0, 0.4);
-        g.fillRect(bx + 2 + b * 4, y + 7, 2, 1);
-      }
-    }
-
-    // Bookshelves along left wall
-    for (let i = 0; i < 4; i++) {
-      const by = y + 18 + i * 22;
-      g.fillStyle(PAL.bookshelf, 1);
-      g.fillRect(x + 4, by, 10, 18);
-      const bookColors = [0xa03030, 0x3060a0, 0x308030, 0x906030];
-      for (let b = 0; b < 3; b++) {
-        g.fillStyle(bookColors[(i + b) % 4], 0.9);
-        g.fillRect(x + 5, by + 2 + b * 5, 8, 4);
-      }
-    }
-
+    // ─── LIBRARY (top-left) ───
+    const lib = roomPos(0, 0);
+    this.drawFloorPlanks(g, lib.x, lib.y, ROOM_W, ROOM_H, PAL.floor1, PAL.floor2, 12);
+    // shadow corners
+    g.fillStyle(PAL.shadow, 0.3);
+    g.fillRect(lib.x, lib.y, 30, 20);
+    g.fillRect(lib.x, lib.y + ROOM_H - 20, 30, 20);
+    // North wall bookshelf
+    this.drawBookshelf(g, lib.x + 8, lib.y + 4, ROOM_W - 16, 24);
+    // West wall bookshelf
+    this.drawBookshelf(g, lib.x + 4, lib.y + 30, 20, ROOM_H - 60);
     // Reading desk
-    g.fillStyle(PAL.desk, 1);
-    g.fillRect(x + 50, y + 30, 24, 16);
-    // Open book on desk
-    g.fillStyle(0xe8e0d0, 0.9);
-    g.fillRect(x + 54, y + 33, 8, 10);
-    g.fillRect(x + 63, y + 33, 8, 10);
-    // Spine line
-    g.lineStyle(1, 0x6b4020, 0.6);
-    g.lineBetween(x + 62, y + 33, x + 62, y + 43);
-    // Text lines
-    g.lineStyle(1, 0x8a7a60, 0.4);
-    for (let l = 0; l < 3; l++) {
-      g.lineBetween(x + 55, y + 35 + l * 3, x + 61, y + 35 + l * 3);
-      g.lineBetween(x + 64, y + 35 + l * 3, x + 70, y + 35 + l * 3);
-    }
+    g.fillStyle(PAL.table, 1);
+    g.fillRect(lib.x + 80, lib.y + 100, 50, 30);
+    g.fillStyle(PAL.tableLeg, 1);
+    g.fillRect(lib.x + 82, lib.y + 102, 3, 3);
+    g.fillRect(lib.x + 125, lib.y + 102, 3, 3);
+    g.fillRect(lib.x + 82, lib.y + 125, 3, 3);
+    g.fillRect(lib.x + 125, lib.y + 125, 3, 3);
+    // Paper on desk
+    this.pageRect = { x: lib.x + 95, y: lib.y + 108, w: 14, h: 10 };
+    const pageGfx = this.add.graphics();
+    pageGfx.fillStyle(0xf0e8d0, 1);
+    pageGfx.fillRect(this.pageRect.x, this.pageRect.y, this.pageRect.w, this.pageRect.h);
+    this.pageGraphics = pageGfx;
+    // Lantern top-right corner
+    this.drawLanternGlow(lib.x + ROOM_W - 20, lib.y + 20, 45, 0.6);
+    // Scholar NPC
+    const scholar = this.drawNPC(g, lib.x + 105, lib.y + 90, NPC_COLORS.scholar);
+    this.npcs.push({ ...scholar, bounds: { x: lib.x + 30, y: lib.y + 30, w: ROOM_W - 50, h: ROOM_H - 50 } });
 
-    // Amber wall lantern (top-right corner of room)
-    this.drawWallLantern(g, x + ROOM_W - 14, y + 8);
-  }
-
-  // ── HALLWAY (top-centre) ──
-  drawHallway(g) {
-    const { x, y } = roomOrigin(1, 0);
-    this.drawStoneFloor(g, x, y, ROOM_W, ROOM_H);
-
-    // Notice board on left wall area
-    g.fillStyle(0x3a2a18, 1);
-    g.fillRect(x + 8, y + 20, 20, 28);
-    g.lineStyle(1, 0x2a1a0e, 0.8);
-    g.strokeRect(x + 8, y + 20, 20, 28);
-    // Paper notices
-    g.fillStyle(0xd8d0c0, 0.7);
-    g.fillRect(x + 11, y + 23, 7, 8);
-    g.fillRect(x + 20, y + 23, 6, 10);
-    g.fillRect(x + 11, y + 33, 8, 7);
-    // Text lines on notices
-    g.lineStyle(1, 0x4a4040, 0.3);
-    g.lineBetween(x + 12, y + 25, x + 17, y + 25);
-    g.lineBetween(x + 12, y + 27, x + 16, y + 27);
-    g.lineBetween(x + 21, y + 25, x + 25, y + 25);
-
-    // Central lantern (on floor, larger)
-    g.fillStyle(PAL.lanternAmber, 0.08);
-    g.fillCircle(x + ROOM_W / 2, y + ROOM_H / 2, 35);
-    this.drawWallLantern(g, x + ROOM_W / 2 - 4, y + ROOM_H / 2 - 4);
-  }
-
-  // ── TAVERN (top-right) ──
-  drawTavern(g) {
-    const { x, y } = roomOrigin(2, 0);
-    this.drawWoodFloor(g, x, y, ROOM_W, ROOM_H);
-
-    // Long bar counter along top wall
-    g.fillStyle(PAL.bar, 1);
-    g.fillRect(x + 8, y + 6, ROOM_W - 16, 14);
-    // Bar top highlight
-    g.fillStyle(0x5a3810, 1);
-    g.fillRect(x + 8, y + 6, ROOM_W - 16, 3);
-
-    // 3 barrels underneath bar
-    for (let i = 0; i < 3; i++) {
-      const bx = x + 20 + i * 30;
-      g.fillStyle(PAL.barrel, 0.9);
-      g.fillCircle(bx, y + 24, 7);
-      g.lineStyle(1, 0x4a2e0a, 0.6);
-      g.strokeCircle(bx, y + 24, 7);
-      // Barrel bands
-      g.lineStyle(1, 0x8a6a30, 0.5);
-      g.lineBetween(bx - 6, y + 22, bx + 6, y + 22);
-      g.lineBetween(bx - 6, y + 26, bx + 6, y + 26);
-    }
-
-    // 2 tables with chairs
-    for (let t = 0; t < 2; t++) {
-      const tx = x + 25 + t * 50;
-      const ty = y + 60 + t * 15;
-      // Table
-      g.fillStyle(0x5a3818, 1);
-      g.fillRect(tx - 10, ty - 8, 20, 16);
-      g.lineStyle(1, 0x3a2010, 0.5);
-      g.strokeRect(tx - 10, ty - 8, 20, 16);
-      // Chairs
-      g.fillStyle(0x4a2a10, 0.9);
-      g.fillRect(tx - 16, ty - 4, 5, 8);
-      g.fillRect(tx + 11, ty - 4, 5, 8);
-    }
-
-    // Hanging lanterns (2)
-    this.tavernLanternPositions = [
-      { x: x + 35, y: y + 45 },
-      { x: x + 85, y: y + 50 }
+    // ─── TAVERN (top-right) ───
+    const tav = roomPos(1, 0);
+    this.drawFloorPlanks(g, tav.x, tav.y, ROOM_W, ROOM_H, PAL.floorWarm1, PAL.floorWarm2, 12);
+    g.fillStyle(PAL.shadow, 0.25);
+    g.fillRect(tav.x + ROOM_W - 30, tav.y, 30, 20);
+    // Counter along north wall
+    g.fillStyle(PAL.barrel, 1);
+    g.fillRect(tav.x + 20, tav.y + 8, ROOM_W - 40, 18);
+    g.fillStyle(PAL.wallDark, 1);
+    g.fillRect(tav.x + 20, tav.y + 8, ROOM_W - 40, 2);
+    // Barrels behind counter
+    this.drawBarrel(g, tav.x + 40, tav.y + 18, 8);
+    this.drawBarrel(g, tav.x + 60, tav.y + 16, 8);
+    this.drawBarrel(g, tav.x + 80, tav.y + 18, 8);
+    // Round tables with stools
+    const tables = [
+      { cx: tav.x + 60, cy: tav.y + 100 },
+      { cx: tav.x + 140, cy: tav.y + 130 }
     ];
-    for (const lp of this.tavernLanternPositions) {
-      this.drawHangingLantern(g, lp.x, lp.y);
-    }
-  }
-
-  // ── STORAGE (bottom-left) ──
-  drawStorage(g) {
-    const { x, y } = roomOrigin(0, 1);
-    this.drawWoodFloor(g, x, y, ROOM_W, ROOM_H);
-
-    // Stacked barrels
-    const barrelPositions = [[20, 25], [35, 20], [20, 42], [30, 55], [18, 68]];
-    for (const [bx, by] of barrelPositions) {
-      g.fillStyle(PAL.barrel, 0.9);
-      g.fillCircle(x + bx, y + by, 8);
-      g.lineStyle(1, 0x4a2e0a, 0.5);
-      g.strokeCircle(x + bx, y + by, 8);
-      g.lineStyle(1, 0x8a6a30, 0.4);
-      g.lineBetween(x + bx - 7, y + by - 2, x + bx + 7, y + by - 2);
-      g.lineBetween(x + bx - 7, y + by + 2, x + bx + 7, y + by + 2);
-    }
-
-    // Crates with X cross
-    const cratePositions = [[65, 20], [85, 25], [70, 42], [90, 50], [80, 70]];
-    for (const [cx, cy] of cratePositions) {
-      g.fillStyle(PAL.crate, 1);
-      g.fillRect(x + cx - 8, y + cy - 8, 16, 16);
-      g.lineStyle(1, 0x5a3818, 0.6);
-      g.strokeRect(x + cx - 8, y + cy - 8, 16, 16);
-      // X cross
-      g.lineStyle(1, 0x5a3818, 0.4);
-      g.lineBetween(x + cx - 7, y + cy - 7, x + cx + 7, y + cy + 7);
-      g.lineBetween(x + cx + 7, y + cy - 7, x + cx - 7, y + cy + 7);
-    }
-
-    // Iteration 2: Barrel labels — tiny marks on each barrel
-    for (const [bx, by] of barrelPositions) {
-      g.fillStyle(0xd0c0a0, 0.5);
-      g.fillRect(x + bx - 3, y + by - 5, 6, 4);
-      g.lineStyle(1, 0x4a3020, 0.3);
-      g.lineBetween(x + bx - 2, y + by - 4, x + bx + 2, y + by - 4);
-      g.lineBetween(x + bx - 1, y + by - 2, x + bx + 1, y + by - 2);
-    }
-
-    // Small chest
-    g.fillStyle(PAL.chest, 1);
-    g.fillRect(x + 55, y + 85, 18, 12);
-    g.lineStyle(1, 0x3a2010, 0.7);
-    g.strokeRect(x + 55, y + 85, 18, 12);
-    // Gold latch
-    g.fillStyle(PAL.chestGold, 1);
-    g.fillCircle(x + 64, y + 91, 2);
-  }
-
-  // ── WELL (bottom-centre) ──
-  drawWell(g) {
-    const { x, y } = roomOrigin(1, 1);
-    this.drawStoneFloor(g, x, y, ROOM_W, ROOM_H);
-
-    // Well structure — circular stone rim
-    const cx = x + ROOM_W / 2;
-    const cy = y + ROOM_H / 2;
-
-    // Stone rim (outer)
-    g.fillStyle(0x3a3028, 1);
-    g.fillCircle(cx, cy, 22);
-    // Inner dark (water)
-    g.fillStyle(PAL.water, 1);
-    g.fillCircle(cx, cy, 16);
-
-    // Store well centre for shimmer animation
-    this.wellCenter = { x: cx, y: cy };
-
-    // Stone rim detail
-    g.lineStyle(2, 0x2a2018, 0.6);
-    g.strokeCircle(cx, cy, 22);
-    g.lineStyle(1, 0x4a4030, 0.4);
-    g.strokeCircle(cx, cy, 19);
-
-    // Rope
-    g.lineStyle(2, PAL.rope, 0.8);
-    g.lineBetween(cx, cy - 16, cx + 20, cy - 30);
-    g.lineBetween(cx + 20, cy - 30, cx + 22, cy - 28);
-
-    // Bucket
-    g.fillStyle(0x6b5030, 1);
-    g.fillRect(cx + 16, cy - 30, 10, 8);
-    g.lineStyle(1, 0x8a7050, 0.6);
-    g.strokeRect(cx + 16, cy - 30, 10, 8);
-    // Bucket handle
-    g.lineStyle(1, 0x8a7050, 0.5);
-    g.beginPath();
-    g.arc(cx + 21, cy - 32, 5, Math.PI, 0, false);
-    g.strokePath();
-  }
-
-  // ── KITCHEN (bottom-right) ──
-  drawKitchen(g) {
-    const { x, y } = roomOrigin(2, 1);
-    this.drawWoodFloor(g, x, y, ROOM_W, ROOM_H);
-
-    // Cooking counter along bottom wall
-    g.fillStyle(PAL.counter, 1);
-    g.fillRect(x + 10, y + ROOM_H - 20, ROOM_W - 20, 14);
-    g.fillStyle(0x5a3810, 1);
-    g.fillRect(x + 10, y + ROOM_H - 20, ROOM_W - 20, 3);
-
-    // Cutting board on counter
-    g.fillStyle(0xc0a870, 0.9);
-    g.fillRect(x + 30, y + ROOM_H - 18, 14, 10);
-    g.lineStyle(1, 0x8a7a50, 0.5);
-    g.strokeRect(x + 30, y + ROOM_H - 18, 14, 10);
-
-    // Iteration 2: Food on counter — fish, vegetables, bowl
-    // Fish
-    g.fillStyle(0x8090a0, 0.8);
-    g.fillEllipse(x + 55, y + ROOM_H - 13, 10, 4);
-    g.fillStyle(0x7080a0, 0.6);
-    g.fillEllipse(x + 60, y + ROOM_H - 13, 4, 3);
-    // Vegetables (small green circles)
-    g.fillStyle(0x509030, 0.8);
-    g.fillCircle(x + 75, y + ROOM_H - 14, 3);
-    g.fillCircle(x + 81, y + ROOM_H - 13, 2.5);
-    // Bowl
-    g.fillStyle(0x6a5030, 0.9);
-    g.fillCircle(x + 20, y + ROOM_H - 13, 5);
-    g.fillStyle(0xc0a060, 0.5);
-    g.fillCircle(x + 20, y + ROOM_H - 13, 3);
-
-    // Pots and pans
-    const potPositions = [[22, 35], [40, 30], [55, 38]];
-    for (const [px, py] of potPositions) {
-      g.fillStyle(PAL.pot, 0.9);
-      g.fillCircle(x + px, y + py, 5);
-      g.lineStyle(1, 0x3a2010, 0.5);
-      g.strokeCircle(x + px, y + py, 5);
-      // Handle
-      g.lineStyle(1, 0x5a4020, 0.6);
-      g.lineBetween(x + px + 4, y + py, x + px + 9, y + py - 2);
-    }
-
-    // Fireplace on right wall
-    this.fireplacePos = { x: x + ROOM_W - 18, y: y + 30 };
-    g.fillStyle(PAL.fireplace, 1);
-    g.fillRect(x + ROOM_W - 22, y + 20, 18, 28);
-    // Fire glow
-    g.fillStyle(0xf08020, 0.9);
-    g.fillRect(x + ROOM_W - 18, y + 28, 10, 12);
-    g.fillStyle(0xf0c040, 0.7);
-    g.fillRect(x + ROOM_W - 16, y + 32, 6, 6);
-  }
-
-  // ── Wall helpers ──
-  // Iteration 1: Octagonal doorway trim — chamfer corners with diagonal cuts
-  drawDoorwayTrim(g, dx, dy, isVertical) {
-    const CH = 6; // chamfer size
-    g.fillStyle(0x4a3020, 1);
-    if (isVertical) {
-      // Top-left chamfer
-      g.beginPath(); g.moveTo(dx, dy); g.lineTo(dx + CH, dy); g.lineTo(dx, dy + CH); g.closePath(); g.fillPath();
-      // Top-right chamfer
-      g.beginPath(); g.moveTo(dx + WALL_INNER, dy); g.lineTo(dx + WALL_INNER - CH, dy); g.lineTo(dx + WALL_INNER, dy + CH); g.closePath(); g.fillPath();
-      // Bottom-left chamfer
-      g.beginPath(); g.moveTo(dx, dy + DOOR_W); g.lineTo(dx + CH, dy + DOOR_W); g.lineTo(dx, dy + DOOR_W - CH); g.closePath(); g.fillPath();
-      // Bottom-right chamfer
-      g.beginPath(); g.moveTo(dx + WALL_INNER, dy + DOOR_W); g.lineTo(dx + WALL_INNER - CH, dy + DOOR_W); g.lineTo(dx + WALL_INNER, dy + DOOR_W - CH); g.closePath(); g.fillPath();
-    } else {
-      // Left-top chamfer
-      g.beginPath(); g.moveTo(dx, dy); g.lineTo(dx, dy + WALL_INNER); g.lineTo(dx + CH, dy); g.closePath(); g.fillPath();
-      // Left-bottom chamfer
-      g.beginPath(); g.moveTo(dx, dy + WALL_INNER); g.lineTo(dx + CH, dy + WALL_INNER); g.lineTo(dx, dy); g.closePath(); g.fillPath();
-      // Right-top chamfer
-      g.beginPath(); g.moveTo(dx + DOOR_W, dy); g.lineTo(dx + DOOR_W, dy + WALL_INNER); g.lineTo(dx + DOOR_W - CH, dy); g.closePath(); g.fillPath();
-      // Right-bottom chamfer
-      g.beginPath(); g.moveTo(dx + DOOR_W, dy + WALL_INNER); g.lineTo(dx + DOOR_W - CH, dy + WALL_INNER); g.lineTo(dx + DOOR_W, dy); g.closePath(); g.fillPath();
-    }
-    // Trim outline
-    g.lineStyle(1, 0x5a4030, 0.6);
-    if (isVertical) {
-      g.lineBetween(dx, dy + CH, dx, dy + DOOR_W - CH);
-      g.lineBetween(dx + WALL_INNER, dy + CH, dx + WALL_INNER, dy + DOOR_W - CH);
-    } else {
-      g.lineBetween(dx + CH, dy, dx + DOOR_W - CH, dy);
-      g.lineBetween(dx + CH, dy + WALL_INNER, dx + DOOR_W - CH, dy + WALL_INNER);
-    }
-  }
-
-  drawInnerWalls(g) {
-    // Vertical inner walls (between columns)
-    for (let col = 0; col < 2; col++) {
-      for (let row = 0; row < 2; row++) {
-        const r1 = roomOrigin(col, row);
-        const wx = r1.x + ROOM_W;
-        const wy = r1.y;
-
-        // Doorway in middle of each wall
-        const doorY = wy + (ROOM_H - DOOR_W) / 2;
-
-        g.fillStyle(PAL.innerWall, 1);
-        // Top part
-        g.fillRect(wx, wy, WALL_INNER, doorY - wy);
-        // Bottom part
-        g.fillRect(wx, doorY + DOOR_W, WALL_INNER, wy + ROOM_H - doorY - DOOR_W);
-
-        // Threshold
-        g.fillStyle(PAL.threshold, 1);
-        g.fillRect(wx, doorY, WALL_INNER, DOOR_W);
-
-        // Iteration 1: Octagonal doorway trim
-        this.drawDoorwayTrim(g, wx, doorY, true);
+    tables.forEach(t => {
+      g.fillStyle(PAL.table, 1);
+      g.fillCircle(t.cx, t.cy, 14);
+      g.lineStyle(1, PAL.tableLeg, 1);
+      g.strokeCircle(t.cx, t.cy, 14);
+      // stools
+      const offsets = [[-18, 0], [18, 0], [0, -18], [0, 18]];
+      offsets.forEach(o => {
+        g.fillStyle(PAL.bookshelf, 1);
+        g.fillCircle(t.cx + o[0], t.cy + o[1], 4);
+      });
+    });
+    // East wall shelves with bottles
+    g.fillStyle(PAL.bookshelf, 1);
+    g.fillRect(tav.x + ROOM_W - 22, tav.y + 40, 16, 80);
+    for (let by = 0; by < 80; by += 14) {
+      g.fillStyle(PAL.wallDark, 1);
+      g.fillRect(tav.x + ROOM_W - 22, tav.y + 40 + by, 16, 1);
+      // bottles
+      for (let bx = 0; bx < 14; bx += 5) {
+        g.fillStyle(0x3a6a4a, 0.8);
+        g.fillRect(tav.x + ROOM_W - 20 + bx, tav.y + 40 + by + 3, 3, 9);
+        g.fillStyle(0x2a5a3a, 1);
+        g.fillRect(tav.x + ROOM_W - 20 + bx, tav.y + 40 + by + 2, 3, 2);
       }
     }
+    // Lanterns
+    this.drawLanternGlow(tav.x + 50, tav.y + 60, 50, 0.5);
+    this.drawLanternGlow(tav.x + 150, tav.y + 80, 45, 0.55);
+    // Innkeeper NPC at counter
+    const innkeeper = this.drawNPC(g, tav.x + 110, tav.y + 38, NPC_COLORS.innkeeper);
+    this.npcs.push({ ...innkeeper, bounds: { x: tav.x + 30, y: tav.y + 30, w: ROOM_W - 60, h: 30 } });
+    // Patron NPC at table
+    const patron = this.drawNPC(g, tav.x + 60, tav.y + 85, NPC_COLORS.patron);
+    this.npcs.push({ ...patron, bounds: { x: tav.x + 30, y: tav.y + 50, w: ROOM_W - 60, h: ROOM_H - 80 } });
 
-    // Horizontal inner wall (between rows)
-    for (let col = 0; col < 3; col++) {
-      const r1 = roomOrigin(col, 0);
-      const wx = r1.x;
-      const wy = r1.y + ROOM_H;
-
-      const doorX = wx + (ROOM_W - DOOR_W) / 2;
-
-      g.fillStyle(PAL.innerWall, 1);
-      g.fillRect(wx, wy, doorX - wx, WALL_INNER);
-      g.fillRect(doorX + DOOR_W, wy, wx + ROOM_W - doorX - DOOR_W, WALL_INNER);
-
-      // Threshold
-      g.fillStyle(PAL.threshold, 1);
-      g.fillRect(doorX, wy, DOOR_W, WALL_INNER);
-
-      // Iteration 1: Octagonal doorway trim
-      this.drawDoorwayTrim(g, doorX, wy, false);
-    }
-  }
-
-  drawOuterWallBorder(g, bx, by, bw, bh) {
-    g.lineStyle(WALL_OUTER, PAL.outerWall, 1);
-    g.strokeRect(bx + WALL_OUTER / 2, by + WALL_OUTER / 2, bw - WALL_OUTER, bh - WALL_OUTER);
-    // Outer edge highlight
-    g.lineStyle(1, 0x1a0e06, 1);
-    g.strokeRect(bx, by, bw, bh);
-
-    // Iteration 4: Drop shadows below south-facing walls (horizontal inner walls)
-    g.lineStyle(2, 0x000000, 0.15);
-    for (let col = 0; col < 3; col++) {
-      const r1 = roomOrigin(col, 0);
-      const wy = r1.y + ROOM_H + WALL_INNER;
-      g.lineBetween(r1.x, wy, r1.x + ROOM_W, wy);
-    }
-    // Shadow below outer top wall
-    g.lineStyle(2, 0x000000, 0.12);
-    for (let col = 0; col < 3; col++) {
-      const r0 = roomOrigin(col, 0);
-      g.lineBetween(r0.x, r0.y, r0.x + ROOM_W, r0.y);
-    }
-    // Shadow below vertical inner walls (east side)
-    for (let col = 0; col < 2; col++) {
-      for (let row = 0; row < 2; row++) {
-        const r1 = roomOrigin(col, row);
-        const wx = r1.x + ROOM_W + WALL_INNER;
-        g.lineBetween(wx, r1.y, wx, r1.y + ROOM_H);
+    // ─── STORAGE (bottom-left) ───
+    const sto = roomPos(0, 1);
+    this.drawFloorPlanks(g, sto.x, sto.y, ROOM_W, ROOM_H, PAL.floorDark1, PAL.floorDark2, 14);
+    g.fillStyle(PAL.shadow, 0.35);
+    g.fillRect(sto.x, sto.y, ROOM_W, ROOM_H); // darker overall
+    g.fillStyle(PAL.shadow, 0.15);
+    g.fillRect(sto.x, sto.y, ROOM_W, ROOM_H);
+    // Barrels 3×2 grid
+    for (let r = 0; r < 2; r++) {
+      for (let c = 0; c < 3; c++) {
+        this.drawBarrel(g, sto.x + 30 + c * 30, sto.y + 50 + r * 30, 11);
       }
     }
+    // Crates stacked
+    this.drawCrate(g, sto.x + 130, sto.y + 40, 18);
+    this.drawCrate(g, sto.x + 150, sto.y + 38, 16);
+    this.drawCrate(g, sto.x + 138, sto.y + 58, 14);
+    // Pots near walls
+    g.fillStyle(0x6a4a30, 1);
+    g.fillCircle(sto.x + 20, sto.y + ROOM_H - 30, 7);
+    g.fillCircle(sto.x + 38, sto.y + ROOM_H - 25, 6);
+    g.fillStyle(0x5a3a20, 1);
+    g.fillCircle(sto.x + ROOM_W - 25, sto.y + ROOM_H - 35, 8);
+    // Dim lantern
+    this.drawLanternGlow(sto.x + ROOM_W - 25, sto.y + 20, 30, 0.35);
+    // Worker NPC
+    const worker = this.drawNPC(g, sto.x + 100, sto.y + 140, NPC_COLORS.worker);
+    this.npcs.push({ ...worker, bounds: { x: sto.x + 20, y: sto.y + 20, w: ROOM_W - 40, h: ROOM_H - 40 } });
+
+    // ─── WORKSHOP (bottom-right) ───
+    const wrk = roomPos(1, 1);
+    this.drawFloorPlanks(g, wrk.x, wrk.y, ROOM_W, ROOM_H, PAL.floorStone1, PAL.floorStone2, 14);
+    // Forge/anvil
+    g.fillStyle(0x2a2a2a, 1);
+    g.fillRect(wrk.x + 70, wrk.y + 60, 40, 30);
+    g.fillStyle(0x1a1a1a, 1);
+    g.fillRect(wrk.x + 75, wrk.y + 65, 30, 20);
+    // Anvil top
+    g.fillStyle(0x4a4a4a, 1);
+    g.fillRect(wrk.x + 78, wrk.y + 55, 24, 10);
+    // Forge glow
+    const forgeGlow = this.add.graphics();
+    forgeGlow.fillStyle(PAL.forgeGlow, 0.2);
+    forgeGlow.fillCircle(wrk.x + 90, wrk.y + 75, 50);
+    forgeGlow.fillStyle(PAL.forgeGlow, 0.35);
+    forgeGlow.fillCircle(wrk.x + 90, wrk.y + 70, 25);
+    forgeGlow.fillStyle(0xff6030, 0.5);
+    forgeGlow.fillCircle(wrk.x + 90, wrk.y + 65, 10);
+    this.forgeGlows.push(forgeGlow);
+    // Tool wall (north)
+    g.fillStyle(PAL.wallInner, 1);
+    g.fillRect(wrk.x + 20, wrk.y + 6, ROOM_W - 40, 18);
+    // Hanging tools
+    g.lineStyle(2, 0x6a6a6a, 1);
+    // hammer
+    g.lineBetween(wrk.x + 40, wrk.y + 10, wrk.x + 40, wrk.y + 22);
+    g.fillStyle(0x5a5a5a, 1);
+    g.fillRect(wrk.x + 35, wrk.y + 9, 10, 5);
+    // tongs
+    g.lineBetween(wrk.x + 70, wrk.y + 10, wrk.x + 68, wrk.y + 22);
+    g.lineBetween(wrk.x + 74, wrk.y + 10, wrk.x + 76, wrk.y + 22);
+    // another hammer
+    g.lineBetween(wrk.x + 100, wrk.y + 10, wrk.x + 100, wrk.y + 22);
+    g.fillStyle(0x5a5a5a, 1);
+    g.fillRect(wrk.x + 96, wrk.y + 8, 8, 5);
+    // saw
+    g.lineStyle(2, 0x6a6a6a, 1);
+    g.lineBetween(wrk.x + 130, wrk.y + 10, wrk.x + 150, wrk.y + 10);
+    g.lineBetween(wrk.x + 130, wrk.y + 10, wrk.x + 130, wrk.y + 20);
+    // Workbench along south
+    g.fillStyle(PAL.table, 1);
+    g.fillRect(wrk.x + 15, wrk.y + ROOM_H - 40, ROOM_W - 30, 24);
+    g.fillStyle(PAL.tableLeg, 1);
+    g.fillRect(wrk.x + 17, wrk.y + ROOM_H - 18, 4, 4);
+    g.fillRect(wrk.x + ROOM_W - 21, wrk.y + ROOM_H - 18, 4, 4);
+    // Scattered items on workbench
+    g.fillStyle(0x8a8a8a, 1);
+    g.fillRect(wrk.x + 30, wrk.y + ROOM_H - 36, 8, 4);
+    g.fillRect(wrk.x + 60, wrk.y + ROOM_H - 38, 5, 6);
+    g.fillStyle(0xaa6a2a, 1);
+    g.fillRect(wrk.x + 90, wrk.y + ROOM_H - 36, 12, 5);
+    g.fillRect(wrk.x + 120, wrk.y + ROOM_H - 37, 6, 4);
+    // Lantern
+    this.drawLanternGlow(wrk.x + 20, wrk.y + 100, 35, 0.4);
+    // Blacksmith NPC (stocky)
+    const smith = this.drawNPC(g, wrk.x + 90, wrk.y + 100, NPC_COLORS.smith, true);
+    this.npcs.push({ ...smith, bounds: { x: wrk.x + 40, y: wrk.y + 40, w: 80, h: 80 } });
+
+    // store main graphics ref for NPC layer
+    this.mainGfx = g;
   }
 
-  // Iteration 5: Exterior windows — small night-sky blue rectangles on outer walls
-  drawExteriorWindows(g) {
-    // Top row rooms — windows on top outer wall
-    for (let col = 0; col < 3; col++) {
-      const { x, y } = roomOrigin(col, 0);
-      const wy = y - WALL_OUTER;
-      // 2 windows per room
-      for (let w = 0; w < 2; w++) {
-        const wx = x + 25 + w * 50;
-        g.fillStyle(0x1a2a4a, 1);
-        g.fillRect(wx, wy + 1, 12, WALL_OUTER - 2);
-        // Star dots
-        g.fillStyle(0x8090c0, 0.6);
-        g.fillCircle(wx + 4, wy + 3, 1);
-        g.fillCircle(wx + 9, wy + 5, 0.8);
-      }
-    }
-    // Bottom row rooms — windows on bottom outer wall
-    for (let col = 0; col < 3; col++) {
-      const { x, y } = roomOrigin(col, 1);
-      const wy = y + ROOM_H;
-      for (let w = 0; w < 2; w++) {
-        const wx = x + 25 + w * 50;
-        g.fillStyle(0x1a2a4a, 1);
-        g.fillRect(wx, wy + 1, 12, WALL_OUTER - 2);
-        g.fillStyle(0x8090c0, 0.5);
-        g.fillCircle(wx + 6, wy + 4, 1);
-      }
-    }
-    // Left column — windows on left outer wall
-    for (let row = 0; row < 2; row++) {
-      const { x, y } = roomOrigin(0, row);
-      const wx = x - WALL_OUTER;
-      for (let w = 0; w < 2; w++) {
-        const wy = y + 25 + w * 50;
-        g.fillStyle(0x1a2a4a, 1);
-        g.fillRect(wx + 1, wy, WALL_OUTER - 2, 12);
-        g.fillStyle(0x8090c0, 0.5);
-        g.fillCircle(wx + 4, wy + 6, 1);
-      }
-    }
-    // Right column — windows on right outer wall
-    for (let row = 0; row < 2; row++) {
-      const { x, y } = roomOrigin(2, row);
-      const wx = x + ROOM_W;
-      for (let w = 0; w < 2; w++) {
-        const wy = y + 25 + w * 50;
-        g.fillStyle(0x1a2a4a, 1);
-        g.fillRect(wx + 1, wy, WALL_OUTER - 2, 12);
-        g.fillStyle(0x8090c0, 0.5);
-        g.fillCircle(wx + 4, wy + 6, 1);
-      }
-    }
-  }
+  drawWallsAndDoors() {
+    const g = this.add.graphics();
 
-  drawWallLantern(g, lx, ly) {
-    // Bracket
-    g.fillStyle(0x4a3020, 1);
-    g.fillRect(lx, ly, 8, 3);
-    // Lantern body
-    g.fillStyle(PAL.lanternAmber, 0.9);
-    g.fillRect(lx + 1, ly + 3, 6, 8);
-    // Glow
-    g.fillStyle(PAL.lanternAmber, 0.06);
-    g.fillCircle(lx + 4, ly + 7, 30);
-  }
-
-  drawHangingLantern(g, lx, ly) {
-    // Chain/rope
-    g.lineStyle(1, 0x6a5030, 0.6);
-    g.lineBetween(lx, ly - 10, lx, ly);
-    // Body
-    g.fillStyle(PAL.lanternAmber, 0.9);
-    g.fillRect(lx - 4, ly, 8, 10);
-    g.fillStyle(0xd0a040, 1);
-    g.fillRect(lx - 5, ly - 1, 10, 2);
-    g.fillRect(lx - 5, ly + 10, 10, 2);
-    // Glow
-    g.fillStyle(PAL.lanternAmber, 0.08);
-    g.fillCircle(lx, ly + 5, 30);
-  }
-
-  // ── Lighting overlays ──
-  drawLighting(g) {
+    // Room positions
     const rooms = [
-      { col: 0, row: 0, color: 0xf0c060, alpha: 0.08 },  // Library
-      { col: 2, row: 0, color: 0xf08020, alpha: 0.12 },  // Tavern
-      { col: 2, row: 1, color: 0xf06020, alpha: 0.10 },  // Kitchen
-      { col: 1, row: 0, color: 0x6080b0, alpha: 0.05 },  // Hallway
-      { col: 1, row: 1, color: 0x6080b0, alpha: 0.05 },  // Well
-      // Storage: no tint
+      roomPos(0, 0), roomPos(1, 0),
+      roomPos(0, 1), roomPos(1, 1)
     ];
 
-    for (const r of rooms) {
-      const { x, y } = roomOrigin(r.col, r.row);
-      g.fillStyle(r.color, r.alpha);
-      g.fillRect(x, y, ROOM_W, ROOM_H);
-    }
-  }
+    // Draw outer walls for each room
+    rooms.forEach((r, i) => {
+      g.lineStyle(WALL_T, PAL.wall, 1);
+      g.strokeRect(r.x - WALL_T / 2, r.y - WALL_T / 2, ROOM_W + WALL_T, ROOM_H + WALL_T);
+    });
 
-  // ── Characters ──
-  drawCharacters(g) {
-    this.characters = [];
+    // Now cut doorways by drawing over shared walls
 
-    const charDefs = [
-      { col: 2, row: 0, ox: 50, oy: 14, color: PAL.charInnkeeper, name: 'innkeeper' },
-      { col: 0, row: 0, ox: 58, oy: 34, color: PAL.charScholar, name: 'scholar' },
-      { col: 2, row: 1, ox: 80, oy: 38, color: PAL.charCook, name: 'cook' },
-      { col: 2, row: 0, ox: 28, oy: 65, color: PAL.charCustomer, name: 'customer' },
-      { col: 1, row: 0, ox: 60, oy: 85, color: PAL.charGuard, name: 'guard' },
-    ];
-
-    for (const cd of charDefs) {
-      const { x, y } = roomOrigin(cd.col, cd.row);
-      const cx = x + cd.ox;
-      const cy = y + cd.oy;
-      const charG = this.add.graphics();
-      // Body
-      charG.fillStyle(cd.color, 1);
-      charG.fillRect(-3, 0, 6, 10);
-      // Head
-      charG.fillStyle(0xd0a878, 1);
-      charG.fillCircle(0, -2, 3);
-      charG.setPosition(cx, cy);
-      this.characters.push(charG);
-    }
-  }
-
-  // ── Animations ──
-  addFireplaceFlicker() {
-    const fp = this.fireplacePos;
-    const fireGlow = this.add.graphics();
-    const drawFire = (alpha) => {
-      fireGlow.clear();
-      fireGlow.fillStyle(0xf06020, alpha * 0.10);
-      const { x, y } = roomOrigin(2, 1);
-      fireGlow.fillRect(x, y, ROOM_W, ROOM_H);
+    // Doorway: Library ↔ Tavern (vertical wall between top rooms)
+    const doorLT = {
+      x: rooms[0].x + ROOM_W,
+      y: rooms[0].y + (ROOM_H - DOOR_W) / 2
     };
-    drawFire(1);
-    const pulse = { val: 1 };
-    this.tweens.add({
-      targets: pulse,
-      val: { from: 0.8, to: 1.0 },
-      duration: 600,
-      yoyo: true,
-      repeat: -1,
-      ease: 'Sine.easeInOut',
-      onUpdate: () => drawFire(pulse.val)
+    this.drawDoorway(g, doorLT.x - WALL_T / 2 - 2, doorLT.y, WALL_T + 4, DOOR_W, 'vertical');
+
+    // Doorway: Storage ↔ Workshop (vertical wall between bottom rooms)
+    const doorSW = {
+      x: rooms[2].x + ROOM_W,
+      y: rooms[2].y + (ROOM_H - DOOR_W) / 2
+    };
+    this.drawDoorway(g, doorSW.x - WALL_T / 2 - 2, doorSW.y, WALL_T + 4, DOOR_W, 'vertical');
+
+    // Doorway: Library ↔ Storage (horizontal wall between left rooms)
+    const doorLS = {
+      x: rooms[0].x + (ROOM_W - DOOR_W) / 2,
+      y: rooms[0].y + ROOM_H
+    };
+    this.drawDoorway(g, doorLS.x, doorLS.y - WALL_T / 2 - 2, DOOR_W, WALL_T + 4, 'horizontal');
+
+    // Doorway: Tavern ↔ Workshop (horizontal wall between right rooms)
+    const doorTW = {
+      x: rooms[1].x + (ROOM_W - DOOR_W) / 2,
+      y: rooms[1].y + ROOM_H
+    };
+    this.drawDoorway(g, doorTW.x, doorTW.y - WALL_T / 2 - 2, DOOR_W, WALL_T + 4, 'horizontal');
+  }
+
+  drawDoorway(g, x, y, w, h, orientation) {
+    // Clear wall section with floor color
+    g.fillStyle(PAL.floor1, 1);
+    g.fillRect(x, y, w, h);
+
+    // Draw octagonal/chamfered frame
+    const chamfer = 6;
+    g.lineStyle(2, PAL.wallInner, 1);
+
+    if (orientation === 'vertical') {
+      // Left edge chamfered
+      g.lineBetween(x, y + chamfer, x, y + h - chamfer);
+      g.lineBetween(x, y + chamfer, x + chamfer, y);
+      g.lineBetween(x, y + h - chamfer, x + chamfer, y + h);
+      // Right edge chamfered
+      g.lineBetween(x + w, y + chamfer, x + w, y + h - chamfer);
+      g.lineBetween(x + w, y + chamfer, x + w - chamfer, y);
+      g.lineBetween(x + w, y + h - chamfer, x + w - chamfer, y + h);
+    } else {
+      // Top edge chamfered
+      g.lineBetween(x + chamfer, y, x + w - chamfer, y);
+      g.lineBetween(x + chamfer, y, x, y + chamfer);
+      g.lineBetween(x + w - chamfer, y, x + w, y + chamfer);
+      // Bottom edge chamfered
+      g.lineBetween(x + chamfer, y + h, x + w - chamfer, y + h);
+      g.lineBetween(x + chamfer, y + h, x, y + h - chamfer);
+      g.lineBetween(x + w - chamfer, y + h, x + w, y + h - chamfer);
+    }
+
+    // Threshold floor detail
+    g.fillStyle(PAL.floor3, 0.6);
+    g.fillRect(x + 2, y + 2, w - 4, h - 4);
+  }
+
+  drawHUD() {
+    const g = this.add.graphics();
+    // Semi-transparent bar
+    g.fillStyle(PAL.hudBg, 0.5);
+    g.fillRect(0, 0, W, 30);
+    g.fillStyle(PAL.wall, 0.6);
+    g.fillRect(0, 29, W, 1);
+
+    // Left text
+    this.add.text(12, 7, '🏠 Takamachi Inn — Year 1, Autumn', {
+      fontFamily: 'monospace',
+      fontSize: '12px',
+      color: '#e0d0b0'
+    });
+
+    // Right text - gold
+    this.add.text(W - 80, 7, '💰 1,240G', {
+      fontFamily: 'monospace',
+      fontSize: '12px',
+      color: '#f0a030'
     });
   }
 
-  addTavernLanternPulse() {
-    if (!this.tavernLanternPositions) return;
-    const glow = this.add.graphics();
-    const drawGlow = (alpha) => {
-      glow.clear();
-      for (const lp of this.tavernLanternPositions) {
-        glow.fillStyle(PAL.lanternAmber, alpha);
-        glow.fillCircle(lp.x, lp.y + 5, 30);
+  startAnimations() {
+    // Lantern pulse
+    this.time.addEvent({
+      delay: 50,
+      loop: true,
+      callback: () => {
+        const t = this.time.now;
+        this.lanternGlows.forEach((lg, i) => {
+          const phase = lg.phase + t * 0.002;
+          const alpha = lg.baseAlpha + Math.sin(phase) * 0.2;
+          lg.gfx.setAlpha(Math.max(0.1, Math.min(1, alpha)));
+        });
       }
-    };
-    drawGlow(0.10);
-    const pulse = { val: 0.10 };
-    this.tweens.add({
-      targets: pulse,
-      val: { from: 0.10, to: 0.18 },
-      duration: 1200,
-      yoyo: true,
-      repeat: -1,
-      ease: 'Sine.easeInOut',
-      onUpdate: () => drawGlow(pulse.val)
     });
-  }
 
-  addWellShimmer() {
-    if (!this.wellCenter) return;
-    const shimmer = this.add.graphics();
-    const drawShimmer = (alpha) => {
-      shimmer.clear();
-      shimmer.fillStyle(0x4a8ab0, alpha);
-      shimmer.fillCircle(this.wellCenter.x, this.wellCenter.y, 14);
-    };
-    drawShimmer(0.2);
-    const pulse = { val: 0.2 };
-    this.tweens.add({
-      targets: pulse,
-      val: { from: 0.15, to: 0.35 },
-      duration: 1500,
-      yoyo: true,
-      repeat: -1,
-      ease: 'Sine.easeInOut',
-      onUpdate: () => drawShimmer(pulse.val)
+    // Forge flicker
+    this.time.addEvent({
+      delay: 80,
+      loop: true,
+      callback: () => {
+        this.forgeGlows.forEach(fg => {
+          const flicker = 0.3 + Math.random() * 0.5;
+          fg.setAlpha(flicker);
+        });
+      }
     });
-  }
 
-  addCharacterBob() {
-    if (!this.characters) return;
-    this.characters.forEach((c, i) => {
-      this.tweens.add({
-        targets: c,
-        y: c.y + 1,
-        duration: 2000,
-        delay: i * 400,
-        yoyo: true,
-        repeat: -1,
-        ease: 'Sine.easeInOut'
-      });
-    });
-  }
-
-  addDustMotes() {
-    const { x, y } = roomOrigin(0, 0);
-    for (let i = 0; i < 4; i++) {
-      const mote = this.add.graphics();
-      mote.fillStyle(0xffffff, 1);
-      mote.fillCircle(0, 0, 1);
-
-      const sx = x + 20 + Math.random() * 80;
-      const sy = y + 10 + Math.random() * 40;
-      mote.setPosition(sx, sy);
-      mote.setAlpha(0.15);
-
-      this.tweens.add({
-        targets: mote,
-        y: sy + 60 + Math.random() * 30,
-        x: sx + (Math.random() - 0.5) * 20,
-        alpha: { from: 0.3, to: 0.05 },
-        duration: 6000 + Math.random() * 3000,
-        delay: i * 1500,
-        repeat: -1,
-        onRepeat: () => {
-          mote.setPosition(x + 20 + Math.random() * 80, y + 10 + Math.random() * 20);
+    // Page reading animation
+    this.time.addEvent({
+      delay: 100,
+      loop: true,
+      callback: () => {
+        if (this.pageGraphics) {
+          const pulse = 0.5 + Math.sin(this.time.now * 0.001) * 0.4;
+          this.pageGraphics.setAlpha(pulse);
         }
-      });
+      }
+    });
+
+    // NPC idle drift
+    this.npcGfx = this.add.graphics();
+    this.time.addEvent({
+      delay: 100,
+      loop: true,
+      callback: () => {
+        const t = this.time.now;
+        this.npcGfx.clear();
+        this.npcs.forEach((npc, i) => {
+          npc.timer -= 100;
+          if (npc.timer <= 0) {
+            npc.dx = (Math.random() - 0.5) * 0.3;
+            npc.dy = (Math.random() - 0.5) * 0.3;
+            npc.timer = 3000 + Math.random() * 2000;
+          }
+          npc.x += npc.dx;
+          npc.y += npc.dy;
+          // clamp to bounds
+          const b = npc.bounds;
+          if (b) {
+            npc.x = Math.max(b.x, Math.min(b.x + b.w, npc.x));
+            npc.y = Math.max(b.y, Math.min(b.y + b.h, npc.y));
+          }
+          // Redraw NPC at new position
+          this.drawNPCAt(this.npcGfx, npc);
+        });
+      }
+    });
+  }
+
+  drawNPCAt(g, npc) {
+    const cx = npc.x, cy = npc.y;
+    const w = npc.w, h = npc.h;
+    // shadow
+    g.fillStyle(0x000000, 0.2);
+    g.fillEllipse(cx, cy + h / 2 + 1, w + 2, 4);
+    // body
+    const origColors = this.getNPCOrigColors(npc);
+    g.fillStyle(origColors.body, 1);
+    g.fillRect(cx - w / 2, cy - h / 2 + 3, w, h - 3);
+    if (origColors.apron) {
+      g.fillStyle(origColors.apron, 1);
+      g.fillRect(cx - w / 2 + 1, cy - h / 2 + 5, w - 2, h - 6);
     }
+    // head
+    g.fillStyle(PAL.skin, 1);
+    g.fillCircle(cx, cy - h / 2 + 2, 4);
+    // hair
+    g.fillStyle(origColors.hair, 1);
+    g.fillRect(cx - 3, cy - h / 2 - 2, 6, 3);
+  }
+
+  getNPCOrigColors(npc) {
+    // map npc index to colors
+    const idx = this.npcs.indexOf(npc);
+    const colorSets = [
+      { body: NPC_COLORS.scholar.robe, hair: NPC_COLORS.scholar.hair },
+      { body: NPC_COLORS.innkeeper.shirt, hair: NPC_COLORS.innkeeper.hair, apron: NPC_COLORS.innkeeper.apron },
+      { body: NPC_COLORS.patron.shirt, hair: NPC_COLORS.patron.hair },
+      { body: NPC_COLORS.worker.shirt, hair: NPC_COLORS.worker.hair },
+      { body: NPC_COLORS.smith.shirt, hair: NPC_COLORS.smith.hair },
+    ];
+    return colorSets[idx] || colorSets[0];
   }
 }
 
@@ -806,8 +555,8 @@ new Phaser.Game({
   type: Phaser.AUTO,
   width: W,
   height: H,
-  backgroundColor: '#0a0a0a',
-  scene: ShukubamachiScene,
+  backgroundColor: '#0d0a07',
+  scene: TakamachiScene,
   scale: {
     mode: Phaser.Scale.FIT,
     autoCenter: Phaser.Scale.CENTER_BOTH,
