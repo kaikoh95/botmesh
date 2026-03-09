@@ -347,8 +347,8 @@ export default class TownScene extends Phaser.Scene {
       const STATE_URL = window.BOTMESH_STATE_URL || 'http://localhost:3002';
       const res = await fetch(`${STATE_URL}/state`);
       const state = await res.json();
-      const w = Math.max(60, state.world?.width || 80);
-      const h = Math.max(60, state.world?.height || 80);
+      const w = Math.max(80, state.world?.width || 80);
+      const h = Math.max(80, state.world?.height || 80);
       if (w !== this.mapW || h !== this.mapH) {
         this.mapW = w;
         this.mapH = h;

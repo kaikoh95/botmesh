@@ -139,6 +139,9 @@ function applyEvent(event) {
         // Same for world entities
         world: {
           ...(payload.world || {}),
+          // State layer is authoritative for world dimensions — never let hub downsize them
+          width:  Math.max(state.world?.width || 80,  (payload.world || {}).width  || 80),
+          height: Math.max(state.world?.height || 80, (payload.world || {}).height || 80),
           entities: mergeEntities(
             (payload.world || {}).entities || [],
             (state.world  || {}).entities || []
