@@ -34,7 +34,7 @@ export function createStateClient({ onEvent, onStateSync, onConnect, onDisconnec
   function connectSSE() {
     if (evtSource) { evtSource.close(); evtSource = null; }
 
-    evtSource = new EventSource(`${STATE_URL}/events`);
+    evtSource = new EventSource(`${STATE_URL}/events?transport=sse`);
 
     evtSource.addEventListener('connected', () => {
       console.log('[SSE] connected');
