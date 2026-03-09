@@ -6,7 +6,11 @@
   <title>神託の間 · The Oracle Chamber</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { background: #050810; display: flex; justify-content: center; align-items: center; min-height: 100vh; overflow: hidden; }
+    body { background: #050810; display: flex; justify-content: center; align-items: center; min-height: 100vh; overflow: hidden; padding-bottom: 42px; }
+    #oracle-inbox { position: fixed; bottom: 0; left: 0; right: 0; display: flex; gap: 4px; padding: 6px 24px 8px; background: #0a0e1a; border-top: 1px solid #1a2030; z-index: 9999; }
+    #oracle-inbox input { flex: 1; background: #0e1220; border: 1px solid #2a3040; color: #e0d8c8; font-family: monospace; font-size: 13px; padding: 7px 12px; outline: none; border-radius: 2px; }
+    #oracle-inbox input:focus { border-color: #f0a030; }
+    #oracle-inbox button { background: #f0a030; color: #0a0e1a; border: none; font-size: 14px; padding: 4px 14px; cursor: pointer; font-family: monospace; border-radius: 2px; font-weight: bold; }
     canvas { display: block; }
   </style>
   <script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js"></script>
@@ -392,21 +396,9 @@ class OracleChamberScene extends Phaser.Scene {
     const canvas = this.sys.game.canvas;
     const wrap = canvas.parentElement || document.body;
 
-    const form = document.createElement('div');
-    form.style.cssText = 'position:fixed;bottom:0;left:0;right:0;display:flex;gap:4px;padding:6px 24px 8px;background:#0a0e1a;border-top:1px solid #1a2030;z-index:9999;';
-
-    const input = document.createElement('input');
-    input.type = 'text';
-    input.placeholder = 'Send instruction to the Oracle...';
-    input.maxLength = 300;
-    input.style.cssText = 'flex:1;background:#0e1220;border:1px solid #2a3040;color:#e0d8c8;font-family:monospace;font-size:13px;padding:7px 12px;outline:none;border-radius:2px;';
-    input.addEventListener('focus', () => input.style.borderColor = '#f0a030');
-    input.addEventListener('blur', () => input.style.borderColor = '#2a3040');
-
-    const btn = document.createElement('button');
-    btn.textContent = '⚡';
-    btn.style.cssText = 'background:#f0a030;color:#0a0e1a;border:none;font-size:14px;padding:4px 12px;cursor:pointer;font-family:monospace;border-radius:2px;';
-
+    // Input bar is static HTML below — wired here
+    const input = document.getElementById('oracle-input');
+    const btn   = document.getElementById('oracle-send');
     const send = () => {
       const msg = input.value.trim();
       if (!msg) return;
@@ -417,13 +409,8 @@ class OracleChamberScene extends Phaser.Scene {
         body: JSON.stringify({ message: msg, from: 'ui' }),
       }).catch(() => {});
     };
-
     input.addEventListener('keydown', (e) => { if (e.key === 'Enter') send(); });
     btn.addEventListener('click', send);
-
-    form.appendChild(input);
-    form.appendChild(btn);
-    document.body.appendChild(form);
   }
 
   // ── Iter 2: Candle flicker animation ──
@@ -822,5 +809,9 @@ new Phaser.Game({
   }
 });
 </script>
+<div id="oracle-inbox">
+  <input id="oracle-input" type="text" placeholder="Send instruction to the Oracle..." maxlength="300" autocomplete="off" />
+  <button id="oracle-send">⚡ Send</button>
+</div>
 </body>
 </html>
