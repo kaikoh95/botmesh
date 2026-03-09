@@ -289,6 +289,20 @@ function createRoutes(getState, sendCommand, HOME_LOCATIONS = {}) {
     }
   });
 
+  // ── QA Inspection Report ──────────────────────────────────────────────────
+  // POST /world/inspection — QA posts its latest health report
+  router.post('/world/inspection', requireAuth, (req, res) => {
+    const state = getState();
+    state.inspection = req.body;
+    res.json({ ok: true });
+  });
+
+  // GET /world/inspection — UI reads the latest inspection report
+  router.get('/world/inspection', (req, res) => {
+    const state = getState();
+    res.json(state.inspection || null);
+  });
+
   return router;
 }
 

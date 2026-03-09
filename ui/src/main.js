@@ -727,6 +727,85 @@ async function init() {
   refreshPulse();
   setInterval(refreshPulse, 30000);
 
+  // ── QA Inspection Panel ────────────────────────────────────────────────
+  async function refreshInspection() {
+    try {
+      const STATE_URL = window.BOTMESH_STATE_URL || 'http://localhost:3002';
+      const r = await fetch(`${STATE_URL}/world/inspection`);
+      const report = await r.json();
+      const el = document.getElementById('inspection-report');
+      const badge = document.getElementById('inspection-status-badge');
+      if (!el || !report || !report.timestamp) {
+        if (el) el.innerHTML = '<div style="color:#888;font-style:italic">No inspection yet</div>';
+        return;
+      }
+
+      const ago = formatTimeAgo(report.timestamp);
+      const isHealthy = report.status === 'healthy';
+      const statusIcon = isHealthy ? '✅' : '⚠️';
+
+      if (badge) {
+        badge.textContent = statusIcon;
+        badge.style.color = isHealthy ? '#27ae60' : '#e67e22';
+      }
+
+      // Auto-expand if there are warnings
+      if (!isHealthy) {
+        const body = document.getElementById('acc-inspection-body');
+        if (body) body.classList.remove('collapsed');
+      }
+
+      let html = `<div style="margin-bottom:6px;color:${isHealthy ? '#27ae60' : '#e67e22'};font-weight:bold">${statusIcon} ${isHealthy ? 'Town Healthy' : 'Anomalies Found'}</div>`;
+      html += `<div style="color:#888;font-size:10px;margin-bottom:6px">Last inspected ${ago}</div>`;
+
+      // Summary row
+      const s = report.summary || {};
+      html += `<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:6px;font-size:10px">`;
+      html += `<span>👥 ${s.agents || '?'}</span>`;
+      html += `<span>🏛️ ${s.buildings || '?'}</span>`;
+      html += `<span>🤝 ${s.relationships || 0} bonds</span>`;
+      html += `</div>`;
+
+      // Findings
+      const findings = report.findings || [];
+      if (findings.length === 0) {
+        html += '<div style="color:#555">No anomalies — all systems normal.</div>';
+      } else {
+        const warnings = findings.filter(f => f.severity === 'warning');
+        const infos = findings.filter(f => f.severity === 'info');
+
+        if (warnings.length > 0) {
+          html += `<div style="color:#e67e22;font-weight:bold;margin-top:4px">⚠️ Warnings (${warnings.length})</div>`;
+          warnings.forEach(f => {
+            html += `<div style="color:#ddd;margin-left:8px">• ${f.issue}</div>`;
+          });
+        }
+        if (infos.length > 0) {
+          html += `<div style="color:#7ec8e3;margin-top:4px">ℹ️ Notes (${infos.length})</div>`;
+          infos.slice(0, 5).forEach(f => {
+            html += `<div style="color:#999;margin-left:8px;font-size:10px">• ${f.issue}</div>`;
+          });
+          if (infos.length > 5) {
+            html += `<div style="color:#666;margin-left:8px;font-size:10px">…and ${infos.length - 5} more</div>`;
+          }
+        }
+      }
+
+      el.innerHTML = html;
+    } catch (e) { /* silent */ }
+  }
+
+  function formatTimeAgo(isoStr) {
+    const ms = Date.now() - new Date(isoStr).getTime();
+    if (ms < 60000) return 'just now';
+    if (ms < 3600000) return `${Math.floor(ms / 60000)}m ago`;
+    if (ms < 86400000) return `${Math.floor(ms / 3600000)}h ago`;
+    return `${Math.floor(ms / 86400000)}d ago`;
+  }
+
+  refreshInspection();
+  setInterval(refreshInspection, 60000);
+
   // ── Relationships Panel ─────────────────────────────────────────────────
   async function refreshRelationships() {
     try {
