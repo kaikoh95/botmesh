@@ -451,6 +451,10 @@ export default class Building {
     });
   }
 
+  updateLabelVisibility(zoom) {
+    this.label.setVisible(zoom > 0.45);
+  }
+
   setGlow(on) {
     if (this.glow === on) return;
     this.glow = on;

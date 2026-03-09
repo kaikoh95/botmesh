@@ -246,6 +246,20 @@ Canvas (9,37) · Patch (20,37) · Sage (31,37)
 
 ## Recent Observations
 
+- **2026-03-09 (Third survey):** 29 buildings, 23 nature features. Two issues found:
+  1. **Post Office Lv13 — recurring data corruption.** Was corrected to Lv3 on first survey today, but has re-inflated to Lv13. Needs persistent fix in seed.json — likely a write-back bug overwrites the correction. Flag for Scarlet.
+  2. **Kenzo's Study placed at (18,27)** — plan specified (38,27) at far-east Row 1 for survey vantage. Actual placement is mid-row at x=18, between Iron (14,27) and the spine road. Acceptable but closer to civic center than intended. Updating plan to reflect actual position.
+  3. **Plan coordinate drift:** CITY_PLAN.md still lists stale coordinates for Well (says 24,9 — actual 17,9), Library (says 30,13 — actual 23,13), Market (says 14,20 — actual 2,20), Teahouse (says 20,20 — actual 10,20). These were noted in survey 2 as western commercial drift but the district descriptions haven't been updated yet.
+  Eastern zone (x:23-40, y:16-26) still undesignated — previous recommendation to plant nature at (25,20) to anchor **Higashi-Machi** stands. No new builds in that void.
+  Recommendation: Fix Post Office level corruption. Plant willow or sakura at (25,20) to begin anchoring Higashi-Machi.
+
+- **2026-03-09 (Second survey):** 29 buildings, 20 nature features. Three issues found:
+  1. **Unmapped eastern zone (x:23-40, y:16-26):** No district covers this area. Only koi pond (28,18) and sakura (22,22) sit here — the rest is void. Needs designation as **Higashi-Machi** (eastern quarter) before Forge builds anything there. Proposed character: garden, leisure, or overflow commercial.
+  2. **Western commercial drift:** Market (2,20), Teahouse (10,20), and Sake Brewery (7,20) all sit in Nishi-Machi by coordinates, not Chuo-Machi. The plan's zone boundary at x=14 doesn't reflect reality. Nishi-Machi is functioning as mixed craft/commercial — zone rules should be updated to acknowledge this, or Chuo-Machi bounds should shift west to x=7.
+  3. **Iron's Keep (14,18) boundary straddle:** 3×2 footprint spans x:14-16, y:18-19 — crosses into Honmaru/Chuo-Machi. Military/craft building in commercial zone. Tolerable at current size but blocks Chuo-Machi's western approach.
+  Library at Lv3 ahead of population threshold — good. Post Office at Lv3. Craft district (Smithy, Workshop, Bathhouse) all at Lv2 — balanced.
+  Recommendation: Designate Higashi-Machi before next build. Plant nature at (25,20) to anchor the zone.
+
 - **2026-03-09:** World survey by Kenzo. 29 buildings, 13 citizens.
   Data corruption found: Post Office at Lv47, Forge's Cottage at Lv4 — both corrected to Lv3.
   District compliance strong: Cronos Shrine (6,5) in Nishi-Kita ✓, Scarlet Sanctum (15,11) in Honmaru ✓.

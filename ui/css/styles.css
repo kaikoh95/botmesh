@@ -911,22 +911,50 @@ html, body {
 }
 #zoom-controls button:hover { background: rgba(40,40,40,0.95); }
 
-/* ── Mobile — drawer is already full-width, just tweak panel sizes ─────── */
-@media (max-width: 600px) {
+/* ── Mobile — responsive layout, touch targets, safe areas ─────────────── */
+@media (max-width: 768px) {
   .sidebar {
     width: 100vw;
   }
 
+  /* Touch-friendly zoom controls */
+  #zoom-controls {
+    bottom: max(12px, env(safe-area-inset-bottom));
+    right: max(12px, env(safe-area-inset-right));
+    left: auto;
+    top: auto;
+  }
+  #zoom-controls button {
+    width: 44px;
+    height: 44px;
+    font-size: 20px;
+  }
+
+  /* Safe area for hamburger on notch phones */
+  #menu-toggle {
+    top: max(8px, env(safe-area-inset-top));
+    right: max(8px, env(safe-area-inset-right));
+  }
+
+  /* Info panels — fit mobile viewport */
   .info-panel {
-    width: 85vw;
-    max-height: 55vh;
+    width: calc(100vw - 24px);
+    max-width: 360px;
+    max-height: 60vh;
+    left: 12px !important;
+    right: 12px !important;
+    bottom: max(70px, calc(70px + env(safe-area-inset-bottom)));
+    top: auto !important;
+    transform: none !important;
     font-size: 10px;
   }
 
-  #zoom-controls {
-    bottom: 8px;
-    top: auto;
-    left: auto;
-    right: 8px;
+  /* Upgrade tooltip repositioned for mobile */
+  .upgrade-tooltip {
+    left: 12px !important;
+    top: auto !important;
+    bottom: max(70px, calc(70px + env(safe-area-inset-bottom)));
+    width: calc(100vw - 24px);
+    max-width: 360px;
   }
 }

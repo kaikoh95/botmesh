@@ -131,14 +131,30 @@ export default class TownScene extends Phaser.Scene {
     this.input.on('pointerup', () => { _dragStart = null; _camStart = null; setTimeout(() => { this._dragging = false; }, 50); });
 
     // ── Zoom ────────────────────────────────────────────────────────────────
-    this._zoom = 1.0;
+    const isMobile = window.innerWidth < 768;
+    this._zoom = isMobile ? 0.45 : 1.0;
     const CAM = this.cameras.main;
     CAM.setZoom(this._zoom);
+
+    // On mobile, centre camera on the civic district (Town Hall area)
+    if (isMobile) {
+      const civic = this.gridToScreen(18, 13);
+      CAM.centerOn(civic.x, civic.y);
+    }
+
+    // Centralised zoom apply — updates camera + building label visibility
+    const applyZoom = () => {
+      CAM.setZoom(this._zoom);
+      Object.values(this.buildings).forEach(b => b.updateLabelVisibility(this._zoom));
+    };
+
+    // Apply initial label visibility
+    applyZoom();
 
     // Mouse wheel zoom
     this.input.on('wheel', (_ptr, _objs, _dx, deltaY) => {
       this._zoom = Phaser.Math.Clamp(this._zoom - deltaY * 0.0008, 0.35, 2.5);
-      CAM.setZoom(this._zoom);
+      applyZoom();
     });
 
     // Pinch-to-zoom (touch)
@@ -153,7 +169,7 @@ export default class TownScene extends Phaser.Scene {
         if (lastPinchDist !== null) {
           const delta = dist - lastPinchDist;
           this._zoom = Phaser.Math.Clamp(this._zoom + delta * 0.003, 0.35, 2.5);
-          CAM.setZoom(this._zoom);
+          applyZoom();
         }
         lastPinchDist = dist;
       } else {
@@ -162,16 +178,16 @@ export default class TownScene extends Phaser.Scene {
     });
 
     // Keyboard +/- zoom
-    this.input.keyboard.on('keydown-PLUS',  () => { this._zoom = Phaser.Math.Clamp(this._zoom + 0.15, 0.35, 2.5); CAM.setZoom(this._zoom); });
-    this.input.keyboard.on('keydown-MINUS', () => { this._zoom = Phaser.Math.Clamp(this._zoom - 0.15, 0.35, 2.5); CAM.setZoom(this._zoom); });
-    this.input.keyboard.on('keydown-ZERO',  () => { this._zoom = 1.0; CAM.setZoom(1.0); });
+    this.input.keyboard.on('keydown-PLUS',  () => { this._zoom = Phaser.Math.Clamp(this._zoom + 0.15, 0.35, 2.5); applyZoom(); });
+    this.input.keyboard.on('keydown-MINUS', () => { this._zoom = Phaser.Math.Clamp(this._zoom - 0.15, 0.35, 2.5); applyZoom(); });
+    this.input.keyboard.on('keydown-ZERO',  () => { this._zoom = 1.0; applyZoom(); });
 
     // Expose to window for UI buttons
     window.botmeshZoom = (delta) => {
       this._zoom = Phaser.Math.Clamp(this._zoom + delta, 0.35, 2.5);
-      CAM.setZoom(this._zoom);
+      applyZoom();
     };
-    window._zoomReset = () => { this._zoom = 1.0; CAM.setZoom(1.0); };
+    window._zoomReset = () => { this._zoom = 1.0; applyZoom(); };
 
     // ── Snowfall ────────────────────────────────────────────────────────────
     this._initSnow();
