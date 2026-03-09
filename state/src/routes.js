@@ -322,6 +322,55 @@ function createRoutes(getState, sendCommand, HOME_LOCATIONS = {}, sseBroadcast =
     res.json({ ok: true, notice });
   });
 
+  // ── Inbox — UI sends instructions to Scarlet ────────────────────────────
+  const INBOX_PATH = '/tmp/scarlet-inbox.json';
+  const INBOX_MAX = 50;
+
+  function readInbox() {
+    try { return JSON.parse(fs.readFileSync(INBOX_PATH, 'utf8')); }
+    catch { return []; }
+  }
+
+  function writeInbox(entries) {
+    fs.writeFileSync(INBOX_PATH, JSON.stringify(entries, null, 2));
+  }
+
+  // POST /inbox — append a message for Scarlet
+  router.post('/inbox', (req, res) => {
+    const { message, from } = req.body || {};
+    if (!message) return res.status(400).json({ error: 'message required' });
+
+    const entry = {
+      id: `inbox-${Date.now()}`,
+      message,
+      from: from || 'ui',
+      timestamp: new Date().toISOString(),
+      read: false,
+    };
+
+    const inbox = readInbox();
+    inbox.push(entry);
+    // Rotate oldest when over max
+    while (inbox.length > INBOX_MAX) inbox.shift();
+    writeInbox(inbox);
+
+    // Broadcast via SSE
+    if (sseBroadcast) {
+      sseBroadcast({
+        type: 'user:message',
+        payload: { message: entry.message, from: entry.from, id: entry.id, timestamp: entry.timestamp },
+      });
+    }
+
+    res.json({ ok: true, id: entry.id });
+  });
+
+  // GET /inbox — last 20 messages
+  router.get('/inbox', (req, res) => {
+    const inbox = readInbox();
+    res.json(inbox.slice(-20));
+  });
+
   // Forward command to Hub
   router.post('/command', requireAuth, (req, res) => {
     const { action, params } = req.body;

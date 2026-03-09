@@ -13,7 +13,7 @@
 </head>
 <body>
 <script>
-const W = 620, H = 780;
+const W = 620, H = 830;
 
 const AGENTS = [
   { id: 'scarlet',  emoji: '🔴', name: 'Scarlet' },
@@ -94,6 +94,9 @@ class OracleChamberScene extends Phaser.Scene {
     this.drawTicker();
     // Iter 10: Title
     this.drawTitle();
+
+    // Inbox input bar
+    this.drawInbox();
 
     // Animations
     this.addCandleFlicker();    // Iter 2
@@ -376,6 +379,54 @@ class OracleChamberScene extends Phaser.Scene {
     }).setOrigin(0.5);
   }
 
+  // ── Inbox input bar ──
+  drawInbox() {
+    const iy = H - 40;
+    const g = this.add.graphics();
+    g.fillStyle(0x0a0e1a, 0.95);
+    g.fillRect(20, iy - 6, W - 40, 34);
+    g.lineStyle(1, 0x2a3040, 0.5);
+    g.strokeRect(20, iy - 6, W - 40, 34);
+
+    // Create DOM input overlaying the canvas
+    const canvas = this.sys.game.canvas;
+    const wrap = canvas.parentElement || document.body;
+
+    const form = document.createElement('div');
+    form.style.cssText = 'position:absolute;bottom:0;left:0;right:0;display:flex;gap:4px;padding:6px 24px 8px;background:#0a0e1a;z-index:10;';
+
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.placeholder = 'Send instruction to the Oracle...';
+    input.maxLength = 300;
+    input.style.cssText = 'flex:1;background:#0e1220;border:1px solid #2a3040;color:#e0d8c8;font-family:monospace;font-size:12px;padding:6px 10px;outline:none;border-radius:2px;';
+    input.addEventListener('focus', () => input.style.borderColor = '#f0a030');
+    input.addEventListener('blur', () => input.style.borderColor = '#2a3040');
+
+    const btn = document.createElement('button');
+    btn.textContent = '⚡';
+    btn.style.cssText = 'background:#f0a030;color:#0a0e1a;border:none;font-size:14px;padding:4px 12px;cursor:pointer;font-family:monospace;border-radius:2px;';
+
+    const send = () => {
+      const msg = input.value.trim();
+      if (!msg) return;
+      input.value = '';
+      fetch('https://api.kurokimachi.com/inbox', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: msg, from: 'ui' }),
+      }).catch(() => {});
+    };
+
+    input.addEventListener('keydown', (e) => { if (e.key === 'Enter') send(); });
+    btn.addEventListener('click', send);
+
+    form.appendChild(input);
+    form.appendChild(btn);
+    wrap.style.position = 'relative';
+    wrap.appendChild(form);
+  }
+
   // ── Iter 2: Candle flicker animation ──
   addCandleFlicker() {
     this.time.addEvent({
@@ -560,6 +611,7 @@ class OracleChamberScene extends Phaser.Scene {
       es.addEventListener('agent:speak', (e) => this.handleSSE(e));
       es.addEventListener('agent:online', (e) => this.handleSSE(e));
       es.addEventListener('agent:offline', (e) => this.handleSSE(e));
+      es.addEventListener('user:message', (e) => this.handleSSE(e));
     } catch (err) {
       this.time.delayedCall(3000, () => this.startSSE());
     }
@@ -572,6 +624,10 @@ class OracleChamberScene extends Phaser.Scene {
       const agentId = data.agentId || (data.meta && data.meta.agentId);
       const message = data.content || (data.meta && data.meta.message) || '';
 
+      if (type === 'user:message') {
+        const uMsg = data.payload?.message || data.content || message;
+        this.onUserMessage(uMsg);
+      }
       if (type === 'agent:speak' && agentId) {
         this.onAgentSpeak(agentId, message);
       }
@@ -596,6 +652,25 @@ class OracleChamberScene extends Phaser.Scene {
     } catch (err) { /* ignore parse errors */ }
   }
 
+  // ── User message → show in ticker ──
+  onUserMessage(message) {
+    this.lastUserMessageTime = Date.now();
+    const truncMsg = message.length > 60 ? message.substring(0, 60) + '…' : message;
+    const fullText = `🖊 You → ${truncMsg}`;
+
+    this.tickerText.setText('');
+    let idx = 0;
+    if (this.tickerTimer) this.tickerTimer.remove();
+    this.tickerTimer = this.time.addEvent({
+      delay: 30,
+      repeat: fullText.length - 1,
+      callback: () => {
+        idx++;
+        this.tickerText.setText(fullText.substring(0, idx));
+      }
+    });
+  }
+
   // ── Iter 3: Agent speak → stele pulse ──
   // ── Iter 4: Ink brushstroke text animation ──
   onAgentSpeak(agentId, message) {
@@ -608,18 +683,25 @@ class OracleChamberScene extends Phaser.Scene {
       state.lastMessage = message;
     }
 
+    // Enhanced glow if Scarlet is responding to a user instruction (within 60s)
+    const isResponse = agentId === 'scarlet' && this.lastUserMessageTime &&
+      (Date.now() - this.lastUserMessageTime < 60000);
+    const glowAlpha = isResponse ? 0.4 : 0.2;
+    const glowRadius = isResponse ? STELE_W * 0.8 : STELE_W * 0.6;
+    const glowDuration = isResponse ? 4000 : 2000;
+
     // Amber pulse on stele
     s.glowG.clear();
-    s.glowG.fillStyle(PAL.amberGlow, 0.2);
+    s.glowG.fillStyle(PAL.amberBright, glowAlpha);
     s.glowG.fillRect(s.bx + 4, s.by, s.bw - 8, s.bh);
-    s.glowG.fillStyle(PAL.amberGlow, 0.08);
-    s.glowG.fillCircle(s.cx, s.cy, STELE_W * 0.6);
+    s.glowG.fillStyle(PAL.amberBright, glowAlpha * 0.4);
+    s.glowG.fillCircle(s.cx, s.cy, glowRadius);
     s.glowG.setAlpha(1);
 
     this.tweens.add({
       targets: s.glowG,
       alpha: { from: 1, to: 0 },
-      duration: 2000,
+      duration: glowDuration,
       ease: 'Sine.easeOut'
     });
 
