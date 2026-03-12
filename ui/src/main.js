@@ -40,6 +40,23 @@ const AGENT_JOBS = {
   planner: { building: 'town_hall',   title: 'City Planner', shift: [7, 19] },
 };
 
+// ── Agent → Building mapping for activity-based movement ──────────────────
+const AGENT_BUILDING_MAP = {
+  scarlet: { work: 'scarlet_sanctum', home: null },
+  forge:   { work: 'workshop',        home: null },
+  lumen:   { work: 'library',         home: null },
+  canvas:  { work: 'garden-pavilion', home: null },
+  sage:    { work: 'library',         home: null },
+  iron:    { work: 'iron_keep',       home: null },
+  cronos:  { work: 'cronos_shrine',   home: null },
+  echo:    { work: 'post_office',     home: null },
+  mosaic:  { work: 'workshop',        home: null },
+  patch:   { work: 'smithy',          home: null },
+  muse:    { work: 'teahouse',        home: null },
+  qa:      { work: 'town_hall',       home: null },
+  planner: { work: 'town_hall',       home: null },
+};
+
 // ── HTML Panel Manager ────────────────────────────────────────────────────
 // ── Roadmap Panel ─────────────────────────────────────────────────────────
 const RoadmapPanel = {
@@ -625,6 +642,31 @@ async function init() {
           if (currentAgents[p.agentId]) {
             currentAgents[p.agentId].mood = p.to;
           }
+          break;
+        }
+
+        case 'agent:activity': {
+          const id = p.agentId;
+          if (currentAgents[id]) {
+            currentAgents[id].activity = p.activity;
+            currentAgents[id].activityDetail = p.detail || null;
+          }
+          // Move agent to target building (server already set targetBuilding,
+          // walk ticker will handle position — but we can also kick the UI)
+          const actMap = AGENT_BUILDING_MAP[id];
+          if (actMap) {
+            const isIdle = p.activity === 'idle' || p.activity === 'sleeping';
+            const targetBld = isIdle ? null : actMap.work;
+            if (targetBld) {
+              scene.walkAgentToBuilding(id, targetBld);
+              scene.setBuildingWorking(targetBld, true, id);
+            } else {
+              // Going home — clear any work indicator
+              if (actMap.work) scene.setBuildingWorking(actMap.work, false, id);
+              scene.walkAgentHome(id);
+            }
+          }
+          updateRoster(currentAgents);
           break;
         }
 

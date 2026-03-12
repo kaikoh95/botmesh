@@ -8,6 +8,7 @@ const ICONS = {
   'agent:online':      '\u{1F7E2}',
   'agent:offline':     '\u26AB',
   'agent:work':        '\u{1F528}',
+  'agent:activity':    '\u{1F3AF}',
   'building:upgraded': '\u2B06\uFE0F',
   'time:tick':         '\u{1F305}',
   'world:event':       '\u{1F30D}',
@@ -134,6 +135,8 @@ function formatEvent(event) {
       return { agentId: null, agentName: null, content: `${p.period} \u2014 ${String(p.hour).padStart(2,'0')}:${String(p.minute).padStart(2,'0')}` };
     case 'world:event':
       return { agentId: null, agentName: null, content: p.description || p.event };
+    case 'agent:activity':
+      return { agentId, agentName: name, content: `${p.activity}${p.detail ? ': ' + p.detail : ''}` };
     case 'agent:work':
       if (p.action === 'start') {
         return { agentId, agentName: name, content: `entered ${p.buildingName || 'a building'} to work` };

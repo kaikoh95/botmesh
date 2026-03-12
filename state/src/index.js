@@ -24,20 +24,20 @@ const CHARACTERS_DIR = path.join(__dirname, '../../characters');
 
 // ── Home spawn positions for each citizen ─────────────────────────────────
 const HOME_LOCATIONS = {
-  scarlet: { x: 15, y: 12 }, // Town Hall area
-  forge:   { x: 6,  y: 20 }, // Workshop area (west)
-  lumen:   { x: 24, y: 14 }, // Library area
-  sage:    { x: 27, y: 13 }, // Library area (east offset)
-  iron:    { x: 18, y: 11 }, // Civic perimeter
-  cronos:  { x: 4,  y: 8  }, // Cultural NW — far from echo
-  mosaic:  { x: 8,  y: 15 }, // Western quarter
-  echo:    { x: 29, y: 11 }, // Post Office area (NE) — far from cronos
-  canvas:  { x: 16, y: 21 }, // Market area
-  patch:   { x: 10, y: 20 }, // Commercial zone
-  muse:    { x: 4,  y: 6  }, // Cultural NW near observatory
-  planner: { x: 19, y: 13 }, // Town Hall area — observing the civic core
+  scarlet: { x: 25, y: 56 }, // Scarlet's cottage (south housing)
+  forge:   { x: 33, y: 57 }, // Forge's cottage (south housing)
+  lumen:   { x: 42, y: 56 }, // Lumen's cottage (south housing)
+  sage:    { x: 55, y: 63 }, // Sage's cottage (south housing)
+  iron:    { x: 50, y: 57 }, // Iron's cottage (south housing)
+  cronos:  { x: 46, y: 62 }, // Cronos's cottage (south housing)
+  mosaic:  { x: 22, y: 67 }, // Mosaic's cottage (south housing)
+  echo:    { x: 32, y: 68 }, // Echo's cottage (south housing)
+  canvas:  { x: 41, y: 67 }, // Canvas's cottage (south housing)
+  patch:   { x: 50, y: 68 }, // Patch's cottage (south housing)
+  muse:    { x: 34, y: 63 }, // Muse's cottage (south housing)
+  planner: { x: 28, y: 62 }, // Kenzo's study (south housing)
 };
-const DEFAULT_HOME = { x: 12, y: 12 };
+const DEFAULT_HOME = { x: 38, y: 38 };
 
 // ── Seed citizens from characters/ directory ──────────────────────────────
 // Character file existing = citizen exists in the world (dormant until active)
@@ -209,6 +209,17 @@ function applyEvent(event) {
     case 'agent:offline': {
       const a = (state.agents || {})[payload.agentId];
       if (a) { a.online = false; a.state = 'dormant'; a.lastSeen = new Date().toISOString(); }
+      addGazetteEntry(event);
+      break;
+    }
+
+    case 'agent:activity': {
+      const agent = (state.agents || {})[payload.agentId];
+      if (agent) {
+        agent.activity = payload.activity;
+        agent.activityDetail = payload.detail || null;
+        agent.activitySince = Date.now();
+      }
       addGazetteEntry(event);
       break;
     }

@@ -32,6 +32,26 @@ const MENTION_OPENERS = [
 const STATES = ['idle', 'walking', 'working', 'talking'];
 const MOODS = ['content', 'excited', 'focused', 'tired', 'curious'];
 
+// ── Agent → Building mapping for activity-based movement ──────────────────
+const AGENT_BUILDING_MAP = {
+  scarlet: { work: 'scarlet_sanctum' },
+  forge:   { work: 'workshop' },
+  lumen:   { work: 'library' },
+  canvas:  { work: 'garden-pavilion' },
+  sage:    { work: 'library' },
+  iron:    { work: 'iron_keep' },
+  cronos:  { work: 'cronos_shrine' },
+  echo:    { work: 'post_office' },
+  mosaic:  { work: 'workshop' },
+  patch:   { work: 'smithy' },
+  muse:    { work: 'teahouse' },
+  qa:      { work: 'town_hall' },
+  planner: { work: 'town_hall' },
+};
+
+// Social buildings where idle agents may wander
+const SOCIAL_BUILDINGS = ['teahouse', 'plaza', 'market', 'community_garden'];
+
 // Track pending responses and pending work completions
 const pendingResponses = [];
 const pendingWorkCompletions = [];
@@ -87,8 +107,33 @@ function generateAgentEvent(agent, onEvent) {
     return null;
   }
 
+  // Don't simulate over real activity (set via /agents/:id/activity endpoint)
+  if (agent.activity && agent.activitySince && Date.now() - agent.activitySince < 300000) {
+    return null;
+  }
+
   if (roll < 0.4) {
-    // Move 1-2 tiles
+    // Move — idle agents may wander toward social buildings instead of random walk
+    if (agent.state === 'idle' && Math.random() < 0.3) {
+      const socialId = randomItem(SOCIAL_BUILDINGS);
+      const building = worldState.buildings?.[socialId];
+      if (building) {
+        const targetX = (building.x || 0) + Math.floor((building.width || 2) / 2);
+        const targetY = (building.y || 0) + (building.height || 1) + 1;
+        world.updateAgent(agent.id, {
+          location: { x: targetX, y: targetY, building: null },
+          targetBuilding: socialId,
+        });
+        return {
+          type: 'agent:move',
+          agentId: agent.id,
+          from: { x: agent.location.x, y: agent.location.y },
+          to: { x: targetX, y: targetY },
+        };
+      }
+    }
+
+    // Default: random walk 1-2 tiles
     const dx = randomInt(-2, 2);
     const dy = randomInt(-2, 2);
     const from = { x: agent.location.x, y: agent.location.y };
@@ -116,7 +161,8 @@ function generateAgentEvent(agent, onEvent) {
 
     // If transitioning to 'working', trigger building work
     if (newState === 'working') {
-      const buildingId = world.getBuildingForAgent(agent.id);
+      // Prefer AGENT_BUILDING_MAP for work building, fall back to world lookup
+      const buildingId = AGENT_BUILDING_MAP[agent.id]?.work || world.getBuildingForAgent(agent.id);
       const building = worldState.buildings[buildingId];
       if (building) {
         world.startWork(agent.id, buildingId);

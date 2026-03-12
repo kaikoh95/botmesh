@@ -62,7 +62,7 @@ export function createStateClient({ onEvent, onStateSync, onConnect, onDisconnec
       'time:tick',
       'agent:move', 'agent:speak', 'agent:action',
       'agent:state', 'agent:mood',
-      'agent:joined', 'agent:online', 'agent:offline',
+      'agent:joined', 'agent:online', 'agent:offline', 'agent:activity',
       'agent:work', 'building:upgraded',
       'building:damaged', 'building:restored',
       'task:complete', 'infra:down', 'infra:up', 'agent:crashed',

@@ -127,6 +127,61 @@ function createRoutes(getState, sendCommand, HOME_LOCATIONS = {}, sseBroadcast =
     res.json({ ok: true, agent: req.params.id, state: agent.state });
   });
 
+  // ── Activity endpoint — external services report what an agent is doing ────
+  // POST /agents/:id/activity { activity: "working", detail: "building voice input" }
+  router.post('/agents/:id/activity', requireAuth, (req, res) => {
+    const state = getState();
+    const { id } = req.params;
+    const { activity, detail } = req.body || {};
+    if (!activity) return res.status(400).json({ error: 'activity required' });
+
+    const agent = (state.agents || {})[id];
+    if (!agent) return res.status(404).json({ error: 'agent not found' });
+
+    agent.activity = activity;
+    agent.activityDetail = detail || null;
+    agent.activitySince = Date.now();
+
+    // Map activity to a target building
+    const AGENT_BUILDING_MAP = {
+      scarlet: { work: 'scarlet_sanctum', home: null },
+      forge:   { work: 'workshop',        home: null },
+      lumen:   { work: 'library',         home: null },
+      canvas:  { work: 'garden-pavilion', home: null },
+      sage:    { work: 'library',         home: null },
+      iron:    { work: 'iron_keep',       home: null },
+      cronos:  { work: 'cronos_shrine',   home: null },
+      echo:    { work: 'post_office',     home: null },
+      mosaic:  { work: 'workshop',        home: null },
+      patch:   { work: 'smithy',          home: null },
+      muse:    { work: 'teahouse',        home: null },
+      qa:      { work: 'town_hall',       home: null },
+      planner: { work: 'town_hall',       home: null },
+    };
+
+    const map = AGENT_BUILDING_MAP[id];
+    if (map) {
+      const isIdle = activity === 'idle' || activity === 'sleeping';
+      if (isIdle) {
+        // Go home — clear targetBuilding so walk ticker sends them to HOME_LOCATIONS
+        agent.targetBuilding = null;
+      } else {
+        // Go to work building
+        agent.targetBuilding = map.work;
+      }
+    }
+
+    // Broadcast via SSE
+    const event = {
+      type: 'agent:activity',
+      timestamp: new Date().toISOString(),
+      payload: { agentId: id, activity, detail, targetBuilding: agent.targetBuilding },
+    };
+    if (sseBroadcast) sseBroadcast(event);
+
+    res.json({ ok: true, agentId: id, activity, targetBuilding: agent.targetBuilding });
+  });
+
   router.post('/agents/:id/sleep', requireAuth, (req, res) => {
     const state = getState();
     const agent = (state.agents || {})[req.params.id];
