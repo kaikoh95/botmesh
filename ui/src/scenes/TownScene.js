@@ -775,10 +775,10 @@ export default class TownScene extends Phaser.Scene {
     ];
 
     const g = this.add.graphics();
-    const WOOD = 0x8b6914;       // warm brown
-    const WOOD_DARK = 0x6b4e0a;  // darker accent
-    const POST_H = 10;           // fence post height in px
-    const RAIL_H = 6;            // horizontal rail offset
+    const WOOD = 0x5c3a1e;       // darker warm brown
+    const WOOD_DARK = 0x3d2510;  // deep brown accent
+    const POST_H = 12;           // fence post height in px
+    const RAIL_H = 7;            // horizontal rail offset
 
     for (const yard of yards) {
       // Four corners in grid coords
@@ -804,7 +804,7 @@ export default class TownScene extends Phaser.Scene {
           const py = a.y + (b.y - a.y) * t;
 
           // Fence post (vertical line)
-          g.lineStyle(2, WOOD_DARK, 0.9);
+          g.lineStyle(3, WOOD_DARK, 0.9);
           g.beginPath();
           g.moveTo(px, py);
           g.lineTo(px, py - POST_H);
@@ -816,14 +816,14 @@ export default class TownScene extends Phaser.Scene {
         }
 
         // Top rail
-        g.lineStyle(1.5, WOOD, 0.85);
+        g.lineStyle(2.5, WOOD, 0.85);
         g.beginPath();
         g.moveTo(a.x, a.y - POST_H + 1);
         g.lineTo(b.x, b.y - POST_H + 1);
         g.strokePath();
 
         // Bottom rail
-        g.lineStyle(1.5, WOOD, 0.75);
+        g.lineStyle(2.5, WOOD, 0.75);
         g.beginPath();
         g.moveTo(a.x, a.y - RAIL_H);
         g.lineTo(b.x, b.y - RAIL_H);
