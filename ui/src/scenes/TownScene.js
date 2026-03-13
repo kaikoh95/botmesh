@@ -17,11 +17,11 @@ const TILE_PNG_H = 48; // cube tile: 32px top face + 16px side faces
 
 // ── District definitions ─────────────────────────────────────────────────────
 const DISTRICTS = {
-  cronos:      { label: 'Cronos Shrine',    cx: 18, cy: 10, bounds: { x1: 0,  y1: 0,  x2: 37,  y2: 14 } },
-  scarlet:     { label: 'Scarlet Sanctum',  cx: 87, cy: 8,  bounds: { x1: 38, y1: 0,  x2: 119, y2: 14 } },
-  communal:    { label: 'Communal District',cx: 20, cy: 35, bounds: { x1: 0,  y1: 15, x2: 37,  y2: 66 } },
-  east:        { label: 'East District',    cx: 50, cy: 30, bounds: { x1: 38, y1: 15, x2: 119, y2: 64 } },
-  residential: { label: 'Residential',      cx: 42, cy: 78, bounds: { x1: 0,  y1: 65, x2: 119, y2: 119 } },
+  communal:    { label: 'Communal District',cx: 12, cy: 12, bounds: { x1: 0,  y1: 0,  x2: 24, y2: 24 } },
+  cronos:      { label: 'Cronos Shrine',    cx: 12, cy: 37, bounds: { x1: 0,  y1: 25, x2: 24, y2: 49 } },
+  scarlet:     { label: 'Scarlet Sanctum',  cx: 37, cy: 12, bounds: { x1: 25, y1: 0,  x2: 49, y2: 24 } },
+  east:        { label: 'East District',    cx: 37, cy: 37, bounds: { x1: 25, y1: 25, x2: 49, y2: 49 } },
+  residential: { label: 'Residential',      cx: 24, cy: 62, bounds: { x1: 0,  y1: 50, x2: 49, y2: 74 } },
 };
 
 export default class TownScene extends Phaser.Scene {
@@ -113,17 +113,17 @@ export default class TownScene extends Phaser.Scene {
     // ── Star field — scattered dots above the map ──────────────────────────
     this._drawStarField();
 
-    this.mapW = 120;
-    this.mapH = 120;
+    this.mapW = 50;
+    this.mapH = 75;
     // Origin: center the star layout on grid (55,55)
     this.originX = this.cameras.main.width * 0.5;
     this.originY = -800;
 
-    // Draw ground tiles synchronously for default district (communal)
+    // Draw ground tiles async for default district (communal)
     this._currentDistrict = 'communal';
     this._sceneryGraphics = [];
     this._windowGlows = [];
-    this._drawGroundSync(this.mapW, this.mapH, DISTRICTS.communal.bounds);
+    this._drawGroundAsync(this.mapW, this.mapH, DISTRICTS.communal.bounds).then(() => {});
 
     // Draw scenery for communal district
     const communalBounds = DISTRICTS.communal.bounds;
@@ -1020,13 +1020,13 @@ export default class TownScene extends Phaser.Scene {
       const STATE_URL = window.BOTMESH_STATE_URL || 'http://localhost:3002';
       const res = await fetch(`${STATE_URL}/state`);
       const state = await res.json();
-      const w = Math.max(80, state.world?.width || 80);
-      const h = Math.max(80, state.world?.height || 80);
+      const w = Math.max(50, state.world?.width || 50);
+      const h = Math.max(50, state.world?.height || 50);
       if (w !== this.mapW || h !== this.mapH) {
         this.mapW = w;
         this.mapH = h;
         const db = this._currentDistrict ? DISTRICTS[this._currentDistrict].bounds : { x1: 0, y1: 0, x2: w - 1, y2: h - 1 };
-        this._drawGroundSync(w, h, db);
+        await this._drawGroundAsync(w, h, db);
       }
     } catch (e) { /* API unavailable — keep defaults */ }
   }
@@ -1068,8 +1068,8 @@ export default class TownScene extends Phaser.Scene {
 
     // Chunked RenderTextures for snow/cobblestone tiles within district bounds
     const hasCobble = this.textures.exists('ground-cobblestone');
-    const isRoad = (x, y) => (y === 37 || y === 38) || (x === 38 || x === 39);
-    const isMarket = (x, y) => x >= 20 && x <= 55 && y >= 37 && y <= 60;
+    const isRoad = (x, y) => (y === 24 || y === 25) || (y === 49 || y === 50) || (x === 24 || x === 25);
+    const isMarket = (x, y) => x >= 6 && x <= 22 && y >= 12 && y <= 18;
 
     const colCount = Math.ceil(totalW / CHUNK_PX);
     const rowCount = Math.ceil(totalH / CHUNK_PX);
@@ -1142,8 +1142,8 @@ export default class TownScene extends Phaser.Scene {
 
     // Chunked RenderTextures + async yield
     const hasCobble = this.textures.exists('ground-cobblestone');
-    const isRoad = (x, y) => (y === 37 || y === 38) || (x === 38 || x === 39);
-    const isMarket = (x, y) => x >= 20 && x <= 55 && y >= 37 && y <= 60;
+    const isRoad = (x, y) => (y === 24 || y === 25) || (y === 49 || y === 50) || (x === 24 || x === 25);
+    const isMarket = (x, y) => x >= 6 && x <= 22 && y >= 12 && y <= 18;
 
     const colCount = Math.ceil(totalW / CHUNK_PX);
     const rowCount = Math.ceil(totalH / CHUNK_PX);
@@ -1184,7 +1184,7 @@ export default class TownScene extends Phaser.Scene {
 
             count++;
             if (count % CHUNK_SIZE === 0) {
-              await new Promise(r => requestAnimationFrame(r));
+              await new Promise(r => setTimeout(r, 0));
             }
           }
         }
@@ -1240,12 +1240,9 @@ export default class TownScene extends Phaser.Scene {
     (this._smokeParticles || []).forEach(g => g.destroy && g.destroy());
     this._smokeParticles = [];
 
-    // 2. Show/hide buildings — exact bounds, no padding
-    Object.values(this.buildings).forEach(b => {
-      const inside = b.gridX >= d.bounds.x1 && b.gridX <= d.bounds.x2 &&
-                     b.gridY >= d.bounds.y1 && b.gridY <= d.bounds.y2;
-      if (b.container) b.container.setVisible(inside);
-    });
+    // 2. Destroy all buildings and respawn only for target district
+    this._destroyAllBuildings();
+    this._spawnBuildingsForDistrict(key);
 
     // 3. Show/hide agents — reverse-map from container position if no location data
     Object.values(this.agents).forEach(a => {
@@ -1687,9 +1684,9 @@ export default class TownScene extends Phaser.Scene {
     );
     // Add walkways connecting buildings to main roads
     this._computeWalkways();
-    // Redraw ground layer with new path data for current district
-    const db = this._currentDistrict ? DISTRICTS[this._currentDistrict].bounds : { x1: 0, y1: 0, x2: (this.mapW || 80) - 1, y2: (this.mapH || 80) - 1 };
-    this._drawGroundSync(this.mapW || 80, this.mapH || 80, db);
+    // Redraw ground layer with new path data for current district (async)
+    const db = this._currentDistrict ? DISTRICTS[this._currentDistrict].bounds : { x1: 0, y1: 0, x2: (this.mapW || 50) - 1, y2: (this.mapH || 75) - 1 };
+    this._drawGroundAsync(this.mapW || 50, this.mapH || 75, db).then(() => {});
   }
 
   // Generate walkways from each building entrance to nearest main road
@@ -1698,17 +1695,20 @@ export default class TownScene extends Phaser.Scene {
 
     // Known building positions: [id, x, y, width, height]
     const buildings = [
-      ['well', 10, 20, 3, 2], ['market', 20, 20, 4, 3], ['town_hall', 30, 20, 4, 3],
-      ['library', 45, 20, 4, 3], ['post_office', 57, 20, 4, 3],
-      ['smithy', 10, 28, 3, 2], ['workshop', 20, 28, 3, 2], ['iron_keep', 30, 28, 4, 3],
-      ['garden_pavilion', 45, 28, 4, 3], ['leisure', 57, 28, 3, 2],
-      ['plaza', 10, 42, 4, 3], ['teahouse', 20, 42, 3, 2], ['sake_brewery', 30, 42, 4, 3],
-      ['community_garden', 45, 42, 4, 3],
-      ['bathhouse', 10, 50, 4, 3],
-      ['cronos_shrine', 15, 8, 3, 2], ['observatory', 90, 8, 3, 2],
-      ['scarlet_sanctum', 85, 5, 4, 3],
-      ['house1', 22, 72, 3, 2], ['house2', 62, 72, 3, 2],
-      ['house3', 22, 85, 3, 2], ['house4', 62, 85, 3, 2],
+      // communal
+      ['town_hall', 12, 8, 4, 3], ['market', 8, 14, 4, 3], ['well', 5, 5, 3, 2],
+      ['workshop', 16, 14, 3, 2], ['post_office', 20, 8, 4, 3],
+      // cronos
+      ['cronos_shrine', 10, 32, 3, 2], ['library', 18, 36, 4, 3], ['bathhouse', 6, 40, 4, 3],
+      // scarlet
+      ['scarlet_sanctum', 37, 6, 4, 3], ['observatory', 44, 8, 3, 2],
+      // east
+      ['iron_keep', 30, 30, 4, 3], ['sake_brewery', 38, 36, 2, 2],
+      ['smithy', 28, 40, 3, 2], ['garden-pavilion', 44, 32, 4, 3],
+      // residential
+      ['house-north', 10, 56, 3, 2], ['house-south', 10, 66, 3, 2],
+      ['house-east', 30, 56, 3, 2], ['house-west', 30, 66, 3, 2],
+      ['teahouse', 20, 60, 3, 2], ['community_garden', 40, 62, 4, 3],
     ];
 
     // Build a set of occupied building tiles for collision avoidance
@@ -1721,12 +1721,12 @@ export default class TownScene extends Phaser.Scene {
       }
     }
 
-    // Civic district buildings get 2-tile-wide walkways (x=30-60, y=18-40)
-    const civicIds = new Set(['town_hall', 'library', 'post_office', 'iron_keep', 'garden_pavilion', 'leisure']);
+    // Civic buildings get 2-tile-wide walkways
+    const civicIds = new Set(['town_hall', 'library', 'post_office', 'iron_keep', 'garden-pavilion']);
 
-    // Main roads: E-W at y=37-38, N-S at x=38-39
-    const EW_ROAD_Y = 37;
-    const NS_ROAD_X = 38;
+    // Main roads: E-W at y=24-25 and y=49-50, N-S at x=24-25
+    const EW_ROAD_Y = 24;
+    const NS_ROAD_X = 24;
 
     for (const [id, bx, by, bw, bh] of buildings) {
       const entranceX = bx + Math.floor(bw / 2);
@@ -1886,13 +1886,13 @@ export default class TownScene extends Phaser.Scene {
 
     // Update map dimensions from state if available
     if (state.world?.width || state.world?.height) {
-      const w = Math.max(60, state.world.width || 80);
-      const h = Math.max(60, state.world.height || 80);
+      const w = Math.max(50, state.world.width || 50);
+      const h = Math.max(50, state.world.height || 75);
       if (w !== this.mapW || h !== this.mapH) {
         this.mapW = w;
         this.mapH = h;
         const db = this._currentDistrict ? DISTRICTS[this._currentDistrict].bounds : { x1: 0, y1: 0, x2: w - 1, y2: h - 1 };
-        this._drawGroundSync(w, h, db);
+        this._drawGroundAsync(w, h, db).then(() => {});
       }
     }
 
@@ -1946,11 +1946,7 @@ export default class TownScene extends Phaser.Scene {
     const d = DISTRICTS[this._currentDistrict];
     if (!d) return;
 
-    Object.values(this.buildings).forEach(b => {
-      const inside = b.gridX >= d.bounds.x1 && b.gridX <= d.bounds.x2 &&
-                     b.gridY >= d.bounds.y1 && b.gridY <= d.bounds.y2;
-      if (b.container) b.container.setVisible(inside);
-    });
+    // Buildings are already district-filtered (only current district in memory)
 
     Object.values(this.agents).forEach(a => {
       if (!a.container) return;
@@ -2058,8 +2054,19 @@ export default class TownScene extends Phaser.Scene {
     }
   }
 
+  _isBuildingInDistrict(bData, key) {
+    const d = DISTRICTS[key];
+    if (!d) return false;
+    if (bData.district) return bData.district === key;
+    return bData.x >= d.bounds.x1 && bData.x <= d.bounds.x2 &&
+           bData.y >= d.bounds.y1 && bData.y <= d.bounds.y2;
+  }
+
   addBuilding(bData) {
     if (this.buildings[bData.id]) return;
+    // Skip buildings not in the current district
+    if (this._currentDistrict && !this._isBuildingInDistrict(bData, this._currentDistrict)) return;
+
     // Position at south (front-bottom) corner of the isometric footprint diamond.
     // This is grid point (x+width, y+height), which maps to the lowest visible corner.
     const cx = bData.x + (bData.width || 2);
@@ -2076,9 +2083,12 @@ export default class TownScene extends Phaser.Scene {
     shadow.setDepth((cx + cy) * 100 - 1);
 
     // Ambient detail — stone lantern near civic/market buildings
-    this._spawnBuildingDetail(bData, pos);
+    const detail = this._spawnBuildingDetail(bData, pos);
 
     const building = new Building(this, bData, pos.x, pos.y);
+    // Track auxiliary graphics for cleanup on district switch
+    building._shadow = shadow;
+    building._detail = detail;
     this.buildings[bData.id] = building;
 
     // Warm window light pool — golden glow on ground beneath building
@@ -2105,11 +2115,47 @@ export default class TownScene extends Phaser.Scene {
     });
   }
 
+  _destroyAllBuildings() {
+    for (const b of Object.values(this.buildings)) {
+      if (b._shadow) { b._shadow.destroy(); b._shadow = null; }
+      if (b._detail) { b._detail.destroy(); b._detail = null; }
+      b.destroy();
+    }
+    this.buildings = {};
+    this._buildingFootprint = new Set();
+  }
+
+  _spawnBuildingsForDistrict(key) {
+    if (!this.worldData) return;
+    // Spawn from state.buildings
+    if (this.worldData.buildings) {
+      for (const bData of Object.values(this.worldData.buildings)) {
+        if (this._isBuildingInDistrict(bData, key)) {
+          this.addBuilding(bData);
+        }
+      }
+    }
+    // Spawn dynamic buildings from world entities
+    if (this.worldData.world?.entities) {
+      for (const entity of this.worldData.world.entities) {
+        if (entity.entity === 'building' && !this.worldData.buildings?.[entity.id]) {
+          const bData = { ...entity, id: entity.id || entity.kind };
+          if (this._isBuildingInDistrict(bData, key)) {
+            this.addBuilding(bData);
+          }
+        }
+      }
+    }
+    // Re-apply murals and cottage props
+    if (this.worldData.murals) this.applyMurals(this.worldData.murals);
+    if (this.worldData.agents) this.applyCottageProps(this.worldData.agents);
+  }
+
   _spawnBuildingDetail(bData, pos) {
     const type = bData.type || bData.id || '';
     const isCivic = ['town_hall','post_office','market','teahouse','plaza','library'].includes(bData.id);
     const isCottage = type === 'cottage';
-    if (!isCivic && !isCottage) return;
+    if (!isCivic && !isCottage) return null;
 
     // Draw a tiny stone lantern (tōrō) or flower box as a pixel detail
     const g = this.add.graphics();
@@ -2129,6 +2175,7 @@ export default class TownScene extends Phaser.Scene {
       g.fillStyle(0xffaa22, 1); g.fillRect(ox + 1, oy - 6, 2, 2);     // flower
       g.fillStyle(0x44cc44, 1); g.fillRect(ox - 1, oy - 4, 2, 1);     // leaf
     }
+    return g;
   }
 
   _addWindowGlow(bData, pos) {
