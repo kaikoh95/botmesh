@@ -82,6 +82,9 @@ export default class TownScene extends Phaser.Scene {
 
     // Ground tile sprites
     this.load.image('tile-path', `assets/buildings/path-tile.png${v}`);
+    this.load.image('ground-snow', `assets/ground/snow-tile.png${v}`);
+    this.load.image('ground-soil', `assets/ground/soil-tile.png${v}`);
+    this.load.image('ground-path', `assets/ground/path-tile.png${v}`);
   }
 
   create() {
@@ -230,6 +233,7 @@ export default class TownScene extends Phaser.Scene {
     this._gridVisible = true;
     window.botmeshToggleGrid = () => {
       this._gridVisible = !this._gridVisible;
+      if (this._groundRT) this._groundRT.setVisible(this._gridVisible);
       if (this._groundGraphics) this._groundGraphics.setVisible(this._gridVisible);
       return this._gridVisible;
     };
@@ -977,119 +981,143 @@ export default class TownScene extends Phaser.Scene {
   }
 
   _drawGround(mapW, mapH) {
-    if (this._groundGraphics) { this._groundGraphics.destroy(); }
+    // Clean up previous ground render
+    if (this._groundRT) { this._groundRT.destroy(); this._groundRT = null; }
+    if (this._groundGraphics) { this._groundGraphics.destroy(); this._groundGraphics = null; }
     if (this._pathSprites) { this._pathSprites.forEach(s => s.destroy()); }
     this._pathSprites = [];
 
-    const g = this.add.graphics();
-    this._groundGraphics = g;
-    g.setDepth(-100);  // ground always behind everything
-
-    // Check if path tile sprite is loaded
-    const hasPathSprite = this.textures.exists('tile-path');
+    // Check available sprite textures
+    const hasSnow = this.textures.exists('ground-snow');
+    const hasSoil = this.textures.exists('ground-soil');
+    const hasPathSprite = this.textures.exists('ground-path') || this.textures.exists('tile-path');
     const hasMoatSprite = this.textures.exists('life-moat');
     const hasBridgeSprite = this.textures.exists('life-bridge');
+    const pathKey = this.textures.exists('ground-path') ? 'ground-path' : 'tile-path';
 
-    // Bridge gap coordinates (where roads cross the moat ring x=5-68, y=15-58)
+    // Bridge gap coordinates (where roads cross the moat ring)
     const bridgeGaps = new Set([
-      '38,15', '39,15',   // North gate (NS road crosses top moat)
-      '38,58', '39,58',   // South gate (NS road crosses bottom moat)
-      '5,37', '5,38',     // West gate (EW road crosses left moat)
-      '68,37', '68,38',   // East gate (EW road crosses right moat)
+      '38,15', '39,15', '38,58', '39,58',
+      '5,37', '5,38', '68,37', '68,38',
     ]);
 
-    // Draw ground with padding beyond grid edges so buildings never float over void
-    const PAD = 20; // moderate padding
+    const PAD = 20;
+
+    // ── Calculate bounding box for in-grid tiles only (fits 8192 GPU limit) ──
+    const topSy  = 0 - TILE_H / 2;
+    const botSy  = ((mapW - 1) + (mapH - 1)) * (TILE_H / 2) + TILE_H / 2;
+    const leftSx = (0 - (mapH - 1)) * (TILE_W / 2) - TILE_W / 2;
+    const rightSx = ((mapW - 1) - 0) * (TILE_W / 2) + TILE_W / 2;
+
+    const rtW = Math.ceil(rightSx - leftSx);
+    const rtH = Math.ceil(botSy - topSy);
+
+    // Offset: world-space position of RT top-left corner
+    const rtWorldX = this.originX + leftSx;
+    const rtWorldY = this.originY + topSy;
+
+    // ── Create RenderTexture and stamp all ground tiles into it ──
+    const rt = this.add.renderTexture(rtWorldX, rtWorldY, rtW, rtH);
+    rt.setOrigin(0, 0);
+    rt.setDepth(-100);
+    this._groundRT = rt;
+
+    const _stamp = (key, sx, sy) => {
+      rt.drawFrame(key, undefined, sx - TILE_W / 2, sy - TILE_H / 2);
+    };
+
+    // Graphics for padding tiles + water fallback (drawn on top of RT)
+    const g = this.add.graphics();
+    this._groundGraphics = g;
+    g.setDepth(-100);
+
+    // ── Draw padding tiles with flat graphics (outside RT to avoid GPU size limits) ──
     for (let y = -PAD; y < mapH + PAD; y++) {
       for (let x = -PAD; x < mapW + PAD; x++) {
-        const inGrid = x >= 0 && x < mapW && y >= 0 && y < mapH;
-        const screen = this.gridToScreen(x, y);
+        if (x >= 0 && x < mapW && y >= 0 && y < mapH) continue; // in-grid handled by RT
+        const worldSx = this.originX + (x - y) * (TILE_W / 2);
+        const worldSy = this.originY + (x + y) * (TILE_H / 2);
+        const padColor = this._grassColor(x, y);
+        g.fillStyle(padColor, 1);
+        g.beginPath();
+        g.moveTo(worldSx, worldSy - TILE_H / 2);
+        g.lineTo(worldSx + TILE_W / 2, worldSy);
+        g.lineTo(worldSx, worldSy + TILE_H / 2);
+        g.lineTo(worldSx - TILE_W / 2, worldSy);
+        g.closePath();
+        g.fillPath();
+      }
+    }
 
-        // Padding tiles outside grid — same snow ground so no dark void edges visible
-        if (!inGrid) {
-          const padColor = this._grassColor(x, y);
-          g.fillStyle(padColor, 1);
-          g.beginPath();
-          g.moveTo(screen.x, screen.y - TILE_H / 2);
-          g.lineTo(screen.x + TILE_W / 2, screen.y);
-          g.lineTo(screen.x, screen.y + TILE_H / 2);
-          g.lineTo(screen.x - TILE_W / 2, screen.y);
-          g.closePath();
-          g.fillPath();
-          continue;
-        }
+    // ── Stamp in-grid tiles into RenderTexture ──
+    for (let y = 0; y < mapH; y++) {
+      for (let x = 0; x < mapW; x++) {
+        // Screen position relative to RT local space
+        const sx = (x - y) * (TILE_W / 2) - leftSx;
+        const sy = (x + y) * (TILE_H / 2) - topSy;
+
+        // World screen position (for individual sprites like bridges)
+        const worldSx = this.originX + (x - y) * (TILE_W / 2);
+        const worldSy = this.originY + (x + y) * (TILE_H / 2);
 
         const isWater = this._isWater(x, y);
         const isPath = this._isPath(x, y);
         const isBridgeGap = bridgeGaps.has(`${x},${y}`);
 
-        // Bridge tiles at moat crossing points
+        // Bridge tiles — individual sprites (only ~8 tiles)
         if (isBridgeGap && hasBridgeSprite) {
-          const img = this.add.image(screen.x, screen.y, 'life-bridge');
+          const img = this.add.image(worldSx, worldSy, 'life-bridge');
           img.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
           img.setDisplaySize(TILE_W, TILE_H);
           img.setOrigin(0.5, 0.5);
           img.setDepth(-50);
-          continue;
-        }
-
-        if (isPath && hasPathSprite) {
-          // Pixel art cobblestone tile sprite — scale to exactly one isometric tile
-          const img = this.add.image(screen.x, screen.y, 'tile-path');
-          img.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
-          // Sprite should display at TILE_W × TILE_H (64×32)
-          img.setDisplaySize(TILE_W, TILE_H);
-          img.setOrigin(0.5, 0.5);
-          img.setDepth(-50); // above base ground, below buildings
           this._pathSprites.push(img);
-          continue; // skip programmatic drawing for this tile
-        }
-
-        // Moat water tiles — use sprite if available, fallback to programmatic
-        if (isWater && hasMoatSprite) {
-          const img = this.add.image(screen.x, screen.y, 'life-moat');
-          img.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
-          img.setDisplaySize(TILE_W, TILE_H);
-          img.setOrigin(0.5, 0.5);
-          img.setDepth(-50);
           continue;
         }
 
-        let baseColor;
-        if (isWater) {
-          baseColor = this._waterColor(x, y);
-        } else if (isPath) {
-          // Smooth stone path — noise-based warm grey, no per-tile alternating
-          const n1 = this._smoothNoise(x * 0.2, y * 0.2);
-          const noise = Math.round(n1 * 6) - 3;
-          const base = 0x4a4640;
-          const r = Math.min(255, Math.max(0, ((base >> 16) & 0xff) + noise));
-          const g3 = Math.min(255, Math.max(0, ((base >> 8) & 0xff) + noise));
-          const b3 = Math.min(255, Math.max(0, (base & 0xff) + noise));
-          baseColor = (r << 16) | (g3 << 8) | b3;
-        } else {
-          baseColor = this._grassColor(x, y);
+        // Path tiles — stamp into RT
+        if (isPath && hasPathSprite) {
+          _stamp(pathKey, sx, sy);
+          continue;
         }
 
-        g.fillStyle(baseColor, 1);
-        g.beginPath();
-        g.moveTo(screen.x, screen.y - TILE_H / 2);
-        g.lineTo(screen.x + TILE_W / 2, screen.y);
-        g.lineTo(screen.x, screen.y + TILE_H / 2);
-        g.lineTo(screen.x - TILE_W / 2, screen.y);
-        g.closePath();
-        g.fillPath();
-
-        // Very subtle border only for water tiles
+        // Water tiles — stamp as graphics (need border effect)
         if (isWater) {
-          g.lineStyle(1, 0x4a8aaa, 0.2);
-          g.beginPath();
-          g.moveTo(screen.x, screen.y - TILE_H / 2);
-          g.lineTo(screen.x + TILE_W / 2, screen.y);
-          g.lineTo(screen.x, screen.y + TILE_H / 2);
-          g.lineTo(screen.x - TILE_W / 2, screen.y);
-          g.closePath();
-          g.strokePath();
+          if (hasMoatSprite) {
+            const img = this.add.image(worldSx, worldSy, 'life-moat');
+            img.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
+            img.setDisplaySize(TILE_W, TILE_H);
+            img.setOrigin(0.5, 0.5);
+            img.setDepth(-50);
+            this._pathSprites.push(img);
+          } else {
+            const wc = this._waterColor(x, y);
+            g.fillStyle(wc, 1);
+            g.beginPath();
+            g.moveTo(worldSx, worldSy - TILE_H / 2);
+            g.lineTo(worldSx + TILE_W / 2, worldSy);
+            g.lineTo(worldSx, worldSy + TILE_H / 2);
+            g.lineTo(worldSx - TILE_W / 2, worldSy);
+            g.closePath();
+            g.fillPath();
+            g.lineStyle(1, 0x4a8aaa, 0.2);
+            g.beginPath();
+            g.moveTo(worldSx, worldSy - TILE_H / 2);
+            g.lineTo(worldSx + TILE_W / 2, worldSy);
+            g.lineTo(worldSx, worldSy + TILE_H / 2);
+            g.lineTo(worldSx - TILE_W / 2, worldSy);
+            g.closePath();
+            g.strokePath();
+          }
+          continue;
+        }
+
+        // Ground tiles: near-path → soil, default → snow
+        const nearPath = this._isNearPath(x, y);
+        if (nearPath && hasSoil) {
+          _stamp('ground-soil', sx, sy);
+        } else if (hasSnow) {
+          _stamp('ground-snow', sx, sy);
         }
       }
     }
