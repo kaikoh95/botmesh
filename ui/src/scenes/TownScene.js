@@ -19,7 +19,7 @@ const TILE_PNG_H = 48; // cube tile: 32px top face + 16px side faces
 const DISTRICTS = {
   cronos:      { label: 'Cronos Shrine',    cx: 18, cy: 10, bounds: { x1: 0,  y1: 0,  x2: 37,  y2: 14 } },
   scarlet:     { label: 'Scarlet Sanctum',  cx: 87, cy: 8,  bounds: { x1: 38, y1: 0,  x2: 119, y2: 14 } },
-  communal:    { label: 'Communal District',cx: 20, cy: 35, bounds: { x1: 0,  y1: 15, x2: 37,  y2: 64 } },
+  communal:    { label: 'Communal District',cx: 20, cy: 35, bounds: { x1: 0,  y1: 15, x2: 37,  y2: 66 } },
   east:        { label: 'East District',    cx: 50, cy: 30, bounds: { x1: 38, y1: 15, x2: 119, y2: 64 } },
   residential: { label: 'Residential',      cx: 42, cy: 78, bounds: { x1: 0,  y1: 65, x2: 119, y2: 119 } },
 };
@@ -447,10 +447,19 @@ export default class TownScene extends Phaser.Scene {
       f.wx += f.drift * dt + Math.sin(f.wobble) * f.wobbleAmp * dt;
       f.wy += f.speed * dt;
 
-      // Wrap: when flake exits bottom, respawn at top within bounds
-      if (f.wy > bounds.bottom)  { f.wy = bounds.top;   f.wx = Phaser.Math.FloatBetween(bounds.left, bounds.right); }
-      if (f.wx < bounds.left)    { f.wx = bounds.right; }
-      if (f.wx > bounds.right)   { f.wx = bounds.left;  }
+      // Wrap: when flake exits bounds, respawn at a grid position within district
+      if (f.wy > bounds.bottom || f.wx < bounds.left || f.wx > bounds.right) {
+        if (this._currentDistrict && DISTRICTS[this._currentDistrict]) {
+          const d = DISTRICTS[this._currentDistrict];
+          const gx = Phaser.Math.FloatBetween(d.bounds.x1, d.bounds.x2);
+          const gy = Phaser.Math.FloatBetween(d.bounds.y1, d.bounds.y2);
+          const sc = this.gridToScreen(gx, gy);
+          f.wx = sc.x + Phaser.Math.FloatBetween(-20, 20);
+          f.wy = bounds.top + Phaser.Math.FloatBetween(-30, 0);
+        } else {
+          f.wy = bounds.top; f.wx = Phaser.Math.FloatBetween(bounds.left, bounds.right);
+        }
+      }
 
       // Redraw with zoom-adjusted size
       const screenSize = f.gfx._baseSize * sizeScale;
@@ -1302,20 +1311,25 @@ export default class TownScene extends Phaser.Scene {
 
     // 9. Re-scatter snow + frost sparkles to district bounds
     const distBounds = this._getDistrictWorldBounds();
+    // Re-scatter snow + frost to grid positions within district (not screen rect — avoids void)
     if (this._snowFlakes) {
       for (const f of this._snowFlakes) {
-        f.wx = Phaser.Math.FloatBetween(distBounds.left, distBounds.right);
-        f.wy = Phaser.Math.FloatBetween(distBounds.top, distBounds.bottom);
+        const gx = Phaser.Math.FloatBetween(d.bounds.x1, d.bounds.x2);
+        const gy = Phaser.Math.FloatBetween(d.bounds.y1, d.bounds.y2);
+        const sc = this.gridToScreen(gx, gy);
+        f.wx = sc.x + Phaser.Math.FloatBetween(-20, 20);
+        f.wy = sc.y + Phaser.Math.FloatBetween(-10, 10);
         f.gfx.setPosition(f.wx, f.wy);
       }
     }
     if (this._frostSparkles) {
       for (const s of this._frostSparkles) {
-        if (s.gfx && !s.gfx.destroyed) {
-          const wx = Phaser.Math.FloatBetween(distBounds.left, distBounds.right);
-          const wy = Phaser.Math.FloatBetween(distBounds.top, distBounds.bottom);
-          s.gfx.setPosition(wx, wy);
-        }
+        const obj = s.gfx || s;
+        if (!obj || obj.destroyed) continue;
+        const gx = Phaser.Math.Between(d.bounds.x1, d.bounds.x2);
+        const gy = Phaser.Math.Between(d.bounds.y1, d.bounds.y2);
+        const sc = this.gridToScreen(gx, gy);
+        obj.setPosition(sc.x + Phaser.Math.Between(-12, 12), sc.y + Phaser.Math.Between(-6, 6));
       }
     }
 
