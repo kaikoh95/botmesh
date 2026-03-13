@@ -93,6 +93,9 @@ export default class TownScene extends Phaser.Scene {
     const backdrop = this.add.rectangle(0, 0, 10000, 10000, 0x080c14);
     backdrop.setDepth(-9999);
 
+    // ── Star field — scattered dots above the map ──────────────────────────
+    this._drawStarField();
+
     this.mapW = 120;
     this.mapH = 120;
     // Origin: center the star layout on grid (55,55)
@@ -212,6 +215,9 @@ export default class TownScene extends Phaser.Scene {
     // ── Path lanterns — warm glow points along main roads ─────────────────
     this._drawPathLanterns();
 
+    // ── Window glow on snow — warm light spilling from buildings ─────────
+    this._drawWindowGlow();
+
     // ── Fog layer — low mist drifting across the scene ────────────────────
     this._initFog();
 
@@ -323,26 +329,30 @@ export default class TownScene extends Phaser.Scene {
   _initSnow() {
     const W = this.cameras.main.width  || 900;
     const H = this.cameras.main.height || 700;
-    const FLAKE_COUNT = 120;
+    const FLAKE_COUNT = 220;
     this._snowFlakes = [];
+    // Extra margin so snow covers full viewport even when panning
+    const MARGIN = 60;
 
     for (let i = 0; i < FLAKE_COUNT; i++) {
       const size   = Phaser.Math.Between(1, 3);
-      const alpha  = Phaser.Math.FloatBetween(0.25, 0.75);
+      const alpha  = Phaser.Math.FloatBetween(0.5, 0.95);
       const speed  = Phaser.Math.FloatBetween(28, 80);   // px/s fall speed
-      const drift  = Phaser.Math.FloatBetween(-18, 18);  // px/s horizontal drift
+      const drift  = Phaser.Math.FloatBetween(-15, -8);   // leftward wind drift
       const wobble = Phaser.Math.FloatBetween(0, Math.PI * 2); // phase offset
+      // Color: white to very light blue
+      const color  = Math.random() < 0.4 ? 0xddeeff : 0xffffff;
 
-      // Draw a simple white circle
+      // Draw a simple circle
       const g = this.add.graphics();
-      g.fillStyle(0xdce8f0, alpha);
+      g.fillStyle(color, alpha);
       g.fillCircle(0, 0, size);
       g.setScrollFactor(0);         // fixed to camera — not part of world
       g.setDepth(9999);             // always on top
 
       const flake = {
         gfx:    g,
-        x:      Phaser.Math.Between(0, W),
+        x:      Phaser.Math.Between(-MARGIN, W + MARGIN),
         y:      Phaser.Math.Between(-H, H),  // stagger initial positions vertically
         size,
         speed,
@@ -360,16 +370,17 @@ export default class TownScene extends Phaser.Scene {
     const W = this.cameras.main.width  || 900;
     const H = this.cameras.main.height || 700;
     const dt = delta / 1000; // seconds
+    const M = 60; // margin
 
     for (const f of this._snowFlakes) {
       f.wobble += dt * f.wobbleFreq;
       f.x += f.drift * dt + Math.sin(f.wobble) * f.wobbleAmp * dt;
       f.y += f.speed * dt;
 
-      // Wrap around edges
-      if (f.y > H + 10)    { f.y = -10; f.x = Phaser.Math.Between(0, W); }
-      if (f.x > W + 10)    { f.x = -10; }
-      if (f.x < -10)       { f.x = W + 10; }
+      // Wrap around edges with margin
+      if (f.y > H + 10)      { f.y = -10; f.x = Phaser.Math.Between(-M, W + M); }
+      if (f.x > W + M + 10)  { f.x = -M; }
+      if (f.x < -M - 10)     { f.x = W + M; }
 
       f.gfx.setPosition(f.x, f.y);
     }
@@ -478,18 +489,23 @@ export default class TownScene extends Phaser.Scene {
       post.setPosition(screen.x, screen.y);
       post.setDepth(screen.y + 5001);
 
-      // Warm ground glow pool
+      // Warm ground glow pool — 3 concentric isometric ellipses (key cozy lighting effect)
       const glow = this.add.graphics();
-      const glowSize = isSacred ? 1.3 : 1.0;
-      glow.fillStyle(0xffaa44, isSacred ? 0.10 : 0.08);
-      glow.fillEllipse(0, 0, 40 * glowSize, 18 * glowSize);
-      glow.fillStyle(0xffcc66, isSacred ? 0.07 : 0.05);
-      glow.fillEllipse(0, 0, 22 * glowSize, 10 * glowSize);
+      const gs = isSacred ? 1.3 : 1.0;
+      // Outer ring — wide warm wash on snow
+      glow.fillStyle(0xffdd88, isSacred ? 0.06 : 0.05);
+      glow.fillEllipse(0, 4, 80 * gs, 40 * gs);
+      // Middle ring
+      glow.fillStyle(0xffcc66, isSacred ? 0.12 : 0.10);
+      glow.fillEllipse(0, 2, 48 * gs, 24 * gs);
+      // Inner bright ring
+      glow.fillStyle(0xff9944, isSacred ? 0.20 : 0.18);
+      glow.fillEllipse(0, 0, 24 * gs, 12 * gs);
       // Tiny bright center (the "flame")
-      glow.fillStyle(0xffdd88, isSacred ? 0.6 : 0.5);
+      glow.fillStyle(0xffdd88, isSacred ? 0.7 : 0.6);
       glow.fillCircle(0, isSacred ? -12 : -10, isSacred ? 3 : 2);
       glow.setPosition(screen.x, screen.y);
-      glow.setDepth(screen.y + 4999);
+      glow.setDepth(-90);
 
       // Flicker
       this.tweens.add({
@@ -578,6 +594,82 @@ export default class TownScene extends Phaser.Scene {
       // Brighter highlight on top
       g.fillStyle(0xdce8f4, 0.15);
       g.fillEllipse(screen.x, screen.y, w * 0.6, h * 0.5);
+    }
+  }
+
+  _drawStarField() {
+    const g = this.add.graphics();
+    g.setDepth(-9990);
+    const STAR_COUNT = 120;
+    // Stars scatter across a wide band above the map (world coords)
+    // Upper 40% of the world area — roughly y from -2000 to 0
+    for (let i = 0; i < STAR_COUNT; i++) {
+      const sx = Phaser.Math.Between(-3000, 7000);
+      const sy = Phaser.Math.Between(-2500, -200);
+      const roll = Math.random();
+
+      if (roll < 0.05) {
+        // 5% bright feature stars with sparkle cross
+        const alpha = Phaser.Math.FloatBetween(0.9, 1.0);
+        g.fillStyle(0xffffff, alpha);
+        g.fillCircle(sx, sy, 2);
+        // Cross sparkle arms
+        g.lineStyle(1, 0xffffff, alpha * 0.6);
+        g.beginPath();
+        g.moveTo(sx - 4, sy); g.lineTo(sx + 4, sy);
+        g.moveTo(sx, sy - 4); g.lineTo(sx, sy + 4);
+        g.strokePath();
+      } else if (roll < 0.20) {
+        // 15% medium stars
+        const alpha = Phaser.Math.FloatBetween(0.6, 0.85);
+        const size = Phaser.Math.FloatBetween(1, 2);
+        g.fillStyle(0xddeeff, alpha);
+        g.fillCircle(sx, sy, size);
+      } else {
+        // 80% tiny dim stars
+        const alpha = Phaser.Math.FloatBetween(0.3, 0.6);
+        g.fillStyle(0xccddee, alpha);
+        g.fillCircle(sx, sy, 1);
+      }
+    }
+
+    // Gentle twinkle on the whole star layer
+    this.tweens.add({
+      targets: g,
+      alpha: { from: 0.85, to: 1.0 },
+      duration: 3000,
+      yoyo: true,
+      repeat: -1,
+      ease: 'Sine.easeInOut',
+    });
+  }
+
+  _drawWindowGlow() {
+    // Warm light spilling from building windows onto nearby snow
+    const g = this.add.graphics();
+    g.setDepth(-95);
+
+    const buildings = [
+      [10, 20, 3, 2], [20, 20, 4, 3], [30, 20, 4, 3], [45, 20, 4, 3], [57, 20, 4, 3],
+      [10, 28, 3, 2], [20, 28, 3, 2], [30, 28, 4, 3], [45, 28, 4, 3], [57, 28, 3, 2],
+      [10, 42, 4, 3], [20, 42, 3, 2], [30, 42, 4, 3], [45, 42, 4, 3],
+      [10, 50, 4, 3],
+      [15, 8, 3, 2],   // cronos_shrine
+      [90, 8, 3, 2],   // observatory
+      [85, 5, 4, 3],   // scarlet_sanctum
+      [22, 72, 3, 2], [62, 72, 3, 2], [22, 85, 3, 2], [62, 85, 3, 2],
+    ];
+
+    for (const [bx, by, bw, bh] of buildings) {
+      // Place glow 1 tile south of building center (where window light hits ground)
+      const cx = bx + Math.floor(bw / 2);
+      const cy = by + bh + 1;
+      const screen = this.gridToScreen(cx, cy);
+
+      g.fillStyle(0xffcc66, 0.07);
+      g.fillEllipse(screen.x, screen.y, 60, 30);
+      g.fillStyle(0xffcc66, 0.04);
+      g.fillEllipse(screen.x, screen.y + 4, 90, 44);
     }
   }
 
