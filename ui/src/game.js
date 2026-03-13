@@ -31,7 +31,6 @@ export function createGame(container) {
     let game;
     try {
       game = new Phaser.Game(config);
-      window.__phaserGame = game; // debug hook
     } catch (e) {
       console.error('[createGame] Phaser init failed:', e);
       reject(e);
