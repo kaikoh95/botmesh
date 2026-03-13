@@ -111,6 +111,9 @@ export default class TownScene extends Phaser.Scene {
     // Draw scattered trees (fallback for non-sakura spots)
     this._drawTrees();
 
+    // Draw connected fence lines around residential yards
+    this._drawFences();
+
     // World life — flora, fauna, ambient
     this.worldLife = new WorldLife(this);
     this.worldLife.spawn(1); // starts with 1, updates as agents join
@@ -761,6 +764,76 @@ export default class TownScene extends Phaser.Scene {
     }
   }
 
+  _drawFences() {
+    // Connected isometric fence lines around residential yards
+    // Houses at (22,72), (62,72), (22,85), (62,85)
+    const yards = [
+      { x1: 20, y1: 70, x2: 30, y2: 80 },
+      { x1: 60, y1: 70, x2: 70, y2: 80 },
+      { x1: 20, y1: 83, x2: 30, y2: 93 },
+      { x1: 60, y1: 83, x2: 70, y2: 93 },
+    ];
+
+    const g = this.add.graphics();
+    const WOOD = 0x8b6914;       // warm brown
+    const WOOD_DARK = 0x6b4e0a;  // darker accent
+    const POST_H = 10;           // fence post height in px
+    const RAIL_H = 6;            // horizontal rail offset
+
+    for (const yard of yards) {
+      // Four corners in grid coords
+      const corners = [
+        [yard.x1, yard.y1],  // top
+        [yard.x2, yard.y1],  // right
+        [yard.x2, yard.y2],  // bottom
+        [yard.x1, yard.y2],  // left
+      ];
+      const screenCorners = corners.map(([gx, gy]) => this.gridToScreen(gx, gy));
+      const midDepth = (screenCorners[0].y + screenCorners[2].y) / 2 + 4000;
+
+      // Draw each edge with posts and rails
+      for (let i = 0; i < 4; i++) {
+        const a = screenCorners[i];
+        const b = screenCorners[(i + 1) % 4];
+
+        // Number of posts along this edge
+        const posts = 6;
+        for (let p = 0; p <= posts; p++) {
+          const t = p / posts;
+          const px = a.x + (b.x - a.x) * t;
+          const py = a.y + (b.y - a.y) * t;
+
+          // Fence post (vertical line)
+          g.lineStyle(2, WOOD_DARK, 0.9);
+          g.beginPath();
+          g.moveTo(px, py);
+          g.lineTo(px, py - POST_H);
+          g.strokePath();
+
+          // Post cap
+          g.fillStyle(WOOD, 1);
+          g.fillRect(px - 1.5, py - POST_H - 1, 3, 2);
+        }
+
+        // Top rail
+        g.lineStyle(1.5, WOOD, 0.85);
+        g.beginPath();
+        g.moveTo(a.x, a.y - POST_H + 1);
+        g.lineTo(b.x, b.y - POST_H + 1);
+        g.strokePath();
+
+        // Bottom rail
+        g.lineStyle(1.5, WOOD, 0.75);
+        g.beginPath();
+        g.moveTo(a.x, a.y - RAIL_H);
+        g.lineTo(b.x, b.y - RAIL_H);
+        g.strokePath();
+      }
+
+      g.setDepth(midDepth);
+    }
+  }
+
   _grassColor(x, y) {
     // WINTER — Uniform crisp snow across all zones (Shirakawa-go aesthetic)
     // - Near paths: grey slush from foot traffic
@@ -926,7 +999,7 @@ export default class TownScene extends Phaser.Scene {
       this._refreshPaths(state.world.entities);
 
       for (const entity of state.world.entities) {
-        if (entity.entity === 'life' && entity.kind !== 'path' && entity.kind !== 'moat' && entity.kind !== 'bridge') {
+        if (entity.entity === 'life' && entity.kind !== 'path' && entity.kind !== 'moat' && entity.kind !== 'bridge' && entity.kind !== 'fence') {
           this.addLifeEntity(entity);
         } else if (entity.entity === 'building') {
           // Dynamic buildings — add if not already in state.buildings
