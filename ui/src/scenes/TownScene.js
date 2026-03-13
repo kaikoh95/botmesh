@@ -1282,7 +1282,19 @@ export default class TownScene extends Phaser.Scene {
       this._drawCivicScenery(db);
     }
 
-    // 9. Pan camera to district center
+    // 9. Set camera bounds to district area + pan to center
+    const corners = [
+      this.gridToScreen(d.bounds.x1 - 2, d.bounds.y1 - 2),
+      this.gridToScreen(d.bounds.x2 + 2, d.bounds.y1 - 2),
+      this.gridToScreen(d.bounds.x1 - 2, d.bounds.y2 + 2),
+      this.gridToScreen(d.bounds.x2 + 2, d.bounds.y2 + 2),
+    ];
+    const camLeft   = Math.min(...corners.map(c => c.x)) - 200;
+    const camRight  = Math.max(...corners.map(c => c.x)) + 200;
+    const camTop    = Math.min(...corners.map(c => c.y)) - 200;
+    const camBottom = Math.max(...corners.map(c => c.y)) + 200;
+    this.cameras.main.setBounds(camLeft, camTop, camRight - camLeft, camBottom - camTop);
+
     const center = this.gridToScreen(d.cx, d.cy);
     this.cameras.main.pan(center.x, center.y, 400, 'Sine.easeInOut');
 
