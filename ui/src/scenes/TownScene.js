@@ -119,11 +119,13 @@ export default class TownScene extends Phaser.Scene {
     this.originX = this.cameras.main.width * 0.5;
     this.originY = -800;
 
-    // Draw ground tiles async for default district (communal)
+    // Preload ALL district ground tiles async (hidden by default, communal visible)
     this._currentDistrict = 'communal';
     this._sceneryGraphics = [];
     this._windowGlows = [];
-    this._drawGroundAsync(this.mapW, this.mapH, DISTRICTS.communal.bounds).then(() => {});
+    this._districtGroundChunks = {};
+    this._groundChunks = [];
+    this._preloadAllDistrictGrounds();
 
     // Draw scenery for communal district
     const communalBounds = DISTRICTS.communal.bounds;
@@ -250,7 +252,9 @@ export default class TownScene extends Phaser.Scene {
     this._gridVisible = true;
     window.botmeshToggleGrid = () => {
       this._gridVisible = !this._gridVisible;
-      if (this._groundChunks) this._groundChunks.forEach(c => c.setVisible(this._gridVisible));
+      // Toggle only current district's ground chunks
+      const currentChunks = this._districtGroundChunks?.[this._currentDistrict] || [];
+      currentChunks.forEach(c => c.setVisible(this._gridVisible));
       if (this._groundGraphics) this._groundGraphics.setVisible(this._gridVisible);
       return this._gridVisible;
     };
@@ -1025,8 +1029,7 @@ export default class TownScene extends Phaser.Scene {
       if (w !== this.mapW || h !== this.mapH) {
         this.mapW = w;
         this.mapH = h;
-        const db = this._currentDistrict ? DISTRICTS[this._currentDistrict].bounds : { x1: 0, y1: 0, x2: w - 1, y2: h - 1 };
-        await this._drawGroundAsync(w, h, db);
+        this._rebuildAllDistrictGrounds();
       }
     } catch (e) { /* API unavailable — keep defaults */ }
   }
@@ -1112,12 +1115,7 @@ export default class TownScene extends Phaser.Scene {
   }
 
   async _drawGroundAsync(mapW, mapH, districtBounds) {
-    // Clean up previous ground render
-    (this._groundChunks || []).forEach(rt => rt.destroy());
-    this._groundChunks = [];
-    if (this._groundGraphics) { this._groundGraphics.destroy(); this._groundGraphics = null; }
-    if (this._pathSprites) { this._pathSprites.forEach(s => s.destroy()); }
-    this._pathSprites = [];
+    const chunks = [];
 
     const hasSnow = this.textures.exists('ground-snow');
 
@@ -1162,7 +1160,7 @@ export default class TownScene extends Phaser.Scene {
         const rt = this.add.renderTexture(rtWorldX, rtWorldY, chunkW, chunkH);
         rt.setOrigin(0, 0);
         rt.setDepth(-100);
-        this._groundChunks.push(rt);
+        chunks.push(rt);
 
         for (let y = y1; y <= y2; y++) {
           for (let x = x1; x <= x2; x++) {
@@ -1190,6 +1188,47 @@ export default class TownScene extends Phaser.Scene {
         }
       }
     }
+    return chunks;
+  }
+
+  async _preloadAllDistrictGrounds() {
+    const districtKeys = Object.keys(DISTRICTS);
+    for (const key of districtKeys) {
+      const chunks = await this._drawGroundAsync(this.mapW, this.mapH, DISTRICTS[key].bounds);
+      this._districtGroundChunks[key] = chunks;
+      this._groundChunks.push(...chunks);
+      // Only communal visible at startup
+      const visible = (key === 'communal');
+      chunks.forEach(c => c.setVisible(visible));
+    }
+  }
+
+  async _rebuildAllDistrictGrounds() {
+    // Destroy all existing ground chunks
+    (this._groundChunks || []).forEach(rt => rt.destroy());
+    this._groundChunks = [];
+    this._districtGroundChunks = {};
+    if (this._groundGraphics) { this._groundGraphics.destroy(); this._groundGraphics = null; }
+    if (this._pathSprites) { this._pathSprites.forEach(s => s.destroy()); }
+    this._pathSprites = [];
+
+    // Re-preload all districts
+    const districtKeys = Object.keys(DISTRICTS);
+    for (const key of districtKeys) {
+      const chunks = await this._drawGroundAsync(this.mapW, this.mapH, DISTRICTS[key].bounds);
+      this._districtGroundChunks[key] = chunks;
+      this._groundChunks.push(...chunks);
+      const visible = (key === this._currentDistrict);
+      chunks.forEach(c => c.setVisible(visible));
+    }
+  }
+
+  _setBuildingVisible(building, visible) {
+    if (building.container) building.container.setVisible(visible);
+    if (building._shadow) building._shadow.setVisible(visible);
+    if (building._detail) building._detail.setVisible(visible);
+    if (building._windowGlow) building._windowGlow.setVisible(visible);
+    if (building._smokeGraphics) building._smokeGraphics.forEach(g => g.setVisible(visible));
   }
 
   // ── District navigation system ──────────────────────────────────────────────
@@ -1229,20 +1268,17 @@ export default class TownScene extends Phaser.Scene {
     const d = DISTRICTS[key];
     this._currentDistrict = key;
 
-    // 1. Destroy existing ground chunks + scenery
-    (this._groundChunks || []).forEach(rt => rt.destroy());
-    this._groundChunks = [];
-    if (this._groundGraphics) { this._groundGraphics.destroy(); this._groundGraphics = null; }
-    (this._sceneryGraphics || []).forEach(g => g.destroy && g.destroy());
-    this._sceneryGraphics = [];
-    (this._windowGlows || []).forEach(g => g.destroy && g.destroy());
-    this._windowGlows = [];
-    (this._smokeParticles || []).forEach(g => g.destroy && g.destroy());
-    this._smokeParticles = [];
+    // 1. Hide ALL ground chunks, show only target district's
+    for (const [dk, chunks] of Object.entries(this._districtGroundChunks || {})) {
+      const visible = dk === key;
+      (chunks || []).forEach(c => c.setVisible(visible));
+    }
 
-    // 2. Destroy all buildings and respawn only for target district
-    this._destroyAllBuildings();
-    this._spawnBuildingsForDistrict(key);
+    // 2. Hide all buildings, show only target district's
+    Object.values(this.buildings).forEach(b => {
+      const inDistrict = this._isBuildingInDistrict(b.buildingData, key);
+      this._setBuildingVisible(b, inDistrict);
+    });
 
     // 3. Show/hide agents — reverse-map from container position if no location data
     Object.values(this.agents).forEach(a => {
@@ -1252,7 +1288,6 @@ export default class TownScene extends Phaser.Scene {
       if (loc && loc.x !== undefined) {
         gx = loc.x; gy = loc.y;
       } else {
-        // Reverse-map from container world position to grid
         const dx = (a.container.x - this.originX) / (TILE_W / 2);
         const dy = (a.container.y - this.originY) / (TILE_H / 2);
         gx = Math.round((dx + dy) / 2);
@@ -1266,16 +1301,9 @@ export default class TownScene extends Phaser.Scene {
     // 4. Filter life entities to district screen bounds
     this._filterLifeForDistrict(key);
 
-    // 5. Show loading indicator
-    this._showDistrictLoading();
-
-    // 6. Async render ground tiles for this district
-    await this._drawGroundAsync(this.mapW, this.mapH, d.bounds);
-
-    // 7. Hide loading indicator
-    this._hideDistrictLoading();
-
-    // 8. Draw scenery for this district
+    // 5. Redraw scenery for this district (lightweight Graphics calls)
+    (this._sceneryGraphics || []).forEach(g => g.destroy && g.destroy());
+    this._sceneryGraphics = [];
     const db = d.bounds;
     this._drawWater(db);
     this._drawTrees(db);
@@ -1288,9 +1316,7 @@ export default class TownScene extends Phaser.Scene {
       this._drawCivicScenery(db);
     }
 
-    // 9. Re-scatter snow + frost sparkles to district bounds
-    const distBounds = this._getDistrictWorldBounds();
-    // 10. Set camera bounds to district area + pan to center
+    // 6. Set camera bounds to district area + pan to center
     const corners = [
       this.gridToScreen(d.bounds.x1 - 2, d.bounds.y1 - 2),
       this.gridToScreen(d.bounds.x2 + 2, d.bounds.y1 - 2),
@@ -1306,7 +1332,7 @@ export default class TownScene extends Phaser.Scene {
     const center = this.gridToScreen(d.cx, d.cy);
     this.cameras.main.pan(center.x, center.y, 400, 'Sine.easeInOut');
 
-    // 10. Update nav UI — highlight active button
+    // 7. Update nav UI — highlight active button
     document.querySelectorAll('.dist-btn').forEach(b => b.classList.remove('active'));
     const activeBtn = document.querySelector(`.dist-btn[data-district="${key}"]`);
     if (activeBtn) activeBtn.classList.add('active');
@@ -1684,9 +1710,8 @@ export default class TownScene extends Phaser.Scene {
     );
     // Add walkways connecting buildings to main roads
     this._computeWalkways();
-    // Redraw ground layer with new path data for current district (async)
-    const db = this._currentDistrict ? DISTRICTS[this._currentDistrict].bounds : { x1: 0, y1: 0, x2: (this.mapW || 50) - 1, y2: (this.mapH || 75) - 1 };
-    this._drawGroundAsync(this.mapW || 50, this.mapH || 75, db).then(() => {});
+    // Redraw ground layer with new path data for all districts (async)
+    this._rebuildAllDistrictGrounds();
   }
 
   // Generate walkways from each building entrance to nearest main road
@@ -1891,8 +1916,8 @@ export default class TownScene extends Phaser.Scene {
       if (w !== this.mapW || h !== this.mapH) {
         this.mapW = w;
         this.mapH = h;
-        const db = this._currentDistrict ? DISTRICTS[this._currentDistrict].bounds : { x1: 0, y1: 0, x2: w - 1, y2: h - 1 };
-        this._drawGroundAsync(w, h, db).then(() => {});
+        // Re-preload all district grounds with new dimensions
+        this._rebuildAllDistrictGrounds();
       }
     }
 
@@ -1946,7 +1971,11 @@ export default class TownScene extends Phaser.Scene {
     const d = DISTRICTS[this._currentDistrict];
     if (!d) return;
 
-    // Buildings are already district-filtered (only current district in memory)
+    // Show/hide buildings based on current district
+    Object.values(this.buildings).forEach(b => {
+      const inDistrict = this._isBuildingInDistrict(b.buildingData, this._currentDistrict);
+      this._setBuildingVisible(b, inDistrict);
+    });
 
     Object.values(this.agents).forEach(a => {
       if (!a.container) return;
@@ -2064,8 +2093,6 @@ export default class TownScene extends Phaser.Scene {
 
   addBuilding(bData) {
     if (this.buildings[bData.id]) return;
-    // Skip buildings not in the current district
-    if (this._currentDistrict && !this._isBuildingInDistrict(bData, this._currentDistrict)) return;
 
     // Position at south (front-bottom) corner of the isometric footprint diamond.
     // This is grid point (x+width, y+height), which maps to the lowest visible corner.
@@ -2076,7 +2103,6 @@ export default class TownScene extends Phaser.Scene {
     // Ground shadow — soft ellipse beneath every building
     const shadowW = (bData.width || 3) * TILE_W * 0.7;
     const shadowH = (bData.height || 2) * TILE_H * 0.8;
-    // Subtle shadow — smaller and lighter than before
     const shadow = this.add.graphics();
     shadow.fillStyle(0x000000, 0.08);
     shadow.fillEllipse(pos.x, pos.y + shadowH * 0.05, shadowW * 0.6, shadowH * 0.2);
@@ -2086,21 +2112,25 @@ export default class TownScene extends Phaser.Scene {
     const detail = this._spawnBuildingDetail(bData, pos);
 
     const building = new Building(this, bData, pos.x, pos.y);
-    // Track auxiliary graphics for cleanup on district switch
+    // Track auxiliary graphics for show/hide on district switch
     building._shadow = shadow;
     building._detail = detail;
     this.buildings[bData.id] = building;
 
     // Warm window light pool — golden glow on ground beneath building
-    this._addWindowGlow(bData, pos);
+    this._addWindowGlow(bData, pos, building);
 
     // Chimney smoke on taverns, teahouses, and select buildings
-    this._addChimneySmoke(bData, pos);
-
-    // Scarlet Sanctum — no flash/pulse; static sprite
+    this._addChimneySmoke(bData, pos, building);
 
     // Recompute building footprint exclusion set
     this._updateBuildingFootprint();
+
+    // Set visibility based on current district
+    if (this._currentDistrict) {
+      const visible = this._isBuildingInDistrict(bData, this._currentDistrict);
+      this._setBuildingVisible(building, visible);
+    }
   }
 
   _updateBuildingFootprint() {
@@ -2125,24 +2155,19 @@ export default class TownScene extends Phaser.Scene {
     this._buildingFootprint = new Set();
   }
 
-  _spawnBuildingsForDistrict(key) {
+  _spawnAllBuildings() {
     if (!this.worldData) return;
-    // Spawn from state.buildings
+    // Spawn ALL buildings regardless of district
     if (this.worldData.buildings) {
       for (const bData of Object.values(this.worldData.buildings)) {
-        if (this._isBuildingInDistrict(bData, key)) {
-          this.addBuilding(bData);
-        }
+        this.addBuilding(bData);
       }
     }
     // Spawn dynamic buildings from world entities
     if (this.worldData.world?.entities) {
       for (const entity of this.worldData.world.entities) {
         if (entity.entity === 'building' && !this.worldData.buildings?.[entity.id]) {
-          const bData = { ...entity, id: entity.id || entity.kind };
-          if (this._isBuildingInDistrict(bData, key)) {
-            this.addBuilding(bData);
-          }
+          this.addBuilding({ ...entity, id: entity.id || entity.kind });
         }
       }
     }
@@ -2178,12 +2203,11 @@ export default class TownScene extends Phaser.Scene {
     return g;
   }
 
-  _addWindowGlow(bData, pos) {
+  _addWindowGlow(bData, pos, building) {
     // Warm golden light pool on ground — suggests light spilling from windows
     const g = this.add.graphics();
     const w = (bData.width || 3) * TILE_W * 0.35;
     const h = (bData.height || 2) * TILE_H * 0.3;
-    // Offset to the right side of the building (where the window is)
     const ox = pos.x + w * 0.4;
     const oy = pos.y - 2;
 
@@ -2204,9 +2228,10 @@ export default class TownScene extends Phaser.Scene {
     });
     if (!this._windowGlows) this._windowGlows = [];
     this._windowGlows.push(g);
+    if (building) building._windowGlow = g;
   }
 
-  _addChimneySmoke(bData, pos) {
+  _addChimneySmoke(bData, pos, building) {
     const smokeBuildings = ['tavern', 'teahouse', 'forge', 'workshop', 'bakery'];
     const type = bData.type || bData.id || '';
     if (!smokeBuildings.some(t => type.includes(t))) return;
@@ -2216,6 +2241,7 @@ export default class TownScene extends Phaser.Scene {
     const smokeX = pos.x + Phaser.Math.Between(-8, 8);
     const wallH = 30 + ((bData.level || 1) - 1) * 8;
     const smokeBaseY = pos.y - wallH - 16;
+    const smokeArr = [];
 
     for (let i = 0; i < 4; i++) {
       const g = this.add.graphics();
@@ -2240,8 +2266,10 @@ export default class TownScene extends Phaser.Scene {
         });
       };
       rise();
+      smokeArr.push(g);
       this._smokeParticles.push(g);
     }
+    if (building) building._smokeGraphics = smokeArr;
   }
 
   moveAgent(id, toX, toY) {
