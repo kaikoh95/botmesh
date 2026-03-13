@@ -81,9 +81,10 @@ export default class Building {
     this.screenY = screenY;
 
     this.container = scene.add.container(screenX, screenY);
-    // Depth: screenY + offset ensures buildings always render above ground (depth 0-1)
-    // even for buildings at the top of the map where screenY can be negative
-    this.container.setDepth(screenY + 5000);
+    // Depth: (gx + gy) * 100 — unified isometric depth sort with agents and life entities
+    const southGx = this.gridX + this.gridW;
+    const southGy = this.gridY + this.gridH;
+    this.container.setDepth((southGx + southGy) * 100);
 
     // Sprite support — try to use pixel art building sprites
     const texBase = BUILDING_TEXTURE_MAP[this.id] || BUILDING_TYPE_TEXTURE_MAP[this.type];

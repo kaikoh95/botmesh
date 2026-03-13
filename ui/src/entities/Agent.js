@@ -43,7 +43,8 @@ export default class Agent {
 
     // Container holds body + label + speech bubble
     this.container = scene.add.container(screenX, screenY);
-    this.container.setDepth(screenY + 1000);
+    // Depth: (gx + gy) * 100 + 50 — unified isometric sort, agents slightly above static entities
+    this.container.setDepth((this.gridX + this.gridY) * 100 + 50);
 
     // Use pixel art sprite if available, otherwise programmatic graphics
     const textureKey = `agent-${agentData.id}`;
@@ -197,15 +198,15 @@ export default class Agent {
     // Snow dust puff at departure point
     this._spawnSnowDust(this.container.x, this.container.y);
 
+    // Set depth immediately to target grid position
+    this.container.setDepth((gridX + gridY) * 100 + 50);
+
     this.scene.tweens.add({
       targets: this.container,
       x: screenX,
       y: screenY,
       duration: 600,
       ease: 'Power2',
-      onUpdate: () => {
-        this.container.setDepth(this.container.y + 1000);
-      }
     });
   }
 

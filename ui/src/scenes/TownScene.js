@@ -3,7 +3,7 @@
  * - Grid: TILE_W=64, TILE_H=32, origin offset = camera.width*0.55, -60
  * - Screen pos: screenX = originX + (gx-gy)*(TILE_W/2), screenY = originY + (gx+gy)*(TILE_H/2)
  * - Sprite anchor: buildings=(0.5, 1.0), agents=(0.5, 1.0), life=(0.5, 1.0)
- * - Depth: screenY (buildings/life) or screenY+1 (agents — same tile priority)
+ * - Depth: (gridX+gridY)*100 (buildings/life), +50 for agents — unified isometric sort
  * - All sprites have 30px transparent padding — no adjustment needed for origin
  * - Day/night: tint only, no overlay rectangles
  */
@@ -14,6 +14,67 @@ import WorldLife from '../entities/WorldLife.js';
 const TILE_W = 64;
 const TILE_H = 32;
 const TILE_PNG_H = 48; // cube tile: 32px top face + 16px side faces
+
+// Zone-based tile map (from tile-zone-plan.json) — later zones override earlier ones
+const TILE_ZONES = [
+  { tile: 'snow',        rect: { x1: 0, y1: 0, x2: 37, y2: 36 } },
+  { tile: 'stone',       rect: { x1: 40, y1: 0, x2: 119, y2: 36 } },
+  { tile: 'soil',        rect: { x1: 0, y1: 37, x2: 19, y2: 60 } },
+  { tile: 'cobblestone', rect: { x1: 20, y1: 37, x2: 55, y2: 60 } },
+  { tile: 'cobblestone', rect: { x1: 56, y1: 37, x2: 119, y2: 60 } },
+  { tile: 'soil',        rect: { x1: 0, y1: 61, x2: 119, y2: 119 } },
+  { tile: 'wood',        rect: { x1: 12, y1: 5, x2: 20, y2: 12 } },
+  { tile: 'cobblestone', rect: { x1: 13, y1: 20, x2: 18, y2: 25 } },
+  { tile: 'snow',        rect: { x1: 0, y1: 0, x2: 10, y2: 16 } },
+  { tile: 'cobblestone', rect: { x1: 26, y1: 18, x2: 36, y2: 28 } },
+  { tile: 'stone',       rect: { x1: 52, y1: 2, x2: 58, y2: 8 } },
+  { tile: 'wood',        rect: { x1: 82, y1: 2, x2: 90, y2: 10 } },
+  { tile: 'stone',       rect: { x1: 87, y1: 5, x2: 95, y2: 13 } },
+  { tile: 'stone',       rect: { x1: 93, y1: 15, x2: 100, y2: 24 } },
+  { tile: 'cobblestone', rect: { x1: 78, y1: 20, x2: 88, y2: 30 } },
+  { tile: 'stone',       rect: { x1: 69, y1: 13, x2: 76, y2: 20 } },
+  { tile: 'stone',       rect: { x1: 27, y1: 27, x2: 36, y2: 36 } },
+  { tile: 'stone',       rect: { x1: 42, y1: 19, x2: 50, y2: 26 } },
+  { tile: 'wood',        rect: { x1: 42, y1: 27, x2: 50, y2: 34 } },
+  { tile: 'soil',        rect: { x1: 12, y1: 27, x2: 19, y2: 34 } },
+  { tile: 'wood',        rect: { x1: 27, y1: 39, x2: 35, y2: 46 } },
+  { tile: 'cobblestone', rect: { x1: 42, y1: 39, x2: 50, y2: 46 } },
+  { tile: 'soil',        rect: { x1: 12, y1: 47, x2: 20, y2: 54 } },
+  { tile: 'wood',        rect: { x1: 27, y1: 47, x2: 35, y2: 54 } },
+  { tile: 'wood',        rect: { x1: 42, y1: 47, x2: 50, y2: 54 } },
+  { tile: 'soil',        rect: { x1: 12, y1: 67, x2: 20, y2: 75 } },
+  { tile: 'soil',        rect: { x1: 29, y1: 67, x2: 37, y2: 75 } },
+  { tile: 'soil',        rect: { x1: 49, y1: 67, x2: 57, y2: 75 } },
+  { tile: 'soil',        rect: { x1: 69, y1: 67, x2: 77, y2: 75 } },
+  { tile: 'soil',        rect: { x1: 89, y1: 67, x2: 97, y2: 75 } },
+  { tile: 'soil',        rect: { x1: 12, y1: 79, x2: 20, y2: 87 } },
+  { tile: 'soil',        rect: { x1: 32, y1: 79, x2: 40, y2: 87 } },
+  { tile: 'soil',        rect: { x1: 52, y1: 79, x2: 60, y2: 87 } },
+  { tile: 'soil',        rect: { x1: 72, y1: 79, x2: 80, y2: 87 } },
+  { tile: 'soil',        rect: { x1: 22, y1: 91, x2: 30, y2: 99 } },
+  { tile: 'soil',        rect: { x1: 47, y1: 91, x2: 55, y2: 99 } },
+  { tile: 'soil',        rect: { x1: 72, y1: 91, x2: 80, y2: 99 } },
+  { tile: 'cobblestone', rect: { x1: 10, y1: 64, x2: 100, y2: 65 } },
+  { tile: 'cobblestone', rect: { x1: 10, y1: 77, x2: 85, y2: 78 } },
+  { tile: 'cobblestone', rect: { x1: 20, y1: 89, x2: 82, y2: 90 } },
+  { tile: 'water',       rect: { x1: 8, y1: 18, x2: 54, y2: 18 } },
+  { tile: 'water',       rect: { x1: 8, y1: 56, x2: 54, y2: 56 } },
+  { tile: 'water',       rect: { x1: 8, y1: 18, x2: 8, y2: 56 } },
+  { tile: 'water',       rect: { x1: 54, y1: 18, x2: 54, y2: 56 } },
+  { tile: 'cobblestone', rect: { x1: 0, y1: 37, x2: 119, y2: 38 } },
+  { tile: 'cobblestone', rect: { x1: 38, y1: 0, x2: 39, y2: 119 } },
+  { tile: 'cobblestone', rect: { x1: 36, y1: 35, x2: 41, y2: 40 } },
+];
+
+function _tileForGrid(gx, gy) {
+  let result = 'snow';
+  for (const z of TILE_ZONES) {
+    if (gx >= z.rect.x1 && gx <= z.rect.x2 && gy >= z.rect.y1 && gy <= z.rect.y2) {
+      result = z.tile;
+    }
+  }
+  return result;
+}
 
 export default class TownScene extends Phaser.Scene {
   constructor() {
@@ -437,7 +498,7 @@ export default class TownScene extends Phaser.Scene {
       // Random grid positions avoiding water/paths
       const gx = Phaser.Math.Between(1, 115);
       const gy = Phaser.Math.Between(1, 115);
-      if (this._isWater(gx, gy) || this._isPath(gx, gy)) continue;
+      if (this._isWater(gx, gy) || this._isPath(gx, gy) || this._buildingFootprint?.has(`${gx},${gy}`)) continue;
 
       const screen = this.gridToScreen(gx, gy);
       // Offset within tile for variety
@@ -542,7 +603,7 @@ export default class TownScene extends Phaser.Scene {
         post.fillRect(-3, -12, 6, 3);
       }
       post.setPosition(screen.x, screen.y);
-      post.setDepth(screen.y + 5001);
+      post.setDepth((lx + ly) * 100 + 1);
 
       // Warm ground glow pool — 3 concentric isometric ellipses (key cozy lighting effect)
       const glow = this.add.graphics();
@@ -590,7 +651,7 @@ export default class TownScene extends Phaser.Scene {
       g.fillStyle(0xd0dde8, Phaser.Math.FloatBetween(0.01, 0.03));
       g.fillEllipse(fogW * 0.2, 0, fogW * 0.5, fogH * 0.6);
       g.setScrollFactor(0);
-      g.setDepth(8000); // above buildings, below snow
+      g.setDepth(28000); // above buildings, below snow
 
       const wisp = {
         gfx: g,
@@ -636,7 +697,7 @@ export default class TownScene extends Phaser.Scene {
     ];
 
     for (const [dx, dy] of driftSpots) {
-      if (this._isWater(dx, dy) || this._isPath(dx, dy)) continue;
+      if (this._isWater(dx, dy) || this._isPath(dx, dy) || this._buildingFootprint?.has(`${dx},${dy}`)) continue;
       const screen = this.gridToScreen(dx, dy);
 
       // Soft white elliptical mound
@@ -670,7 +731,7 @@ export default class TownScene extends Phaser.Scene {
           if (dist > ring.radius || dist <= ring.radius - 1) continue;
           const gx = Math.round(cx + dx);
           const gy = Math.round(cy + dy);
-          if (this._isWater(gx, gy) || this._isPath(gx, gy)) continue;
+          if (this._isWater(gx, gy) || this._isPath(gx, gy) || this._buildingFootprint?.has(`${gx},${gy}`)) continue;
 
           const screen = this.gridToScreen(gx, gy);
           g.fillStyle(ring.color, ring.alpha);
@@ -688,7 +749,7 @@ export default class TownScene extends Phaser.Scene {
     // Stone lantern cluster at the exact crossroads center
     const center = this.gridToScreen(38, 37);
     const lanternG = this.add.graphics();
-    lanternG.setDepth(center.y + 5003);
+    lanternG.setDepth((38 + 37) * 100 + 3);
 
     // Central stone well/lantern pedestal
     // Base: octagonal stone platform
@@ -796,7 +857,7 @@ export default class TownScene extends Phaser.Scene {
       barrelG.fillStyle(0x6b4a2a, 0.9);
       barrelG.fillEllipse(screen.x, screen.y - 6, 9, 4);
 
-      barrelG.setDepth(screen.y + 5001);
+      barrelG.setDepth((b.x + b.y) * 100 + 1);
     }
   }
 
@@ -815,7 +876,7 @@ export default class TownScene extends Phaser.Scene {
     for (const spot of toroSpots) {
       const screen = this.gridToScreen(spot.x, spot.y);
       const tg = this.add.graphics();
-      tg.setDepth(screen.y + 5002);
+      tg.setDepth((spot.x + spot.y) * 100 + 2);
 
       // Base pedestal
       tg.fillStyle(0x666660, 0.9);
@@ -863,7 +924,7 @@ export default class TownScene extends Phaser.Scene {
 
     const pg = this.add.graphics();
     for (const pine of civicPines) {
-      if (this._isWater(pine.x, pine.y) || this._isPath(pine.x, pine.y)) continue;
+      if (this._isWater(pine.x, pine.y) || this._isPath(pine.x, pine.y) || this._buildingFootprint?.has(`${pine.x},${pine.y}`)) continue;
       const screen = this.gridToScreen(pine.x, pine.y);
 
       // Shadow
@@ -890,7 +951,7 @@ export default class TownScene extends Phaser.Scene {
       pg.fillStyle(0xd8e4f0, 0.4);
       pg.fillEllipse(screen.x, screen.y - 30, 7, 3);
 
-      pg.setDepth(screen.y + 5500);
+      pg.setDepth((pine.x + pine.y) * 100 + 5);
     }
   }
 
@@ -996,11 +1057,24 @@ export default class TownScene extends Phaser.Scene {
     // Check available sprite textures
     const hasSnow = this.textures.exists('ground-snow');
     const hasSoil = this.textures.exists('ground-soil');
+    const hasCobblestone = this.textures.exists('ground-cobblestone');
+    const hasStone = this.textures.exists('ground-stone');
+    const hasWood = this.textures.exists('ground-wood');
     const hasPathSprite = this.textures.exists('ground-path') || this.textures.exists('tile-path');
     const hasWaterSprite = this.textures.exists('ground-water');
     const hasMoatSprite = this.textures.exists('life-moat');
     const hasBridgeSprite = this.textures.exists('life-bridge');
     const pathKey = this.textures.exists('ground-path') ? 'ground-path' : 'tile-path';
+
+    // Map zone tile names to texture keys (with fallback to snow)
+    const zoneTileKeys = {
+      snow: hasSnow ? 'ground-snow' : null,
+      soil: hasSoil ? 'ground-soil' : null,
+      cobblestone: hasCobblestone ? 'ground-cobblestone' : null,
+      stone: hasStone ? 'ground-stone' : null,
+      wood: hasWood ? 'ground-wood' : null,
+      water: hasWaterSprite ? 'ground-water' : null,
+    };
 
     // Bridge gap coordinates (where roads cross the moat ring)
     const bridgeGaps = new Set([
@@ -1148,9 +1222,11 @@ export default class TownScene extends Phaser.Scene {
               continue;
             }
 
-            const nearPath = this._isNearPath(x, y);
-            if (nearPath && hasSoil) {
-              rt.drawFrame('ground-soil', undefined, localX, localY);
+            // Zone-based tile selection — look up the tile type for this grid cell
+            const zoneTile = _tileForGrid(x, y);
+            const zoneKey = zoneTileKeys[zoneTile];
+            if (zoneKey) {
+              rt.drawFrame(zoneKey, undefined, localX, localY);
             } else if (hasSnow) {
               rt.drawFrame('ground-snow', undefined, localX, localY);
             }
@@ -1248,7 +1324,7 @@ export default class TownScene extends Phaser.Scene {
     };
 
     for (const { x: tx, y: ty, type } of treeSpots) {
-      if (this._isWater(tx, ty) || this._isPath(tx, ty)) continue;
+      if (this._isWater(tx, ty) || this._isPath(tx, ty) || this._buildingFootprint?.has(`${tx},${ty}`)) continue;
       const screen = this.gridToScreen(tx, ty);
       const colors = treeColors[type] || treeColors.deciduous;
 
@@ -1288,7 +1364,7 @@ export default class TownScene extends Phaser.Scene {
         g.fillEllipse(screen.x, topY - 2, 8, 3);
       }
 
-      g.setDepth(screen.y + 5500);
+      g.setDepth((tx + ty) * 100 + 5);
     }
   }
 
@@ -1836,7 +1912,7 @@ export default class TownScene extends Phaser.Scene {
     const shadow = this.add.graphics();
     shadow.fillStyle(0x000000, 0.08);
     shadow.fillEllipse(pos.x, pos.y + shadowH * 0.05, shadowW * 0.6, shadowH * 0.2);
-    shadow.setDepth(pos.y + 4999);
+    shadow.setDepth((cx + cy) * 100 - 1);
 
     // Ambient detail — stone lantern near civic/market buildings
     this._spawnBuildingDetail(bData, pos);
@@ -1851,6 +1927,21 @@ export default class TownScene extends Phaser.Scene {
     this._addChimneySmoke(bData, pos);
 
     // Scarlet Sanctum — no flash/pulse; static sprite
+
+    // Recompute building footprint exclusion set
+    this._updateBuildingFootprint();
+  }
+
+  _updateBuildingFootprint() {
+    this._buildingFootprint = new Set();
+    Object.values(this.buildings).forEach(b => {
+      const bw = b.gridW || 3, bh = b.gridH || 2;
+      for (let dy = -1; dy <= bh; dy++) {
+        for (let dx = -1; dx <= bw; dx++) {
+          this._buildingFootprint.add(`${b.gridX + dx},${b.gridY + dy}`);
+        }
+      }
+    });
   }
 
   _spawnBuildingDetail(bData, pos) {
@@ -1863,7 +1954,7 @@ export default class TownScene extends Phaser.Scene {
     const g = this.add.graphics();
     const ox = pos.x + (TILE_W * (bData.width || 3)) * 0.28;
     const oy = pos.y + (TILE_H * (bData.height || 2)) * 0.1;
-    g.setDepth(pos.y + 5002);
+    g.setDepth((bData.x + (bData.width || 2) + bData.y + (bData.height || 2)) * 100 + 2);
 
     if (isCivic) {
       // Stone lantern: grey pedestal + cap
@@ -1892,7 +1983,7 @@ export default class TownScene extends Phaser.Scene {
     g.fillEllipse(ox, oy, w, h);
     g.fillStyle(0xffe0a0, 0.04);
     g.fillEllipse(ox, oy, w * 0.5, h * 0.5);
-    g.setDepth(pos.y + 4999.5);
+    g.setDepth((bData.x + (bData.width || 2) + bData.y + (bData.height || 2)) * 100 - 1);
 
     // Gentle flicker
     this.tweens.add({
@@ -2102,7 +2193,7 @@ export default class TownScene extends Phaser.Scene {
     const ph = headerH + rows.length * rowH + pad * 2 + 8;
 
     const panel = this.add.container(0, 0);
-    panel.setDepth(10001);
+    panel.setDepth(30001);
     panel.setScrollFactor(0);
 
     // Background
@@ -2371,7 +2462,7 @@ export default class TownScene extends Phaser.Scene {
     }
 
     const panelH = 28 + rows.length * lineH + 24;
-    const container = this.add.container(px, py).setScrollFactor(0).setDepth(10001);
+    const container = this.add.container(px, py).setScrollFactor(0).setDepth(30001);
 
     // Background — intercept all clicks so background handler doesn't close panel
     const bg = this.add.graphics();
@@ -2473,7 +2564,7 @@ export default class TownScene extends Phaser.Scene {
 
     const lineH = 14;
     const th = 20 + lines.length * lineH + 12;
-    const tooltip = this.add.container(tx, ty).setScrollFactor(0).setDepth(10002);
+    const tooltip = this.add.container(tx, ty).setScrollFactor(0).setDepth(30002);
 
     const bg = this.add.graphics();
     bg.fillStyle(0x0f0f1e, 0.95);
@@ -2526,7 +2617,8 @@ export default class TownScene extends Phaser.Scene {
     const pos = this.gridToScreen(x || 10 + Math.random() * 20, y || 10 + Math.random() * 15);
     const img = this.add.image(pos.x, pos.y, key);
     img.setOrigin(0.5, 0.85);
-    img.setDepth(pos.y + 3000);  // offset so life entities always above ground (depth 0-1)
+    const gx = x || 10, gy = y || 10;
+    img.setDepth((gx + gy) * 100);
     const scale = 64 / Math.max(img.width, img.height) * 1.5;
     img.setScale(scale);
     // Tween in
@@ -2608,7 +2700,9 @@ export default class TownScene extends Phaser.Scene {
         duration: 600,
         ease: 'Power2',
         onComplete: () => {
-          agent.container.setDepth(exitPos.y + 1000);
+          const egx = building.gridX + building.gridW + 1;
+          const egy = building.gridY + 1;
+          agent.container.setDepth((egx + egy) * 100 + 50);
         }
       });
     }

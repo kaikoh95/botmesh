@@ -31,6 +31,10 @@ export default class WorldLife {
     if (agentCount >= 5) this._spawnAmbient(agentCount);
   }
 
+  _isFootprint(tx, ty) {
+    return this.scene._buildingFootprint?.has(`${tx},${ty}`) || false;
+  }
+
   _spawnFlora(agentCount) {
     const { scene } = this;
     const TILE_H = 32;
@@ -46,11 +50,11 @@ export default class WorldLife {
       [33, 3], [38, 2], [37, 18], [34, 22],
     ];
     for (const [tx, ty] of sakuraSpots) {
-      if (scene._isWater?.(tx, ty) || scene._isPath?.(tx, ty)) continue;
+      if (scene._isWater?.(tx, ty) || scene._isPath?.(tx, ty) || this._isFootprint(tx, ty)) continue;
       const pos = scene.gridToScreen(tx, ty);
       const key = scene.textures.exists('life-sakura') ? 'life-sakura' : null;
       if (key) {
-        const spr = scene.add.image(pos.x, pos.y - 16, key).setOrigin(0.5, 1).setDepth(pos.y - 5);
+        const spr = scene.add.image(pos.x, pos.y - 16, key).setOrigin(0.5, 1).setDepth((tx + ty) * 100);
         spr.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
         scaleToMaxH(spr, 1.4 * TILE_H); // sakura — compact, not larger than buildings
         this.elements.push(spr);
@@ -62,11 +66,11 @@ export default class WorldLife {
       [4, 7], [36, 7], [12, 2], [28, 7],
     ];
     for (const [tx, ty] of bambooSpots) {
-      if (scene._isWater?.(tx, ty) || scene._isPath?.(tx, ty)) continue;
+      if (scene._isWater?.(tx, ty) || scene._isPath?.(tx, ty) || this._isFootprint(tx, ty)) continue;
       const pos = scene.gridToScreen(tx, ty);
       const key = scene.textures.exists('life-bamboo') ? 'life-bamboo' : null;
       if (key) {
-        const spr = scene.add.image(pos.x, pos.y - 12, key).setOrigin(0.5, 1).setDepth(pos.y - 4);
+        const spr = scene.add.image(pos.x, pos.y - 12, key).setOrigin(0.5, 1).setDepth((tx + ty) * 100);
         spr.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
         scaleToMaxH(spr, 2.2 * TILE_H); // bamboo — tall but not towering
         this.elements.push(spr);
@@ -77,11 +81,11 @@ export default class WorldLife {
     const zenCount = agentCount >= 5 ? 2 : 1;
     const zenSpots = [[8, 19], [32, 14]].slice(0, zenCount);
     for (const [tx, ty] of zenSpots) {
-      if (scene._isWater?.(tx, ty) || scene._isPath?.(tx, ty)) continue;
+      if (scene._isWater?.(tx, ty) || scene._isPath?.(tx, ty) || this._isFootprint(tx, ty)) continue;
       const pos = scene.gridToScreen(tx, ty);
       const key = scene.textures.exists('life-zen') ? 'life-zen' : null;
       if (key) {
-        const spr = scene.add.image(pos.x, pos.y, key).setOrigin(0.5, 0.75).setDepth(pos.y - 2);
+        const spr = scene.add.image(pos.x, pos.y, key).setOrigin(0.5, 0.75).setDepth((tx + ty) * 100);
         spr.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
         scaleToMaxH(spr, 1.2 * TILE_H); // zen garden — ground-level, compact
         this.elements.push(spr);
@@ -93,11 +97,11 @@ export default class WorldLife {
       [14, 17], [23, 17], [11, 18], [26, 18],
     ];
     for (const [tx, ty] of willowSpots) {
-      if (scene._isPath?.(tx, ty)) continue;
+      if (scene._isPath?.(tx, ty) || this._isFootprint(tx, ty)) continue;
       const pos = scene.gridToScreen(tx, ty);
       const key = scene.textures.exists('life-willow') ? 'life-willow' : null;
       if (key) {
-        const spr = scene.add.image(pos.x, pos.y - 8, key).setOrigin(0.5, 1).setDepth(pos.y - 3);
+        const spr = scene.add.image(pos.x, pos.y - 8, key).setOrigin(0.5, 1).setDepth((tx + ty) * 100);
         spr.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
         scaleToMaxH(spr, 2.0 * TILE_H); // willows — tall, drooping
         this.elements.push(spr);
@@ -106,9 +110,9 @@ export default class WorldLife {
 
     // Kuroki — ancient black pine (kuro-matsu), singular named tree near Sanctum
     // Planted at x:14, y:12 — west moat wall. This tree has been here longer than the town.
-    if (scene.textures.exists('life-pine')) {
+    if (scene.textures.exists('life-pine') && !this._isFootprint(14, 12)) {
       const pos = scene.gridToScreen(14, 12);
-      const kuroki = scene.add.image(pos.x, pos.y - 16, 'life-pine').setOrigin(0.5, 1).setDepth(pos.y - 6);
+      const kuroki = scene.add.image(pos.x, pos.y - 16, 'life-pine').setOrigin(0.5, 1).setDepth((14 + 12) * 100);
       kuroki.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
       scaleToMaxH(kuroki, 2.5 * TILE_H); // taller than willow, upright and imposing
       kuroki.setName('kuroki');
@@ -116,9 +120,9 @@ export default class WorldLife {
     }
 
     // Koi pond (always present if texture exists)
-    if (scene.textures.exists('life-koipond')) {
+    if (scene.textures.exists('life-koipond') && !this._isFootprint(14, 24)) {
       const pos = scene.gridToScreen(14, 24);
-      const pond = scene.add.image(pos.x, pos.y, 'life-koipond').setOrigin(0.5, 0.75).setDepth(pos.y - 1);
+      const pond = scene.add.image(pos.x, pos.y, 'life-koipond').setOrigin(0.5, 0.75).setDepth((14 + 24) * 100);
       pond.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
       scaleToMaxH(pond, 1.5 * TILE_H);
       this.elements.push(pond);
@@ -134,7 +138,7 @@ export default class WorldLife {
       const count = agentCount >= 5 ? 2 : 1;
       for (const [tx, ty] of craneSpots.slice(0, count)) {
         const pos = scene.gridToScreen(tx, ty);
-        const crane = scene.add.image(pos.x, pos.y, 'life-crane').setOrigin(0.5, 1).setDepth(pos.y);
+        const crane = scene.add.image(pos.x, pos.y, 'life-crane').setOrigin(0.5, 1).setDepth((tx + ty) * 100);
         crane.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
         crane.setScale(0.04);
         this.elements.push(crane);
@@ -146,7 +150,7 @@ export default class WorldLife {
     // Deer — wanders near trees (small fauna, ~1/4 building height)
     if (scene.textures.exists('life-deer')) {
       const pos = scene.gridToScreen(27, 22);
-      const deer = scene.add.image(pos.x, pos.y, 'life-deer').setOrigin(0.5, 1).setDepth(pos.y);
+      const deer = scene.add.image(pos.x, pos.y, 'life-deer').setOrigin(0.5, 1).setDepth((27 + 22) * 100);
       deer.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
       deer.setScale(0.04);
       this.elements.push(deer);
@@ -159,7 +163,7 @@ export default class WorldLife {
         const spots = [[3, 4], [7, 3], [35, 5]];
         const [tx, ty] = spots[i];
         const pos = scene.gridToScreen(tx, ty);
-        const bf = scene.add.image(pos.x, pos.y - 20, 'life-butterfly').setOrigin(0.5, 0.5).setDepth(pos.y + 10);
+        const bf = scene.add.image(pos.x, pos.y - 20, 'life-butterfly').setOrigin(0.5, 0.5).setDepth((tx + ty) * 100 + 10);
         bf.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
         bf.setScale(0.03);
         this.elements.push(bf);
@@ -195,11 +199,11 @@ export default class WorldLife {
     for (let i = 0; i < count; i++) {
       const tx = Phaser.Math.Between(2, worldW - 2);
       const ty = Phaser.Math.Between(2, worldH - 2);
-      if (scene._isPath?.(tx, ty)) continue;
+      if (scene._isPath?.(tx, ty) || this._isFootprint(tx, ty)) continue;
       const pos = scene.gridToScreen(tx, ty);
       const ff = scene.add.image(pos.x, pos.y - 10, 'life-firefly')
         .setOrigin(0.5, 0.5)
-        .setDepth(pos.y + 20)
+        .setDepth((tx + ty) * 100 + 20)
         .setAlpha(0);
       ff.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
       ff.setScale(0.03);
