@@ -85,12 +85,12 @@ export default class TownScene extends Phaser.Scene {
   }
 
   create() {
-    this.cameras.main.setBackgroundColor('#080c14'); // deep midnight blue — no purple bleed
+    this.cameras.main.setBackgroundColor('#1c2436'); // match snow ground color // deep midnight blue — no purple bleed
 
     // Solid backdrop in world space — prevents transparent checkerboard on all devices.
     // World-space rect (no scrollFactor override) so it pans with the camera and
     // covers all positions regardless of DPR, zoom, or viewport size.
-    const backdrop = this.add.rectangle(0, 0, 10000, 10000, 0x080c14);
+    const backdrop = this.add.rectangle(0, 0, 20000, 20000, 0x1c2436); // snow-matching dark blue-grey
     backdrop.setDepth(-9999);
 
     // ── Star field — scattered dots above the map ──────────────────────────
@@ -970,7 +970,7 @@ export default class TownScene extends Phaser.Scene {
     ]);
 
     // Draw ground with padding beyond grid edges so buildings never float over void
-    const PAD = 60; // large padding so snow fills screen even at max zoom-out
+    const PAD = 20; // moderate padding
     for (let y = -PAD; y < mapH + PAD; y++) {
       for (let x = -PAD; x < mapW + PAD; x++) {
         const inGrid = x >= 0 && x < mapW && y >= 0 && y < mapH;
