@@ -1,0 +1,173 @@
+{
+  "version": 1,
+  "author": "Forge ⚙️",
+  "purpose": "Aesthetic and functional requirements per district — informs Kenzo's tile zone map and entity placement",
+  "tileTypes": ["snow", "soil", "cobblestone", "water", "wood", "stone"],
+  "districts": {
+    "sacred": {
+      "bounds": { "x1": 0, "y1": 0, "x2": 37, "y2": 36 },
+      "primaryTile": "snow",
+      "primaryReason": "White gravel/snow evokes Shinto shrine purity — karesansui (dry garden) aesthetic. Pristine open ground is the visual language of sacred space in jōkamachi towns.",
+      "secondaryTile": "stone",
+      "secondaryReason": "Stone paths and clearings for torii approach and well clearing — functional transition from spiritual snow to built structures.",
+      "entities": {
+        "pine": { "density": "sparse", "count": "4-6", "reason": "Evergreen pines frame shrine grounds without crowding. Japanese temple groves are deliberately sparse — each tree is placed, not clustered." },
+        "bamboo": { "density": "sparse", "count": "3-5", "reason": "Bamboo groves along western edge create natural screen between sacred and craft districts." },
+        "deer": { "density": "rare", "count": "2-4", "reason": "Sacred deer (shika) roam shrine grounds only — Nara shrine reference. They signal 'you are in holy space'." },
+        "crane": { "density": "rare", "count": "1-2", "reason": "Cranes near water features evoke longevity and spiritual grace." },
+        "koipond": { "density": "rare", "count": "1", "reason": "Single contemplative water feature near shrine — meditative focal point." },
+        "torii": { "density": "landmark", "count": "2-3", "reason": "Gate markers at district entrance and shrine approach. Non-negotiable sacred signifiers." },
+        "sakura": { "density": "sparse", "count": "2-3", "reason": "Cherry blossoms near shrine for seasonal beauty — not overwhelming, each tree is a moment of contemplation." }
+      },
+      "atmosphere": "Hushed, reverent, spacious. Mostly open white ground with occasional dark pine verticals. The eye should rest here. No clutter. The shrine platform and torii are the only dense visual anchors — everything else breathes. Morning mist feeling. Snow sparkle should dominate the palette.",
+      "special": [
+        "Wood platform (3-tile border) around Shrine of Cronos at (15,8) — raised engawa-style platform separates sacred interior from open grounds",
+        "Stone approach path from torii gate area to shrine — 2-tile wide cobblestone/stone walkway",
+        "Cobblestone clearing around well at (15,22) — functional gathering point, not spiritual",
+        "Sacred grove (x:0-10, y:0-16) should be pure snow with no soil — pristine snowfield with only pine and deer"
+      ]
+    },
+    "castle": {
+      "bounds": { "x1": 40, "y1": 0, "x2": 119, "y2": 36 },
+      "primaryTile": "stone",
+      "primaryReason": "Stone ground signals authority, permanence, and military function — castle districts in jōkamachi used cut stone for fortification aesthetics and practical drainage around keeps.",
+      "secondaryTile": "cobblestone",
+      "secondaryReason": "Cobblestone for civic plazas (town hall, post office) — distinguishes administrative zones from raw military stone while maintaining formality.",
+      "entities": {
+        "lamp": { "density": "medium", "count": "8-12", "reason": "Stone lanterns (tōrō) line formal approaches and plazas — castle districts are well-lit, orderly, watched." },
+        "sakura": { "density": "sparse", "count": "3-4", "reason": "Ornamental cherry trees in civic plazas — controlled beauty, not wild growth." },
+        "pine": { "density": "sparse", "count": "2-3", "reason": "Sentinel pines at fortress approaches — matsu (pine) symbolizes endurance and samurai resolve." },
+        "torii": { "density": "landmark", "count": "1", "reason": "Torii gate at (55,5) marks the boundary between sacred and castle precincts." }
+      },
+      "atmosphere": "Formal, imposing, ordered. Grey stone dominates with geometric precision. Lantern-lit pathways create structure. Buildings here are larger and more authoritative. The visual weight should feel heavier than any other district — this is where power lives. Cobblestone plazas around civic buildings break the stone monotony with warmer tones.",
+      "special": [
+        "Wood platform around Scarlet Sanctum at (85,5) — sacred space within the castle precinct, raised and distinct",
+        "Wood deck around Bathhouse at (45,30) — warm wood against cold stone signals rest and recovery",
+        "Stone courtyard around Iron's Keep at (30,30) — 2-tile border of unbroken stone, fortress feel",
+        "Cobblestone town hall plaza at (82,24) — civic gathering space, warmer than raw stone",
+        "Stone grounds extending around Observatory (90,8) and Library (96,18) — knowledge buildings get formal stone treatment"
+      ]
+    },
+    "communal": {
+      "bounds": { "x1": 20, "y1": 37, "x2": 55, "y2": 60 },
+      "primaryTile": "cobblestone",
+      "primaryReason": "Cobblestone is the universal tile of commerce and gathering — worn smooth by foot traffic, practical for market stalls, and visually warm. Japanese shōtengai (market streets) use paved stone for durability and identity.",
+      "secondaryTile": "wood",
+      "secondaryReason": "Wood decks around teahouse, garden teahouse, and pavilion — elevated wood platforms signal 'stop and sit', contrasting the walkable cobblestone.",
+      "entities": {
+        "lamp": { "density": "dense", "count": "8-10", "reason": "Lanterns everywhere — market districts glow at night. Chōchin (paper lanterns) and stone tōrō create the warm, inviting atmosphere that draws citizens." },
+        "sakura": { "density": "medium", "count": "4-6", "reason": "Cherry blossoms soften the commercial hardscape — placed near teahouses and garden areas for hanami (flower viewing) spots." },
+        "crane": { "density": "rare", "count": "1-2", "reason": "Cranes near garden pavilion/koi pond — graceful accents in the communal garden zone." },
+        "koipond": { "density": "sparse", "count": "1-2", "reason": "Koi ponds near garden pavilion create contemplative pockets within the busy market district." },
+        "bench": { "density": "medium", "count": "4-6", "reason": "Seating throughout — markets need rest stops, garden areas need viewing spots." }
+      },
+      "atmosphere": "Lively, warm, the heart of daily life. Cobblestone streets with lantern glow. Wood deck islands where people linger over tea and sake. The busiest, most textured district — multiple tile types create visual rhythm. Should feel like walking through a living shōtengai. Garden areas in the south (pavilion, garden teahouse) transition to a softer, greener feel.",
+      "special": [
+        "Wood deck (2-tile border) around Teahouse at (30,42) — elevated engawa platform",
+        "Wood deck around Garden Teahouse at (30,50) and Garden Pavilion at (45,50) — garden leisure platforms",
+        "Cobblestone around Sake Brewery at (45,42) — working commercial surface, heavier foot traffic",
+        "Market square zone (x:26-36, y:18-28) gets dense cobblestone — the commercial heart",
+        "Soil patches in community garden transition zone — where cobblestone meets growing earth"
+      ]
+    },
+    "craft": {
+      "bounds": { "x1": 0, "y1": 37, "x2": 19, "y2": 60 },
+      "primaryTile": "soil",
+      "primaryReason": "Raw earth for artisan workshops — craftsmen work with their hands in the dirt. Soil signals honest labor, impermanence, and connection to materials. Forges, kilns, and workshops historically sat on packed earth.",
+      "secondaryTile": "wood",
+      "secondaryReason": "Wood platforms around workshop structures — functional surfaces for tool storage and covered work areas.",
+      "entities": {
+        "bamboo": { "density": "medium", "count": "3-5", "reason": "Bamboo is a craft material and natural screen — it belongs where things are made. Also provides visual boundary between craft and sacred districts above." },
+        "fence": { "density": "medium", "count": "6-10", "reason": "Fencing delineates workshop areas and community garden plots — craft districts are organized, partitioned, functional." },
+        "lamp": { "density": "sparse", "count": "2-3", "reason": "Fewer lanterns than communal — craft work happens by daylight, district is quieter at night." }
+      },
+      "atmosphere": "Industrious, grounded, earthy. Brown soil dominates with occasional wood platforms. This district is utilitarian — beauty comes from the work, not decoration. Bamboo screens and fences create organized workspace partitions. Quieter than communal, more purposeful. Smoke and steam implied. The community garden in the south softens the industrial feel with living green.",
+      "special": [
+        "Soil work area around Forge Workshop at (15,30) — packed earth, functional",
+        "Community garden at (15,50) stays soil — growing beds, not paved",
+        "Wood platform borders around workshop buildings — 1-tile raised work surface",
+        "Bamboo screen along eastern edge (x:19) transitioning to communal cobblestone"
+      ]
+    },
+    "residential": {
+      "bounds": { "x1": 0, "y1": 61, "x2": 119, "y2": 119 },
+      "primaryTile": "soil",
+      "primaryReason": "Soil yards around cottages — residential earth gardens are the domestic ground of Japanese village life. Each cottage sits in its own soil plot, suggesting personal gardens, chickens, drying racks. Humble and lived-in.",
+      "secondaryTile": "cobblestone",
+      "secondaryReason": "Cobblestone paths connecting cottage rows — the shared walkways that bind the neighborhood. Three E-W paths at y=64, y=77, y=89 create the residential street grid.",
+      "entities": {
+        "sakura": { "density": "medium", "count": "6-8", "reason": "Cherry blossoms along residential paths — the iconic Japanese neighborhood tree. Each row should have 2-3 sakura creating canopy moments." },
+        "pine": { "density": "sparse", "count": "2-4", "reason": "Occasional pine at yard corners — evergreen anchors that give the neighborhood year-round structure." },
+        "fence": { "density": "dense", "count": "40-60", "reason": "Fences define every yard boundary — the primary visual structure of the residential district. Without fences, cottages float in formless soil." },
+        "lamp": { "density": "sparse", "count": "4-6", "reason": "Lanterns at path intersections only — residential streets are dim, intimate, not commercial bright." },
+        "bench": { "density": "sparse", "count": "2-4", "reason": "Occasional rest spots along shared paths — neighbors chatting." },
+        "well": { "density": "rare", "count": "1-2", "reason": "Shared neighborhood wells — communal water source for the residential district." }
+      },
+      "atmosphere": "Domestic, quiet, personal. Brown soil yards with wooden fences creating a patchwork of private spaces. Cobblestone paths thread between them like village streets. Sakura and pine give vertical interest. Each cottage yard should feel distinct but part of a cohesive neighborhood. The southern edge of the map fades to open snow — the village boundary dissolving into wilderness.",
+      "special": [
+        "Each cottage gets a soil yard (approximately 8×8 tile plot) bounded by fence entities",
+        "Three cobblestone connector paths at y=64-65, y=77-78, y=89-90 — 2 tiles wide each",
+        "Snow transition zone at y=105+ — residential soil fades to open snow at map edge, suggesting village boundary",
+        "N-S spine road continuation through residential to connect rows to communal district above"
+      ]
+    },
+    "roads": {
+      "bounds": {
+        "eastWest": { "x1": 0, "y1": 37, "x2": 119, "y2": 38 },
+        "northSouth": { "x1": 38, "y1": 0, "x2": 39, "y2": 119 },
+        "crossroads": { "x1": 36, "y1": 35, "x2": 41, "y2": 40 }
+      },
+      "primaryTile": "cobblestone",
+      "primaryReason": "Cobblestone is the universal road surface — durable, distinct from surrounding district tiles, and historically correct for jōkamachi main thoroughfares. Roads must visually 'cut through' whatever district they cross.",
+      "secondaryTile": null,
+      "secondaryReason": "Roads are uniform — no secondary tile. Consistency is their identity.",
+      "entities": {
+        "lamp": { "density": "dense", "count": "12-16", "reason": "Stone lanterns line both main roads at regular intervals (every 8-10 tiles) — the roads are the town's arterial system and must be lit, safe, navigable." },
+        "torii": { "density": "landmark", "count": "1", "reason": "Single torii at the crossroads plaza or northern road terminus — marks the town's spiritual center point." }
+      },
+      "atmosphere": "Connective, structured, the spine of the town. Cobblestone roads should feel like a clear visual channel cutting through each district. The crossroads plaza (6×6 expanded area) is the town's navel — the place where all districts meet. Lanterns create rhythm along the roads. At night, the roads glow while districts fade to shadow.",
+      "special": [
+        "Crossroads plaza (x:36-41, y:35-40) expanded to 6×6 cobblestone — the town's central gathering node",
+        "Roads maintain 2-tile width throughout — never narrower, never wider except at crossroads",
+        "Lamp placement every 8-10 tiles along both roads — consistent rhythm"
+      ]
+    },
+    "moat": {
+      "bounds": {
+        "north": { "x1": 8, "y1": 18, "x2": 54, "y2": 18 },
+        "south": { "x1": 8, "y1": 56, "x2": 54, "y2": 56 },
+        "west": { "x1": 8, "y1": 18, "x2": 8, "y2": 56 },
+        "east": { "x1": 54, "y1": 18, "x2": 54, "y2": 56 }
+      },
+      "primaryTile": "water",
+      "primaryReason": "Water tiles form the defensive moat encircling the civic core — castle town moats are non-negotiable defensive infrastructure and the strongest visual boundary in the town.",
+      "secondaryTile": "stone",
+      "secondaryReason": "Stone banks along moat edges — the 1-tile border where water meets land should be stone to suggest constructed embankment.",
+      "entities": {
+        "bridge": { "density": "landmark", "count": "4-8", "reason": "Bridges at road crossings and key access points — the moat must be crossable but the crossings should feel deliberate and controlled." },
+        "crane": { "density": "rare", "count": "1-2", "reason": "Cranes standing in or near moat water — elegant wildlife drawn to water." },
+        "willow": { "density": "sparse", "count": "2-3", "reason": "Weeping willows along moat banks — the classic Japanese waterside tree. Branches trailing toward water create iconic silhouettes." }
+      },
+      "atmosphere": "Protective, serene boundary. Dark water tiles create a strong visual frame around the civic core. Bridges punctuate the ring. Willows soften the military function with natural grace. The moat should read as both defensive infrastructure and the town's most beautiful water feature.",
+      "special": [
+        "Water tiles are 1-tile wide throughout — moat is a border, not a lake",
+        "Stone bank tiles (1-tile) on inner and outer edges of moat where possible",
+        "Bridge entities at every road/path crossing point",
+        "Willow placement on outer moat bank only — inner bank stays clear for defensive sightlines"
+      ]
+    }
+  },
+  "globalRules": {
+    "entityExclusionPadding": 2,
+    "tileTransitions": "Districts should not hard-cut between tile types. Use 1-2 tile transition strips where districts meet (e.g. snow→stone at sacred/castle border uses a stone strip).",
+    "densityGuidelines": {
+      "sparse": "1 entity per 40-60 tiles of area",
+      "medium": "1 entity per 20-30 tiles of area",
+      "dense": "1 entity per 10-15 tiles of area",
+      "rare": "1-3 total in the district",
+      "landmark": "Fixed placement, unique structure"
+    },
+    "visualHierarchy": "Roads > Moat > Building platforms > District ground. Later layers override earlier ones in rendering.",
+    "paletteNotes": "Snow=blue-white, Soil=warm brown, Cobblestone=grey-warm, Stone=grey-cool, Wood=amber-brown, Water=dark teal. Each district should have a dominant color temperature: sacred=cool, castle=cool-neutral, communal=warm, craft=warm-earth, residential=warm-earth."
+  }
+}
