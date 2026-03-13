@@ -171,12 +171,8 @@ export default class TownScene extends Phaser.Scene {
     this.originX = this.cameras.main.width * 0.5;
     this.originY = -800;
 
-    // Draw ground tiles — deferred one frame so loading screen can paint first
-    this.time.delayedCall(0, () => {
-      this._drawGround(this.mapW, this.mapH);
-      // Dismiss loading screen once ground is ready
-      if (typeof window.__dismissLoadingScreen === 'function') window.__dismissLoadingScreen();
-    });
+    // Draw ground tiles synchronously
+    this._drawGround(this.mapW, this.mapH);
 
     // Communal district enhancements — plaza, market stalls, civic scenery
     this._drawPlazaDetail();
@@ -363,6 +359,9 @@ export default class TownScene extends Phaser.Scene {
       loop: true,
       callback: () => this._checkFriendProximity(),
     });
+
+    // Dismiss loading screen — create() is complete
+    if (typeof window.__dismissLoadingScreen === 'function') window.__dismissLoadingScreen();
   }
 
   async _checkFriendProximity() {
