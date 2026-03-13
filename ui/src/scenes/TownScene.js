@@ -416,10 +416,28 @@ export default class TownScene extends Phaser.Scene {
     };
   }
 
+  _getDistrictWorldBounds() {
+    if (!this._currentDistrict) return this._getWorldBounds(this.mapW || 120, this.mapH || 120);
+    const d = DISTRICTS[this._currentDistrict];
+    const pad = 3;
+    const corners = [
+      this.gridToScreen(d.bounds.x1 - pad, d.bounds.y1 - pad),
+      this.gridToScreen(d.bounds.x2 + pad, d.bounds.y1 - pad),
+      this.gridToScreen(d.bounds.x1 - pad, d.bounds.y2 + pad),
+      this.gridToScreen(d.bounds.x2 + pad, d.bounds.y2 + pad),
+    ];
+    return {
+      left:   Math.min(...corners.map(c => c.x)) - 100,
+      right:  Math.max(...corners.map(c => c.x)) + 100,
+      top:    Math.min(...corners.map(c => c.y)) - 100,
+      bottom: Math.max(...corners.map(c => c.y)) + 100,
+    };
+  }
+
   _updateSnow(delta) {
     if (!this._snowFlakes) return;
     const dt = delta / 1000;
-    const bounds = this._getWorldBounds(this.mapW || 120, this.mapH || 120);
+    const bounds = this._getDistrictWorldBounds();
     const zoom = this.cameras.main.zoom || 1;
     // Scale flake size inversely with zoom so they always look ~2-5px on screen
     const sizeScale = Math.max(1, 1 / zoom);
@@ -1282,7 +1300,26 @@ export default class TownScene extends Phaser.Scene {
       this._drawCivicScenery(db);
     }
 
-    // 9. Set camera bounds to district area + pan to center
+    // 9. Re-scatter snow + frost sparkles to district bounds
+    const distBounds = this._getDistrictWorldBounds();
+    if (this._snowFlakes) {
+      for (const f of this._snowFlakes) {
+        f.wx = Phaser.Math.FloatBetween(distBounds.left, distBounds.right);
+        f.wy = Phaser.Math.FloatBetween(distBounds.top, distBounds.bottom);
+        f.gfx.setPosition(f.wx, f.wy);
+      }
+    }
+    if (this._frostSparkles) {
+      for (const s of this._frostSparkles) {
+        if (s.gfx && !s.gfx.destroyed) {
+          const wx = Phaser.Math.FloatBetween(distBounds.left, distBounds.right);
+          const wy = Phaser.Math.FloatBetween(distBounds.top, distBounds.bottom);
+          s.gfx.setPosition(wx, wy);
+        }
+      }
+    }
+
+    // 10. Set camera bounds to district area + pan to center
     const corners = [
       this.gridToScreen(d.bounds.x1 - 2, d.bounds.y1 - 2),
       this.gridToScreen(d.bounds.x2 + 2, d.bounds.y1 - 2),
