@@ -1215,13 +1215,13 @@ export default class TownScene extends Phaser.Scene {
 
             // Water tiles (cube variant)
             if (this._isWater(x, y) && hasWaterSprite) {
-              rt.drawFrame('ground-water', undefined, localX, localY);
+              rt.stamp('ground-water', undefined, localX, localY);
               continue;
             }
 
             const isPath = this._isPath(x, y);
             if (isPath && hasPathSprite) {
-              rt.drawFrame(pathKey, undefined, localX, localY);
+              rt.stamp(pathKey, undefined, localX, localY);
               continue;
             }
 
@@ -1229,9 +1229,9 @@ export default class TownScene extends Phaser.Scene {
             const zoneTile = _tileForGrid(x, y);
             const zoneKey = zoneTileKeys[zoneTile];
             if (zoneKey) {
-              rt.drawFrame(zoneKey, undefined, localX, localY);
+              rt.stamp(zoneKey, undefined, localX, localY);
             } else if (hasSnow) {
-              rt.drawFrame('ground-snow', undefined, localX, localY);
+              rt.stamp('ground-snow', undefined, localX, localY);
             }
           }
         }
