@@ -373,10 +373,20 @@ export default class TownScene extends Phaser.Scene {
   }
 
   _getWorldBounds(mapW, mapH) {
-    // Get screen-space extents of the full map for snow spawning
-    const tl = this.gridToScreen(-20, -20);
-    const br = this.gridToScreen(mapW + 20, mapH + 20);
-    return { left: tl.x - 400, right: br.x + 400, top: tl.y - 200, bottom: br.y + 200 };
+    // Isometric map extents in world/screen space
+    // The map diamond spans: left tip at gridToScreen(0,mapH), right tip at gridToScreen(mapW,0)
+    // top tip at gridToScreen(0,0), bottom tip at gridToScreen(mapW,mapH)
+    const topTip    = this.gridToScreen(0, 0);
+    const leftTip   = this.gridToScreen(0, mapH);
+    const rightTip  = this.gridToScreen(mapW, 0);
+    const bottomTip = this.gridToScreen(mapW, mapH);
+    const pad = 500;
+    return {
+      left:   leftTip.x  - pad,
+      right:  rightTip.x + pad,
+      top:    topTip.y   - pad,
+      bottom: bottomTip.y + pad,
+    };
   }
 
   _updateSnow(delta) {
