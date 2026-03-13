@@ -105,6 +105,11 @@ export default class TownScene extends Phaser.Scene {
     // Draw ground tiles immediately with defaults
     this._drawGround(this.mapW, this.mapH);
 
+    // Communal district enhancements — plaza, market stalls, civic scenery
+    this._drawPlazaDetail();
+    this._drawMarketScenery();
+    this._drawCivicScenery();
+
     // Async: read world dimensions from state API and resize if needed
     this._fetchWorldDims();
 
@@ -570,14 +575,12 @@ export default class TownScene extends Phaser.Scene {
     const driftSpots = [
       // Near north sacred district
       [50, 10], [60, 10], [18, 10], [88, 10], [108, 10],
-      // Near center communal+craft
-      [12, 25], [48, 25], [12, 48], [48, 48],
       // Near east castle
       [78, 28], [92, 22], [98, 28],
       // Near south housing
       [18, 72], [35, 72], [55, 72], [75, 72], [93, 72],
       [18, 84], [40, 84], [60, 84], [78, 84],
-      // Scattered across full map
+      // Scattered across full map (outside communal zone)
       [8, 8], [100, 10], [110, 50], [5, 90], [80, 100], [15, 15], [90, 20],
       [30, 110], [70, 110], [110, 100],
     ];
@@ -594,6 +597,250 @@ export default class TownScene extends Phaser.Scene {
       // Brighter highlight on top
       g.fillStyle(0xdce8f4, 0.15);
       g.fillEllipse(screen.x, screen.y, w * 0.6, h * 0.5);
+    }
+  }
+
+  // ─── PLAZA COURTYARD — warm paving + stone lantern cluster at crossroads center ───
+  _drawPlazaDetail() {
+    const g = this.add.graphics();
+    g.setDepth(-98); // above base ground, below paths
+
+    // Concentric paving rings radiating from crossroads center (38.5, 37.5)
+    const cx = 38.5, cy = 37.5;
+    const rings = [
+      { radius: 3, color: 0x3a3530, alpha: 0.25 },
+      { radius: 2, color: 0x40392e, alpha: 0.30 },
+      { radius: 1, color: 0x46403a, alpha: 0.35 },
+    ];
+
+    for (const ring of rings) {
+      for (let dy = -ring.radius; dy <= ring.radius; dy++) {
+        for (let dx = -ring.radius; dx <= ring.radius; dx++) {
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist > ring.radius || dist <= ring.radius - 1) continue;
+          const gx = Math.round(cx + dx);
+          const gy = Math.round(cy + dy);
+          if (this._isWater(gx, gy) || this._isPath(gx, gy)) continue;
+
+          const screen = this.gridToScreen(gx, gy);
+          g.fillStyle(ring.color, ring.alpha);
+          g.beginPath();
+          g.moveTo(screen.x, screen.y - TILE_H / 2);
+          g.lineTo(screen.x + TILE_W / 2, screen.y);
+          g.lineTo(screen.x, screen.y + TILE_H / 2);
+          g.lineTo(screen.x - TILE_W / 2, screen.y);
+          g.closePath();
+          g.fillPath();
+        }
+      }
+    }
+
+    // Stone lantern cluster at the exact crossroads center
+    const center = this.gridToScreen(38, 37);
+    const lanternG = this.add.graphics();
+    lanternG.setDepth(center.y + 5003);
+
+    // Central stone well/lantern pedestal
+    // Base: octagonal stone platform
+    lanternG.fillStyle(0x666660, 0.9);
+    lanternG.fillEllipse(center.x + 16, center.y + 8, 20, 10);
+    // Pillar
+    lanternG.fillStyle(0x777770, 0.9);
+    lanternG.fillRect(center.x + 13, center.y - 10, 6, 18);
+    // Cap (wide flat hat shape — tōrō roof)
+    lanternG.fillStyle(0x555550, 0.9);
+    lanternG.fillRect(center.x + 8, center.y - 14, 16, 3);
+    lanternG.fillRect(center.x + 10, center.y - 17, 12, 3);
+    // Finial
+    lanternG.fillStyle(0x666660, 0.9);
+    lanternG.fillRect(center.x + 14, center.y - 20, 4, 3);
+    // Warm lantern glow inside
+    lanternG.fillStyle(0xffcc66, 0.7);
+    lanternG.fillRect(center.x + 14, center.y - 8, 4, 6);
+
+    // Ground glow pool from the lantern
+    const plazaGlow = this.add.graphics();
+    plazaGlow.setDepth(-97);
+    plazaGlow.fillStyle(0xffdd88, 0.06);
+    plazaGlow.fillEllipse(center.x + 16, center.y + 10, 100, 50);
+    plazaGlow.fillStyle(0xffcc66, 0.10);
+    plazaGlow.fillEllipse(center.x + 16, center.y + 8, 50, 25);
+    this.tweens.add({
+      targets: plazaGlow,
+      alpha: { from: 0.7, to: 1.0 },
+      duration: 2000,
+      yoyo: true,
+      repeat: -1,
+      ease: 'Sine.easeInOut',
+    });
+  }
+
+  // ─── MARKET SCENERY — stalls, barrels, props in the market district ───
+  _drawMarketScenery() {
+    const g = this.add.graphics();
+
+    // Market stalls — small awning shapes with supporting posts
+    const stalls = [
+      { x: 16, y: 22, color: 0x8b2020 },  // red stall near well/market
+      { x: 25, y: 22, color: 0x20608b },  // blue stall near market
+      { x: 14, y: 26, color: 0x6b5020 },  // brown stall near smithy approach
+      { x: 24, y: 26, color: 0x206b30 },  // green stall near workshop approach
+    ];
+
+    for (const stall of stalls) {
+      const screen = this.gridToScreen(stall.x, stall.y);
+      const depth = screen.y + 5001;
+
+      // Shadow
+      g.fillStyle(0x000000, 0.12);
+      g.fillEllipse(screen.x, screen.y + 3, 24, 10);
+
+      // Counter/table — wooden brown base
+      g.fillStyle(0x5c3a1e, 0.9);
+      g.fillRect(screen.x - 10, screen.y - 4, 20, 6);
+
+      // Awning — colored fabric canopy
+      g.fillStyle(stall.color, 0.8);
+      g.beginPath();
+      g.moveTo(screen.x - 12, screen.y - 12);
+      g.lineTo(screen.x + 12, screen.y - 12);
+      g.lineTo(screen.x + 14, screen.y - 6);
+      g.lineTo(screen.x - 14, screen.y - 6);
+      g.closePath();
+      g.fillPath();
+
+      // Awning stripe highlight
+      g.fillStyle(0xffffff, 0.1);
+      g.fillRect(screen.x - 8, screen.y - 11, 6, 4);
+      g.fillRect(screen.x + 2, screen.y - 11, 6, 4);
+
+      // Support posts
+      g.fillStyle(0x4a3018, 0.9);
+      g.fillRect(screen.x - 11, screen.y - 12, 2, 14);
+      g.fillRect(screen.x + 9, screen.y - 12, 2, 14);
+
+      g.setDepth(depth);
+    }
+
+    // Barrel props scattered near market stalls
+    const barrels = [
+      { x: 13, y: 21 }, { x: 27, y: 21 },
+      { x: 12, y: 29 }, { x: 26, y: 24 },
+      { x: 18, y: 25 }, { x: 22, y: 29 },
+    ];
+
+    const barrelG = this.add.graphics();
+    for (const b of barrels) {
+      const screen = this.gridToScreen(b.x, b.y);
+      // Shadow
+      barrelG.fillStyle(0x000000, 0.1);
+      barrelG.fillEllipse(screen.x, screen.y + 2, 10, 5);
+      // Barrel body — dark wooden cylinder
+      barrelG.fillStyle(0x5a3a20, 0.9);
+      barrelG.fillRect(screen.x - 4, screen.y - 6, 8, 8);
+      // Metal bands
+      barrelG.fillStyle(0x444444, 0.7);
+      barrelG.fillRect(screen.x - 5, screen.y - 5, 10, 1);
+      barrelG.fillRect(screen.x - 5, screen.y - 1, 10, 1);
+      // Barrel top (ellipse)
+      barrelG.fillStyle(0x6b4a2a, 0.9);
+      barrelG.fillEllipse(screen.x, screen.y - 6, 9, 4);
+
+      barrelG.setDepth(screen.y + 5001);
+    }
+  }
+
+  // ─── CIVIC SCENERY — stone tōrō lanterns + pines flanking civic approaches ───
+  _drawCivicScenery() {
+    // Stone tōrō lanterns at civic building junctions
+    const toroSpots = [
+      { x: 34, y: 22 },  // near town hall approach
+      { x: 34, y: 30 },  // near iron keep approach
+      { x: 49, y: 22 },  // near library approach
+      { x: 49, y: 30 },  // near garden pavilion approach
+      { x: 57, y: 22 },  // near post office
+      { x: 57, y: 30 },  // near leisure approach
+    ];
+
+    for (const spot of toroSpots) {
+      const screen = this.gridToScreen(spot.x, spot.y);
+      const tg = this.add.graphics();
+      tg.setDepth(screen.y + 5002);
+
+      // Base pedestal
+      tg.fillStyle(0x666660, 0.9);
+      tg.fillRect(screen.x - 4, screen.y - 2, 8, 3);
+      // Tall post
+      tg.fillStyle(0x777770, 0.9);
+      tg.fillRect(screen.x - 2, screen.y - 14, 4, 12);
+      // Square box (fire chamber)
+      tg.fillStyle(0x888880, 0.9);
+      tg.fillRect(screen.x - 4, screen.y - 18, 8, 5);
+      // Glow inside chamber
+      tg.fillStyle(0xffcc66, 0.6);
+      tg.fillRect(screen.x - 2, screen.y - 16, 4, 3);
+      // Flat cap roof
+      tg.fillStyle(0x555550, 0.9);
+      tg.fillRect(screen.x - 5, screen.y - 20, 10, 2);
+      // Finial point
+      tg.fillStyle(0x666660, 0.9);
+      tg.fillRect(screen.x - 1, screen.y - 23, 2, 3);
+
+      // Ground glow from tōrō
+      const glow = this.add.graphics();
+      glow.setDepth(-96);
+      glow.fillStyle(0xffdd88, 0.05);
+      glow.fillEllipse(screen.x, screen.y + 2, 60, 30);
+      glow.fillStyle(0xffcc66, 0.09);
+      glow.fillEllipse(screen.x, screen.y, 30, 15);
+      this.tweens.add({
+        targets: glow,
+        alpha: { from: 0.7, to: 1.0 },
+        duration: Phaser.Math.Between(1200, 2200),
+        yoyo: true,
+        repeat: -1,
+        ease: 'Sine.easeInOut',
+      });
+    }
+
+    // Pine trees flanking civic building approaches
+    const civicPines = [
+      { x: 29, y: 21 }, { x: 29, y: 27 },  // town hall flanks
+      { x: 44, y: 21 }, { x: 44, y: 27 },  // library flanks
+      { x: 56, y: 21 }, { x: 56, y: 27 },  // post office flanks
+      { x: 35, y: 34 }, { x: 50, y: 34 },  // civic south edge
+    ];
+
+    const pg = this.add.graphics();
+    for (const pine of civicPines) {
+      if (this._isWater(pine.x, pine.y) || this._isPath(pine.x, pine.y)) continue;
+      const screen = this.gridToScreen(pine.x, pine.y);
+
+      // Shadow
+      pg.fillStyle(0x000000, 0.15);
+      pg.fillEllipse(screen.x + 2, screen.y + 4, 16, 7);
+      // Trunk
+      pg.fillStyle(0x4a3520, 1);
+      pg.fillRect(screen.x - 2, screen.y - 8, 4, 12);
+      // Pine foliage layers — compact formal shape
+      const layers = [0x1a5c2a, 0x1e6630, 0x165224, 0x1a5c2a];
+      for (let i = 0; i < 4; i++) {
+        pg.fillStyle(layers[i], 1);
+        const yOff = screen.y - 12 - i * 5;
+        const size = 9 - i * 1.5;
+        pg.beginPath();
+        pg.moveTo(screen.x, yOff - size);
+        pg.lineTo(screen.x + size, yOff);
+        pg.lineTo(screen.x, yOff + size / 2);
+        pg.lineTo(screen.x - size, yOff);
+        pg.closePath();
+        pg.fillPath();
+      }
+      // Snow cap
+      pg.fillStyle(0xd8e4f0, 0.4);
+      pg.fillEllipse(screen.x, screen.y - 30, 7, 3);
+
+      pg.setDepth(screen.y + 5500);
     }
   }
 
@@ -1036,13 +1283,18 @@ export default class TownScene extends Phaser.Scene {
 
   _grassColor(x, y) {
     const nearPath = this._isNearPath(x, y);
+    // Market district (x=10-30, y=18-30) — warmer earthy tone from forge fires and foot traffic
+    const inMarket = x >= 10 && x <= 30 && y >= 18 && y <= 30;
+    // Plaza courtyard area (x=35-42, y=34-41) — warmer stone
+    const inPlaza = x >= 35 && x <= 42 && y >= 34 && y <= 41;
 
     if (nearPath) {
       // Grey slush near roads — smooth noise blending
       const n = this._smoothNoise(x * 0.25, y * 0.25);
-      const r = 0x28 + Math.round(n * 6);
-      const g = 0x2c + Math.round(n * 6);
-      const b = 0x38 + Math.round(n * 8);
+      let r = 0x28 + Math.round(n * 6);
+      let g = 0x2c + Math.round(n * 6);
+      let b = 0x38 + Math.round(n * 8);
+      if (inMarket) { r += 4; g += 2; b -= 2; }
       return (r << 16) | (g << 8) | b;
     }
 
@@ -1053,9 +1305,18 @@ export default class TownScene extends Phaser.Scene {
     const blend = n1 * 0.7 + n2 * 0.3;
 
     // Blend between snow tones: dark blue-grey base to slightly lighter
-    const r = 0x1c + Math.round(blend * 6);   // 0x1c..0x22
-    const g = 0x26 + Math.round(blend * 6);   // 0x26..0x2c
-    const b = 0x36 + Math.round(blend * 6);   // 0x36..0x3c
+    let r = 0x1c + Math.round(blend * 6);   // 0x1c..0x22
+    let g = 0x26 + Math.round(blend * 6);   // 0x26..0x2c
+    let b = 0x36 + Math.round(blend * 6);   // 0x36..0x3c
+
+    // Market zone warm shift — subtle amber from forge glow and trampled earth
+    if (inMarket) {
+      r += 5; g += 3; b -= 3;
+    }
+    // Plaza zone warm shift — slightly warmer stone
+    if (inPlaza) {
+      r += 3; g += 2; b -= 2;
+    }
 
     // Smooth moonlit patches — broad low-frequency glow
     const moon = this._smoothNoise(x * 0.04 + 50, y * 0.04 + 50);
@@ -1118,7 +1379,7 @@ export default class TownScene extends Phaser.Scene {
     this._drawGround(this.mapW || 80, this.mapH || 80);
   }
 
-  // Generate 1-tile-wide walkways from each building entrance to nearest main road
+  // Generate walkways from each building entrance to nearest main road
   _computeWalkways() {
     if (!this.pathTiles) this.pathTiles = new Set();
 
@@ -1137,47 +1398,72 @@ export default class TownScene extends Phaser.Scene {
       ['house3', 22, 85, 3, 2], ['house4', 62, 85, 3, 2],
     ];
 
-    // Main roads: E-W at y=37-38, N-S at x=38-39
-    const EW_ROAD_Y = 37; // y=37 or 38
-    const NS_ROAD_X = 38; // x=38 or 39
+    // Build a set of occupied building tiles for collision avoidance
+    const occupied = new Set();
+    for (const [, bx, by, bw, bh] of buildings) {
+      for (let ox = bx; ox < bx + bw; ox++) {
+        for (let oy = by; oy < by + bh; oy++) {
+          occupied.add(`${ox},${oy}`);
+        }
+      }
+    }
 
-    for (const [_id, bx, by, bw, bh] of buildings) {
-      // Entrance: center-bottom of building footprint
+    // Civic district buildings get 2-tile-wide walkways (x=30-60, y=18-40)
+    const civicIds = new Set(['town_hall', 'library', 'post_office', 'iron_keep', 'garden_pavilion', 'leisure']);
+
+    // Main roads: E-W at y=37-38, N-S at x=38-39
+    const EW_ROAD_Y = 37;
+    const NS_ROAD_X = 38;
+
+    for (const [id, bx, by, bw, bh] of buildings) {
       const entranceX = bx + Math.floor(bw / 2);
       const entranceY = by + bh;
+      const isCivic = civicIds.has(id);
 
-      // Find nearest road and walk toward it
       const distToEW = Math.abs(entranceY - EW_ROAD_Y);
       const distToNS = Math.abs(entranceX - NS_ROAD_X);
 
       let targetX, targetY;
       if (distToEW <= distToNS) {
-        // Walk vertically to E-W road
         targetX = entranceX;
         targetY = EW_ROAD_Y;
       } else {
-        // Walk horizontally to N-S road
         targetX = NS_ROAD_X;
         targetY = entranceY;
       }
 
-      // Skip if already on the road
       if (this._isPath(entranceX, entranceY)) continue;
 
-      // Trace Manhattan path from entrance to target road tile
+      // Trace Manhattan path, avoiding building footprints
       let cx = entranceX, cy = entranceY;
-      const maxSteps = 80; // safety limit
+      const maxSteps = 80;
       let steps = 0;
       while ((cx !== targetX || cy !== targetY) && steps < maxSteps) {
-        // Don't overwrite water tiles
-        if (!this._isWater(cx, cy) && !this._isPath(cx, cy)) {
+        if (!this._isWater(cx, cy) && !this._isPath(cx, cy) && !occupied.has(`${cx},${cy}`)) {
           this.pathTiles.add(`${cx},${cy}`);
+          // Civic buildings: add adjacent tile for wider walkway
+          if (isCivic) {
+            const isVertical = (targetX === entranceX);
+            const adj = isVertical ? `${cx + 1},${cy}` : `${cx},${cy + 1}`;
+            if (!this._isWater(cx + (isVertical ? 1 : 0), cy + (isVertical ? 0 : 1)) && !occupied.has(adj)) {
+              this.pathTiles.add(adj);
+            }
+          }
         }
         // Move one step: prefer the longer axis first
-        if (Math.abs(cx - targetX) > Math.abs(cy - targetY)) {
-          cx += cx < targetX ? 1 : -1;
+        const dx = Math.abs(cx - targetX);
+        const dy = Math.abs(cy - targetY);
+        const nextX = cx + (cx < targetX ? 1 : -1);
+        const nextY = cy + (cy < targetY ? 1 : -1);
+        if (dx > dy) {
+          // Prefer horizontal but skip if occupied by a building
+          if (!occupied.has(`${nextX},${cy}`)) { cx = nextX; }
+          else if (dy > 0 && !occupied.has(`${cx},${nextY}`)) { cy = nextY; }
+          else { cx = nextX; } // last resort
         } else {
-          cy += cy < targetY ? 1 : -1;
+          if (!occupied.has(`${cx},${nextY}`)) { cy = nextY; }
+          else if (dx > 0 && !occupied.has(`${nextX},${cy}`)) { cx = nextX; }
+          else { cy = nextY; }
         }
         steps++;
       }
