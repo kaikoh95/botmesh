@@ -150,7 +150,7 @@ export default class Building {
         // All sprites are generated with the building base at the very bottom of the canvas,
         // so setOrigin(0.5, 1.0) places the base exactly on the isometric ground plane.
         const TILE_W = 64;
-        const targetW = this.gridW * TILE_W * 1.8; // 1.8x footprint: buildings visually taller than ground
+        const targetW = this.gridW * TILE_W * 1.2; // 1.2x footprint: fits 5-tile gaps without visual overlap
         const scale = targetW / img.width;
         img.setScale(scale);
         const spriteH = img.displayHeight;
