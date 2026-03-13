@@ -232,7 +232,7 @@ export default class TownScene extends Phaser.Scene {
     this._initSnow();
 
     // ── Frost sparkles — tiny glints on the snow surface ──────────────────
-    this._initFrostSparkles();
+    // frost sparkles removed — screen-space overlay caused false void bleed
 
     // ── Snow drift accents — small white mounds near buildings ─────────────
     this._drawSnowDrifts();
