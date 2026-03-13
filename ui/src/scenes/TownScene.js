@@ -958,7 +958,7 @@ export default class TownScene extends Phaser.Scene {
     ]);
 
     // Draw ground with padding beyond grid edges so buildings never float over void
-    const PAD = 15;
+    const PAD = 60; // large padding so snow fills screen even at max zoom-out
     for (let y = -PAD; y < mapH + PAD; y++) {
       for (let x = -PAD; x < mapW + PAD; x++) {
         const inGrid = x >= 0 && x < mapW && y >= 0 && y < mapH;
