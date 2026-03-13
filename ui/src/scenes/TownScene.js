@@ -125,6 +125,7 @@ export default class TownScene extends Phaser.Scene {
     this._windowGlows = [];
     this._districtGroundChunks = {};
     this._groundChunks = [];
+    this._groundGeneration = 0; // guards against async ground rebuild races
     this._preloadAllDistrictGrounds();
 
     // Draw scenery for communal district
@@ -1192,18 +1193,24 @@ export default class TownScene extends Phaser.Scene {
   }
 
   async _preloadAllDistrictGrounds() {
+    const gen = ++this._groundGeneration;
     const districtKeys = Object.keys(DISTRICTS);
     for (const key of districtKeys) {
       const chunks = await this._drawGroundAsync(this.mapW, this.mapH, DISTRICTS[key].bounds);
+      // Abort if a rebuild superseded this preload
+      if (this._groundGeneration !== gen) {
+        chunks.forEach(c => c.destroy());
+        return;
+      }
       this._districtGroundChunks[key] = chunks;
       this._groundChunks.push(...chunks);
-      // Only communal visible at startup
-      const visible = (key === 'communal');
+      const visible = (key === this._currentDistrict);
       chunks.forEach(c => c.setVisible(visible));
     }
   }
 
   async _rebuildAllDistrictGrounds() {
+    const gen = ++this._groundGeneration;
     // Destroy all existing ground chunks
     (this._groundChunks || []).forEach(rt => rt.destroy());
     this._groundChunks = [];
@@ -1216,6 +1223,11 @@ export default class TownScene extends Phaser.Scene {
     const districtKeys = Object.keys(DISTRICTS);
     for (const key of districtKeys) {
       const chunks = await this._drawGroundAsync(this.mapW, this.mapH, DISTRICTS[key].bounds);
+      // Abort if another rebuild superseded this one
+      if (this._groundGeneration !== gen) {
+        chunks.forEach(c => c.destroy());
+        return;
+      }
       this._districtGroundChunks[key] = chunks;
       this._groundChunks.push(...chunks);
       const visible = (key === this._currentDistrict);
