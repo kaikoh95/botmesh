@@ -352,9 +352,11 @@ export default class TownScene extends Phaser.Scene {
 
       const g = this.add.graphics();
       g.fillStyle(color, alpha);
-      // Scale size up so flakes are visible at any zoom (world-space needs larger px)
-      g.fillCircle(0, 0, size * 4);
+      g.fillCircle(0, 0, size);
       g.setDepth(9999);
+      g._baseSize = size;
+      g._color = color;
+      g._alpha = alpha;
 
       const flake = {
         gfx: g,
@@ -381,6 +383,9 @@ export default class TownScene extends Phaser.Scene {
     if (!this._snowFlakes) return;
     const dt = delta / 1000;
     const bounds = this._getWorldBounds(this.mapW || 120, this.mapH || 120);
+    const zoom = this.cameras.main.zoom || 1;
+    // Scale flake size inversely with zoom so they always look ~2-5px on screen
+    const sizeScale = Math.max(1, 1 / zoom);
 
     for (const f of this._snowFlakes) {
       f.wobble += dt * f.wobbleFreq;
@@ -388,9 +393,18 @@ export default class TownScene extends Phaser.Scene {
       f.wy += f.speed * dt;
 
       // Wrap: when flake exits bottom, respawn at top within bounds
-      if (f.wy > bounds.bottom)  { f.wy = bounds.top; f.wx = Phaser.Math.FloatBetween(bounds.left, bounds.right); }
+      if (f.wy > bounds.bottom)  { f.wy = bounds.top;   f.wx = Phaser.Math.FloatBetween(bounds.left, bounds.right); }
       if (f.wx < bounds.left)    { f.wx = bounds.right; }
-      if (f.wx > bounds.right)   { f.wx = bounds.left; }
+      if (f.wx > bounds.right)   { f.wx = bounds.left;  }
+
+      // Redraw with zoom-adjusted size
+      const screenSize = f.gfx._baseSize * sizeScale;
+      if (Math.abs(screenSize - (f.gfx._lastSize || 0)) > 0.5) {
+        f.gfx.clear();
+        f.gfx.fillStyle(f.gfx._color || 0xffffff, f.gfx._alpha || 0.8);
+        f.gfx.fillCircle(0, 0, screenSize);
+        f.gfx._lastSize = screenSize;
+      }
 
       f.gfx.setPosition(f.wx, f.wy);
     }
