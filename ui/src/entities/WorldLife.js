@@ -57,6 +57,7 @@ export default class WorldLife {
         const spr = scene.add.image(pos.x, pos.y - 16, key).setOrigin(0.5, 1).setDepth((tx + ty) * 100);
         spr.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
         scaleToMaxH(spr, 1.4 * TILE_H); // sakura — compact, not larger than buildings
+        spr._gx = tx; spr._gy = ty;
         this.elements.push(spr);
       }
     }
@@ -73,6 +74,7 @@ export default class WorldLife {
         const spr = scene.add.image(pos.x, pos.y - 12, key).setOrigin(0.5, 1).setDepth((tx + ty) * 100);
         spr.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
         scaleToMaxH(spr, 2.2 * TILE_H); // bamboo — tall but not towering
+        spr._gx = tx; spr._gy = ty;
         this.elements.push(spr);
       }
     }
@@ -88,6 +90,7 @@ export default class WorldLife {
         const spr = scene.add.image(pos.x, pos.y, key).setOrigin(0.5, 0.75).setDepth((tx + ty) * 100);
         spr.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
         scaleToMaxH(spr, 1.2 * TILE_H); // zen garden — ground-level, compact
+        spr._gx = tx; spr._gy = ty;
         this.elements.push(spr);
       }
     }
@@ -104,6 +107,7 @@ export default class WorldLife {
         const spr = scene.add.image(pos.x, pos.y - 8, key).setOrigin(0.5, 1).setDepth((tx + ty) * 100);
         spr.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
         scaleToMaxH(spr, 2.0 * TILE_H); // willows — tall, drooping
+        spr._gx = tx; spr._gy = ty;
         this.elements.push(spr);
       }
     }
@@ -116,6 +120,7 @@ export default class WorldLife {
       kuroki.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
       scaleToMaxH(kuroki, 2.5 * TILE_H); // taller than willow, upright and imposing
       kuroki.setName('kuroki');
+      kuroki._gx = 14; kuroki._gy = 12;
       this.elements.push(kuroki);
     }
 
@@ -125,6 +130,7 @@ export default class WorldLife {
       const pond = scene.add.image(pos.x, pos.y, 'life-koipond').setOrigin(0.5, 0.75).setDepth((14 + 24) * 100);
       pond.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
       scaleToMaxH(pond, 1.5 * TILE_H);
+      pond._gx = 14; pond._gy = 24;
       this.elements.push(pond);
     }
   }
@@ -141,6 +147,7 @@ export default class WorldLife {
         const crane = scene.add.image(pos.x, pos.y, 'life-crane').setOrigin(0.5, 1).setDepth((tx + ty) * 100);
         crane.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
         crane.setScale(0.04);
+        crane._gx = tx; crane._gy = ty;
         this.elements.push(crane);
         // Gentle bob animation
         scene.tweens.add({ targets: crane, y: crane.y - 2, duration: 2000, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' });
@@ -153,6 +160,7 @@ export default class WorldLife {
       const deer = scene.add.image(pos.x, pos.y, 'life-deer').setOrigin(0.5, 1).setDepth((27 + 22) * 100);
       deer.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
       deer.setScale(0.04);
+      deer._gx = 27; deer._gy = 22;
       this.elements.push(deer);
       this.animatedElements.push({ sprite: deer, type: 'wander', baseX: pos.x, baseY: pos.y });
     }
@@ -166,6 +174,7 @@ export default class WorldLife {
         const bf = scene.add.image(pos.x, pos.y - 20, 'life-butterfly').setOrigin(0.5, 0.5).setDepth((tx + ty) * 100 + 10);
         bf.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
         bf.setScale(0.03);
+        bf._gx = tx; bf._gy = ty;
         this.elements.push(bf);
         // Drift in a small circle
         scene.tweens.add({
@@ -207,6 +216,7 @@ export default class WorldLife {
         .setAlpha(0);
       ff.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
       ff.setScale(0.03);
+      ff._gx = tx; ff._gy = ty;
       this.elements.push(ff);
       // Twinkle in/out
       scene.tweens.add({

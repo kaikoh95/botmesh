@@ -1041,72 +1041,32 @@ html, body {
   top: 12px;
   left: 50%;
   transform: translateX(-50%);
-  z-index: 200;
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 2px;
-  pointer-events: auto;
-}
-
-.nav-middle {
-  display: flex;
-  align-items: center;
-  gap: 2px;
-}
-
-#district-label {
-  background: rgba(10, 13, 26, 0.85);
-  border: 1px solid rgba(200, 170, 110, 0.25);
-  border-radius: 4px;
-  color: #c9a84c;
-  font-family: 'Press Start 2P', monospace;
-  font-size: 8px;
-  padding: 6px 14px;
-  letter-spacing: 0.5px;
-  min-width: 140px;
-  text-align: center;
-  white-space: nowrap;
-}
-
-.nav-btn {
-  background: rgba(10, 13, 26, 0.85);
-  border: 1px solid rgba(200, 170, 110, 0.25);
-  border-radius: 4px;
-  color: #e8d5a3;
-  font-size: 12px;
-  width: 30px;
-  height: 30px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
+  gap: 6px;
+  z-index: 1000;
+  flex-wrap: wrap;
   justify-content: center;
-  transition: background 0.15s, opacity 0.15s;
 }
 
-.nav-btn:hover:not(:disabled) {
-  background: rgba(74, 53, 32, 0.95);
-  border-color: rgba(200, 170, 110, 0.5);
+.dist-btn {
+  background: rgba(10, 15, 30, 0.82);
+  color: #c9a84c;
+  border: 1px solid rgba(201, 168, 76, 0.4);
+  border-radius: 6px;
+  padding: 5px 9px;
+  font-size: 10px;
+  font-family: 'Press Start 2P', monospace;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s, border-color 0.15s;
 }
 
-.nav-btn:disabled {
-  cursor: default;
-  opacity: 0.2;
-  pointer-events: none;
+.dist-btn:hover {
+  background: rgba(30, 40, 70, 0.92);
+  border-color: #c9a84c;
 }
 
-@media (max-width: 768px) {
-  #district-nav {
-    top: max(8px, env(safe-area-inset-top));
-  }
-  .nav-btn {
-    width: 36px;
-    height: 36px;
-    font-size: 14px;
-  }
-  #district-label {
-    font-size: 7px;
-    padding: 5px 10px;
-    min-width: 110px;
-  }
+.dist-btn.active {
+  background: rgba(201, 168, 76, 0.25);
+  border-color: #c9a84c;
 }

@@ -17,17 +17,11 @@ const TILE_PNG_H = 48; // cube tile: 32px top face + 16px side faces
 
 // ── District definitions ─────────────────────────────────────────────────────
 const DISTRICTS = {
-  communal:    { label: 'Communal District',  cx: 30, cy: 38, bounds: { x1: 5,  y1: 15, x2: 65, y2: 65 } },
-  residential: { label: 'Residential',        cx: 42, cy: 82, bounds: { x1: 0,  y1: 66, x2: 119, y2: 119 } },
-  cronos:      { label: 'Cronos Shrine',       cx: 18, cy: 10, bounds: { x1: 0,  y1: 0,  x2: 55, y2: 36 } },
-  scarlet:     { label: 'Scarlet Sanctum',     cx: 85, cy: 7,  bounds: { x1: 56, y1: 0,  x2: 119, y2: 36 } },
-};
-
-const NAV_MAP = {
-  communal:    { up: 'cronos',    down: 'residential', left: null,      right: 'scarlet' },
-  residential: { up: 'communal', down: null,           left: null,      right: null },
-  cronos:      { up: null,       down: 'communal',     left: null,      right: 'scarlet' },
-  scarlet:     { up: null,       down: 'communal',     left: 'cronos',  right: null },
+  cronos:      { label: 'Cronos Shrine',    cx: 18, cy: 10, bounds: { x1: 0,  y1: 0,  x2: 37,  y2: 14 } },
+  scarlet:     { label: 'Scarlet Sanctum',  cx: 87, cy: 8,  bounds: { x1: 38, y1: 0,  x2: 119, y2: 14 } },
+  communal:    { label: 'Communal District',cx: 20, cy: 35, bounds: { x1: 0,  y1: 15, x2: 37,  y2: 64 } },
+  east:        { label: 'East District',    cx: 50, cy: 30, bounds: { x1: 38, y1: 15, x2: 119, y2: 64 } },
+  residential: { label: 'Residential',      cx: 42, cy: 78, bounds: { x1: 0,  y1: 65, x2: 119, y2: 119 } },
 };
 
 export default class TownScene extends Phaser.Scene {
@@ -1192,57 +1186,34 @@ export default class TownScene extends Phaser.Scene {
   // ── District navigation system ──────────────────────────────────────────────
 
   _initDistrictNav() {
-    // Create HTML overlay for district navigation
+    // Create HTML overlay for district navigation — direct jump buttons
     const nav = document.createElement('div');
     nav.id = 'district-nav';
     nav.innerHTML = `
-      <button id="nav-up" class="nav-btn">▲</button>
-      <div class="nav-middle">
-        <button id="nav-left" class="nav-btn">◀</button>
-        <span id="district-label">Communal District</span>
-        <button id="nav-right" class="nav-btn">▶</button>
-      </div>
-      <button id="nav-down" class="nav-btn">▼</button>
+      <button class="dist-btn" data-district="communal">🏮 Communal</button>
+      <button class="dist-btn" data-district="east">🔨 East</button>
+      <button class="dist-btn" data-district="cronos">⛩️ Cronos</button>
+      <button class="dist-btn" data-district="scarlet">🔴 Scarlet</button>
+      <button class="dist-btn" data-district="residential">🏠 Residential</button>
     `;
     document.body.appendChild(nav);
 
-    // Bind navigation clicks
-    ['up', 'down', 'left', 'right'].forEach(dir => {
-      const btn = document.getElementById('nav-' + dir);
-      if (!btn) return;
-      btn.addEventListener('click', () => {
-        const nav = NAV_MAP[this._currentDistrict];
-        const target = nav?.[dir];
-        if (!target) return;
-        this._navigateToDistrict(target);
+    // Bind district jump clicks
+    document.querySelectorAll('.dist-btn').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const key = btn.dataset.district;
+        if (key === this._currentDistrict) return;
+        document.querySelectorAll('.dist-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        this.cameras.main.fade(250, 0, 0, 0, false, async (_cam, progress) => {
+          if (progress < 1) return;
+          await this._loadDistrict(key);
+          this.cameras.main.fadeIn(300);
+        });
       });
     });
-
-    this._currentDistrict = 'communal';
-    this._updateNavButtons('communal');
-  }
-
-  async _navigateToDistrict(key) {
-    if (this._navTransitioning) return;
-    this._navTransitioning = true;
-
-    // Disable nav buttons during transition
-    document.querySelectorAll('.nav-btn').forEach(b => b.disabled = true);
-
-    // Fade camera out
-    this.cameras.main.fade(300, 0, 0, 0);
-    await new Promise(r => this.time.delayedCall(320, r));
-
-    // Load the new district
-    await this._loadDistrict(key);
-
-    // Fade camera back in
-    this.cameras.main.fadeIn(300, 0, 0, 0);
-    await new Promise(r => this.time.delayedCall(320, r));
-
-    // Re-enable nav buttons
-    document.querySelectorAll('.nav-btn').forEach(b => b.disabled = false);
-    this._navTransitioning = false;
+    const initialBtn = document.querySelector('.dist-btn[data-district="communal"]');
+    if (initialBtn) initialBtn.classList.add('active');
   }
 
   async _loadDistrict(key) {
@@ -1305,46 +1276,36 @@ export default class TownScene extends Phaser.Scene {
     const center = this.gridToScreen(d.cx, d.cy);
     this.cameras.main.pan(center.x, center.y, 400, 'Sine.easeInOut');
 
-    // 10. Update nav UI
-    const label = document.getElementById('district-label');
-    if (label) label.textContent = d.label;
-    this._updateNavButtons(key);
+    // 10. Update nav UI — highlight active button
+    document.querySelectorAll('.dist-btn').forEach(b => b.classList.remove('active'));
+    const activeBtn = document.querySelector(`.dist-btn[data-district="${key}"]`);
+    if (activeBtn) activeBtn.classList.add('active');
   }
 
-  _updateNavButtons(key) {
-    const nav = NAV_MAP[key];
-    ['up', 'down', 'left', 'right'].forEach(dir => {
-      const btn = document.getElementById('nav-' + dir);
-      if (!btn) return;
-      const hasTarget = !!nav[dir];
-      btn.style.opacity = hasTarget ? '1' : '0.2';
-      btn.style.pointerEvents = hasTarget ? 'auto' : 'none';
-    });
-  }
 
   _filterLifeForDistrict(key) {
     if (!this.worldLife) return;
     const d = DISTRICTS[key];
-    // Convert district grid bounds to screen-space bounding box
-    const corners = [
-      this.gridToScreen(d.bounds.x1, d.bounds.y1),
-      this.gridToScreen(d.bounds.x2, d.bounds.y1),
-      this.gridToScreen(d.bounds.x1, d.bounds.y2),
-      this.gridToScreen(d.bounds.x2, d.bounds.y2),
-    ];
-    const sx1 = Math.min(...corners.map(c => c.x)) - 64;
-    const sx2 = Math.max(...corners.map(c => c.x)) + 64;
-    const sy1 = Math.min(...corners.map(c => c.y)) - 64;
-    const sy2 = Math.max(...corners.map(c => c.y)) + 64;
+    const x1 = d.bounds.x1 - 1, x2 = d.bounds.x2 + 1;
+    const y1 = d.bounds.y1 - 1, y2 = d.bounds.y2 + 1;
 
-    const allEls = [...(this.worldLife.elements || []), ...(this.worldLife.animatedElements || [])];
-    for (const el of allEls) {
-      // animatedElements are { sprite, type, ... } objects
-      const obj = el?.sprite || el;
-      if (!obj || obj.destroyed) continue;
-      const inView = obj.x >= sx1 && obj.x <= sx2 && obj.y >= sy1 && obj.y <= sy2;
-      if (obj.setVisible) obj.setVisible(inView);
-    }
+    const filter = (el) => {
+      const obj = el?.sprite ?? el;
+      if (!obj || obj.destroyed) return;
+      let gx = obj._gx, gy = obj._gy;
+      if (gx === undefined) {
+        // Reverse-map from world coords as fallback
+        const dx = (obj.x - this.originX) / (TILE_W / 2);
+        const dy = (obj.y - this.originY) / (TILE_H / 2);
+        gx = Math.round((dx + dy) / 2);
+        gy = Math.round((dy - dx) / 2);
+      }
+      const inside = gx >= x1 && gx <= x2 && gy >= y1 && gy <= y2;
+      if (obj.setVisible) obj.setVisible(inside);
+    };
+
+    (this.worldLife.elements || []).forEach(filter);
+    (this.worldLife.animatedElements || []).forEach(filter);
   }
 
   _showDistrictLoading() {
