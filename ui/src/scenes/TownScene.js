@@ -1280,22 +1280,20 @@ export default class TownScene extends Phaser.Scene {
       this._setBuildingVisible(b, inDistrict);
     });
 
-    // 3. Show/hide agents — reverse-map from container position if no location data
+    // 3. Show/hide agents — use stored gridX/gridY for reliable filtering
     Object.values(this.agents).forEach(a => {
       if (!a.container) return;
-      let gx, gy;
-      const loc = a.agentData?.location;
-      if (loc && loc.x !== undefined) {
-        gx = loc.x; gy = loc.y;
-      } else {
-        const dx = (a.container.x - this.originX) / (TILE_W / 2);
-        const dy = (a.container.y - this.originY) / (TILE_H / 2);
-        gx = Math.round((dx + dy) / 2);
-        gy = Math.round((dy - dx) / 2);
-      }
+      const gx = a.gridX ?? 0;
+      const gy = a.gridY ?? 0;
       const inside = gx >= d.bounds.x1 - 1 && gx <= d.bounds.x2 + 1 &&
                      gy >= d.bounds.y1 - 1 && gy <= d.bounds.y2 + 1;
       a.container.setVisible(inside);
+      // Clear speech bubble when hiding agent to prevent cross-district text bleed
+      if (!inside && a.speechBubble) {
+        a.speechBubble.destroy();
+        a.speechBubble = null;
+        if (a.speechTimer) { clearTimeout(a.speechTimer); a.speechTimer = null; }
+      }
     });
 
     // 4. Filter life entities to district screen bounds
@@ -1342,8 +1340,9 @@ export default class TownScene extends Phaser.Scene {
   _filterLifeForDistrict(key) {
     if (!this.worldLife) return;
     const d = DISTRICTS[key];
-    const x1 = d.bounds.x1 - 1, x2 = d.bounds.x2 + 1;
-    const y1 = d.bounds.y1 - 1, y2 = d.bounds.y2 + 1;
+    // Strict bounds — no padding to prevent entities bleeding past terrain edge
+    const x1 = d.bounds.x1, x2 = d.bounds.x2;
+    const y1 = d.bounds.y1, y2 = d.bounds.y2;
 
     const filter = (el) => {
       const obj = el?.sprite ?? el;
@@ -1358,6 +1357,8 @@ export default class TownScene extends Phaser.Scene {
       }
       const inside = gx >= x1 && gx <= x2 && gy >= y1 && gy <= y2;
       if (obj.setVisible) obj.setVisible(inside);
+      // Hide shadow sub-sprite if present
+      if (obj._shadow && obj._shadow.setVisible) obj._shadow.setVisible(inside);
     };
 
     (this.worldLife.elements || []).forEach(filter);
@@ -1964,6 +1965,9 @@ export default class TownScene extends Phaser.Scene {
 
     // Apply district visibility — hide buildings/agents outside current district
     this._applyDistrictVisibility();
+
+    // Defensive re-apply after microtask — catches any async preload interference
+    requestAnimationFrame(() => this._applyDistrictVisibility());
   }
 
   _applyDistrictVisibility() {
@@ -1979,19 +1983,17 @@ export default class TownScene extends Phaser.Scene {
 
     Object.values(this.agents).forEach(a => {
       if (!a.container) return;
-      let gx, gy;
-      const loc = a.agentData?.location;
-      if (loc && loc.x !== undefined) {
-        gx = loc.x; gy = loc.y;
-      } else {
-        const dx = (a.container.x - this.originX) / (TILE_W / 2);
-        const dy = (a.container.y - this.originY) / (TILE_H / 2);
-        gx = Math.round((dx + dy) / 2);
-        gy = Math.round((dy - dx) / 2);
-      }
+      const gx = a.gridX ?? 0;
+      const gy = a.gridY ?? 0;
       const inside = gx >= d.bounds.x1 - 1 && gx <= d.bounds.x2 + 1 &&
                      gy >= d.bounds.y1 - 1 && gy <= d.bounds.y2 + 1;
       a.container.setVisible(inside);
+      // Clear speech bubble when hiding to prevent cross-district text bleed
+      if (!inside && a.speechBubble) {
+        a.speechBubble.destroy();
+        a.speechBubble = null;
+        if (a.speechTimer) { clearTimeout(a.speechTimer); a.speechTimer = null; }
+      }
     });
 
     this._filterLifeForDistrict(this._currentDistrict);

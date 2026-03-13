@@ -41,6 +41,9 @@ export default class Agent {
     this.gridX = agentData.location?.x ?? 0;
     this.gridY = agentData.location?.y ?? 0;
 
+    // Store original data for district filtering
+    this.agentData = agentData;
+
     // Container holds body + label + speech bubble
     this.container = scene.add.container(screenX, screenY);
     // Depth: (gx + gy) * 100 + 50 — unified isometric sort, agents slightly above static entities
