@@ -236,9 +236,9 @@ export default class WorldLife {
   update(time, delta) {
     // Deer wanders slowly
     for (const el of this.animatedElements) {
-      if (el.type === 'wander' && time % 8000 < delta) {
-        const dx = Phaser.Math.Between(-20, 20);
-        const dy = Phaser.Math.Between(-10, 10);
+      if (el.type === 'wander' && el.sprite?.visible && time % 8000 < delta) {
+        const dx = Phaser.Math.Between(-12, 12);
+        const dy = Phaser.Math.Between(-6, 6);
         this.scene.tweens.add({
           targets: el.sprite,
           x: el.baseX + dx,
