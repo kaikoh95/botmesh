@@ -1238,12 +1238,22 @@ export default class TownScene extends Phaser.Scene {
       if (b.container) b.container.setVisible(inside);
     });
 
-    // 3. Show/hide agents — exact bounds, no padding
+    // 3. Show/hide agents — reverse-map from container position if no location data
     Object.values(this.agents).forEach(a => {
+      if (!a.container) return;
+      let gx, gy;
       const loc = a.agentData?.location;
-      if (!loc || !a.container) return;
-      const inside = loc.x >= d.bounds.x1 && loc.x <= d.bounds.x2 &&
-                     loc.y >= d.bounds.y1 && loc.y <= d.bounds.y2;
+      if (loc && loc.x !== undefined) {
+        gx = loc.x; gy = loc.y;
+      } else {
+        // Reverse-map from container world position to grid
+        const dx = (a.container.x - this.originX) / (TILE_W / 2);
+        const dy = (a.container.y - this.originY) / (TILE_H / 2);
+        gx = Math.round((dx + dy) / 2);
+        gy = Math.round((dy - dx) / 2);
+      }
+      const inside = gx >= d.bounds.x1 - 1 && gx <= d.bounds.x2 + 1 &&
+                     gy >= d.bounds.y1 - 1 && gy <= d.bounds.y2 + 1;
       a.container.setVisible(inside);
     });
 
@@ -1920,10 +1930,19 @@ export default class TownScene extends Phaser.Scene {
     });
 
     Object.values(this.agents).forEach(a => {
+      if (!a.container) return;
+      let gx, gy;
       const loc = a.agentData?.location;
-      if (!loc || !a.container) return;
-      const inside = loc.x >= d.bounds.x1 && loc.x <= d.bounds.x2 &&
-                     loc.y >= d.bounds.y1 && loc.y <= d.bounds.y2;
+      if (loc && loc.x !== undefined) {
+        gx = loc.x; gy = loc.y;
+      } else {
+        const dx = (a.container.x - this.originX) / (TILE_W / 2);
+        const dy = (a.container.y - this.originY) / (TILE_H / 2);
+        gx = Math.round((dx + dy) / 2);
+        gy = Math.round((dy - dx) / 2);
+      }
+      const inside = gx >= d.bounds.x1 - 1 && gx <= d.bounds.x2 + 1 &&
+                     gy >= d.bounds.y1 - 1 && gy <= d.bounds.y2 + 1;
       a.container.setVisible(inside);
     });
 
