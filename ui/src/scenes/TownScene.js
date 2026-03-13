@@ -352,8 +352,8 @@ export default class TownScene extends Phaser.Scene {
 
       const g = this.add.graphics();
       g.fillStyle(color, alpha);
-      g.fillCircle(0, 0, size);
-      // NO setScrollFactor — flakes are in world space
+      // Scale size up so flakes are visible at any zoom (world-space needs larger px)
+      g.fillCircle(0, 0, size * 4);
       g.setDepth(9999);
 
       const flake = {
