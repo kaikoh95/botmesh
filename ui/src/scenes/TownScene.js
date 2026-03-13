@@ -359,21 +359,18 @@ export default class TownScene extends Phaser.Scene {
   }
 
   _initSnow() {
-    // World-space snow: flakes live in world coordinates, covering the full map.
-    // Density stays consistent at any zoom level because flakes span the actual world.
-    const FLAKE_COUNT = 600;
+    // SCREEN-SPACE snow: scrollFactor(0) so flakes always stay in viewport.
+    // This prevents snow from ever appearing in the dark void outside the ground tile.
+    const FLAKE_COUNT = 300;
     this._snowFlakes = [];
-
-    // Map world extents — spawn across the full 120x120 grid plus padding
-    const mapW = (this.mapW || 120);
-    const mapH = (this.mapH || 120);
-    const worldBounds = this._getWorldBounds(mapW, mapH);
+    const W = this.cameras.main.width;
+    const H = this.cameras.main.height;
 
     for (let i = 0; i < FLAKE_COUNT; i++) {
       const size   = Phaser.Math.Between(1, 3);
       const alpha  = Phaser.Math.FloatBetween(0.5, 0.95);
-      const speed  = Phaser.Math.FloatBetween(30, 90);    // world px/s fall speed
-      const drift  = Phaser.Math.FloatBetween(-20, -5);   // leftward wind drift
+      const speed  = Phaser.Math.FloatBetween(40, 120);   // screen px/s
+      const drift  = Phaser.Math.FloatBetween(-15, -3);
       const wobble = Phaser.Math.FloatBetween(0, Math.PI * 2);
       const color  = Math.random() < 0.4 ? 0xddeeff : 0xffffff;
 
@@ -381,17 +378,17 @@ export default class TownScene extends Phaser.Scene {
       g.fillStyle(color, alpha);
       g.fillCircle(0, 0, size);
       g.setDepth(9999);
+      g.setScrollFactor(0); // screen-space: never in the world void
       g._baseSize = size;
       g._color = color;
       g._alpha = alpha;
 
       const flake = {
         gfx: g,
-        // Scatter initial positions across full world bounds
-        wx: Phaser.Math.FloatBetween(worldBounds.left, worldBounds.right),
-        wy: Phaser.Math.FloatBetween(worldBounds.top, worldBounds.bottom),
+        wx: Phaser.Math.FloatBetween(0, W),
+        wy: Phaser.Math.FloatBetween(-H, H),
         size, speed, drift, wobble,
-        wobbleAmp:  Phaser.Math.FloatBetween(10, 30),
+        wobbleAmp:  Phaser.Math.FloatBetween(8, 20),
         wobbleFreq: Phaser.Math.FloatBetween(0.5, 1.5),
       };
       g.setPosition(flake.wx, flake.wy);
@@ -437,32 +434,21 @@ export default class TownScene extends Phaser.Scene {
   _updateSnow(delta) {
     if (!this._snowFlakes) return;
     const dt = delta / 1000;
-    const bounds = this._getDistrictWorldBounds();
-    const zoom = this.cameras.main.zoom || 1;
-    // Scale flake size inversely with zoom so they always look ~2-5px on screen
-    const sizeScale = Math.max(1, 1 / zoom);
+    const W = this.cameras.main.width;
+    const H = this.cameras.main.height;
 
     for (const f of this._snowFlakes) {
       f.wobble += dt * f.wobbleFreq;
       f.wx += f.drift * dt + Math.sin(f.wobble) * f.wobbleAmp * dt;
       f.wy += f.speed * dt;
 
-      // Wrap: when flake exits bounds, respawn at a grid position within district
-      if (f.wy > bounds.bottom || f.wx < bounds.left || f.wx > bounds.right) {
-        if (this._currentDistrict && DISTRICTS[this._currentDistrict]) {
-          const d = DISTRICTS[this._currentDistrict];
-          const gx = Phaser.Math.FloatBetween(d.bounds.x1, d.bounds.x2);
-          const gy = Phaser.Math.FloatBetween(d.bounds.y1, d.bounds.y2);
-          const sc = this.gridToScreen(gx, gy);
-          f.wx = sc.x + Phaser.Math.FloatBetween(-20, 20);
-          f.wy = bounds.top + Phaser.Math.FloatBetween(-30, 0);
-        } else {
-          f.wy = bounds.top; f.wx = Phaser.Math.FloatBetween(bounds.left, bounds.right);
-        }
-      }
+      // Wrap in screen-space
+      if (f.wy > H + 10)  { f.wy = -10; f.wx = Phaser.Math.FloatBetween(0, W); }
+      if (f.wx < -20)     { f.wx = W + 10; }
+      if (f.wx > W + 20)  { f.wx = -10; }
 
-      // Redraw with zoom-adjusted size
-      const screenSize = f.gfx._baseSize * sizeScale;
+      // Redraw (no zoom scaling needed — screen-space)
+      const screenSize = f.gfx._baseSize;
       if (Math.abs(screenSize - (f.gfx._lastSize || 0)) > 0.5) {
         f.gfx.clear();
         f.gfx.fillStyle(f.gfx._color || 0xffffff, f.gfx._alpha || 0.8);
@@ -479,19 +465,14 @@ export default class TownScene extends Phaser.Scene {
     this._frostSparkles = [];
     const count = 40;
     for (let i = 0; i < count; i++) {
-      // Random grid positions avoiding water/paths
-      const gx = Phaser.Math.Between(1, 115);
-      const gy = Phaser.Math.Between(1, 115);
-      if (this._isWater(gx, gy) || this._isPath(gx, gy) || this._buildingFootprint?.has(`${gx},${gy}`)) continue;
-
-      const screen = this.gridToScreen(gx, gy);
-      // Offset within tile for variety
-      const ox = Phaser.Math.Between(-12, 12);
-      const oy = Phaser.Math.Between(-6, 6);
+      // Screen-space frost sparkle — no world position, always on screen
+      const W = this.cameras.main.width;
+      const H = this.cameras.main.height;
+      const px = Phaser.Math.Between(0, W);
+      const py = Phaser.Math.Between(0, H);
 
       const g = this.add.graphics();
       g.fillStyle(0xd0e8ff, 0.9);
-      // Tiny 4-point star shape
       const s = Phaser.Math.FloatBetween(1.0, 2.0);
       g.beginPath();
       g.moveTo(0, -s * 1.5);
@@ -500,8 +481,9 @@ export default class TownScene extends Phaser.Scene {
       g.lineTo(-s * 0.5, 0);
       g.closePath();
       g.fillPath();
-      g.setPosition(screen.x + ox, screen.y + oy);
+      g.setPosition(px, py);
       g.setDepth(2);
+      g.setScrollFactor(0); // screen-space: never in the void
       g.setAlpha(0);
 
       // Staggered twinkle tween
@@ -1311,28 +1293,6 @@ export default class TownScene extends Phaser.Scene {
 
     // 9. Re-scatter snow + frost sparkles to district bounds
     const distBounds = this._getDistrictWorldBounds();
-    // Re-scatter snow + frost to grid positions within district (not screen rect — avoids void)
-    if (this._snowFlakes) {
-      for (const f of this._snowFlakes) {
-        const gx = Phaser.Math.FloatBetween(d.bounds.x1, d.bounds.x2);
-        const gy = Phaser.Math.FloatBetween(d.bounds.y1, d.bounds.y2);
-        const sc = this.gridToScreen(gx, gy);
-        f.wx = sc.x + Phaser.Math.FloatBetween(-20, 20);
-        f.wy = sc.y + Phaser.Math.FloatBetween(-10, 10);
-        f.gfx.setPosition(f.wx, f.wy);
-      }
-    }
-    if (this._frostSparkles) {
-      for (const s of this._frostSparkles) {
-        const obj = s.gfx || s;
-        if (!obj || obj.destroyed) continue;
-        const gx = Phaser.Math.Between(d.bounds.x1, d.bounds.x2);
-        const gy = Phaser.Math.Between(d.bounds.y1, d.bounds.y2);
-        const sc = this.gridToScreen(gx, gy);
-        obj.setPosition(sc.x + Phaser.Math.Between(-12, 12), sc.y + Phaser.Math.Between(-6, 6));
-      }
-    }
-
     // 10. Set camera bounds to district area + pan to center
     const corners = [
       this.gridToScreen(d.bounds.x1 - 2, d.bounds.y1 - 2),
