@@ -332,61 +332,67 @@ export default class TownScene extends Phaser.Scene {
   }
 
   _initSnow() {
-    const W = this.scale.width  || window.innerWidth  || 1200;
-    const H = this.scale.height || window.innerHeight || 800;
-    const FLAKE_COUNT = 400; // generous count for full coverage at any zoom
+    // World-space snow: flakes live in world coordinates, covering the full map.
+    // Density stays consistent at any zoom level because flakes span the actual world.
+    const FLAKE_COUNT = 600;
     this._snowFlakes = [];
-    const MARGIN = 120; // large margin so edges are covered
+
+    // Map world extents — spawn across the full 120x120 grid plus padding
+    const mapW = (this.mapW || 120);
+    const mapH = (this.mapH || 120);
+    const worldBounds = this._getWorldBounds(mapW, mapH);
 
     for (let i = 0; i < FLAKE_COUNT; i++) {
       const size   = Phaser.Math.Between(1, 3);
       const alpha  = Phaser.Math.FloatBetween(0.5, 0.95);
-      const speed  = Phaser.Math.FloatBetween(28, 80);   // px/s fall speed
-      const drift  = Phaser.Math.FloatBetween(-15, -8);   // leftward wind drift
-      const wobble = Phaser.Math.FloatBetween(0, Math.PI * 2); // phase offset
-      // Color: white to very light blue
+      const speed  = Phaser.Math.FloatBetween(30, 90);    // world px/s fall speed
+      const drift  = Phaser.Math.FloatBetween(-20, -5);   // leftward wind drift
+      const wobble = Phaser.Math.FloatBetween(0, Math.PI * 2);
       const color  = Math.random() < 0.4 ? 0xddeeff : 0xffffff;
 
-      // Draw a simple circle
       const g = this.add.graphics();
       g.fillStyle(color, alpha);
       g.fillCircle(0, 0, size);
-      g.setScrollFactor(0);         // fixed to camera — not part of world
-      g.setDepth(9999);             // always on top
+      // NO setScrollFactor — flakes are in world space
+      g.setDepth(9999);
 
       const flake = {
-        gfx:    g,
-        x:      Phaser.Math.Between(-MARGIN, W + MARGIN),
-        y:      Phaser.Math.Between(-H, H),  // stagger initial positions vertically
-        size,
-        speed,
-        drift,
-        wobble,
-        wobbleAmp: Phaser.Math.FloatBetween(8, 25),
-        wobbleFreq: Phaser.Math.FloatBetween(0.6, 1.4),
+        gfx: g,
+        // Scatter initial positions across full world bounds
+        wx: Phaser.Math.FloatBetween(worldBounds.left, worldBounds.right),
+        wy: Phaser.Math.FloatBetween(worldBounds.top, worldBounds.bottom),
+        size, speed, drift, wobble,
+        wobbleAmp:  Phaser.Math.FloatBetween(10, 30),
+        wobbleFreq: Phaser.Math.FloatBetween(0.5, 1.5),
       };
+      g.setPosition(flake.wx, flake.wy);
       this._snowFlakes.push(flake);
     }
   }
 
+  _getWorldBounds(mapW, mapH) {
+    // Get screen-space extents of the full map for snow spawning
+    const tl = this.gridToScreen(-20, -20);
+    const br = this.gridToScreen(mapW + 20, mapH + 20);
+    return { left: tl.x - 400, right: br.x + 400, top: tl.y - 200, bottom: br.y + 200 };
+  }
+
   _updateSnow(delta) {
     if (!this._snowFlakes) return;
-    const W = this.scale.width  || window.innerWidth  || 1200;
-    const H = this.scale.height || window.innerHeight || 800;
-    const dt = delta / 1000; // seconds
-    const M = 120; // margin matches init
+    const dt = delta / 1000;
+    const bounds = this._getWorldBounds(this.mapW || 120, this.mapH || 120);
 
     for (const f of this._snowFlakes) {
       f.wobble += dt * f.wobbleFreq;
-      f.x += f.drift * dt + Math.sin(f.wobble) * f.wobbleAmp * dt;
-      f.y += f.speed * dt;
+      f.wx += f.drift * dt + Math.sin(f.wobble) * f.wobbleAmp * dt;
+      f.wy += f.speed * dt;
 
-      // Wrap around edges with margin
-      if (f.y > H + 10)      { f.y = -10; f.x = Phaser.Math.Between(-M, W + M); }
-      if (f.x > W + M + 10)  { f.x = -M; }
-      if (f.x < -M - 10)     { f.x = W + M; }
+      // Wrap: when flake exits bottom, respawn at top within bounds
+      if (f.wy > bounds.bottom)  { f.wy = bounds.top; f.wx = Phaser.Math.FloatBetween(bounds.left, bounds.right); }
+      if (f.wx < bounds.left)    { f.wx = bounds.right; }
+      if (f.wx > bounds.right)   { f.wx = bounds.left; }
 
-      f.gfx.setPosition(f.x, f.y);
+      f.gfx.setPosition(f.wx, f.wy);
     }
   }
 
