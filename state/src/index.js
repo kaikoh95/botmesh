@@ -24,21 +24,21 @@ const CHARACTERS_DIR = path.join(__dirname, '../../characters');
 
 // ── Home spawn positions for each citizen ─────────────────────────────────
 const HOME_LOCATIONS = {
-  scarlet: { x: 22, y: 72 },  // house-north
-  forge:   { x: 22, y: 72 },  // house-north
-  iron:    { x: 22, y: 72 },  // house-north
-  planner: { x: 22, y: 72 },  // house-north
-  lumen:   { x: 48, y: 72 },  // house-east
-  sage:    { x: 48, y: 72 },  // house-east
-  canvas:  { x: 48, y: 72 },  // house-east
-  mosaic:  { x: 22, y: 85 },  // house-south
-  muse:    { x: 22, y: 85 },  // house-south
-  echo:    { x: 22, y: 85 },  // house-south
-  patch:   { x: 48, y: 85 },  // house-west
-  cronos:  { x: 48, y: 85 },  // house-west
-  qa:      { x: 48, y: 85 },  // house-west
+  scarlet: { x: 10, y: 58 },  // house-north
+  forge:   { x: 10, y: 58 },  // house-north
+  iron:    { x: 10, y: 58 },  // house-north
+  planner: { x: 10, y: 58 },  // house-north
+  lumen:   { x: 30, y: 58 },  // house-east
+  sage:    { x: 30, y: 58 },  // house-east
+  canvas:  { x: 30, y: 58 },  // house-east
+  mosaic:  { x: 10, y: 68 },  // house-south
+  muse:    { x: 10, y: 68 },  // house-south
+  echo:    { x: 10, y: 68 },  // house-south
+  patch:   { x: 30, y: 68 },  // house-west
+  cronos:  { x: 30, y: 68 },  // house-west
+  qa:      { x: 30, y: 68 },  // house-west
 };
-const DEFAULT_HOME = { x: 55, y: 55 };
+const DEFAULT_HOME = { x: 24, y: 62 };
 
 // ── Seed citizens from characters/ directory ──────────────────────────────
 // Character file existing = citizen exists in the world (dormant until active)
@@ -144,8 +144,8 @@ function applyEvent(event) {
         world: {
           ...(payload.world || {}),
           // State layer is authoritative for world dimensions — never let hub downsize them
-          width:  Math.max(state.world?.width || 80,  (payload.world || {}).width  || 80),
-          height: Math.max(state.world?.height || 80, (payload.world || {}).height || 80),
+          width:  Math.max(state.world?.width || 50,  (payload.world || {}).width  || 50),
+          height: Math.max(state.world?.height || 75, (payload.world || {}).height || 75),
           entities: mergeEntities(
             (payload.world || {}).entities || [],
             (state.world  || {}).entities || []
@@ -277,6 +277,7 @@ function applyEvent(event) {
                 upgrades: [],
                 currentWorkers: [],
                 description: payload.description || '',
+                district: payload.district || null,
                 addedAt: new Date().toISOString(),
               };
             }
