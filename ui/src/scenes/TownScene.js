@@ -765,8 +765,8 @@ export default class TownScene extends Phaser.Scene {
   }
 
   _drawFences() {
-    // Connected isometric fence lines around residential yards
-    // Houses at (22,72), (62,72), (22,85), (62,85)
+    // Yotsume-gaki (四つ目垣) bamboo lattice fences around residential yards
+    // Traditional Japanese four-eye fence pattern with vertical posts and horizontal rails
     const yards = [
       { x1: 20, y1: 70, x2: 30, y2: 80 },
       { x1: 60, y1: 70, x2: 70, y2: 80 },
@@ -775,13 +775,15 @@ export default class TownScene extends Phaser.Scene {
     ];
 
     const g = this.add.graphics();
-    const WOOD = 0x5c3a1e;       // darker warm brown
-    const WOOD_DARK = 0x3d2510;  // deep brown accent
-    const POST_H = 12;           // fence post height in px
-    const RAIL_H = 7;            // horizontal rail offset
+    const WOOD = 0x5c3a1e;        // warm dark brown (bamboo base)
+    const WOOD_DARK = 0x3d2510;   // deep brown for main posts
+    const WOOD_LIGHT = 0x7a5230;  // lighter brown for cross-bars
+    const SNOW_WHITE = 0xd8dce8;  // snow accumulation color
+    const POST_H = 14;            // main post height in px
+    const POSTS_PER_EDGE = 6;     // number of vertical posts per edge
+    const RAILS = 3;              // horizontal rail count (yotsume pattern)
 
     for (const yard of yards) {
-      // Four corners in grid coords
       const corners = [
         [yard.x1, yard.y1],  // top
         [yard.x2, yard.y1],  // right
@@ -791,42 +793,47 @@ export default class TownScene extends Phaser.Scene {
       const screenCorners = corners.map(([gx, gy]) => this.gridToScreen(gx, gy));
       const midDepth = (screenCorners[0].y + screenCorners[2].y) / 2 + 4000;
 
-      // Draw each edge with posts and rails
+      // Draw each edge
       for (let i = 0; i < 4; i++) {
         const a = screenCorners[i];
         const b = screenCorners[(i + 1) % 4];
 
-        // Number of posts along this edge
-        const posts = 6;
-        for (let p = 0; p <= posts; p++) {
-          const t = p / posts;
+        // Horizontal rails (thinner bamboo cross-bars) — draw first so posts overlap
+        for (let r = 0; r < RAILS; r++) {
+          const railY = POST_H - (r * (POST_H - 2)) / (RAILS - 1);
+          g.lineStyle(1.5, WOOD_LIGHT, 0.7);
+          g.beginPath();
+          g.moveTo(a.x, a.y - railY);
+          g.lineTo(b.x, b.y - railY);
+          g.strokePath();
+        }
+
+        // Vertical posts (thicker bamboo uprights)
+        for (let p = 0; p <= POSTS_PER_EDGE; p++) {
+          const t = p / POSTS_PER_EDGE;
           const px = a.x + (b.x - a.x) * t;
           const py = a.y + (b.y - a.y) * t;
 
-          // Fence post (vertical line)
-          g.lineStyle(3, WOOD_DARK, 0.9);
+          // Main post — thicker at corners
+          const isCorner = p === 0 || p === POSTS_PER_EDGE;
+          const postWidth = isCorner ? 4 : 3;
+          g.lineStyle(postWidth, WOOD_DARK, 0.9);
           g.beginPath();
           g.moveTo(px, py);
           g.lineTo(px, py - POST_H);
           g.strokePath();
 
-          // Post cap
+          // Post cap (rounded bamboo top)
           g.fillStyle(WOOD, 1);
-          g.fillRect(px - 1.5, py - POST_H - 1, 3, 2);
+          const capW = isCorner ? 5 : 3;
+          g.fillRect(px - capW / 2, py - POST_H - 1, capW, 2);
         }
 
-        // Top rail
-        g.lineStyle(2.5, WOOD, 0.85);
+        // Snow accumulation on top rail
+        g.lineStyle(2, SNOW_WHITE, 0.3);
         g.beginPath();
-        g.moveTo(a.x, a.y - POST_H + 1);
-        g.lineTo(b.x, b.y - POST_H + 1);
-        g.strokePath();
-
-        // Bottom rail
-        g.lineStyle(2.5, WOOD, 0.75);
-        g.beginPath();
-        g.moveTo(a.x, a.y - RAIL_H);
-        g.lineTo(b.x, b.y - RAIL_H);
+        g.moveTo(a.x, a.y - POST_H);
+        g.lineTo(b.x, b.y - POST_H);
         g.strokePath();
       }
 
