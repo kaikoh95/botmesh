@@ -420,37 +420,74 @@ export default class TownScene extends Phaser.Scene {
   }
 
   _drawPathLanterns() {
-    // Warm lantern glow points spaced along main roads
-    const lanternSpots = [
-      // E-W road (y=37)
-      [10, 37], [20, 37], [30, 37], [50, 37], [60, 37], [70, 37], [80, 37], [90, 37], [100, 37],
-      // N-S road (x=38)
-      [38, 10], [38, 20], [38, 30], [38, 50], [38, 60], [38, 70], [38, 80], [38, 90], [38, 100],
-      // Center intersection
-      [38, 37],
+    // Dynamic lantern placement: along roads every ~8 tiles + at building walkway junctions
+    const lanternSet = new Set();
+    const addLantern = (x, y) => lanternSet.add(`${x},${y}`);
+
+    // E-W road (y=37) — lantern every 8 tiles
+    for (let x = 8; x <= 108; x += 8) addLantern(x, 37);
+    // N-S road (x=38) — lantern every 8 tiles
+    for (let y = 8; y <= 112; y += 8) addLantern(38, y);
+    // Center intersection
+    addLantern(38, 37);
+
+    // Building entrance lanterns — where walkways meet the road
+    const buildings = [
+      [10, 20, 3, 2], [20, 20, 4, 3], [30, 20, 4, 3], [45, 20, 4, 3], [57, 20, 4, 3],
+      [10, 28, 3, 2], [20, 28, 3, 2], [30, 28, 4, 3], [45, 28, 4, 3], [57, 28, 3, 2],
+      [10, 42, 4, 3], [20, 42, 3, 2], [30, 42, 4, 3], [45, 42, 4, 3],
+      [10, 50, 4, 3],
+      [22, 72, 3, 2], [62, 72, 3, 2], [22, 85, 3, 2], [62, 85, 3, 2],
     ];
+    for (const [bx, by, bw, bh] of buildings) {
+      // Lantern at building entrance (south side)
+      const ex = bx + Math.floor(bw / 2);
+      const ey = by + bh;
+      addLantern(ex, ey);
+    }
 
-    for (const [lx, ly] of lanternSpots) {
+    // Stone lanterns (tōrō) near sacred buildings — larger, warmer
+    const sacredLanterns = [
+      [14, 10], [16, 10], [13, 6], [19, 6],  // near cronos_shrine
+      [84, 7], [86, 3], [88, 9],              // near scarlet_sanctum
+      [89, 10], [91, 6],                      // near observatory
+    ];
+    const sacredSet = new Set(sacredLanterns.map(([x, y]) => `${x},${y}`));
+    for (const [sx, sy] of sacredLanterns) addLantern(sx, sy);
+
+    for (const key of lanternSet) {
+      const [lx, ly] = key.split(',').map(Number);
       const screen = this.gridToScreen(lx, ly);
+      const isSacred = sacredSet.has(key);
 
-      // Lantern post (tiny)
+      // Lantern post
       const post = this.add.graphics();
-      post.fillStyle(0x555555, 0.8);
-      post.fillRect(-1, -10, 2, 10);
-      post.fillStyle(0x444444, 0.8);
-      post.fillRect(-3, -12, 6, 3);
+      if (isSacred) {
+        // Stone tōrō — thicker grey pedestal
+        post.fillStyle(0x777777, 0.9);
+        post.fillRect(-3, -12, 6, 12);
+        post.fillStyle(0x666666, 0.9);
+        post.fillRect(-5, -14, 10, 3);
+        post.fillRect(-5, -1, 10, 2);
+      } else {
+        post.fillStyle(0x555555, 0.8);
+        post.fillRect(-1, -10, 2, 10);
+        post.fillStyle(0x444444, 0.8);
+        post.fillRect(-3, -12, 6, 3);
+      }
       post.setPosition(screen.x, screen.y);
       post.setDepth(screen.y + 5001);
 
       // Warm ground glow pool
       const glow = this.add.graphics();
-      glow.fillStyle(0xffaa44, 0.08);
-      glow.fillEllipse(0, 0, 40, 18);
-      glow.fillStyle(0xffcc66, 0.05);
-      glow.fillEllipse(0, 0, 22, 10);
+      const glowSize = isSacred ? 1.3 : 1.0;
+      glow.fillStyle(0xffaa44, isSacred ? 0.10 : 0.08);
+      glow.fillEllipse(0, 0, 40 * glowSize, 18 * glowSize);
+      glow.fillStyle(0xffcc66, isSacred ? 0.07 : 0.05);
+      glow.fillEllipse(0, 0, 22 * glowSize, 10 * glowSize);
       // Tiny bright center (the "flame")
-      glow.fillStyle(0xffdd88, 0.5);
-      glow.fillCircle(0, -10, 2);
+      glow.fillStyle(0xffdd88, isSacred ? 0.6 : 0.5);
+      glow.fillCircle(0, isSacred ? -12 : -10, isSacred ? 3 : 2);
       glow.setPosition(screen.x, screen.y);
       glow.setDepth(screen.y + 4999);
 
@@ -588,11 +625,9 @@ export default class TownScene extends Phaser.Scene {
         const inGrid = x >= 0 && x < mapW && y >= 0 && y < mapH;
         const screen = this.gridToScreen(x, y);
 
-        // Padding tiles outside grid — uniform dark ground with very subtle noise
+        // Padding tiles outside grid — same snow ground so no dark void edges visible
         if (!inGrid) {
-          const pn = this._smoothNoise(x * 0.15, y * 0.15);
-          const padBase = 0x19 + Math.round(pn * 2);
-          const padColor = (padBase << 16) | ((padBase + 2) << 8) | (padBase + 6);
+          const padColor = this._grassColor(x, y);
           g.fillStyle(padColor, 1);
           g.beginPath();
           g.moveTo(screen.x, screen.y - TILE_H / 2);
@@ -711,41 +746,79 @@ export default class TownScene extends Phaser.Scene {
 
   _drawTrees() {
     const g = this.add.graphics();
-    // Deterministic tree positions scattered around
+
+    // Zone-based tree placement — logical positioning per district
+    // type: 'pine' (sacred/castle), 'sakura' (communal parks), 'bamboo' (bathhouse/residential), 'deciduous' (general)
     const treeSpots = [
-      // North quadrant
-      [30, 8], [44, 8], [28, 20], [46, 20], [35, 10], [70, 8],
-      // West border
-      [4, 30], [4, 50], [8, 28], [8, 70], [6, 90], [4, 110],
-      // East border
-      [110, 30], [112, 50], [108, 70], [110, 90], [112, 110],
-      // South quadrant
-      [20, 110], [40, 112], [60, 110], [80, 112], [100, 110],
-      // Mid-field scatter
-      [10, 50], [15, 30], [105, 25], [95, 60], [110, 45],
-      // Scattered filler across 120×120
-      [10, 10], [100, 10], [10, 100], [100, 100], [80, 50], [25, 25],
-      [90, 95], [15, 75], [75, 15], [50, 110], [110, 60],
+      // Sacred zone (north, y<15) — pine trees along shrine approach
+      { x: 12, y: 6, type: 'pine' }, { x: 18, y: 6, type: 'pine' },
+      { x: 10, y: 10, type: 'pine' }, { x: 20, y: 10, type: 'pine' },
+      { x: 25, y: 5, type: 'pine' }, { x: 30, y: 7, type: 'pine' },
+      // Sakura near shrine
+      { x: 17, y: 4, type: 'sakura' }, { x: 13, y: 12, type: 'sakura' },
+
+      // Communal zone parks — cherry blossoms in open areas between buildings
+      { x: 15, y: 24, type: 'sakura' }, { x: 40, y: 24, type: 'sakura' },
+      { x: 52, y: 24, type: 'sakura' }, { x: 35, y: 45, type: 'sakura' },
+      { x: 50, y: 45, type: 'sakura' },
+
+      // Bamboo near bathhouse and residential
+      { x: 6, y: 52, type: 'bamboo' }, { x: 8, y: 54, type: 'bamboo' },
+      { x: 18, y: 70, type: 'bamboo' }, { x: 58, y: 70, type: 'bamboo' },
+      { x: 18, y: 83, type: 'bamboo' }, { x: 58, y: 83, type: 'bamboo' },
+
+      // Castle zone (east, x>75) — formal pines
+      { x: 80, y: 10, type: 'pine' }, { x: 92, y: 12, type: 'pine' },
+      { x: 88, y: 8, type: 'pine' }, { x: 95, y: 15, type: 'pine' },
+      { x: 82, y: 20, type: 'pine' }, { x: 100, y: 10, type: 'pine' },
+
+      // Border trees — natural tree line around village edges
+      { x: 3, y: 20, type: 'pine' }, { x: 3, y: 40, type: 'deciduous' },
+      { x: 3, y: 60, type: 'deciduous' }, { x: 3, y: 80, type: 'pine' },
+      { x: 3, y: 100, type: 'pine' },
+      { x: 110, y: 20, type: 'pine' }, { x: 112, y: 45, type: 'deciduous' },
+      { x: 110, y: 70, type: 'pine' }, { x: 112, y: 95, type: 'pine' },
+      // South edge
+      { x: 20, y: 100, type: 'deciduous' }, { x: 45, y: 105, type: 'deciduous' },
+      { x: 70, y: 100, type: 'deciduous' }, { x: 90, y: 105, type: 'pine' },
+
+      // Residential gardens — small ornamental trees near houses
+      { x: 28, y: 74, type: 'sakura' }, { x: 68, y: 74, type: 'sakura' },
+      { x: 28, y: 87, type: 'sakura' }, { x: 68, y: 87, type: 'sakura' },
     ];
 
-    for (const [tx, ty] of treeSpots) {
+    const treeColors = {
+      pine:      { trunk: 0x4a3520, foliage: [0x1a5c2a, 0x1e6630, 0x165224] },
+      sakura:    { trunk: 0x6b4226, foliage: [0xd4889a, 0xe8a0b0, 0xc07888] },
+      bamboo:    { trunk: 0x5a7a3a, foliage: [0x3a8a3a, 0x48a048, 0x2e7630] },
+      deciduous: { trunk: 0x6b4226, foliage: [0x2d7a3a, 0x358a44, 0x2a6e35] },
+    };
+
+    for (const { x: tx, y: ty, type } of treeSpots) {
       if (this._isWater(tx, ty) || this._isPath(tx, ty)) continue;
       const screen = this.gridToScreen(tx, ty);
+      const colors = treeColors[type] || treeColors.deciduous;
 
-      // Tree shadow
+      // Shadow
       g.fillStyle(0x000000, 0.15);
       g.fillEllipse(screen.x + 2, screen.y + 4, 18, 8);
 
       // Trunk
-      g.fillStyle(0x6b4226, 1);
-      g.fillRect(screen.x - 2, screen.y - 8, 4, 12);
+      g.fillStyle(colors.trunk, 1);
+      if (type === 'bamboo') {
+        // Thin bamboo stalks
+        g.fillRect(screen.x - 1, screen.y - 12, 2, 16);
+        g.fillRect(screen.x + 3, screen.y - 10, 2, 14);
+      } else {
+        g.fillRect(screen.x - 2, screen.y - 8, 4, 12);
+      }
 
-      // Foliage layers (stacked diamonds for isometric feel)
-      const greens = [0x2d7a3a, 0x358a44, 0x2a6e35];
-      for (let i = 0; i < 3; i++) {
-        g.fillStyle(greens[i % greens.length], 1);
+      // Foliage layers
+      const layerCount = type === 'pine' ? 4 : 3;
+      for (let i = 0; i < layerCount; i++) {
+        g.fillStyle(colors.foliage[i % colors.foliage.length], 1);
         const yOff = screen.y - 12 - i * 6;
-        const size = 12 - i * 2;
+        const size = (type === 'pine' ? 10 : 12) - i * 2;
         g.beginPath();
         g.moveTo(screen.x, yOff - size);
         g.lineTo(screen.x + size, yOff);
@@ -753,6 +826,13 @@ export default class TownScene extends Phaser.Scene {
         g.lineTo(screen.x - size, yOff);
         g.closePath();
         g.fillPath();
+      }
+
+      // Snow caps on pine and deciduous trees
+      if (type === 'pine' || type === 'deciduous') {
+        g.fillStyle(0xd8e4f0, 0.4);
+        const topY = screen.y - 12 - (layerCount - 1) * 6;
+        g.fillEllipse(screen.x, topY - 2, 8, 3);
       }
 
       g.setDepth(screen.y + 5500);
@@ -940,8 +1020,76 @@ export default class TownScene extends Phaser.Scene {
         .filter(e => e.kind === 'moat')
         .map(e => `${Math.round(e.x)},${Math.round(e.y)}`)
     );
+    // Add walkways connecting buildings to main roads
+    this._computeWalkways();
     // Redraw ground layer with new path data
     this._drawGround(this.mapW || 80, this.mapH || 80);
+  }
+
+  // Generate 1-tile-wide walkways from each building entrance to nearest main road
+  _computeWalkways() {
+    if (!this.pathTiles) this.pathTiles = new Set();
+
+    // Known building positions: [id, x, y, width, height]
+    const buildings = [
+      ['well', 10, 20, 3, 2], ['market', 20, 20, 4, 3], ['town_hall', 30, 20, 4, 3],
+      ['library', 45, 20, 4, 3], ['post_office', 57, 20, 4, 3],
+      ['smithy', 10, 28, 3, 2], ['workshop', 20, 28, 3, 2], ['iron_keep', 30, 28, 4, 3],
+      ['garden_pavilion', 45, 28, 4, 3], ['leisure', 57, 28, 3, 2],
+      ['plaza', 10, 42, 4, 3], ['teahouse', 20, 42, 3, 2], ['sake_brewery', 30, 42, 4, 3],
+      ['community_garden', 45, 42, 4, 3],
+      ['bathhouse', 10, 50, 4, 3],
+      ['cronos_shrine', 15, 8, 3, 2], ['observatory', 90, 8, 3, 2],
+      ['scarlet_sanctum', 85, 5, 4, 3],
+      ['house1', 22, 72, 3, 2], ['house2', 62, 72, 3, 2],
+      ['house3', 22, 85, 3, 2], ['house4', 62, 85, 3, 2],
+    ];
+
+    // Main roads: E-W at y=37-38, N-S at x=38-39
+    const EW_ROAD_Y = 37; // y=37 or 38
+    const NS_ROAD_X = 38; // x=38 or 39
+
+    for (const [_id, bx, by, bw, bh] of buildings) {
+      // Entrance: center-bottom of building footprint
+      const entranceX = bx + Math.floor(bw / 2);
+      const entranceY = by + bh;
+
+      // Find nearest road and walk toward it
+      const distToEW = Math.abs(entranceY - EW_ROAD_Y);
+      const distToNS = Math.abs(entranceX - NS_ROAD_X);
+
+      let targetX, targetY;
+      if (distToEW <= distToNS) {
+        // Walk vertically to E-W road
+        targetX = entranceX;
+        targetY = EW_ROAD_Y;
+      } else {
+        // Walk horizontally to N-S road
+        targetX = NS_ROAD_X;
+        targetY = entranceY;
+      }
+
+      // Skip if already on the road
+      if (this._isPath(entranceX, entranceY)) continue;
+
+      // Trace Manhattan path from entrance to target road tile
+      let cx = entranceX, cy = entranceY;
+      const maxSteps = 80; // safety limit
+      let steps = 0;
+      while ((cx !== targetX || cy !== targetY) && steps < maxSteps) {
+        // Don't overwrite water tiles
+        if (!this._isWater(cx, cy) && !this._isPath(cx, cy)) {
+          this.pathTiles.add(`${cx},${cy}`);
+        }
+        // Move one step: prefer the longer axis first
+        if (Math.abs(cx - targetX) > Math.abs(cy - targetY)) {
+          cx += cx < targetX ? 1 : -1;
+        } else {
+          cy += cy < targetY ? 1 : -1;
+        }
+        steps++;
+      }
+    }
   }
 
 
