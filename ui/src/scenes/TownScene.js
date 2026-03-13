@@ -17,19 +17,17 @@ const TILE_PNG_H = 48; // cube tile: 32px top face + 16px side faces
 
 // ── District definitions ─────────────────────────────────────────────────────
 const DISTRICTS = {
-  communal:    { label: 'Communal District',   cx: 35, cy: 48, bounds: { x1: 15, y1: 33, x2: 60, y2: 65 } },
-  residential: { label: 'Residential',          cx: 40, cy: 90, bounds: { x1: 0,  y1: 62, x2: 119, y2: 119 } },
-  cronos:      { label: 'Cronos Shrine',        cx: 15, cy: 12, bounds: { x1: 0,  y1: 0,  x2: 37, y2: 36 } },
-  scarlet:     { label: 'Scarlet Sanctum',      cx: 85, cy: 8,  bounds: { x1: 40, y1: 0,  x2: 119, y2: 36 } },
-  observatory: { label: 'Observatory District', cx: 90, cy: 12, bounds: { x1: 60, y1: 0,  x2: 119, y2: 36 } },
+  communal:    { label: 'Communal District',  cx: 30, cy: 38, bounds: { x1: 5,  y1: 15, x2: 65, y2: 65 } },
+  residential: { label: 'Residential',        cx: 42, cy: 82, bounds: { x1: 0,  y1: 66, x2: 119, y2: 119 } },
+  cronos:      { label: 'Cronos Shrine',       cx: 18, cy: 10, bounds: { x1: 0,  y1: 0,  x2: 55, y2: 36 } },
+  scarlet:     { label: 'Scarlet Sanctum',     cx: 85, cy: 7,  bounds: { x1: 56, y1: 0,  x2: 119, y2: 36 } },
 };
 
 const NAV_MAP = {
-  communal:    { up: 'cronos', down: 'residential', left: null, right: 'scarlet' },
-  residential: { up: 'communal', down: null, left: null, right: null },
-  cronos:      { up: null, down: 'communal', left: null, right: 'scarlet' },
-  scarlet:     { up: null, down: 'communal', left: 'cronos', right: 'observatory' },
-  observatory: { up: null, down: 'communal', left: 'scarlet', right: null },
+  communal:    { up: 'cronos',    down: 'residential', left: null,      right: 'scarlet' },
+  residential: { up: 'communal', down: null,           left: null,      right: null },
+  cronos:      { up: null,       down: 'communal',     left: null,      right: 'scarlet' },
+  scarlet:     { up: null,       down: 'communal',     left: 'cronos',  right: null },
 };
 
 export default class TownScene extends Phaser.Scene {
@@ -1400,7 +1398,7 @@ export default class TownScene extends Phaser.Scene {
   }
 
   _drawTrees(bounds) {
-    const inBounds = (x, y) => !bounds || (x >= bounds.x1 - 1 && x <= bounds.x2 + 1 && y >= bounds.y1 - 1 && y <= bounds.y2 + 1);
+    const inBounds = (x, y) => !bounds || (x >= bounds.x1 - 2 && x <= bounds.x2 + 2 && y >= bounds.y1 - 2 && y <= bounds.y2 + 2);
     const g = this.add.graphics();
 
     // Zone-based tree placement — logical positioning per district
@@ -1427,16 +1425,6 @@ export default class TownScene extends Phaser.Scene {
       { x: 80, y: 10, type: 'pine' }, { x: 92, y: 12, type: 'pine' },
       { x: 88, y: 8, type: 'pine' }, { x: 95, y: 15, type: 'pine' },
       { x: 82, y: 20, type: 'pine' }, { x: 100, y: 10, type: 'pine' },
-
-      // Border trees — natural tree line around village edges
-      { x: 3, y: 20, type: 'pine' }, { x: 3, y: 40, type: 'deciduous' },
-      { x: 3, y: 60, type: 'deciduous' }, { x: 3, y: 80, type: 'pine' },
-      { x: 3, y: 100, type: 'pine' },
-      { x: 110, y: 20, type: 'pine' }, { x: 112, y: 45, type: 'deciduous' },
-      { x: 110, y: 70, type: 'pine' }, { x: 112, y: 95, type: 'pine' },
-      // South edge
-      { x: 20, y: 100, type: 'deciduous' }, { x: 45, y: 105, type: 'deciduous' },
-      { x: 70, y: 100, type: 'deciduous' }, { x: 90, y: 105, type: 'pine' },
 
       // Residential gardens — sakura clusters for warmth around houses
       { x: 20, y: 70, type: 'sakura' }, { x: 26, y: 74, type: 'sakura' },
