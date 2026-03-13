@@ -171,8 +171,12 @@ export default class TownScene extends Phaser.Scene {
     this.originX = this.cameras.main.width * 0.5;
     this.originY = -800;
 
-    // Draw ground tiles immediately with defaults
-    this._drawGround(this.mapW, this.mapH);
+    // Draw ground tiles — deferred one frame so loading screen can paint first
+    this.time.delayedCall(0, () => {
+      this._drawGround(this.mapW, this.mapH);
+      // Dismiss loading screen once ground is ready
+      if (typeof window.__dismissLoadingScreen === 'function') window.__dismissLoadingScreen();
+    });
 
     // Communal district enhancements — plaza, market stalls, civic scenery
     this._drawPlazaDetail();
