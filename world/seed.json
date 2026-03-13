@@ -262,19 +262,6 @@
         "y": 38
       },
       {
-        "id": "plaza",
-        "action": "add",
-        "entity": "building",
-        "name": "Town Plaza",
-        "type": "plaza",
-        "x": 15,
-        "y": 42,
-        "width": 2,
-        "height": 2,
-        "level": 2,
-        "description": "Civic gathering point at the castle approach"
-      },
-      {
         "id": "library",
         "action": "add",
         "entity": "building",
@@ -7058,26 +7045,6 @@
           "level": 2,
           "upgradedAt": "2026-03-08T22:20:46.184Z",
           "note": "Kenzo: Nishi-Kita research district \u2014 Observatory Lv2, gives elevated north quarter more presence"
-        }
-      ],
-      "currentWorkers": [],
-      "upgrading": false,
-      "description": ""
-    },
-    "plaza": {
-      "id": "plaza",
-      "name": "Town Plaza",
-      "type": "plaza",
-      "x": 10,
-      "y": 42,
-      "width": 2,
-      "height": 2,
-      "level": 2,
-      "upgrades": [
-        {
-          "level": 2,
-          "upgradedAt": "2026-03-08T20:37:39.068Z",
-          "note": "Kenzo: civic corridor \u2014 Plaza matches Market and Teahouse Lv2, strengthens castle approach"
         }
       ],
       "currentWorkers": [],
