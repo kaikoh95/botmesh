@@ -10,6 +10,14 @@ const BUILDING_TEXTURE_MAP = {
   observatory:    'observatory',
   teahouse:       'teahouse',
   torii:          'torii',
+  'house-north':  'house-north',
+  'house-east':   'house-east',
+  'house-south':  'house-south',
+  'house-west':   'house-west',
+  'torii-main':   'torii-gate',
+  'torii-housing':'torii-gate',
+  'torii-cronos': 'torii-gate',
+  'torii-scarlet':'torii-gate',
   plaza:          'plaza',
   well:           'well',
   bathhouse:      'bathhouse',
@@ -19,7 +27,7 @@ const BUILDING_TEXTURE_MAP = {
   smithy:         'smithy',
   community_garden: 'garden',
   sake_brewery:   'brewery',
-  garden_pavilion: 'pavilion',
+  'garden-pavilion': 'pavilion',
   leisure:         'teahouse',
 };
 
@@ -30,6 +38,8 @@ const BUILDING_TYPE_TEXTURE_MAP = {
   sanctum:  'sanctum',
   shrine:   'shrine',
   torii:    'torii',
+  'torii-gate': 'torii-gate',
+  house:    'house-north',
   keep:     'keep',
   brewery:  'brewery',
   garden:   'garden',
@@ -71,7 +81,9 @@ export default class Building {
     this.screenY = screenY;
 
     this.container = scene.add.container(screenX, screenY);
-    this.container.setDepth(screenY);
+    // Depth: screenY + offset ensures buildings always render above ground (depth 0-1)
+    // even for buildings at the top of the map where screenY can be negative
+    this.container.setDepth(screenY + 5000);
 
     // Sprite support — try to use pixel art building sprites
     const texBase = BUILDING_TEXTURE_MAP[this.id] || BUILDING_TYPE_TEXTURE_MAP[this.type];

@@ -24,20 +24,21 @@ const CHARACTERS_DIR = path.join(__dirname, '../../characters');
 
 // ── Home spawn positions for each citizen ─────────────────────────────────
 const HOME_LOCATIONS = {
-  scarlet: { x: 25, y: 56 }, // Scarlet's cottage (south housing)
-  forge:   { x: 33, y: 57 }, // Forge's cottage (south housing)
-  lumen:   { x: 42, y: 56 }, // Lumen's cottage (south housing)
-  sage:    { x: 55, y: 63 }, // Sage's cottage (south housing)
-  iron:    { x: 50, y: 57 }, // Iron's cottage (south housing)
-  cronos:  { x: 46, y: 62 }, // Cronos's cottage (south housing)
-  mosaic:  { x: 22, y: 67 }, // Mosaic's cottage (south housing)
-  echo:    { x: 32, y: 68 }, // Echo's cottage (south housing)
-  canvas:  { x: 41, y: 67 }, // Canvas's cottage (south housing)
-  patch:   { x: 50, y: 68 }, // Patch's cottage (south housing)
-  muse:    { x: 34, y: 63 }, // Muse's cottage (south housing)
-  planner: { x: 28, y: 62 }, // Kenzo's study (south housing)
+  scarlet: { x: 22, y: 72 },  // house-north
+  forge:   { x: 22, y: 72 },  // house-north
+  iron:    { x: 22, y: 72 },  // house-north
+  planner: { x: 22, y: 72 },  // house-north
+  lumen:   { x: 48, y: 72 },  // house-east
+  sage:    { x: 48, y: 72 },  // house-east
+  canvas:  { x: 48, y: 72 },  // house-east
+  mosaic:  { x: 22, y: 85 },  // house-south
+  muse:    { x: 22, y: 85 },  // house-south
+  echo:    { x: 22, y: 85 },  // house-south
+  patch:   { x: 48, y: 85 },  // house-west
+  cronos:  { x: 48, y: 85 },  // house-west
+  qa:      { x: 48, y: 85 },  // house-west
 };
-const DEFAULT_HOME = { x: 38, y: 38 };
+const DEFAULT_HOME = { x: 55, y: 55 };
 
 // ── Seed citizens from characters/ directory ──────────────────────────────
 // Character file existing = citizen exists in the world (dormant until active)

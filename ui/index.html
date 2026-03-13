@@ -177,6 +177,27 @@
     }
     #oracle-inbox button:active { transform: translateY(1px); }
 
+    #oracle-mic {
+      background: transparent;
+      border: none;
+      font-size: 18px;
+      cursor: pointer;
+      padding: 4px 8px;
+      opacity: 0.6;
+      transition: opacity 0.2s;
+    }
+    #oracle-mic:hover { opacity: 1; }
+    #oracle-mic.listening {
+      opacity: 1;
+      animation: pulse-red 1s infinite;
+    }
+    #oracle-mic.unsupported { display: none; }
+
+    @keyframes pulse-red {
+      0%, 100% { filter: none; }
+      50% { filter: drop-shadow(0 0 6px #e74c3c); }
+    }
+
     /* ── Bulletin Board ──────────────────────────────────────────────────── */
     #bulletin-btn {
       position: fixed;
@@ -449,6 +470,7 @@
   <script type="module" src="src/main.js"></script>
 <div id="oracle-inbox">
   <input id="oracle-input" type="text" placeholder="Send instruction to Scarlet..." maxlength="300" autocomplete="off" />
+  <button id="oracle-mic" title="Voice input" aria-label="Voice input">🎤</button>
   <button id="oracle-send">⚡ Send</button>
 </div>
 <script>
@@ -468,6 +490,79 @@
   };
   input.addEventListener("keydown", function(e) { if (e.key === "Enter") send(); });
   btn.addEventListener("click", send);
+})();
+</script>
+<script>
+(function() {
+  var input = document.getElementById('oracle-input');
+  var micBtn = document.getElementById('oracle-mic');
+  var sendBtn = document.getElementById('oracle-send');
+
+  var SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SpeechRecognition || !micBtn) {
+    if (micBtn) micBtn.classList.add('unsupported');
+    return;
+  }
+
+  var recognition = new SpeechRecognition();
+  recognition.continuous = false;
+  recognition.interimResults = true;
+  recognition.lang = 'en-US';
+
+  var listening = false;
+  var originalPlaceholder = input.placeholder;
+
+  micBtn.addEventListener('click', function() {
+    if (listening) {
+      recognition.stop();
+      return;
+    }
+    input.value = '';
+    input.placeholder = 'Listening...';
+    micBtn.classList.add('listening');
+    listening = true;
+    recognition.start();
+  });
+
+  recognition.onresult = function(event) {
+    var transcript = '';
+    for (var i = event.resultIndex; i < event.results.length; i++) {
+      transcript += event.results[i][0].transcript;
+    }
+    input.value = transcript;
+
+    if (event.results[event.results.length - 1].isFinal) {
+      setTimeout(function() {
+        if (input.value.trim()) {
+          sendBtn.click();
+        }
+      }, 800);
+    }
+  };
+
+  recognition.onerror = function(event) {
+    console.warn('[Voice] error:', event.error);
+    resetMic();
+    if (event.error === 'not-allowed') {
+      input.placeholder = 'Mic permission denied';
+      setTimeout(function() { input.placeholder = originalPlaceholder; }, 3000);
+    }
+  };
+
+  recognition.onend = function() {
+    resetMic();
+  };
+
+  function resetMic() {
+    listening = false;
+    micBtn.classList.remove('listening');
+    input.placeholder = originalPlaceholder;
+  }
+
+  // Stop recognition if user starts typing
+  input.addEventListener('focus', function() {
+    if (listening) recognition.stop();
+  });
 })();
 </script>
 <script>

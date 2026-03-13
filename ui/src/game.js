@@ -52,7 +52,7 @@ export function createGame(container) {
         console.error('[createGame] poll error:', e);
       }
 
-      if (Date.now() - start > 12000) {
+      if (Date.now() - start > 30000) {
         clearInterval(poll);
         console.error('[createGame] Timeout — TownScene never became active');
         // Resolve with null so init() can continue without blocking

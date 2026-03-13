@@ -463,6 +463,10 @@ function updateRoster(agents) {
     el.className = 'roster-agent' + (online ? '' : ' offline');
     const color = agentColorMap[id] || agent.color || '#aaa';
     el.innerHTML = `<span class="roster-dot" style="background:${color}"></span>${agent.emoji || ''} ${agent.name || id}`;
+    el.style.cursor = 'pointer';
+    el.addEventListener('click', () => {
+      window.dispatchEvent(new CustomEvent('botmesh:followagent', { detail: { agentId: id } }));
+    });
     roster.appendChild(el);
   }
 }
