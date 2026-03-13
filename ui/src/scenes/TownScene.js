@@ -233,7 +233,7 @@ export default class TownScene extends Phaser.Scene {
     this._gridVisible = true;
     window.botmeshToggleGrid = () => {
       this._gridVisible = !this._gridVisible;
-      if (this._groundRT) this._groundRT.setVisible(this._gridVisible);
+      if (this._groundChunks) this._groundChunks.forEach(c => c.setVisible(this._gridVisible));
       if (this._groundGraphics) this._groundGraphics.setVisible(this._gridVisible);
       return this._gridVisible;
     };
@@ -982,7 +982,8 @@ export default class TownScene extends Phaser.Scene {
 
   _drawGround(mapW, mapH) {
     // Clean up previous ground render
-    if (this._groundRT) { this._groundRT.destroy(); this._groundRT = null; }
+    (this._groundChunks || []).forEach(rt => rt.destroy());
+    this._groundChunks = [];
     if (this._groundGraphics) { this._groundGraphics.destroy(); this._groundGraphics = null; }
     if (this._pathSprites) { this._pathSprites.forEach(s => s.destroy()); }
     this._pathSprites = [];
@@ -1002,29 +1003,16 @@ export default class TownScene extends Phaser.Scene {
     ]);
 
     const PAD = 20;
+    const CHUNK_PX = 2048;
 
-    // ── Calculate bounding box for in-grid tiles only (fits 8192 GPU limit) ──
+    // ── Calculate bounding box for in-grid tiles ──
     const topSy  = 0 - TILE_H / 2;
     const botSy  = ((mapW - 1) + (mapH - 1)) * (TILE_H / 2) + TILE_H / 2;
     const leftSx = (0 - (mapH - 1)) * (TILE_W / 2) - TILE_W / 2;
     const rightSx = ((mapW - 1) - 0) * (TILE_W / 2) + TILE_W / 2;
 
-    const rtW = Math.ceil(rightSx - leftSx);
-    const rtH = Math.ceil(botSy - topSy);
-
-    // Offset: world-space position of RT top-left corner
-    const rtWorldX = this.originX + leftSx;
-    const rtWorldY = this.originY + topSy;
-
-    // ── Create RenderTexture and stamp all ground tiles into it ──
-    const rt = this.add.renderTexture(rtWorldX, rtWorldY, rtW, rtH);
-    rt.setOrigin(0, 0);
-    rt.setDepth(-100);
-    this._groundRT = rt;
-
-    const _stamp = (key, sx, sy) => {
-      rt.drawFrame(key, undefined, sx - TILE_W / 2, sy - TILE_H / 2);
-    };
+    const totalW = Math.ceil(rightSx - leftSx);
+    const totalH = Math.ceil(botSy - topSy);
 
     // Graphics for padding tiles + water fallback (drawn on top of RT)
     const g = this.add.graphics();
@@ -1049,19 +1037,14 @@ export default class TownScene extends Phaser.Scene {
       }
     }
 
-    // ── Stamp in-grid tiles into RenderTexture ──
+    // ── Pre-collect bridge/water/sprite tiles (handled outside chunks) ──
+    // Then stamp remaining ground tiles into chunked RenderTextures
+    const spriteTiles = new Set(); // "x,y" keys for tiles handled as individual sprites
+
     for (let y = 0; y < mapH; y++) {
       for (let x = 0; x < mapW; x++) {
-        // Screen position relative to RT local space
-        const sx = (x - y) * (TILE_W / 2) - leftSx;
-        const sy = (x + y) * (TILE_H / 2) - topSy;
-
-        // World screen position (for individual sprites like bridges)
         const worldSx = this.originX + (x - y) * (TILE_W / 2);
         const worldSy = this.originY + (x + y) * (TILE_H / 2);
-
-        const isWater = this._isWater(x, y);
-        const isPath = this._isPath(x, y);
         const isBridgeGap = bridgeGaps.has(`${x},${y}`);
 
         // Bridge tiles — individual sprites (only ~8 tiles)
@@ -1072,17 +1055,12 @@ export default class TownScene extends Phaser.Scene {
           img.setOrigin(0.5, 0.5);
           img.setDepth(-50);
           this._pathSprites.push(img);
+          spriteTiles.add(`${x},${y}`);
           continue;
         }
 
-        // Path tiles — stamp into RT
-        if (isPath && hasPathSprite) {
-          _stamp(pathKey, sx, sy);
-          continue;
-        }
-
-        // Water tiles — stamp as graphics (need border effect)
-        if (isWater) {
+        // Water tiles — individual sprites or graphics
+        if (this._isWater(x, y)) {
           if (hasMoatSprite) {
             const img = this.add.image(worldSx, worldSy, 'life-moat');
             img.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
@@ -1109,15 +1087,59 @@ export default class TownScene extends Phaser.Scene {
             g.closePath();
             g.strokePath();
           }
-          continue;
+          spriteTiles.add(`${x},${y}`);
         }
+      }
+    }
 
-        // Ground tiles: near-path → soil, default → snow
-        const nearPath = this._isNearPath(x, y);
-        if (nearPath && hasSoil) {
-          _stamp('ground-soil', sx, sy);
-        } else if (hasSnow) {
-          _stamp('ground-snow', sx, sy);
+    // ── Create chunked RenderTextures (≤2048px each for mobile GPU compat) ──
+    const colCount = Math.ceil(totalW / CHUNK_PX);
+    const rowCount = Math.ceil(totalH / CHUNK_PX);
+
+    for (let cr = 0; cr < rowCount; cr++) {
+      for (let cc = 0; cc < colCount; cc++) {
+        const chunkLeft = cc * CHUNK_PX;
+        const chunkTop = cr * CHUNK_PX;
+        const chunkW = Math.min(CHUNK_PX, totalW - chunkLeft);
+        const chunkH = Math.min(CHUNK_PX, totalH - chunkTop);
+        const rtWorldX = this.originX + leftSx + chunkLeft;
+        const rtWorldY = this.originY + topSy + chunkTop;
+
+        const rt = this.add.renderTexture(rtWorldX, rtWorldY, chunkW, chunkH);
+        rt.setOrigin(0, 0);
+        rt.setDepth(-100);
+        this._groundChunks.push(rt);
+
+        // Stamp tiles that fall within this chunk
+        for (let y = 0; y < mapH; y++) {
+          for (let x = 0; x < mapW; x++) {
+            if (spriteTiles.has(`${x},${y}`)) continue;
+
+            // Position relative to full RT origin
+            const sx = (x - y) * (TILE_W / 2) - leftSx;
+            const sy = (x + y) * (TILE_H / 2) - topSy;
+
+            // Skip tiles outside this chunk (with tile-size margin)
+            if (sx < chunkLeft - TILE_W || sx > chunkLeft + chunkW + TILE_W) continue;
+            if (sy < chunkTop - TILE_H || sy > chunkTop + chunkH + TILE_H) continue;
+
+            // Local position within this chunk's RT
+            const localX = sx - chunkLeft - TILE_W / 2;
+            const localY = sy - chunkTop - TILE_H / 2;
+
+            const isPath = this._isPath(x, y);
+            if (isPath && hasPathSprite) {
+              rt.drawFrame(pathKey, undefined, localX, localY);
+              continue;
+            }
+
+            const nearPath = this._isNearPath(x, y);
+            if (nearPath && hasSoil) {
+              rt.drawFrame('ground-soil', undefined, localX, localY);
+            } else if (hasSnow) {
+              rt.drawFrame('ground-snow', undefined, localX, localY);
+            }
+          }
         }
       }
     }
