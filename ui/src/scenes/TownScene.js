@@ -462,6 +462,18 @@ export default class TownScene extends Phaser.Scene {
       addLantern(ex, ey);
     }
 
+    // Residential district path lanterns — warm glow along walkways to houses
+    // Along west branch (y=73)
+    for (let x = 25; x <= 37; x += 6) addLantern(x, 73);
+    // Along east branch (y=73)
+    for (let x = 41; x <= 61; x += 6) addLantern(x, 73);
+    // Along west branch (y=86)
+    for (let x = 25; x <= 37; x += 6) addLantern(x, 86);
+    // Along east branch (y=86)
+    for (let x = 41; x <= 61; x += 6) addLantern(x, 86);
+    // Near torii-housing gate
+    addLantern(36, 65); addLantern(40, 65);
+
     // Stone lanterns (tōrō) near sacred buildings — larger, warmer
     const sacredLanterns = [
       [14, 10], [16, 10], [13, 6], [19, 6],  // near cronos_shrine
@@ -1121,9 +1133,17 @@ export default class TownScene extends Phaser.Scene {
       { x: 20, y: 100, type: 'deciduous' }, { x: 45, y: 105, type: 'deciduous' },
       { x: 70, y: 100, type: 'deciduous' }, { x: 90, y: 105, type: 'pine' },
 
-      // Residential gardens — small ornamental trees near houses
-      { x: 28, y: 74, type: 'sakura' }, { x: 68, y: 74, type: 'sakura' },
-      { x: 28, y: 87, type: 'sakura' }, { x: 68, y: 87, type: 'sakura' },
+      // Residential gardens — sakura clusters for warmth around houses
+      { x: 20, y: 70, type: 'sakura' }, { x: 26, y: 74, type: 'sakura' },
+      { x: 28, y: 71, type: 'sakura' }, { x: 60, y: 70, type: 'sakura' },
+      { x: 66, y: 74, type: 'sakura' }, { x: 68, y: 71, type: 'sakura' },
+      { x: 20, y: 83, type: 'sakura' }, { x: 26, y: 87, type: 'sakura' },
+      { x: 28, y: 84, type: 'sakura' }, { x: 60, y: 83, type: 'sakura' },
+      { x: 66, y: 87, type: 'sakura' }, { x: 68, y: 84, type: 'sakura' },
+      // Along residential spine road
+      { x: 36, y: 68, type: 'sakura' }, { x: 41, y: 68, type: 'sakura' },
+      { x: 36, y: 78, type: 'sakura' }, { x: 41, y: 78, type: 'sakura' },
+      { x: 36, y: 90, type: 'sakura' }, { x: 41, y: 90, type: 'sakura' },
     ];
 
     const treeColors = {
@@ -1339,9 +1359,9 @@ export default class TownScene extends Phaser.Scene {
   }
 
   _waterColor(x, y) {
-    // Winter moat — icy, pale, semi-frozen. Shirakawa-go canal aesthetic.
+    // Winter moat — dark muted frozen canal, not bright blue
     const n = ((x * 3 + y * 5) % 3);
-    const icy = [0x6aaade, 0x5a99cc, 0x7ab4e0];
+    const icy = [0x3a5a6a, 0x2e4e5c, 0x445e6e];
     return icy[n];
   }
 
@@ -1468,6 +1488,45 @@ export default class TownScene extends Phaser.Scene {
         steps++;
       }
     }
+
+    // ── Residential district walkways ──────────────────────────────
+    // Branch paths from N-S road (x=38) south of torii-housing (37,65)
+    // down to each house group, creating a connected suburb feel.
+
+    const addPath = (x, y) => {
+      if (!this._isWater(x, y) && !occupied.has(`${x},${y}`)) {
+        this.pathTiles.add(`${x},${y}`);
+      }
+    };
+
+    // Main residential spine: continue N-S road south from y=65 to y=90
+    // (the main road already covers x=38-39, but reinforce connectivity)
+    for (let y = 60; y <= 92; y++) {
+      addPath(38, y);
+      addPath(39, y);
+    }
+
+    // West branch: from road (x=38) west to house1 (22,72) and house3 (22,85)
+    // Upper west path at y=73 → connects to house1 entrance
+    for (let x = 23; x <= 38; x++) { addPath(x, 73); }
+    // Lower west path at y=86 → connects to house3 entrance
+    for (let x = 23; x <= 38; x++) { addPath(x, 86); }
+
+    // East branch: from road (x=39) east to house2 (62,72) and house4 (62,85)
+    // Upper east path at y=73 → connects to house2 entrance
+    for (let x = 39; x <= 63; x++) { addPath(x, 73); }
+    // Lower east path at y=86 → connects to house4 entrance
+    for (let x = 39; x <= 63; x++) { addPath(x, 86); }
+
+    // Short north-south connectors from each branch to house entrances
+    // house1 (22,72) entrance at (23,74) — connect down from y=73
+    addPath(23, 74);
+    // house2 (62,72) entrance at (63,74) — connect down from y=73
+    addPath(63, 74);
+    // house3 (22,85) entrance at (23,87) — connect up from y=86
+    addPath(23, 87);
+    // house4 (62,85) entrance at (63,87) — connect up from y=86
+    addPath(63, 87);
   }
 
 
