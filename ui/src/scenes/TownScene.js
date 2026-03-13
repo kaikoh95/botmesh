@@ -151,14 +151,14 @@ export default class TownScene extends Phaser.Scene {
 
     // ── Zoom ────────────────────────────────────────────────────────────────
     const isMobile = window.innerWidth < 768;
-    this._zoom = isMobile ? 0.45 : 1.0;
+    this._zoom = isMobile ? 0.35 : 0.9;
     const CAM = this.cameras.main;
     CAM.setZoom(this._zoom);
 
-    // On mobile, centre camera on the crossroads center
-    if (isMobile) {
-      const civic = this.gridToScreen(55, 55);
-      CAM.centerOn(civic.x, civic.y);
+    // Centre camera on communal district (town heart) on all devices
+    {
+      const center = this.gridToScreen(35, 35);
+      CAM.centerOn(center.x, center.y);
     }
 
     // Centralised zoom apply — updates camera + building label visibility
