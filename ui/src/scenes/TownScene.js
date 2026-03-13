@@ -1981,7 +1981,10 @@ export default class TownScene extends Phaser.Scene {
 
     // Respawn world life with updated agent count
     const agentCount = Object.keys(this.agents).length;
-    if (this.worldLife) this.worldLife.spawn(agentCount);
+    if (this.worldLife) {
+      this.worldLife.spawn(agentCount);
+      this._filterLifeForDistrict(this._currentDistrict); // re-apply district filter after respawn
+    }
 
     // Enable click → dispatch to HTML panel (no Phaser input coordinate issues)
     agent.enableInteraction((a) => {
