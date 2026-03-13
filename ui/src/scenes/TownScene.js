@@ -588,10 +588,11 @@ export default class TownScene extends Phaser.Scene {
         const inGrid = x >= 0 && x < mapW && y >= 0 && y < mapH;
         const screen = this.gridToScreen(x, y);
 
-        // Padding tiles outside grid — plain dark ground, no features
+        // Padding tiles outside grid — uniform dark ground with very subtle noise
         if (!inGrid) {
-          const even = (x + y) % 2 === 0;
-          const padColor = even ? 0x1a1e2a : 0x181c28;
+          const pn = this._smoothNoise(x * 0.15, y * 0.15);
+          const padBase = 0x19 + Math.round(pn * 2);
+          const padColor = (padBase << 16) | ((padBase + 2) << 8) | (padBase + 6);
           g.fillStyle(padColor, 1);
           g.beginPath();
           g.moveTo(screen.x, screen.y - TILE_H / 2);
@@ -606,7 +607,6 @@ export default class TownScene extends Phaser.Scene {
         const isWater = this._isWater(x, y);
         const isPath = this._isPath(x, y);
         const isBridgeGap = bridgeGaps.has(`${x},${y}`);
-        const even = (x + y) % 2 === 0;
 
         // Bridge tiles at moat crossing points
         if (isBridgeGap && hasBridgeSprite) {
@@ -644,21 +644,16 @@ export default class TownScene extends Phaser.Scene {
         if (isWater) {
           baseColor = this._waterColor(x, y);
         } else if (isPath) {
-          // Subtle stone path — low-contrast warm grey with slight positional noise
-          const noise = ((x * 7 + y * 13) & 0xf) - 8; // -8..+7 deterministic noise
-          const base = 0x4a4640; // warm dark stone
-          const r = Math.min(255, Math.max(0, ((base >> 16) & 0xff) + noise + (even ? 3 : 0)));
-          const g3 = Math.min(255, Math.max(0, ((base >> 8) & 0xff) + noise + (even ? 2 : 0)));
+          // Smooth stone path — noise-based warm grey, no per-tile alternating
+          const n1 = this._smoothNoise(x * 0.2, y * 0.2);
+          const noise = Math.round(n1 * 6) - 3;
+          const base = 0x4a4640;
+          const r = Math.min(255, Math.max(0, ((base >> 16) & 0xff) + noise));
+          const g3 = Math.min(255, Math.max(0, ((base >> 8) & 0xff) + noise));
           const b3 = Math.min(255, Math.max(0, (base & 0xff) + noise));
           baseColor = (r << 16) | (g3 << 8) | b3;
         } else {
           baseColor = this._grassColor(x, y);
-          if (even) {
-            const r = ((baseColor >> 16) & 0xff) + 6;
-            const g2 = ((baseColor >> 8) & 0xff) + 7;
-            const b2 = (baseColor & 0xff) + 10;
-            baseColor = (Math.min(r,255) << 16) | (Math.min(g2,255) << 8) | Math.min(b2,255);
-          }
         }
 
         g.fillStyle(baseColor, 1);
@@ -670,17 +665,17 @@ export default class TownScene extends Phaser.Scene {
         g.closePath();
         g.fillPath();
 
-        // Thin border for crisp tile edges
-        const bAlpha = isWater ? 0.45 : isPath ? 0.12 : 0.18;
-        const bColor = isWater ? 0x4a8aaa : isPath ? 0x3e3a36 : 0x8090b0;
-        g.lineStyle(1, bColor, bAlpha);
-        g.beginPath();
-        g.moveTo(screen.x, screen.y - TILE_H / 2);
-        g.lineTo(screen.x + TILE_W / 2, screen.y);
-        g.lineTo(screen.x, screen.y + TILE_H / 2);
-        g.lineTo(screen.x - TILE_W / 2, screen.y);
-        g.closePath();
-        g.strokePath();
+        // Very subtle border only for water tiles
+        if (isWater) {
+          g.lineStyle(1, 0x4a8aaa, 0.2);
+          g.beginPath();
+          g.moveTo(screen.x, screen.y - TILE_H / 2);
+          g.lineTo(screen.x + TILE_W / 2, screen.y);
+          g.lineTo(screen.x, screen.y + TILE_H / 2);
+          g.lineTo(screen.x - TILE_W / 2, screen.y);
+          g.closePath();
+          g.strokePath();
+        }
       }
     }
   }
@@ -841,31 +836,65 @@ export default class TownScene extends Phaser.Scene {
     }
   }
 
+  // Seeded hash for deterministic pseudo-random values
+  _hash(ix, iy) {
+    let h = ix * 374761393 + iy * 668265263;
+    h = (h ^ (h >> 13)) * 1274126177;
+    h = h ^ (h >> 16);
+    return (h & 0x7fffffff) / 0x7fffffff; // 0..1
+  }
+
+  // Smooth interpolated value noise (Perlin-like)
+  _smoothNoise(fx, fy) {
+    const ix = Math.floor(fx);
+    const iy = Math.floor(fy);
+    const dx = fx - ix;
+    const dy = fy - iy;
+    // Smoothstep interpolation
+    const sx = dx * dx * (3 - 2 * dx);
+    const sy = dy * dy * (3 - 2 * dy);
+    const n00 = this._hash(ix, iy);
+    const n10 = this._hash(ix + 1, iy);
+    const n01 = this._hash(ix, iy + 1);
+    const n11 = this._hash(ix + 1, iy + 1);
+    const nx0 = n00 + (n10 - n00) * sx;
+    const nx1 = n01 + (n11 - n01) * sx;
+    return nx0 + (nx1 - nx0) * sy; // 0..1
+  }
+
   _grassColor(x, y) {
-    // WINTER — Uniform crisp snow across all zones (Shirakawa-go aesthetic)
-    // - Near paths: grey slush from foot traffic
-    // - Everywhere else: cool blue-white snow
     const nearPath = this._isNearPath(x, y);
-    const n = Math.abs((x * 7 + y * 13 + x * y) % 7);
 
     if (nearPath) {
-      // Grey slush near roads — dark stone underfoot, subtle texture
-      const slush = [0x2a2e38, 0x262a34, 0x2e3240, 0x28303c, 0x2c3040];
-      return slush[n % slush.length];
+      // Grey slush near roads — smooth noise blending
+      const n = this._smoothNoise(x * 0.25, y * 0.25);
+      const r = 0x28 + Math.round(n * 6);
+      const g = 0x2c + Math.round(n * 6);
+      const b = 0x38 + Math.round(n * 8);
+      return (r << 16) | (g << 8) | b;
     }
-    // Dark blue-grey snow — Shirakawa-go deep winter night, matches dark sky
-    // Occasional brighter patches suggest moonlit snow
-    const blueSnow = [0x1e2838, 0x1c2636, 0x202a3a, 0x1a2434, 0x1e2a38, 0x1c2838, 0x202c3c];
-    const base = blueSnow[n];
-    // ~12% of tiles get a subtle moonlit brightening
-    const moonHash = (x * 31 + y * 47 + x * y * 3) % 17;
-    if (moonHash < 2) {
-      const r = ((base >> 16) & 0xff) + 8;
-      const g = ((base >> 8) & 0xff) + 10;
-      const b = (base & 0xff) + 14;
-      return (Math.min(r, 255) << 16) | (Math.min(g, 255) << 8) | Math.min(b, 255);
+
+    // Dark blue-grey snow — smooth noise for organic variation
+    // Two octaves of noise for natural-looking terrain
+    const n1 = this._smoothNoise(x * 0.08, y * 0.08);     // large-scale variation
+    const n2 = this._smoothNoise(x * 0.25, y * 0.25);     // medium detail
+    const blend = n1 * 0.7 + n2 * 0.3;
+
+    // Blend between snow tones: dark blue-grey base to slightly lighter
+    const r = 0x1c + Math.round(blend * 6);   // 0x1c..0x22
+    const g = 0x26 + Math.round(blend * 6);   // 0x26..0x2c
+    const b = 0x36 + Math.round(blend * 6);   // 0x36..0x3c
+
+    // Smooth moonlit patches — broad low-frequency glow
+    const moon = this._smoothNoise(x * 0.04 + 50, y * 0.04 + 50);
+    if (moon > 0.75) {
+      const glow = (moon - 0.75) * 4; // 0..1 ramp in bright zones
+      const mr = Math.min(255, r + Math.round(glow * 10));
+      const mg = Math.min(255, g + Math.round(glow * 12));
+      const mb = Math.min(255, b + Math.round(glow * 16));
+      return (mr << 16) | (mg << 8) | mb;
     }
-    return base;
+    return (r << 16) | (g << 8) | b;
   }
 
   _isNearPath(x, y) {
