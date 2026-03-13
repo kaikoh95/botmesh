@@ -1034,3 +1034,77 @@ html, body {
   line-height: 1.5;
   word-break: break-word;
 }
+
+/* ── District Navigation ──────────────────────────────────────────────────── */
+#district-nav {
+  position: fixed;
+  top: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 200;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  pointer-events: auto;
+}
+
+.district-nav-row {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+#district-label {
+  background: rgba(10, 13, 26, 0.85);
+  border: 1px solid rgba(200, 170, 110, 0.25);
+  border-radius: 4px;
+  color: #c9a84c;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 8px;
+  padding: 6px 14px;
+  letter-spacing: 0.5px;
+  min-width: 140px;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.district-nav-btn {
+  background: rgba(10, 13, 26, 0.85);
+  border: 1px solid rgba(200, 170, 110, 0.25);
+  border-radius: 4px;
+  color: #e8d5a3;
+  font-size: 12px;
+  width: 30px;
+  height: 30px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s, opacity 0.15s;
+}
+
+.district-nav-btn:hover:not(:disabled) {
+  background: rgba(74, 53, 32, 0.95);
+  border-color: rgba(200, 170, 110, 0.5);
+}
+
+.district-nav-btn:disabled {
+  cursor: default;
+}
+
+@media (max-width: 768px) {
+  #district-nav {
+    top: max(8px, env(safe-area-inset-top));
+  }
+  .district-nav-btn {
+    width: 36px;
+    height: 36px;
+    font-size: 14px;
+  }
+  #district-label {
+    font-size: 7px;
+    padding: 5px 10px;
+    min-width: 110px;
+  }
+}

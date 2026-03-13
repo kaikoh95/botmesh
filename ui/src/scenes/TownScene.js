@@ -15,66 +15,22 @@ const TILE_W = 64;
 const TILE_H = 32;
 const TILE_PNG_H = 48; // cube tile: 32px top face + 16px side faces
 
-// Zone-based tile map (from tile-zone-plan.json) — later zones override earlier ones
-const TILE_ZONES = [
-  { tile: 'snow',        rect: { x1: 0, y1: 0, x2: 37, y2: 36 } },
-  { tile: 'stone',       rect: { x1: 40, y1: 0, x2: 119, y2: 36 } },
-  { tile: 'soil',        rect: { x1: 0, y1: 37, x2: 19, y2: 60 } },
-  { tile: 'cobblestone', rect: { x1: 20, y1: 37, x2: 55, y2: 60 } },
-  { tile: 'cobblestone', rect: { x1: 56, y1: 37, x2: 119, y2: 60 } },
-  { tile: 'soil',        rect: { x1: 0, y1: 61, x2: 119, y2: 119 } },
-  { tile: 'wood',        rect: { x1: 12, y1: 5, x2: 20, y2: 12 } },
-  { tile: 'cobblestone', rect: { x1: 13, y1: 20, x2: 18, y2: 25 } },
-  { tile: 'snow',        rect: { x1: 0, y1: 0, x2: 10, y2: 16 } },
-  { tile: 'cobblestone', rect: { x1: 26, y1: 18, x2: 36, y2: 28 } },
-  { tile: 'stone',       rect: { x1: 52, y1: 2, x2: 58, y2: 8 } },
-  { tile: 'wood',        rect: { x1: 82, y1: 2, x2: 90, y2: 10 } },
-  { tile: 'stone',       rect: { x1: 87, y1: 5, x2: 95, y2: 13 } },
-  { tile: 'stone',       rect: { x1: 93, y1: 15, x2: 100, y2: 24 } },
-  { tile: 'cobblestone', rect: { x1: 78, y1: 20, x2: 88, y2: 30 } },
-  { tile: 'stone',       rect: { x1: 69, y1: 13, x2: 76, y2: 20 } },
-  { tile: 'stone',       rect: { x1: 27, y1: 27, x2: 36, y2: 36 } },
-  { tile: 'stone',       rect: { x1: 42, y1: 19, x2: 50, y2: 26 } },
-  { tile: 'wood',        rect: { x1: 42, y1: 27, x2: 50, y2: 34 } },
-  { tile: 'soil',        rect: { x1: 12, y1: 27, x2: 19, y2: 34 } },
-  { tile: 'wood',        rect: { x1: 27, y1: 39, x2: 35, y2: 46 } },
-  { tile: 'cobblestone', rect: { x1: 42, y1: 39, x2: 50, y2: 46 } },
-  { tile: 'soil',        rect: { x1: 12, y1: 47, x2: 20, y2: 54 } },
-  { tile: 'wood',        rect: { x1: 27, y1: 47, x2: 35, y2: 54 } },
-  { tile: 'wood',        rect: { x1: 42, y1: 47, x2: 50, y2: 54 } },
-  { tile: 'soil',        rect: { x1: 12, y1: 67, x2: 20, y2: 75 } },
-  { tile: 'soil',        rect: { x1: 29, y1: 67, x2: 37, y2: 75 } },
-  { tile: 'soil',        rect: { x1: 49, y1: 67, x2: 57, y2: 75 } },
-  { tile: 'soil',        rect: { x1: 69, y1: 67, x2: 77, y2: 75 } },
-  { tile: 'soil',        rect: { x1: 89, y1: 67, x2: 97, y2: 75 } },
-  { tile: 'soil',        rect: { x1: 12, y1: 79, x2: 20, y2: 87 } },
-  { tile: 'soil',        rect: { x1: 32, y1: 79, x2: 40, y2: 87 } },
-  { tile: 'soil',        rect: { x1: 52, y1: 79, x2: 60, y2: 87 } },
-  { tile: 'soil',        rect: { x1: 72, y1: 79, x2: 80, y2: 87 } },
-  { tile: 'soil',        rect: { x1: 22, y1: 91, x2: 30, y2: 99 } },
-  { tile: 'soil',        rect: { x1: 47, y1: 91, x2: 55, y2: 99 } },
-  { tile: 'soil',        rect: { x1: 72, y1: 91, x2: 80, y2: 99 } },
-  { tile: 'cobblestone', rect: { x1: 10, y1: 64, x2: 100, y2: 65 } },
-  { tile: 'cobblestone', rect: { x1: 10, y1: 77, x2: 85, y2: 78 } },
-  { tile: 'cobblestone', rect: { x1: 20, y1: 89, x2: 82, y2: 90 } },
-  { tile: 'water',       rect: { x1: 8, y1: 18, x2: 54, y2: 18 } },
-  { tile: 'water',       rect: { x1: 8, y1: 56, x2: 54, y2: 56 } },
-  { tile: 'water',       rect: { x1: 8, y1: 18, x2: 8, y2: 56 } },
-  { tile: 'water',       rect: { x1: 54, y1: 18, x2: 54, y2: 56 } },
-  { tile: 'cobblestone', rect: { x1: 0, y1: 37, x2: 119, y2: 38 } },
-  { tile: 'cobblestone', rect: { x1: 38, y1: 0, x2: 39, y2: 119 } },
-  { tile: 'cobblestone', rect: { x1: 36, y1: 35, x2: 41, y2: 40 } },
-];
+// ── District definitions ─────────────────────────────────────────────────────
+const DISTRICTS = {
+  communal:    { label: 'Communal District',   cx: 35, cy: 48, bounds: { x1: 15, y1: 33, x2: 60, y2: 65 } },
+  residential: { label: 'Residential',          cx: 40, cy: 90, bounds: { x1: 0,  y1: 62, x2: 119, y2: 119 } },
+  cronos:      { label: 'Cronos Shrine',        cx: 15, cy: 12, bounds: { x1: 0,  y1: 0,  x2: 37, y2: 36 } },
+  scarlet:     { label: 'Scarlet Sanctum',      cx: 85, cy: 8,  bounds: { x1: 40, y1: 0,  x2: 119, y2: 36 } },
+  observatory: { label: 'Observatory District', cx: 90, cy: 12, bounds: { x1: 60, y1: 0,  x2: 119, y2: 36 } },
+};
 
-function _tileForGrid(gx, gy) {
-  let result = 'snow';
-  for (const z of TILE_ZONES) {
-    if (gx >= z.rect.x1 && gx <= z.rect.x2 && gy >= z.rect.y1 && gy <= z.rect.y2) {
-      result = z.tile;
-    }
-  }
-  return result;
-}
+const NAV_MAP = {
+  communal:    { up: 'cronos', down: 'observatory', left: 'residential', right: 'scarlet' },
+  residential: { up: 'communal', down: null, left: null, right: null },
+  cronos:      { up: null, down: 'communal', left: null, right: 'scarlet' },
+  scarlet:     { up: null, down: 'communal', left: 'cronos', right: 'observatory' },
+  observatory: { up: 'scarlet', down: null, left: 'cronos', right: null },
+};
 
 export default class TownScene extends Phaser.Scene {
   constructor() {
@@ -171,8 +127,9 @@ export default class TownScene extends Phaser.Scene {
     this.originX = this.cameras.main.width * 0.5;
     this.originY = -800;
 
-    // Draw ground tiles synchronously
-    this._drawGround(this.mapW, this.mapH);
+    // Draw ground tiles synchronously for default district (communal)
+    this._currentDistrict = 'communal';
+    this._drawGroundSync(this.mapW, this.mapH, DISTRICTS.communal.bounds);
 
     // Communal district enhancements — plaza, market stalls, civic scenery
     this._drawPlazaDetail();
@@ -226,7 +183,7 @@ export default class TownScene extends Phaser.Scene {
 
     // Centre camera on communal district (town heart) on all devices
     {
-      const center = this.gridToScreen(35, 35);
+      const center = this.gridToScreen(DISTRICTS.communal.cx, DISTRICTS.communal.cy);
       CAM.centerOn(center.x, center.y);
     }
 
@@ -303,6 +260,9 @@ export default class TownScene extends Phaser.Scene {
       if (this._groundGraphics) this._groundGraphics.setVisible(this._gridVisible);
       return this._gridVisible;
     };
+
+    // ── District navigation UI ──────────────────────────────────────────────
+    this._initDistrictNav();
 
     // Grid-based click detection — accurate footprint hits only
     this._setupGridClickHandler();
@@ -1044,12 +1004,18 @@ export default class TownScene extends Phaser.Scene {
       if (w !== this.mapW || h !== this.mapH) {
         this.mapW = w;
         this.mapH = h;
-        this._drawGround(w, h);
+        const db = this._currentDistrict ? DISTRICTS[this._currentDistrict].bounds : { x1: 0, y1: 0, x2: w - 1, y2: h - 1 };
+        this._drawGroundSync(w, h, db);
       }
     } catch (e) { /* API unavailable — keep defaults */ }
   }
 
   _drawGround(mapW, mapH) {
+    // Synchronous fallback — renders full map snow tiles (used by initial create)
+    this._drawGroundSync(mapW, mapH, { x1: 0, y1: 0, x2: mapW - 1, y2: mapH - 1 });
+  }
+
+  _drawGroundSync(mapW, mapH, districtBounds) {
     // Clean up previous ground render
     (this._groundChunks || []).forEach(rt => rt.destroy());
     this._groundChunks = [];
@@ -1057,56 +1023,35 @@ export default class TownScene extends Phaser.Scene {
     if (this._pathSprites) { this._pathSprites.forEach(s => s.destroy()); }
     this._pathSprites = [];
 
-    // Check available sprite textures
     const hasSnow = this.textures.exists('ground-snow');
-    const hasSoil = this.textures.exists('ground-soil');
-    const hasCobblestone = this.textures.exists('ground-cobblestone');
-    const hasStone = this.textures.exists('ground-stone');
-    const hasWood = this.textures.exists('ground-wood');
-    const hasPathSprite = this.textures.exists('ground-path') || this.textures.exists('tile-path');
-    const hasWaterSprite = this.textures.exists('ground-water');
-    const hasMoatSprite = this.textures.exists('life-moat');
-    const hasBridgeSprite = this.textures.exists('life-bridge');
-    const pathKey = this.textures.exists('ground-path') ? 'ground-path' : 'tile-path';
 
-    // Map zone tile names to texture keys (with fallback to snow)
-    const zoneTileKeys = {
-      snow: hasSnow ? 'ground-snow' : null,
-      soil: hasSoil ? 'ground-soil' : null,
-      cobblestone: hasCobblestone ? 'ground-cobblestone' : null,
-      stone: hasStone ? 'ground-stone' : null,
-      wood: hasWood ? 'ground-wood' : null,
-      water: hasWaterSprite ? 'ground-water' : null,
-    };
+    const pad = 10;
+    const x1 = Math.max(0, districtBounds.x1 - pad);
+    const y1 = Math.max(0, districtBounds.y1 - pad);
+    const x2 = Math.min(mapW - 1, districtBounds.x2 + pad);
+    const y2 = Math.min(mapH - 1, districtBounds.y2 + pad);
 
-    // Bridge gap coordinates (where roads cross the moat ring)
-    const bridgeGaps = new Set([
-      '38,15', '39,15', '38,58', '39,58',
-      '5,37', '5,38', '68,37', '68,38',
-    ]);
-
-    const PAD = 20;
     const CHUNK_PX = 2048;
+    const SIDE_OVERHANG = TILE_PNG_H - TILE_H;
 
-    // ── Calculate bounding box for in-grid tiles (cube tiles: 16px side overhang) ──
-    const SIDE_OVERHANG = TILE_PNG_H - TILE_H; // 16px
-    const topSy  = 0 - TILE_H / 2;
-    const botSy  = ((mapW - 1) + (mapH - 1)) * (TILE_H / 2) + TILE_H / 2 + SIDE_OVERHANG;
-    const leftSx = (0 - (mapH - 1)) * (TILE_W / 2) - TILE_W / 2;
-    const rightSx = ((mapW - 1) - 0) * (TILE_W / 2) + TILE_W / 2;
+    // Bounding box for the district area tiles
+    const topSy  = (x1 + y1) * (TILE_H / 2) - TILE_H / 2;
+    const botSy  = (x2 + y2) * (TILE_H / 2) + TILE_H / 2 + SIDE_OVERHANG;
+    const leftSx = (x1 - y2) * (TILE_W / 2) - TILE_W / 2;
+    const rightSx = (x2 - y1) * (TILE_W / 2) + TILE_W / 2;
 
     const totalW = Math.ceil(rightSx - leftSx);
     const totalH = Math.ceil(botSy - topSy);
 
-    // Graphics for padding tiles + water fallback (drawn on top of RT)
+    // Graphics for padding tiles outside grid bounds
     const g = this.add.graphics();
     this._groundGraphics = g;
     g.setDepth(-100);
 
-    // ── Draw padding tiles with flat graphics (outside RT to avoid GPU size limits) ──
-    for (let y = -PAD; y < mapH + PAD; y++) {
-      for (let x = -PAD; x < mapW + PAD; x++) {
-        if (x >= 0 && x < mapW && y >= 0 && y < mapH) continue; // in-grid handled by RT
+    const PAD_OUTER = 20;
+    for (let y = y1 - PAD_OUTER; y <= y2 + PAD_OUTER; y++) {
+      for (let x = x1 - PAD_OUTER; x <= x2 + PAD_OUTER; x++) {
+        if (x >= 0 && x < mapW && y >= 0 && y < mapH) continue;
         const worldSx = this.originX + (x - y) * (TILE_W / 2);
         const worldSy = this.originY + (x + y) * (TILE_H / 2);
         const padColor = this._grassColor(x, y);
@@ -1121,64 +1066,7 @@ export default class TownScene extends Phaser.Scene {
       }
     }
 
-    // ── Pre-collect bridge/water/sprite tiles (handled outside chunks) ──
-    // Then stamp remaining ground tiles into chunked RenderTextures
-    const spriteTiles = new Set(); // "x,y" keys for tiles handled as individual sprites
-
-    for (let y = 0; y < mapH; y++) {
-      for (let x = 0; x < mapW; x++) {
-        const worldSx = this.originX + (x - y) * (TILE_W / 2);
-        const worldSy = this.originY + (x + y) * (TILE_H / 2);
-        const isBridgeGap = bridgeGaps.has(`${x},${y}`);
-
-        // Bridge tiles — individual sprites (only ~8 tiles)
-        if (isBridgeGap && hasBridgeSprite) {
-          const img = this.add.image(worldSx, worldSy, 'life-bridge');
-          img.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
-          img.setDisplaySize(TILE_W, TILE_H);
-          img.setOrigin(0.5, 0.5);
-          img.setDepth(-50);
-          this._pathSprites.push(img);
-          spriteTiles.add(`${x},${y}`);
-          continue;
-        }
-
-        // Water tiles — cube sprite, flat sprite, or graphics fallback
-        if (this._isWater(x, y)) {
-          if (hasWaterSprite) {
-            // Cube water tile (64×48) — handled in RT chunks below
-          } else if (hasMoatSprite) {
-            const img = this.add.image(worldSx, worldSy, 'life-moat');
-            img.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
-            img.setDisplaySize(TILE_W, TILE_H);
-            img.setOrigin(0.5, 0.5);
-            img.setDepth(-50);
-            this._pathSprites.push(img);
-          } else {
-            const wc = this._waterColor(x, y);
-            g.fillStyle(wc, 1);
-            g.beginPath();
-            g.moveTo(worldSx, worldSy - TILE_H / 2);
-            g.lineTo(worldSx + TILE_W / 2, worldSy);
-            g.lineTo(worldSx, worldSy + TILE_H / 2);
-            g.lineTo(worldSx - TILE_W / 2, worldSy);
-            g.closePath();
-            g.fillPath();
-            g.lineStyle(1, 0x4a8aaa, 0.2);
-            g.beginPath();
-            g.moveTo(worldSx, worldSy - TILE_H / 2);
-            g.lineTo(worldSx + TILE_W / 2, worldSy);
-            g.lineTo(worldSx, worldSy + TILE_H / 2);
-            g.lineTo(worldSx - TILE_W / 2, worldSy);
-            g.closePath();
-            g.strokePath();
-          }
-          if (!hasWaterSprite) spriteTiles.add(`${x},${y}`);
-        }
-      }
-    }
-
-    // ── Create chunked RenderTextures (≤2048px each for mobile GPU compat) ──
+    // Chunked RenderTextures for snow tiles within district bounds
     const colCount = Math.ceil(totalW / CHUNK_PX);
     const rowCount = Math.ceil(totalH / CHUNK_PX);
 
@@ -1196,47 +1084,227 @@ export default class TownScene extends Phaser.Scene {
         rt.setDepth(-100);
         this._groundChunks.push(rt);
 
-        // Stamp tiles that fall within this chunk
-        for (let y = 0; y < mapH; y++) {
-          for (let x = 0; x < mapW; x++) {
-            if (spriteTiles.has(`${x},${y}`)) continue;
-
-            // Position relative to full RT origin
+        for (let y = y1; y <= y2; y++) {
+          for (let x = x1; x <= x2; x++) {
             const sx = (x - y) * (TILE_W / 2) - leftSx;
             const sy = (x + y) * (TILE_H / 2) - topSy;
 
-            // Skip tiles outside this chunk (with tile-size margin for 48px tall cubes)
             if (sx < chunkLeft - TILE_W || sx > chunkLeft + chunkW + TILE_W) continue;
             if (sy < chunkTop - TILE_PNG_H || sy > chunkTop + chunkH + TILE_PNG_H) continue;
 
-            // Local position within this chunk's RT — origin at top of cube PNG
             const localX = sx - chunkLeft - TILE_W / 2;
             const localY = sy - chunkTop - TILE_H / 2;
 
-            // Water tiles (cube variant)
-            if (this._isWater(x, y) && hasWaterSprite) {
-              rt.stamp('ground-water', undefined, localX, localY);
-              continue;
-            }
-
-            const isPath = this._isPath(x, y);
-            if (isPath && hasPathSprite) {
-              rt.stamp(pathKey, undefined, localX, localY);
-              continue;
-            }
-
-            // Zone-based tile selection — look up the tile type for this grid cell
-            const zoneTile = _tileForGrid(x, y);
-            const zoneKey = zoneTileKeys[zoneTile];
-            if (zoneKey) {
-              rt.stamp(zoneKey, undefined, localX, localY);
-            } else if (hasSnow) {
+            if (hasSnow) {
               rt.stamp('ground-snow', undefined, localX, localY);
             }
           }
         }
       }
     }
+  }
+
+  async _drawGroundAsync(mapW, mapH, districtBounds) {
+    // Clean up previous ground render
+    (this._groundChunks || []).forEach(rt => rt.destroy());
+    this._groundChunks = [];
+    if (this._groundGraphics) { this._groundGraphics.destroy(); this._groundGraphics = null; }
+    if (this._pathSprites) { this._pathSprites.forEach(s => s.destroy()); }
+    this._pathSprites = [];
+
+    const hasSnow = this.textures.exists('ground-snow');
+
+    const pad = 10;
+    const x1 = Math.max(0, districtBounds.x1 - pad);
+    const y1 = Math.max(0, districtBounds.y1 - pad);
+    const x2 = Math.min(mapW - 1, districtBounds.x2 + pad);
+    const y2 = Math.min(mapH - 1, districtBounds.y2 + pad);
+
+    const CHUNK_PX = 2048;
+    const SIDE_OVERHANG = TILE_PNG_H - TILE_H;
+
+    const topSy  = (x1 + y1) * (TILE_H / 2) - TILE_H / 2;
+    const botSy  = (x2 + y2) * (TILE_H / 2) + TILE_H / 2 + SIDE_OVERHANG;
+    const leftSx = (x1 - y2) * (TILE_W / 2) - TILE_W / 2;
+    const rightSx = (x2 - y1) * (TILE_W / 2) + TILE_W / 2;
+
+    const totalW = Math.ceil(rightSx - leftSx);
+    const totalH = Math.ceil(botSy - topSy);
+
+    // Graphics for padding tiles outside grid bounds
+    const g = this.add.graphics();
+    this._groundGraphics = g;
+    g.setDepth(-100);
+
+    const PAD_OUTER = 20;
+    for (let y = y1 - PAD_OUTER; y <= y2 + PAD_OUTER; y++) {
+      for (let x = x1 - PAD_OUTER; x <= x2 + PAD_OUTER; x++) {
+        if (x >= 0 && x < mapW && y >= 0 && y < mapH) continue;
+        const worldSx = this.originX + (x - y) * (TILE_W / 2);
+        const worldSy = this.originY + (x + y) * (TILE_H / 2);
+        const padColor = this._grassColor(x, y);
+        g.fillStyle(padColor, 1);
+        g.beginPath();
+        g.moveTo(worldSx, worldSy - TILE_H / 2);
+        g.lineTo(worldSx + TILE_W / 2, worldSy);
+        g.lineTo(worldSx, worldSy + TILE_H / 2);
+        g.lineTo(worldSx - TILE_W / 2, worldSy);
+        g.closePath();
+        g.fillPath();
+      }
+    }
+
+    // Chunked RenderTextures + async yield
+    const colCount = Math.ceil(totalW / CHUNK_PX);
+    const rowCount = Math.ceil(totalH / CHUNK_PX);
+    const CHUNK_SIZE = 200;
+    let count = 0;
+
+    for (let cr = 0; cr < rowCount; cr++) {
+      for (let cc = 0; cc < colCount; cc++) {
+        const chunkLeft = cc * CHUNK_PX;
+        const chunkTop = cr * CHUNK_PX;
+        const chunkW = Math.min(CHUNK_PX, totalW - chunkLeft);
+        const chunkH = Math.min(CHUNK_PX, totalH - chunkTop);
+        const rtWorldX = this.originX + leftSx + chunkLeft;
+        const rtWorldY = this.originY + topSy + chunkTop;
+
+        const rt = this.add.renderTexture(rtWorldX, rtWorldY, chunkW, chunkH);
+        rt.setOrigin(0, 0);
+        rt.setDepth(-100);
+        this._groundChunks.push(rt);
+
+        for (let y = y1; y <= y2; y++) {
+          for (let x = x1; x <= x2; x++) {
+            const sx = (x - y) * (TILE_W / 2) - leftSx;
+            const sy = (x + y) * (TILE_H / 2) - topSy;
+
+            if (sx < chunkLeft - TILE_W || sx > chunkLeft + chunkW + TILE_W) continue;
+            if (sy < chunkTop - TILE_PNG_H || sy > chunkTop + chunkH + TILE_PNG_H) continue;
+
+            const localX = sx - chunkLeft - TILE_W / 2;
+            const localY = sy - chunkTop - TILE_H / 2;
+
+            if (hasSnow) {
+              rt.stamp('ground-snow', undefined, localX, localY);
+            }
+
+            count++;
+            if (count % CHUNK_SIZE === 0) {
+              await new Promise(r => requestAnimationFrame(r));
+            }
+          }
+        }
+      }
+    }
+  }
+
+  // ── District navigation system ──────────────────────────────────────────────
+
+  _initDistrictNav() {
+    // Create HTML overlay for district navigation
+    const nav = document.createElement('div');
+    nav.id = 'district-nav';
+    nav.innerHTML = `
+      <button id="nav-up" class="district-nav-btn">▲</button>
+      <div class="district-nav-row">
+        <button id="nav-left" class="district-nav-btn">◀</button>
+        <div id="district-label">Communal District</div>
+        <button id="nav-right" class="district-nav-btn">▶</button>
+      </div>
+      <button id="nav-down" class="district-nav-btn">▼</button>
+    `;
+    document.body.appendChild(nav);
+
+    // Bind navigation clicks
+    ['up', 'down', 'left', 'right'].forEach(dir => {
+      const btn = document.getElementById('nav-' + dir);
+      if (!btn) return;
+      btn.addEventListener('click', () => {
+        const nav = NAV_MAP[this._currentDistrict];
+        const target = nav?.[dir];
+        if (!target) return;
+        this._navigateToDistrict(target);
+      });
+    });
+
+    this._currentDistrict = 'communal';
+    this._updateNavButtons('communal');
+  }
+
+  async _navigateToDistrict(key) {
+    if (this._navTransitioning) return;
+    this._navTransitioning = true;
+
+    // Disable nav buttons during transition
+    document.querySelectorAll('.district-nav-btn').forEach(b => b.disabled = true);
+
+    // Fade camera out
+    this.cameras.main.fade(300, 0, 0, 0);
+    await new Promise(r => this.time.delayedCall(320, r));
+
+    // Load the new district
+    await this._loadDistrict(key);
+
+    // Fade camera back in
+    this.cameras.main.fadeIn(300, 0, 0, 0);
+    await new Promise(r => this.time.delayedCall(320, r));
+
+    // Re-enable nav buttons
+    document.querySelectorAll('.district-nav-btn').forEach(b => b.disabled = false);
+    this._navTransitioning = false;
+  }
+
+  async _loadDistrict(key) {
+    const district = DISTRICTS[key];
+    this._currentDistrict = key;
+
+    // 1. Destroy existing ground chunks
+    (this._groundChunks || []).forEach(rt => rt.destroy());
+    this._groundChunks = [];
+    if (this._groundGraphics) { this._groundGraphics.destroy(); this._groundGraphics = null; }
+
+    // 2. Show/hide buildings based on district bounds
+    Object.values(this.buildings).forEach(b => {
+      const bx = b.gridX ?? 0;
+      const by = b.gridY ?? 0;
+      const inDistrict = bx >= district.bounds.x1 - 5 &&
+                         bx <= district.bounds.x2 + 5 &&
+                         by >= district.bounds.y1 - 5 &&
+                         by <= district.bounds.y2 + 5;
+      if (b.container) b.container.setVisible(inDistrict);
+    });
+
+    // 3. Show/hide agents based on district bounds
+    Object.values(this.agents).forEach(a => {
+      const loc = a.agentData?.location;
+      if (!loc || !a.container) return;
+      const inDistrict = loc.x >= district.bounds.x1 - 5 &&
+                         loc.x <= district.bounds.x2 + 5 &&
+                         loc.y >= district.bounds.y1 - 5 &&
+                         loc.y <= district.bounds.y2 + 5;
+      a.container.setVisible(inDistrict);
+    });
+
+    // 4. Async render ground tiles for this district
+    await this._drawGroundAsync(this.mapW, this.mapH, district.bounds);
+
+    // 5. Pan camera to district center
+    const center = this.gridToScreen(district.cx, district.cy);
+    this.cameras.main.pan(center.x, center.y, 400, 'Sine.easeInOut');
+
+    // 6. Update nav UI
+    const label = document.getElementById('district-label');
+    if (label) label.textContent = district.label;
+    this._updateNavButtons(key);
+  }
+
+  _updateNavButtons(key) {
+    const nav = NAV_MAP[key];
+    ['up', 'down', 'left', 'right'].forEach(dir => {
+      const btn = document.getElementById('nav-' + dir);
+      if (btn) btn.style.opacity = nav[dir] ? '1' : '0.2';
+    });
   }
 
   _drawWater() {
@@ -1568,8 +1636,9 @@ export default class TownScene extends Phaser.Scene {
     );
     // Add walkways connecting buildings to main roads
     this._computeWalkways();
-    // Redraw ground layer with new path data
-    this._drawGround(this.mapW || 80, this.mapH || 80);
+    // Redraw ground layer with new path data for current district
+    const db = this._currentDistrict ? DISTRICTS[this._currentDistrict].bounds : { x1: 0, y1: 0, x2: (this.mapW || 80) - 1, y2: (this.mapH || 80) - 1 };
+    this._drawGroundSync(this.mapW || 80, this.mapH || 80, db);
   }
 
   // Generate walkways from each building entrance to nearest main road
@@ -1771,7 +1840,8 @@ export default class TownScene extends Phaser.Scene {
       if (w !== this.mapW || h !== this.mapH) {
         this.mapW = w;
         this.mapH = h;
-        this._drawGround(w, h);
+        const db = this._currentDistrict ? DISTRICTS[this._currentDistrict].bounds : { x1: 0, y1: 0, x2: w - 1, y2: h - 1 };
+        this._drawGroundSync(w, h, db);
       }
     }
 
@@ -1815,6 +1885,35 @@ export default class TownScene extends Phaser.Scene {
     if (state.time?.period) {
       this.setTime(state.time.period);
     }
+
+    // Apply district visibility — hide buildings/agents outside current district
+    this._applyDistrictVisibility();
+  }
+
+  _applyDistrictVisibility() {
+    if (!this._currentDistrict) return;
+    const district = DISTRICTS[this._currentDistrict];
+    if (!district) return;
+
+    Object.values(this.buildings).forEach(b => {
+      const bx = b.gridX ?? 0;
+      const by = b.gridY ?? 0;
+      const inDistrict = bx >= district.bounds.x1 - 5 &&
+                         bx <= district.bounds.x2 + 5 &&
+                         by >= district.bounds.y1 - 5 &&
+                         by <= district.bounds.y2 + 5;
+      if (b.container) b.container.setVisible(inDistrict);
+    });
+
+    Object.values(this.agents).forEach(a => {
+      const loc = a.agentData?.location;
+      if (!loc || !a.container) return;
+      const inDistrict = loc.x >= district.bounds.x1 - 5 &&
+                         loc.x <= district.bounds.x2 + 5 &&
+                         loc.y >= district.bounds.y1 - 5 &&
+                         loc.y <= district.bounds.y2 + 5;
+      a.container.setVisible(inDistrict);
+    });
   }
 
   /**
