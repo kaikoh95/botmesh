@@ -1038,7 +1038,7 @@ html, body {
 /* ── District Navigation ──────────────────────────────────────────────────── */
 #district-nav {
   position: fixed;
-  top: 14px;
+  top: 12px;
   left: 50%;
   transform: translateX(-50%);
   z-index: 200;
@@ -1049,7 +1049,7 @@ html, body {
   pointer-events: auto;
 }
 
-.district-nav-row {
+.nav-middle {
   display: flex;
   align-items: center;
   gap: 2px;
@@ -1069,7 +1069,7 @@ html, body {
   white-space: nowrap;
 }
 
-.district-nav-btn {
+.nav-btn {
   background: rgba(10, 13, 26, 0.85);
   border: 1px solid rgba(200, 170, 110, 0.25);
   border-radius: 4px;
@@ -1084,20 +1084,22 @@ html, body {
   transition: background 0.15s, opacity 0.15s;
 }
 
-.district-nav-btn:hover:not(:disabled) {
+.nav-btn:hover:not(:disabled) {
   background: rgba(74, 53, 32, 0.95);
   border-color: rgba(200, 170, 110, 0.5);
 }
 
-.district-nav-btn:disabled {
+.nav-btn:disabled {
   cursor: default;
+  opacity: 0.2;
+  pointer-events: none;
 }
 
 @media (max-width: 768px) {
   #district-nav {
     top: max(8px, env(safe-area-inset-top));
   }
-  .district-nav-btn {
+  .nav-btn {
     width: 36px;
     height: 36px;
     font-size: 14px;

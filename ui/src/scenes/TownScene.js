@@ -25,11 +25,11 @@ const DISTRICTS = {
 };
 
 const NAV_MAP = {
-  communal:    { up: 'cronos', down: 'observatory', left: 'residential', right: 'scarlet' },
+  communal:    { up: 'cronos', down: 'residential', left: null, right: 'scarlet' },
   residential: { up: 'communal', down: null, left: null, right: null },
   cronos:      { up: null, down: 'communal', left: null, right: 'scarlet' },
   scarlet:     { up: null, down: 'communal', left: 'cronos', right: 'observatory' },
-  observatory: { up: 'scarlet', down: null, left: 'cronos', right: null },
+  observatory: { up: null, down: 'communal', left: 'scarlet', right: null },
 };
 
 export default class TownScene extends Phaser.Scene {
@@ -151,6 +151,9 @@ export default class TownScene extends Phaser.Scene {
     // World life — flora, fauna, ambient
     this.worldLife = new WorldLife(this);
     this.worldLife.spawn(1); // starts with 1, updates as agents join
+
+    // Apply initial district isolation for communal
+    this._filterLifeForDistrict('communal');
 
     // Path tile registry — populated from world entities on state:sync
     this.pathTiles = new Set();
@@ -1025,7 +1028,7 @@ export default class TownScene extends Phaser.Scene {
 
     const hasSnow = this.textures.exists('ground-snow');
 
-    const pad = 10;
+    const pad = 2;
     const x1 = Math.max(0, districtBounds.x1 - pad);
     const y1 = Math.max(0, districtBounds.y1 - pad);
     const x2 = Math.min(mapW - 1, districtBounds.x2 + pad);
@@ -1043,30 +1046,13 @@ export default class TownScene extends Phaser.Scene {
     const totalW = Math.ceil(rightSx - leftSx);
     const totalH = Math.ceil(botSy - topSy);
 
-    // Graphics for padding tiles outside grid bounds
-    const g = this.add.graphics();
-    this._groundGraphics = g;
-    g.setDepth(-100);
+    // Dark backdrop covers void — no PAD_OUTER loop needed
 
-    const PAD_OUTER = 20;
-    for (let y = y1 - PAD_OUTER; y <= y2 + PAD_OUTER; y++) {
-      for (let x = x1 - PAD_OUTER; x <= x2 + PAD_OUTER; x++) {
-        if (x >= 0 && x < mapW && y >= 0 && y < mapH) continue;
-        const worldSx = this.originX + (x - y) * (TILE_W / 2);
-        const worldSy = this.originY + (x + y) * (TILE_H / 2);
-        const padColor = this._grassColor(x, y);
-        g.fillStyle(padColor, 1);
-        g.beginPath();
-        g.moveTo(worldSx, worldSy - TILE_H / 2);
-        g.lineTo(worldSx + TILE_W / 2, worldSy);
-        g.lineTo(worldSx, worldSy + TILE_H / 2);
-        g.lineTo(worldSx - TILE_W / 2, worldSy);
-        g.closePath();
-        g.fillPath();
-      }
-    }
+    // Chunked RenderTextures for snow/cobblestone tiles within district bounds
+    const hasCobble = this.textures.exists('ground-cobblestone');
+    const isRoad = (x, y) => (y === 37 || y === 38) || (x === 38 || x === 39);
+    const isMarket = (x, y) => x >= 20 && x <= 55 && y >= 37 && y <= 60;
 
-    // Chunked RenderTextures for snow tiles within district bounds
     const colCount = Math.ceil(totalW / CHUNK_PX);
     const rowCount = Math.ceil(totalH / CHUNK_PX);
 
@@ -1095,8 +1081,11 @@ export default class TownScene extends Phaser.Scene {
             const localX = sx - chunkLeft - TILE_W / 2;
             const localY = sy - chunkTop - TILE_H / 2;
 
-            if (hasSnow) {
-              rt.stamp('ground-snow', undefined, localX, localY);
+            let tileKey = 'ground-snow';
+            if (hasCobble && (isRoad(x, y) || isMarket(x, y))) tileKey = 'ground-cobblestone';
+
+            if (this.textures.exists(tileKey)) {
+              rt.stamp(tileKey, undefined, localX, localY);
             }
           }
         }
@@ -1114,7 +1103,7 @@ export default class TownScene extends Phaser.Scene {
 
     const hasSnow = this.textures.exists('ground-snow');
 
-    const pad = 10;
+    const pad = 2;
     const x1 = Math.max(0, districtBounds.x1 - pad);
     const y1 = Math.max(0, districtBounds.y1 - pad);
     const x2 = Math.min(mapW - 1, districtBounds.x2 + pad);
@@ -1131,30 +1120,13 @@ export default class TownScene extends Phaser.Scene {
     const totalW = Math.ceil(rightSx - leftSx);
     const totalH = Math.ceil(botSy - topSy);
 
-    // Graphics for padding tiles outside grid bounds
-    const g = this.add.graphics();
-    this._groundGraphics = g;
-    g.setDepth(-100);
-
-    const PAD_OUTER = 20;
-    for (let y = y1 - PAD_OUTER; y <= y2 + PAD_OUTER; y++) {
-      for (let x = x1 - PAD_OUTER; x <= x2 + PAD_OUTER; x++) {
-        if (x >= 0 && x < mapW && y >= 0 && y < mapH) continue;
-        const worldSx = this.originX + (x - y) * (TILE_W / 2);
-        const worldSy = this.originY + (x + y) * (TILE_H / 2);
-        const padColor = this._grassColor(x, y);
-        g.fillStyle(padColor, 1);
-        g.beginPath();
-        g.moveTo(worldSx, worldSy - TILE_H / 2);
-        g.lineTo(worldSx + TILE_W / 2, worldSy);
-        g.lineTo(worldSx, worldSy + TILE_H / 2);
-        g.lineTo(worldSx - TILE_W / 2, worldSy);
-        g.closePath();
-        g.fillPath();
-      }
-    }
+    // Dark backdrop covers void — no PAD_OUTER loop needed
 
     // Chunked RenderTextures + async yield
+    const hasCobble = this.textures.exists('ground-cobblestone');
+    const isRoad = (x, y) => (y === 37 || y === 38) || (x === 38 || x === 39);
+    const isMarket = (x, y) => x >= 20 && x <= 55 && y >= 37 && y <= 60;
+
     const colCount = Math.ceil(totalW / CHUNK_PX);
     const rowCount = Math.ceil(totalH / CHUNK_PX);
     const CHUNK_SIZE = 200;
@@ -1185,8 +1157,11 @@ export default class TownScene extends Phaser.Scene {
             const localX = sx - chunkLeft - TILE_W / 2;
             const localY = sy - chunkTop - TILE_H / 2;
 
-            if (hasSnow) {
-              rt.stamp('ground-snow', undefined, localX, localY);
+            let tileKey = 'ground-snow';
+            if (hasCobble && (isRoad(x, y) || isMarket(x, y))) tileKey = 'ground-cobblestone';
+
+            if (this.textures.exists(tileKey)) {
+              rt.stamp(tileKey, undefined, localX, localY);
             }
 
             count++;
@@ -1206,13 +1181,13 @@ export default class TownScene extends Phaser.Scene {
     const nav = document.createElement('div');
     nav.id = 'district-nav';
     nav.innerHTML = `
-      <button id="nav-up" class="district-nav-btn">▲</button>
-      <div class="district-nav-row">
-        <button id="nav-left" class="district-nav-btn">◀</button>
-        <div id="district-label">Communal District</div>
-        <button id="nav-right" class="district-nav-btn">▶</button>
+      <button id="nav-up" class="nav-btn">▲</button>
+      <div class="nav-middle">
+        <button id="nav-left" class="nav-btn">◀</button>
+        <span id="district-label">Communal District</span>
+        <button id="nav-right" class="nav-btn">▶</button>
       </div>
-      <button id="nav-down" class="district-nav-btn">▼</button>
+      <button id="nav-down" class="nav-btn">▼</button>
     `;
     document.body.appendChild(nav);
 
@@ -1237,7 +1212,7 @@ export default class TownScene extends Phaser.Scene {
     this._navTransitioning = true;
 
     // Disable nav buttons during transition
-    document.querySelectorAll('.district-nav-btn').forEach(b => b.disabled = true);
+    document.querySelectorAll('.nav-btn').forEach(b => b.disabled = true);
 
     // Fade camera out
     this.cameras.main.fade(300, 0, 0, 0);
@@ -1251,12 +1226,12 @@ export default class TownScene extends Phaser.Scene {
     await new Promise(r => this.time.delayedCall(320, r));
 
     // Re-enable nav buttons
-    document.querySelectorAll('.district-nav-btn').forEach(b => b.disabled = false);
+    document.querySelectorAll('.nav-btn').forEach(b => b.disabled = false);
     this._navTransitioning = false;
   }
 
   async _loadDistrict(key) {
-    const district = DISTRICTS[key];
+    const d = DISTRICTS[key];
     this._currentDistrict = key;
 
     // 1. Destroy existing ground chunks
@@ -1264,38 +1239,41 @@ export default class TownScene extends Phaser.Scene {
     this._groundChunks = [];
     if (this._groundGraphics) { this._groundGraphics.destroy(); this._groundGraphics = null; }
 
-    // 2. Show/hide buildings based on district bounds
+    // 2. Show/hide buildings — exact bounds, no padding
     Object.values(this.buildings).forEach(b => {
-      const bx = b.gridX ?? 0;
-      const by = b.gridY ?? 0;
-      const inDistrict = bx >= district.bounds.x1 - 5 &&
-                         bx <= district.bounds.x2 + 5 &&
-                         by >= district.bounds.y1 - 5 &&
-                         by <= district.bounds.y2 + 5;
-      if (b.container) b.container.setVisible(inDistrict);
+      const inside = b.gridX >= d.bounds.x1 && b.gridX <= d.bounds.x2 &&
+                     b.gridY >= d.bounds.y1 && b.gridY <= d.bounds.y2;
+      if (b.container) b.container.setVisible(inside);
     });
 
-    // 3. Show/hide agents based on district bounds
+    // 3. Show/hide agents — exact bounds, no padding
     Object.values(this.agents).forEach(a => {
       const loc = a.agentData?.location;
       if (!loc || !a.container) return;
-      const inDistrict = loc.x >= district.bounds.x1 - 5 &&
-                         loc.x <= district.bounds.x2 + 5 &&
-                         loc.y >= district.bounds.y1 - 5 &&
-                         loc.y <= district.bounds.y2 + 5;
-      a.container.setVisible(inDistrict);
+      const inside = loc.x >= d.bounds.x1 && loc.x <= d.bounds.x2 &&
+                     loc.y >= d.bounds.y1 && loc.y <= d.bounds.y2;
+      a.container.setVisible(inside);
     });
 
-    // 4. Async render ground tiles for this district
-    await this._drawGroundAsync(this.mapW, this.mapH, district.bounds);
+    // 4. Filter life entities to district screen bounds
+    this._filterLifeForDistrict(key);
 
-    // 5. Pan camera to district center
-    const center = this.gridToScreen(district.cx, district.cy);
+    // 5. Show loading indicator
+    this._showDistrictLoading();
+
+    // 6. Async render ground tiles for this district
+    await this._drawGroundAsync(this.mapW, this.mapH, d.bounds);
+
+    // 7. Hide loading indicator
+    this._hideDistrictLoading();
+
+    // 8. Pan camera to district center
+    const center = this.gridToScreen(d.cx, d.cy);
     this.cameras.main.pan(center.x, center.y, 400, 'Sine.easeInOut');
 
-    // 6. Update nav UI
+    // 9. Update nav UI
     const label = document.getElementById('district-label');
-    if (label) label.textContent = district.label;
+    if (label) label.textContent = d.label;
     this._updateNavButtons(key);
   }
 
@@ -1303,8 +1281,53 @@ export default class TownScene extends Phaser.Scene {
     const nav = NAV_MAP[key];
     ['up', 'down', 'left', 'right'].forEach(dir => {
       const btn = document.getElementById('nav-' + dir);
-      if (btn) btn.style.opacity = nav[dir] ? '1' : '0.2';
+      if (!btn) return;
+      const hasTarget = !!nav[dir];
+      btn.style.opacity = hasTarget ? '1' : '0.2';
+      btn.style.pointerEvents = hasTarget ? 'auto' : 'none';
     });
+  }
+
+  _filterLifeForDistrict(key) {
+    if (!this.worldLife) return;
+    const d = DISTRICTS[key];
+    // Convert district grid bounds to screen-space bounding box
+    const corners = [
+      this.gridToScreen(d.bounds.x1, d.bounds.y1),
+      this.gridToScreen(d.bounds.x2, d.bounds.y1),
+      this.gridToScreen(d.bounds.x1, d.bounds.y2),
+      this.gridToScreen(d.bounds.x2, d.bounds.y2),
+    ];
+    const sx1 = Math.min(...corners.map(c => c.x)) - 64;
+    const sx2 = Math.max(...corners.map(c => c.x)) + 64;
+    const sy1 = Math.min(...corners.map(c => c.y)) - 64;
+    const sy2 = Math.max(...corners.map(c => c.y)) + 64;
+
+    const allEls = [...(this.worldLife.elements || []), ...(this.worldLife.animatedElements || [])];
+    for (const el of allEls) {
+      // animatedElements are { sprite, type, ... } objects
+      const obj = el?.sprite || el;
+      if (!obj || obj.destroyed) continue;
+      const inView = obj.x >= sx1 && obj.x <= sx2 && obj.y >= sy1 && obj.y <= sy2;
+      if (obj.setVisible) obj.setVisible(inView);
+    }
+  }
+
+  _showDistrictLoading() {
+    if (this._loadingText) return;
+    this._loadingText = this.add.text(
+      this.cameras.main.width / 2,
+      this.cameras.main.height / 2,
+      'Loading district\u2026',
+      { fontSize: '12px', fontFamily: '"Press Start 2P", monospace', color: '#c9a84c', stroke: '#000', strokeThickness: 3 }
+    ).setOrigin(0.5).setScrollFactor(0).setDepth(99999);
+  }
+
+  _hideDistrictLoading() {
+    if (this._loadingText) {
+      this._loadingText.destroy();
+      this._loadingText = null;
+    }
   }
 
   _drawWater() {
@@ -1892,28 +1915,24 @@ export default class TownScene extends Phaser.Scene {
 
   _applyDistrictVisibility() {
     if (!this._currentDistrict) return;
-    const district = DISTRICTS[this._currentDistrict];
-    if (!district) return;
+    const d = DISTRICTS[this._currentDistrict];
+    if (!d) return;
 
     Object.values(this.buildings).forEach(b => {
-      const bx = b.gridX ?? 0;
-      const by = b.gridY ?? 0;
-      const inDistrict = bx >= district.bounds.x1 - 5 &&
-                         bx <= district.bounds.x2 + 5 &&
-                         by >= district.bounds.y1 - 5 &&
-                         by <= district.bounds.y2 + 5;
-      if (b.container) b.container.setVisible(inDistrict);
+      const inside = b.gridX >= d.bounds.x1 && b.gridX <= d.bounds.x2 &&
+                     b.gridY >= d.bounds.y1 && b.gridY <= d.bounds.y2;
+      if (b.container) b.container.setVisible(inside);
     });
 
     Object.values(this.agents).forEach(a => {
       const loc = a.agentData?.location;
       if (!loc || !a.container) return;
-      const inDistrict = loc.x >= district.bounds.x1 - 5 &&
-                         loc.x <= district.bounds.x2 + 5 &&
-                         loc.y >= district.bounds.y1 - 5 &&
-                         loc.y <= district.bounds.y2 + 5;
-      a.container.setVisible(inDistrict);
+      const inside = loc.x >= d.bounds.x1 && loc.x <= d.bounds.x2 &&
+                     loc.y >= d.bounds.y1 && loc.y <= d.bounds.y2;
+      a.container.setVisible(inside);
     });
+
+    this._filterLifeForDistrict(this._currentDistrict);
   }
 
   /**
