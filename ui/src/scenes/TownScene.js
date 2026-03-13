@@ -13,6 +13,7 @@ import WorldLife from '../entities/WorldLife.js';
 
 const TILE_W = 64;
 const TILE_H = 32;
+const TILE_PNG_H = 48; // cube tile: 32px top face + 16px side faces
 
 export default class TownScene extends Phaser.Scene {
   constructor() {
@@ -85,6 +86,7 @@ export default class TownScene extends Phaser.Scene {
     this.load.image('ground-snow', `assets/ground/snow-tile.png${v}`);
     this.load.image('ground-soil', `assets/ground/soil-tile.png${v}`);
     this.load.image('ground-path', `assets/ground/path-tile.png${v}`);
+    this.load.image('ground-water', `assets/ground/water-tile.png${v}`);
   }
 
   create() {
@@ -992,6 +994,7 @@ export default class TownScene extends Phaser.Scene {
     const hasSnow = this.textures.exists('ground-snow');
     const hasSoil = this.textures.exists('ground-soil');
     const hasPathSprite = this.textures.exists('ground-path') || this.textures.exists('tile-path');
+    const hasWaterSprite = this.textures.exists('ground-water');
     const hasMoatSprite = this.textures.exists('life-moat');
     const hasBridgeSprite = this.textures.exists('life-bridge');
     const pathKey = this.textures.exists('ground-path') ? 'ground-path' : 'tile-path';
@@ -1005,9 +1008,10 @@ export default class TownScene extends Phaser.Scene {
     const PAD = 20;
     const CHUNK_PX = 2048;
 
-    // ── Calculate bounding box for in-grid tiles ──
+    // ── Calculate bounding box for in-grid tiles (cube tiles: 16px side overhang) ──
+    const SIDE_OVERHANG = TILE_PNG_H - TILE_H; // 16px
     const topSy  = 0 - TILE_H / 2;
-    const botSy  = ((mapW - 1) + (mapH - 1)) * (TILE_H / 2) + TILE_H / 2;
+    const botSy  = ((mapW - 1) + (mapH - 1)) * (TILE_H / 2) + TILE_H / 2 + SIDE_OVERHANG;
     const leftSx = (0 - (mapH - 1)) * (TILE_W / 2) - TILE_W / 2;
     const rightSx = ((mapW - 1) - 0) * (TILE_W / 2) + TILE_W / 2;
 
@@ -1059,9 +1063,11 @@ export default class TownScene extends Phaser.Scene {
           continue;
         }
 
-        // Water tiles — individual sprites or graphics
+        // Water tiles — cube sprite, flat sprite, or graphics fallback
         if (this._isWater(x, y)) {
-          if (hasMoatSprite) {
+          if (hasWaterSprite) {
+            // Cube water tile (64×48) — handled in RT chunks below
+          } else if (hasMoatSprite) {
             const img = this.add.image(worldSx, worldSy, 'life-moat');
             img.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
             img.setDisplaySize(TILE_W, TILE_H);
@@ -1087,7 +1093,7 @@ export default class TownScene extends Phaser.Scene {
             g.closePath();
             g.strokePath();
           }
-          spriteTiles.add(`${x},${y}`);
+          if (!hasWaterSprite) spriteTiles.add(`${x},${y}`);
         }
       }
     }
@@ -1119,13 +1125,19 @@ export default class TownScene extends Phaser.Scene {
             const sx = (x - y) * (TILE_W / 2) - leftSx;
             const sy = (x + y) * (TILE_H / 2) - topSy;
 
-            // Skip tiles outside this chunk (with tile-size margin)
+            // Skip tiles outside this chunk (with tile-size margin for 48px tall cubes)
             if (sx < chunkLeft - TILE_W || sx > chunkLeft + chunkW + TILE_W) continue;
-            if (sy < chunkTop - TILE_H || sy > chunkTop + chunkH + TILE_H) continue;
+            if (sy < chunkTop - TILE_PNG_H || sy > chunkTop + chunkH + TILE_PNG_H) continue;
 
-            // Local position within this chunk's RT
+            // Local position within this chunk's RT — origin at top of cube PNG
             const localX = sx - chunkLeft - TILE_W / 2;
             const localY = sy - chunkTop - TILE_H / 2;
+
+            // Water tiles (cube variant)
+            if (this._isWater(x, y) && hasWaterSprite) {
+              rt.drawFrame('ground-water', undefined, localX, localY);
+              continue;
+            }
 
             const isPath = this._isPath(x, y);
             if (isPath && hasPathSprite) {
