@@ -334,7 +334,7 @@ export default class TownScene extends Phaser.Scene {
   _initSnow() {
     const W = this.cameras.main.width  || 900;
     const H = this.cameras.main.height || 700;
-    const FLAKE_COUNT = 220;
+    const FLAKE_COUNT = 350; // more flakes for full coverage at any zoom
     this._snowFlakes = [];
     // Extra margin so snow covers full viewport even when panning
     const MARGIN = 60;
