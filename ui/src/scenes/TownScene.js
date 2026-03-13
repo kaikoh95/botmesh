@@ -332,12 +332,11 @@ export default class TownScene extends Phaser.Scene {
   }
 
   _initSnow() {
-    const W = this.cameras.main.width  || 900;
-    const H = this.cameras.main.height || 700;
-    const FLAKE_COUNT = 350; // more flakes for full coverage at any zoom
+    const W = this.scale.width  || window.innerWidth  || 1200;
+    const H = this.scale.height || window.innerHeight || 800;
+    const FLAKE_COUNT = 400; // generous count for full coverage at any zoom
     this._snowFlakes = [];
-    // Extra margin so snow covers full viewport even when panning
-    const MARGIN = 60;
+    const MARGIN = 120; // large margin so edges are covered
 
     for (let i = 0; i < FLAKE_COUNT; i++) {
       const size   = Phaser.Math.Between(1, 3);
@@ -372,10 +371,10 @@ export default class TownScene extends Phaser.Scene {
 
   _updateSnow(delta) {
     if (!this._snowFlakes) return;
-    const W = this.cameras.main.width  || 900;
-    const H = this.cameras.main.height || 700;
+    const W = this.scale.width  || window.innerWidth  || 1200;
+    const H = this.scale.height || window.innerHeight || 800;
     const dt = delta / 1000; // seconds
-    const M = 60; // margin
+    const M = 120; // margin matches init
 
     for (const f of this._snowFlakes) {
       f.wobble += dt * f.wobbleFreq;
