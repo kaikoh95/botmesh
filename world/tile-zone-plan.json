@@ -1,0 +1,372 @@
+{
+  "version": 1,
+  "defaultTile": "snow",
+  "notes": "Zones are layered — later zones override earlier ones. Order: base districts → sub-areas → infrastructure → roads",
+  "zones": [
+    {
+      "name": "sacred-district",
+      "tile": "snow",
+      "rect": { "x1": 0, "y1": 0, "x2": 37, "y2": 36 },
+      "description": "Northern sacred grounds — mostly open snow with wood platforms around shrine"
+    },
+    {
+      "name": "castle-district",
+      "tile": "stone",
+      "rect": { "x1": 40, "y1": 0, "x2": 119, "y2": 36 },
+      "description": "Eastern castle/fortress district — stone ground for military and civic buildings"
+    },
+    {
+      "name": "craft-district",
+      "tile": "soil",
+      "rect": { "x1": 0, "y1": 37, "x2": 19, "y2": 60 },
+      "description": "Western craft district — earthy soil for artisan workshops"
+    },
+    {
+      "name": "communal-district",
+      "tile": "cobblestone",
+      "rect": { "x1": 20, "y1": 37, "x2": 55, "y2": 60 },
+      "description": "Central communal district — cobblestone for market, teahouse, brewery"
+    },
+    {
+      "name": "communal-east",
+      "tile": "cobblestone",
+      "rect": { "x1": 56, "y1": 37, "x2": 119, "y2": 60 },
+      "description": "Eastern extension of communal area — cobblestone transition"
+    },
+    {
+      "name": "residential-district",
+      "tile": "soil",
+      "rect": { "x1": 0, "y1": 61, "x2": 119, "y2": 119 },
+      "description": "Southern residential district — soil yards around cottages"
+    },
+
+    {
+      "name": "shrine-platform",
+      "tile": "wood",
+      "rect": { "x1": 12, "y1": 5, "x2": 20, "y2": 12 },
+      "description": "Wooden platform around Shrine of Cronos (15,8)"
+    },
+    {
+      "name": "well-clearing",
+      "tile": "cobblestone",
+      "rect": { "x1": 13, "y1": 20, "x2": 18, "y2": 25 },
+      "description": "Cobblestone clearing around Town Well (15,22)"
+    },
+    {
+      "name": "sacred-grove",
+      "tile": "snow",
+      "rect": { "x1": 0, "y1": 0, "x2": 10, "y2": 16 },
+      "description": "Northern sacred grove — pristine snow fields"
+    },
+    {
+      "name": "market-square",
+      "tile": "cobblestone",
+      "rect": { "x1": 26, "y1": 18, "x2": 36, "y2": 28 },
+      "description": "Market square around The Market (30,22)"
+    },
+    {
+      "name": "torii-approach",
+      "tile": "stone",
+      "rect": { "x1": 52, "y1": 2, "x2": 58, "y2": 8 },
+      "description": "Stone approach to Torii Gate (55,5)"
+    },
+    {
+      "name": "scarlet-sanctum-grounds",
+      "tile": "wood",
+      "rect": { "x1": 82, "y1": 2, "x2": 90, "y2": 10 },
+      "description": "Sacred wood platform around Scarlet Sanctum (85,5)"
+    },
+    {
+      "name": "observatory-grounds",
+      "tile": "stone",
+      "rect": { "x1": 87, "y1": 5, "x2": 95, "y2": 13 },
+      "description": "Stone grounds around The Observatory (90,8)"
+    },
+    {
+      "name": "library-grounds",
+      "tile": "stone",
+      "rect": { "x1": 93, "y1": 15, "x2": 100, "y2": 24 },
+      "description": "Stone grounds around Library (96,18)"
+    },
+    {
+      "name": "town-hall-plaza",
+      "tile": "cobblestone",
+      "rect": { "x1": 78, "y1": 20, "x2": 88, "y2": 30 },
+      "description": "Civic cobblestone plaza around Town Hall (82,24)"
+    },
+    {
+      "name": "post-office-area",
+      "tile": "stone",
+      "rect": { "x1": 69, "y1": 13, "x2": 76, "y2": 20 },
+      "description": "Stone area around Post Office (72,16)"
+    },
+    {
+      "name": "iron-keep-grounds",
+      "tile": "stone",
+      "rect": { "x1": 27, "y1": 27, "x2": 36, "y2": 36 },
+      "description": "Stone fortress grounds around Iron's Keep (30,30)"
+    },
+    {
+      "name": "smithy-area",
+      "tile": "stone",
+      "rect": { "x1": 42, "y1": 19, "x2": 50, "y2": 26 },
+      "description": "Stone work area around The Smithy (45,22)"
+    },
+    {
+      "name": "bathhouse-area",
+      "tile": "wood",
+      "rect": { "x1": 42, "y1": 27, "x2": 50, "y2": 34 },
+      "description": "Wood deck around The Bathhouse (45,30)"
+    },
+    {
+      "name": "forge-workshop-area",
+      "tile": "soil",
+      "rect": { "x1": 12, "y1": 27, "x2": 19, "y2": 34 },
+      "description": "Soil work area around Forge Workshop (15,30)"
+    },
+    {
+      "name": "teahouse-area",
+      "tile": "wood",
+      "rect": { "x1": 27, "y1": 39, "x2": 35, "y2": 46 },
+      "description": "Wood deck around The Teahouse (30,42)"
+    },
+    {
+      "name": "brewery-area",
+      "tile": "cobblestone",
+      "rect": { "x1": 42, "y1": 39, "x2": 50, "y2": 46 },
+      "description": "Cobblestone around Sake Brewery (45,42)"
+    },
+    {
+      "name": "community-garden",
+      "tile": "soil",
+      "rect": { "x1": 12, "y1": 47, "x2": 20, "y2": 54 },
+      "description": "Garden soil around Community Garden (15,50)"
+    },
+    {
+      "name": "garden-teahouse-area",
+      "tile": "wood",
+      "rect": { "x1": 27, "y1": 47, "x2": 35, "y2": 54 },
+      "description": "Wood deck around Garden Teahouse (30,50)"
+    },
+    {
+      "name": "garden-pavilion-area",
+      "tile": "wood",
+      "rect": { "x1": 42, "y1": 47, "x2": 50, "y2": 54 },
+      "description": "Wood deck around Garden Pavilion (45,50)"
+    },
+
+    {
+      "name": "residential-yard-scarlet",
+      "tile": "soil",
+      "rect": { "x1": 12, "y1": 67, "x2": 20, "y2": 75 },
+      "description": "Yard around Scarlet's Cottage (15,70)"
+    },
+    {
+      "name": "residential-yard-forge",
+      "tile": "soil",
+      "rect": { "x1": 29, "y1": 67, "x2": 37, "y2": 75 },
+      "description": "Yard around Forge's Cottage (32,70)"
+    },
+    {
+      "name": "residential-yard-lumen",
+      "tile": "soil",
+      "rect": { "x1": 49, "y1": 67, "x2": 57, "y2": 75 },
+      "description": "Yard around Lumen's Cottage (52,70)"
+    },
+    {
+      "name": "residential-yard-iron",
+      "tile": "soil",
+      "rect": { "x1": 69, "y1": 67, "x2": 77, "y2": 75 },
+      "description": "Yard around Iron's Cottage (72,70)"
+    },
+    {
+      "name": "residential-yard-kenzo",
+      "tile": "soil",
+      "rect": { "x1": 89, "y1": 67, "x2": 97, "y2": 75 },
+      "description": "Yard around Kenzo's Study (92,70)"
+    },
+    {
+      "name": "residential-yard-muse",
+      "tile": "soil",
+      "rect": { "x1": 12, "y1": 79, "x2": 20, "y2": 87 },
+      "description": "Yard around Muse's Cottage (15,82)"
+    },
+    {
+      "name": "residential-yard-cronos",
+      "tile": "soil",
+      "rect": { "x1": 32, "y1": 79, "x2": 40, "y2": 87 },
+      "description": "Yard around Cronos's Cottage (35,82)"
+    },
+    {
+      "name": "residential-yard-mosaic",
+      "tile": "soil",
+      "rect": { "x1": 52, "y1": 79, "x2": 60, "y2": 87 },
+      "description": "Yard around Mosaic's Cottage (55,82)"
+    },
+    {
+      "name": "residential-yard-echo",
+      "tile": "soil",
+      "rect": { "x1": 72, "y1": 79, "x2": 80, "y2": 87 },
+      "description": "Yard around Echo's Cottage (75,82)"
+    },
+    {
+      "name": "residential-yard-canvas",
+      "tile": "soil",
+      "rect": { "x1": 22, "y1": 91, "x2": 30, "y2": 99 },
+      "description": "Yard around Canvas's Cottage (25,94)"
+    },
+    {
+      "name": "residential-yard-patch",
+      "tile": "soil",
+      "rect": { "x1": 47, "y1": 91, "x2": 55, "y2": 99 },
+      "description": "Yard around Patch's Cottage (50,94)"
+    },
+    {
+      "name": "residential-yard-sage",
+      "tile": "soil",
+      "rect": { "x1": 72, "y1": 91, "x2": 80, "y2": 99 },
+      "description": "Yard around Sage's Cottage (75,94)"
+    },
+
+    {
+      "name": "residential-path-row1",
+      "tile": "cobblestone",
+      "rect": { "x1": 10, "y1": 64, "x2": 100, "y2": 65 },
+      "description": "Cobblestone path connecting first row of cottages"
+    },
+    {
+      "name": "residential-path-row2",
+      "tile": "cobblestone",
+      "rect": { "x1": 10, "y1": 77, "x2": 85, "y2": 78 },
+      "description": "Cobblestone path connecting second row of cottages"
+    },
+    {
+      "name": "residential-path-row3",
+      "tile": "cobblestone",
+      "rect": { "x1": 20, "y1": 89, "x2": 82, "y2": 90 },
+      "description": "Cobblestone path connecting third row of cottages"
+    },
+
+    {
+      "name": "moat-north",
+      "tile": "water",
+      "rect": { "x1": 8, "y1": 18, "x2": 54, "y2": 18 },
+      "description": "Moat north edge"
+    },
+    {
+      "name": "moat-south",
+      "tile": "water",
+      "rect": { "x1": 8, "y1": 56, "x2": 54, "y2": 56 },
+      "description": "Moat south edge"
+    },
+    {
+      "name": "moat-west",
+      "tile": "water",
+      "rect": { "x1": 8, "y1": 18, "x2": 8, "y2": 56 },
+      "description": "Moat west edge"
+    },
+    {
+      "name": "moat-east",
+      "tile": "water",
+      "rect": { "x1": 54, "y1": 18, "x2": 54, "y2": 56 },
+      "description": "Moat east edge"
+    },
+
+    {
+      "name": "roads-ew",
+      "tile": "cobblestone",
+      "rect": { "x1": 0, "y1": 37, "x2": 119, "y2": 38 },
+      "description": "East-west main road"
+    },
+    {
+      "name": "roads-ns",
+      "tile": "cobblestone",
+      "rect": { "x1": 38, "y1": 0, "x2": 39, "y2": 119 },
+      "description": "North-south main road"
+    },
+    {
+      "name": "crossroads-plaza",
+      "tile": "cobblestone",
+      "rect": { "x1": 36, "y1": 35, "x2": 41, "y2": 40 },
+      "description": "Expanded cobblestone plaza at the main crossroads intersection"
+    }
+  ],
+
+  "entityExclusionPadding": 2,
+
+  "entityRules": {
+    "pine": {
+      "allowedZones": ["sacred-district", "residential-district"],
+      "description": "Evergreen pines in sacred groves and residential edges"
+    },
+    "sakura": {
+      "allowedZones": ["residential-district", "communal-district", "sacred-district"],
+      "description": "Cherry blossoms along residential paths and communal gathering spaces"
+    },
+    "bamboo": {
+      "allowedZones": ["sacred-district", "craft-district"],
+      "description": "Bamboo groves in sacred and artisan areas"
+    },
+    "lantern": {
+      "allowedZones": ["communal-district", "communal-east", "roads-ew", "roads-ns", "crossroads-plaza"],
+      "description": "Stone lanterns line roads and communal walkways"
+    },
+    "deer": {
+      "allowedZones": ["sacred-district"],
+      "description": "Sacred deer roam only the northern shrine grounds"
+    },
+    "crane": {
+      "allowedZones": ["sacred-district", "communal-district"],
+      "description": "Cranes near water and open sacred/communal spaces"
+    },
+    "koipond": {
+      "allowedZones": ["sacred-district", "communal-district", "community-garden"],
+      "description": "Koi ponds in contemplative and garden spaces"
+    },
+    "bench": {
+      "allowedZones": ["communal-district", "residential-district", "garden-pavilion-area"],
+      "description": "Seating in public and residential areas"
+    },
+    "well": {
+      "allowedZones": ["sacred-district", "residential-district"],
+      "description": "Wells in village gathering points"
+    },
+    "fence": {
+      "allowedZones": ["residential-district", "craft-district", "community-garden"],
+      "description": "Fencing around yards, workshops, and gardens"
+    }
+  },
+
+  "districtMeta": {
+    "sacred": {
+      "rect": { "x1": 0, "y1": 0, "x2": 37, "y2": 36 },
+      "primaryTile": "snow",
+      "accentTiles": ["wood"],
+      "buildings": ["shrine", "well", "market"]
+    },
+    "castle": {
+      "rect": { "x1": 40, "y1": 0, "x2": 119, "y2": 36 },
+      "primaryTile": "stone",
+      "accentTiles": ["cobblestone", "wood"],
+      "buildings": ["torii", "bathhouse", "observatory", "scarlet-sanctum", "post-office", "library", "town-hall", "smithy"]
+    },
+    "communal": {
+      "rect": { "x1": 20, "y1": 37, "x2": 55, "y2": 60 },
+      "primaryTile": "cobblestone",
+      "accentTiles": ["wood", "soil"],
+      "buildings": ["teahouse", "brewery", "garden-teahouse", "garden-pavilion"]
+    },
+    "craft": {
+      "rect": { "x1": 0, "y1": 37, "x2": 19, "y2": 60 },
+      "primaryTile": "soil",
+      "accentTiles": ["wood"],
+      "buildings": ["workshop", "community-garden"]
+    },
+    "residential": {
+      "rect": { "x1": 0, "y1": 61, "x2": 119, "y2": 119 },
+      "primaryTile": "soil",
+      "accentTiles": ["cobblestone"],
+      "buildings": ["scarlet-cottage", "forge-cottage", "lumen-cottage", "iron-cottage", "muse-cottage", "cronos-cottage", "mosaic-cottage", "echo-cottage", "canvas-cottage", "patch-cottage", "sage-cottage", "kenzo-study"]
+    }
+  }
+}
