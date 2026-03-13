@@ -67,8 +67,15 @@ export default class TownScene extends Phaser.Scene {
       this.load.image(`building-${f}`, `assets/buildings/${f}.png${v}`);
     }
 
+    // House and torii-gate building sprites
+    this.load.image('building-house-north-l1', `assets/buildings/house-north-l1.png${v}`);
+    this.load.image('building-house-east-l1', `assets/buildings/house-east-l1.png${v}`);
+    this.load.image('building-house-south-l1', `assets/buildings/house-south-l1.png${v}`);
+    this.load.image('building-house-west-l1', `assets/buildings/house-west-l1.png${v}`);
+    this.load.image('building-torii-gate-l1', `assets/buildings/torii-gate-l1.png${v}`);
+
     // World life sprites
-    const lifeSprites = ['sakura', 'bamboo', 'zen', 'koipond', 'deer', 'crane', 'firefly', 'butterfly', 'willow', 'lamp', 'pine'];
+    const lifeSprites = ['sakura', 'bamboo', 'zen', 'koipond', 'deer', 'crane', 'firefly', 'butterfly', 'willow', 'lamp', 'pine', 'torii', 'moat', 'bridge', 'fence'];
     for (const name of lifeSprites) {
       this.load.image(`life-${name}`, `assets/sprites/life/${name}.png${v}`);
     }
@@ -86,11 +93,11 @@ export default class TownScene extends Phaser.Scene {
     const backdrop = this.add.rectangle(0, 0, 10000, 10000, 0x080c14);
     backdrop.setDepth(-9999);
 
-    this.mapW = 80;
-    this.mapH = 80;
-    // Origin: shift right + up so more of the northern map is visible
-    this.originX = this.cameras.main.width * 0.55;
-    this.originY = -60;
+    this.mapW = 120;
+    this.mapH = 120;
+    // Origin: center the star layout on grid (55,55)
+    this.originX = this.cameras.main.width * 0.5;
+    this.originY = -800;
 
     // Draw ground tiles immediately with defaults
     this._drawGround(this.mapW, this.mapH);
@@ -98,7 +105,7 @@ export default class TownScene extends Phaser.Scene {
     // Async: read world dimensions from state API and resize if needed
     this._fetchWorldDims();
 
-    // Draw water feature (bottom-left corner)
+    // Draw water feature (pond near center)
     this._drawWater();
 
     // Draw scattered trees (fallback for non-sakura spots)
@@ -137,9 +144,9 @@ export default class TownScene extends Phaser.Scene {
     const CAM = this.cameras.main;
     CAM.setZoom(this._zoom);
 
-    // On mobile, centre camera on the civic district (Town Hall area)
+    // On mobile, centre camera on the crossroads center
     if (isMobile) {
-      const civic = this.gridToScreen(18, 13);
+      const civic = this.gridToScreen(55, 55);
       CAM.centerOn(civic.x, civic.y);
     }
 
@@ -371,8 +378,8 @@ export default class TownScene extends Phaser.Scene {
     const count = 40;
     for (let i = 0; i < count; i++) {
       // Random grid positions avoiding water/paths
-      const gx = Phaser.Math.Between(1, 38);
-      const gy = Phaser.Math.Between(1, 28);
+      const gx = Phaser.Math.Between(1, 115);
+      const gy = Phaser.Math.Between(1, 115);
       if (this._isWater(gx, gy) || this._isPath(gx, gy)) continue;
 
       const screen = this.gridToScreen(gx, gy);
@@ -412,14 +419,12 @@ export default class TownScene extends Phaser.Scene {
   _drawPathLanterns() {
     // Warm lantern glow points spaced along main roads
     const lanternSpots = [
-      // E-W civic approach (y=16)
-      [5, 16], [10, 16], [15, 16], [25, 16], [30, 16],
-      // E-W main boulevard (y=22)
-      [5, 22], [10, 22], [15, 22], [25, 22], [30, 22],
-      // N-S spine (x=20)
-      [20, 10], [20, 14], [20, 18], [20, 22],
-      // Intersection highlights
-      [20, 16], [20, 23],
+      // E-W road (y=37)
+      [10, 37], [20, 37], [30, 37], [50, 37], [60, 37], [70, 37], [80, 37], [90, 37], [100, 37],
+      // N-S road (x=38)
+      [38, 10], [38, 20], [38, 30], [38, 50], [38, 60], [38, 70], [38, 80], [38, 90], [38, 100],
+      // Center intersection
+      [38, 37],
     ];
 
     for (const [lx, ly] of lanternSpots) {
@@ -432,7 +437,7 @@ export default class TownScene extends Phaser.Scene {
       post.fillStyle(0x444444, 0.8);
       post.fillRect(-3, -12, 6, 3);
       post.setPosition(screen.x, screen.y);
-      post.setDepth(screen.y + 1);
+      post.setDepth(screen.y + 5001);
 
       // Warm ground glow pool
       const glow = this.add.graphics();
@@ -444,7 +449,7 @@ export default class TownScene extends Phaser.Scene {
       glow.fillStyle(0xffdd88, 0.5);
       glow.fillCircle(0, -10, 2);
       glow.setPosition(screen.x, screen.y);
-      glow.setDepth(screen.y);
+      glow.setDepth(screen.y + 4999);
 
       // Flicker
       this.tweens.add({
@@ -507,15 +512,18 @@ export default class TownScene extends Phaser.Scene {
 
     // Add drifts at deterministic positions near building zones
     const driftSpots = [
-      // Near civic district
-      [16, 13], [17, 13], [22, 13], [23, 13],
-      // Near craft district
-      [16, 19], [17, 19], [22, 19], [23, 19],
-      // Near residential
-      [16, 25], [17, 25], [10, 14], [11, 14],
-      // Scattered accent drifts
-      [5, 5], [8, 10], [30, 8], [33, 16], [28, 20],
-      [3, 20], [35, 10], [12, 7], [26, 12], [7, 17],
+      // Near north sacred district
+      [50, 10], [60, 10], [18, 10], [88, 10], [108, 10],
+      // Near center communal+craft
+      [12, 25], [48, 25], [12, 48], [48, 48],
+      // Near east castle
+      [78, 28], [92, 22], [98, 28],
+      // Near south housing
+      [18, 72], [35, 72], [55, 72], [75, 72], [93, 72],
+      [18, 84], [40, 84], [60, 84], [78, 84],
+      // Scattered across full map
+      [8, 8], [100, 10], [110, 50], [5, 90], [80, 100], [15, 15], [90, 20],
+      [30, 110], [70, 110], [110, 100],
     ];
 
     for (const [dx, dy] of driftSpots) {
@@ -555,17 +563,57 @@ export default class TownScene extends Phaser.Scene {
 
     const g = this.add.graphics();
     this._groundGraphics = g;
-    g.setDepth(0);
+    g.setDepth(-100);  // ground always behind everything
 
     // Check if path tile sprite is loaded
     const hasPathSprite = this.textures.exists('tile-path');
+    const hasMoatSprite = this.textures.exists('life-moat');
+    const hasBridgeSprite = this.textures.exists('life-bridge');
 
-    for (let y = 0; y < mapH; y++) {
-      for (let x = 0; x < mapW; x++) {
+    // Bridge gap coordinates (where roads cross the moat ring x=5-68, y=15-58)
+    const bridgeGaps = new Set([
+      '38,15', '39,15',   // North gate (NS road crosses top moat)
+      '38,58', '39,58',   // South gate (NS road crosses bottom moat)
+      '5,37', '5,38',     // West gate (EW road crosses left moat)
+      '68,37', '68,38',   // East gate (EW road crosses right moat)
+    ]);
+
+    // Draw ground with padding beyond grid edges so buildings never float over void
+    const PAD = 15;
+    for (let y = -PAD; y < mapH + PAD; y++) {
+      for (let x = -PAD; x < mapW + PAD; x++) {
+        const inGrid = x >= 0 && x < mapW && y >= 0 && y < mapH;
         const screen = this.gridToScreen(x, y);
+
+        // Padding tiles outside grid — plain dark ground, no features
+        if (!inGrid) {
+          const even = (x + y) % 2 === 0;
+          const padColor = even ? 0x1a1e2a : 0x181c28;
+          g.fillStyle(padColor, 1);
+          g.beginPath();
+          g.moveTo(screen.x, screen.y - TILE_H / 2);
+          g.lineTo(screen.x + TILE_W / 2, screen.y);
+          g.lineTo(screen.x, screen.y + TILE_H / 2);
+          g.lineTo(screen.x - TILE_W / 2, screen.y);
+          g.closePath();
+          g.fillPath();
+          continue;
+        }
+
         const isWater = this._isWater(x, y);
         const isPath = this._isPath(x, y);
+        const isBridgeGap = bridgeGaps.has(`${x},${y}`);
         const even = (x + y) % 2 === 0;
+
+        // Bridge tiles at moat crossing points
+        if (isBridgeGap && hasBridgeSprite) {
+          const img = this.add.image(screen.x, screen.y, 'life-bridge');
+          img.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
+          img.setDisplaySize(TILE_W, TILE_H);
+          img.setOrigin(0.5, 0.5);
+          img.setDepth(-50);
+          continue;
+        }
 
         if (isPath && hasPathSprite) {
           // Pixel art cobblestone tile sprite — scale to exactly one isometric tile
@@ -574,17 +622,32 @@ export default class TownScene extends Phaser.Scene {
           // Sprite should display at TILE_W × TILE_H (64×32)
           img.setDisplaySize(TILE_W, TILE_H);
           img.setOrigin(0.5, 0.5);
-          img.setDepth(0.5); // above base ground, below buildings
+          img.setDepth(-50); // above base ground, below buildings
           this._pathSprites.push(img);
           continue; // skip programmatic drawing for this tile
+        }
+
+        // Moat water tiles — use sprite if available, fallback to programmatic
+        if (isWater && hasMoatSprite) {
+          const img = this.add.image(screen.x, screen.y, 'life-moat');
+          img.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
+          img.setDisplaySize(TILE_W, TILE_H);
+          img.setOrigin(0.5, 0.5);
+          img.setDepth(-50);
+          continue;
         }
 
         let baseColor;
         if (isWater) {
           baseColor = this._waterColor(x, y);
         } else if (isPath) {
-          // Fallback if sprite not loaded yet
-          baseColor = even ? 0x6a6878 : 0x5c5a6a;
+          // Subtle stone path — low-contrast warm grey with slight positional noise
+          const noise = ((x * 7 + y * 13) & 0xf) - 8; // -8..+7 deterministic noise
+          const base = 0x4a4640; // warm dark stone
+          const r = Math.min(255, Math.max(0, ((base >> 16) & 0xff) + noise + (even ? 3 : 0)));
+          const g3 = Math.min(255, Math.max(0, ((base >> 8) & 0xff) + noise + (even ? 2 : 0)));
+          const b3 = Math.min(255, Math.max(0, (base & 0xff) + noise));
+          baseColor = (r << 16) | (g3 << 8) | b3;
         } else {
           baseColor = this._grassColor(x, y);
           if (even) {
@@ -605,8 +668,8 @@ export default class TownScene extends Phaser.Scene {
         g.fillPath();
 
         // Thin border for crisp tile edges
-        const bAlpha = isWater ? 0.45 : isPath ? 0.4 : 0.18;
-        const bColor = isWater ? 0x4a8aaa : isPath ? 0x3a3848 : 0x8090b0;
+        const bAlpha = isWater ? 0.45 : isPath ? 0.12 : 0.18;
+        const bColor = isWater ? 0x4a8aaa : isPath ? 0x3e3a36 : 0x8090b0;
         g.lineStyle(1, bColor, bAlpha);
         g.beginPath();
         g.moveTo(screen.x, screen.y - TILE_H / 2);
@@ -620,11 +683,11 @@ export default class TownScene extends Phaser.Scene {
   }
 
   _drawWater() {
-    // Animated water shimmer
+    // Animated water shimmer — small pond near community garden
     const waterTiles = [];
-    for (let y = 24; y < 30; y++) {
-      for (let x = 0; x < 6; x++) {
-        if (this._isWater(x, y)) waterTiles.push({ x, y });
+    for (let y = 34; y < 37; y++) {
+      for (let x = 28; x < 31; x++) {
+        waterTiles.push({ x, y });
       }
     }
 
@@ -652,10 +715,19 @@ export default class TownScene extends Phaser.Scene {
     const g = this.add.graphics();
     // Deterministic tree positions scattered around
     const treeSpots = [
-      [2, 3], [4, 7], [7, 2], [8, 9], [1, 12], [3, 18], [6, 22],
-      [33, 3], [36, 7], [38, 2], [35, 11], [37, 18], [34, 22],
-      [12, 2], [25, 3], [28, 7], [14, 24], [22, 26], [30, 25],
-      [10, 8], [32, 14], [8, 19], [27, 22], [16, 4], [24, 8],
+      // North quadrant
+      [30, 8], [44, 8], [28, 20], [46, 20], [35, 10], [70, 8],
+      // West border
+      [4, 30], [4, 50], [8, 28], [8, 70], [6, 90], [4, 110],
+      // East border
+      [110, 30], [112, 50], [108, 70], [110, 90], [112, 110],
+      // South quadrant
+      [20, 110], [40, 112], [60, 110], [80, 112], [100, 110],
+      // Mid-field scatter
+      [10, 50], [15, 30], [105, 25], [95, 60], [110, 45],
+      // Scattered filler across 120×120
+      [10, 10], [100, 10], [10, 100], [100, 100], [80, 50], [25, 25],
+      [90, 95], [15, 75], [75, 15], [50, 110], [110, 60],
     ];
 
     for (const [tx, ty] of treeSpots) {
@@ -685,7 +757,7 @@ export default class TownScene extends Phaser.Scene {
         g.fillPath();
       }
 
-      g.setDepth(screen.y + 500);
+      g.setDepth(screen.y + 5500);
     }
   }
 
@@ -727,23 +799,23 @@ export default class TownScene extends Phaser.Scene {
   _waterColor(x, y) {
     // Winter moat — icy, pale, semi-frozen. Shirakawa-go canal aesthetic.
     const n = ((x * 3 + y * 5) % 3);
-    const icy = [0x8ab4cc, 0x7aaabb, 0x90bcd4];
+    const icy = [0x6aaade, 0x5a99cc, 0x7ab4e0];
     return icy[n];
   }
 
   _isWater(x, y) {
+    // Small pond near center community garden
+    if (x >= 28 && x < 31 && y >= 34 && y < 37) return true;
     return this.moatTiles?.has(`${x},${y}`) || false;
   }
 
   _isPath(x, y) {
     if (this.pathTiles?.has?.(`${x},${y}`)) return true;
-    // Explicit road corridors — always rendered regardless of state entities
-    // E-W civic approach road
-    if ((y === 16 || y === 17) && x >= 2 && x <= 35) return true;
-    // E-W main boulevard (between craft & residential)
-    if ((y === 22 || y === 23) && x >= 2 && x <= 35) return true;
-    // N-S spine connecting all E-W roads
-    if ((x === 20 || x === 21) && y >= 9 && y <= 23) return true;
+    // Main crossroads through center
+    // E-W main road
+    if ((y === 37 || y === 38) && x >= 5 && x <= 110) return true;
+    // N-S main road
+    if ((x === 38 || x === 39) && y >= 5 && y <= 115) return true;
     return false;
   }
 
@@ -854,7 +926,7 @@ export default class TownScene extends Phaser.Scene {
       this._refreshPaths(state.world.entities);
 
       for (const entity of state.world.entities) {
-        if (entity.entity === 'life' && entity.kind !== 'path' && entity.kind !== 'moat') {
+        if (entity.entity === 'life' && entity.kind !== 'path' && entity.kind !== 'moat' && entity.kind !== 'bridge') {
           this.addLifeEntity(entity);
         } else if (entity.entity === 'building') {
           // Dynamic buildings — add if not already in state.buildings
@@ -976,7 +1048,7 @@ export default class TownScene extends Phaser.Scene {
     const shadow = this.add.graphics();
     shadow.fillStyle(0x000000, 0.08);
     shadow.fillEllipse(pos.x, pos.y + shadowH * 0.05, shadowW * 0.6, shadowH * 0.2);
-    shadow.setDepth(pos.y - 1);
+    shadow.setDepth(pos.y + 4999);
 
     // Ambient detail — stone lantern near civic/market buildings
     this._spawnBuildingDetail(bData, pos);
@@ -1003,7 +1075,7 @@ export default class TownScene extends Phaser.Scene {
     const g = this.add.graphics();
     const ox = pos.x + (TILE_W * (bData.width || 3)) * 0.28;
     const oy = pos.y + (TILE_H * (bData.height || 2)) * 0.1;
-    g.setDepth(pos.y + 2);
+    g.setDepth(pos.y + 5002);
 
     if (isCivic) {
       // Stone lantern: grey pedestal + cap
@@ -1032,7 +1104,7 @@ export default class TownScene extends Phaser.Scene {
     g.fillEllipse(ox, oy, w, h);
     g.fillStyle(0xffe0a0, 0.04);
     g.fillEllipse(ox, oy, w * 0.5, h * 0.5);
-    g.setDepth(pos.y - 0.5);
+    g.setDepth(pos.y + 4999.5);
 
     // Gentle flicker
     this.tweens.add({
@@ -1422,18 +1494,20 @@ export default class TownScene extends Phaser.Scene {
 
   panToAgent(agentId) {
     const agent = this.agents && this.agents[agentId];
-    if (!agent) return;
+    if (!agent || !agent.container) return;
     const cam = this.cameras.main;
+    const ax = agent.container.x;
+    const ay = agent.container.y;
     // Smooth pan to agent's current screen position
     this.tweens.add({
       targets: cam,
-      scrollX: agent.x - cam.width / 2,
-      scrollY: agent.y - cam.height / 2,
+      scrollX: ax - cam.width / 2,
+      scrollY: ay - cam.height / 2,
       duration: 600,
       ease: 'Power2',
     });
     // Brief highlight ring around the agent
-    const ring = this.add.circle(agent.x, agent.y, 24, 0xffffff, 0)
+    const ring = this.add.circle(ax, ay, 24, 0xffffff, 0)
       .setStrokeStyle(2, 0xffd700, 1)
       .setDepth(9998);
     this.tweens.add({
@@ -1664,7 +1738,7 @@ export default class TownScene extends Phaser.Scene {
     const pos = this.gridToScreen(x || 10 + Math.random() * 20, y || 10 + Math.random() * 15);
     const img = this.add.image(pos.x, pos.y, key);
     img.setOrigin(0.5, 0.85);
-    img.setDepth(pos.y);
+    img.setDepth(pos.y + 3000);  // offset so life entities always above ground (depth 0-1)
     const scale = 64 / Math.max(img.width, img.height) * 1.5;
     img.setScale(scale);
     // Tween in
