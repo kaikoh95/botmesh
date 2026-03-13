@@ -129,24 +129,23 @@ export default class TownScene extends Phaser.Scene {
 
     // Draw ground tiles synchronously for default district (communal)
     this._currentDistrict = 'communal';
+    this._sceneryGraphics = [];
+    this._windowGlows = [];
     this._drawGroundSync(this.mapW, this.mapH, DISTRICTS.communal.bounds);
 
-    // Communal district enhancements — plaza, market stalls, civic scenery
-    this._drawPlazaDetail();
-    this._drawMarketScenery();
-    this._drawCivicScenery();
+    // Draw scenery for communal district
+    const communalBounds = DISTRICTS.communal.bounds;
+    this._drawWater(communalBounds);
+    this._drawTrees(communalBounds);
+    this._drawFences(communalBounds);
+    this._drawPathLanterns(communalBounds);
+    this._drawSnowDrifts(communalBounds);
+    this._drawPlazaDetail(communalBounds);
+    this._drawMarketScenery(communalBounds);
+    this._drawCivicScenery(communalBounds);
 
     // Async: read world dimensions from state API and resize if needed
     this._fetchWorldDims();
-
-    // Draw water feature (pond near center)
-    this._drawWater();
-
-    // Draw scattered trees (fallback for non-sakura spots)
-    this._drawTrees();
-
-    // Draw connected fence lines around residential yards
-    this._drawFences();
 
     // World life — flora, fauna, ambient
     this.worldLife = new WorldLife(this);
@@ -500,7 +499,8 @@ export default class TownScene extends Phaser.Scene {
     }
   }
 
-  _drawPathLanterns() {
+  _drawPathLanterns(bounds) {
+    const inBounds = (x, y) => !bounds || (x >= bounds.x1 - 1 && x <= bounds.x2 + 1 && y >= bounds.y1 - 1 && y <= bounds.y2 + 1);
     // Dynamic lantern placement: along roads every ~8 tiles + at building walkway junctions
     const lanternSet = new Set();
     const addLantern = (x, y) => lanternSet.add(`${x},${y}`);
@@ -550,6 +550,7 @@ export default class TownScene extends Phaser.Scene {
 
     for (const key of lanternSet) {
       const [lx, ly] = key.split(',').map(Number);
+      if (!inBounds(lx, ly)) continue;
       const screen = this.gridToScreen(lx, ly);
       const isSacred = sacredSet.has(key);
 
@@ -598,6 +599,7 @@ export default class TownScene extends Phaser.Scene {
         repeat: -1,
         ease: 'Sine.easeInOut',
       });
+      this._sceneryGraphics.push(post, glow);
     }
   }
 
@@ -643,7 +645,8 @@ export default class TownScene extends Phaser.Scene {
     }
   }
 
-  _drawSnowDrifts() {
+  _drawSnowDrifts(bounds) {
+    const inBounds = (x, y) => !bounds || (x >= bounds.x1 - 1 && x <= bounds.x2 + 1 && y >= bounds.y1 - 1 && y <= bounds.y2 + 1);
     // Small white mounds along the south/east edges of buildings
     const g = this.add.graphics();
     g.setDepth(1.5);
@@ -663,6 +666,7 @@ export default class TownScene extends Phaser.Scene {
     ];
 
     for (const [dx, dy] of driftSpots) {
+      if (!inBounds(dx, dy)) continue;
       if (this._isWater(dx, dy) || this._isPath(dx, dy) || this._buildingFootprint?.has(`${dx},${dy}`)) continue;
       const screen = this.gridToScreen(dx, dy);
 
@@ -675,10 +679,12 @@ export default class TownScene extends Phaser.Scene {
       g.fillStyle(0xdce8f4, 0.15);
       g.fillEllipse(screen.x, screen.y, w * 0.6, h * 0.5);
     }
+    this._sceneryGraphics.push(g);
   }
 
   // ─── PLAZA COURTYARD — warm paving + stone lantern cluster at crossroads center ───
-  _drawPlazaDetail() {
+  _drawPlazaDetail(bounds) {
+    const inBounds = (x, y) => !bounds || (x >= bounds.x1 - 1 && x <= bounds.x2 + 1 && y >= bounds.y1 - 1 && y <= bounds.y2 + 1);
     const g = this.add.graphics();
     g.setDepth(-98); // above base ground, below paths
 
@@ -697,6 +703,7 @@ export default class TownScene extends Phaser.Scene {
           if (dist > ring.radius || dist <= ring.radius - 1) continue;
           const gx = Math.round(cx + dx);
           const gy = Math.round(cy + dy);
+          if (!inBounds(gx, gy)) continue;
           if (this._isWater(gx, gy) || this._isPath(gx, gy) || this._buildingFootprint?.has(`${gx},${gy}`)) continue;
 
           const screen = this.gridToScreen(gx, gy);
@@ -750,10 +757,12 @@ export default class TownScene extends Phaser.Scene {
       repeat: -1,
       ease: 'Sine.easeInOut',
     });
+    this._sceneryGraphics.push(g, lanternG, plazaGlow);
   }
 
   // ─── MARKET SCENERY — stalls, barrels, props in the market district ───
-  _drawMarketScenery() {
+  _drawMarketScenery(bounds) {
+    const inBounds = (x, y) => !bounds || (x >= bounds.x1 - 1 && x <= bounds.x2 + 1 && y >= bounds.y1 - 1 && y <= bounds.y2 + 1);
     const g = this.add.graphics();
 
     // Market stalls — small awning shapes with supporting posts
@@ -765,6 +774,7 @@ export default class TownScene extends Phaser.Scene {
     ];
 
     for (const stall of stalls) {
+      if (!inBounds(stall.x, stall.y)) continue;
       const screen = this.gridToScreen(stall.x, stall.y);
       const depth = screen.y + 5001;
 
@@ -808,6 +818,7 @@ export default class TownScene extends Phaser.Scene {
 
     const barrelG = this.add.graphics();
     for (const b of barrels) {
+      if (!inBounds(b.x, b.y)) continue;
       const screen = this.gridToScreen(b.x, b.y);
       // Shadow
       barrelG.fillStyle(0x000000, 0.1);
@@ -825,10 +836,12 @@ export default class TownScene extends Phaser.Scene {
 
       barrelG.setDepth((b.x + b.y) * 100 + 1);
     }
+    this._sceneryGraphics.push(g, barrelG);
   }
 
   // ─── CIVIC SCENERY — stone tōrō lanterns + pines flanking civic approaches ───
-  _drawCivicScenery() {
+  _drawCivicScenery(bounds) {
+    const inBounds = (x, y) => !bounds || (x >= bounds.x1 - 1 && x <= bounds.x2 + 1 && y >= bounds.y1 - 1 && y <= bounds.y2 + 1);
     // Stone tōrō lanterns at civic building junctions
     const toroSpots = [
       { x: 34, y: 22 },  // near town hall approach
@@ -840,6 +853,7 @@ export default class TownScene extends Phaser.Scene {
     ];
 
     for (const spot of toroSpots) {
+      if (!inBounds(spot.x, spot.y)) continue;
       const screen = this.gridToScreen(spot.x, spot.y);
       const tg = this.add.graphics();
       tg.setDepth((spot.x + spot.y) * 100 + 2);
@@ -878,6 +892,7 @@ export default class TownScene extends Phaser.Scene {
         repeat: -1,
         ease: 'Sine.easeInOut',
       });
+      this._sceneryGraphics.push(tg, glow);
     }
 
     // Pine trees flanking civic building approaches
@@ -890,6 +905,7 @@ export default class TownScene extends Phaser.Scene {
 
     const pg = this.add.graphics();
     for (const pine of civicPines) {
+      if (!inBounds(pine.x, pine.y)) continue;
       if (this._isWater(pine.x, pine.y) || this._isPath(pine.x, pine.y) || this._buildingFootprint?.has(`${pine.x},${pine.y}`)) continue;
       const screen = this.gridToScreen(pine.x, pine.y);
 
@@ -919,6 +935,7 @@ export default class TownScene extends Phaser.Scene {
 
       pg.setDepth((pine.x + pine.y) * 100 + 5);
     }
+    this._sceneryGraphics.push(pg);
   }
 
   _drawStarField() {
@@ -1234,10 +1251,16 @@ export default class TownScene extends Phaser.Scene {
     const d = DISTRICTS[key];
     this._currentDistrict = key;
 
-    // 1. Destroy existing ground chunks
+    // 1. Destroy existing ground chunks + scenery
     (this._groundChunks || []).forEach(rt => rt.destroy());
     this._groundChunks = [];
     if (this._groundGraphics) { this._groundGraphics.destroy(); this._groundGraphics = null; }
+    (this._sceneryGraphics || []).forEach(g => g.destroy && g.destroy());
+    this._sceneryGraphics = [];
+    (this._windowGlows || []).forEach(g => g.destroy && g.destroy());
+    this._windowGlows = [];
+    (this._smokeParticles || []).forEach(g => g.destroy && g.destroy());
+    this._smokeParticles = [];
 
     // 2. Show/hide buildings — exact bounds, no padding
     Object.values(this.buildings).forEach(b => {
@@ -1267,11 +1290,24 @@ export default class TownScene extends Phaser.Scene {
     // 7. Hide loading indicator
     this._hideDistrictLoading();
 
-    // 8. Pan camera to district center
+    // 8. Draw scenery for this district
+    const db = d.bounds;
+    this._drawWater(db);
+    this._drawTrees(db);
+    this._drawFences(db);
+    this._drawPathLanterns(db);
+    this._drawSnowDrifts(db);
+    if (key === 'communal') {
+      this._drawPlazaDetail(db);
+      this._drawMarketScenery(db);
+      this._drawCivicScenery(db);
+    }
+
+    // 9. Pan camera to district center
     const center = this.gridToScreen(d.cx, d.cy);
     this.cameras.main.pan(center.x, center.y, 400, 'Sine.easeInOut');
 
-    // 9. Update nav UI
+    // 10. Update nav UI
     const label = document.getElementById('district-label');
     if (label) label.textContent = d.label;
     this._updateNavButtons(key);
@@ -1330,14 +1366,17 @@ export default class TownScene extends Phaser.Scene {
     }
   }
 
-  _drawWater() {
+  _drawWater(bounds) {
+    const inBounds = (x, y) => !bounds || (x >= bounds.x1 - 1 && x <= bounds.x2 + 1 && y >= bounds.y1 - 1 && y <= bounds.y2 + 1);
     // Animated water shimmer — small pond near community garden
     const waterTiles = [];
     for (let y = 34; y < 37; y++) {
       for (let x = 28; x < 31; x++) {
+        if (!inBounds(x, y)) continue;
         waterTiles.push({ x, y });
       }
     }
+    if (waterTiles.length === 0) return;
 
     // Add subtle shimmer rectangles
     const g = this.add.graphics();
@@ -1357,9 +1396,11 @@ export default class TownScene extends Phaser.Scene {
       repeat: -1,
       ease: 'Sine.easeInOut',
     });
+    this._sceneryGraphics.push(g);
   }
 
-  _drawTrees() {
+  _drawTrees(bounds) {
+    const inBounds = (x, y) => !bounds || (x >= bounds.x1 - 1 && x <= bounds.x2 + 1 && y >= bounds.y1 - 1 && y <= bounds.y2 + 1);
     const g = this.add.graphics();
 
     // Zone-based tree placement — logical positioning per district
@@ -1418,6 +1459,7 @@ export default class TownScene extends Phaser.Scene {
     };
 
     for (const { x: tx, y: ty, type } of treeSpots) {
+      if (!inBounds(tx, ty)) continue;
       if (this._isWater(tx, ty) || this._isPath(tx, ty) || this._buildingFootprint?.has(`${tx},${ty}`)) continue;
       const screen = this.gridToScreen(tx, ty);
       const colors = treeColors[type] || treeColors.deciduous;
@@ -1460,9 +1502,11 @@ export default class TownScene extends Phaser.Scene {
 
       g.setDepth((tx + ty) * 100 + 5);
     }
+    this._sceneryGraphics.push(g);
   }
 
-  _drawFences() {
+  _drawFences(bounds) {
+    const inBounds = (x, y) => !bounds || (x >= bounds.x1 - 1 && x <= bounds.x2 + 1 && y >= bounds.y1 - 1 && y <= bounds.y2 + 1);
     // Yotsume-gaki (四つ目垣) bamboo lattice fences around residential yards
     // Traditional Japanese four-eye fence pattern with vertical posts and horizontal rails
     const yards = [
@@ -1470,7 +1514,8 @@ export default class TownScene extends Phaser.Scene {
       { x1: 60, y1: 70, x2: 70, y2: 80 },
       { x1: 20, y1: 83, x2: 30, y2: 93 },
       { x1: 60, y1: 83, x2: 70, y2: 93 },
-    ];
+    ].filter(yard => inBounds(yard.x1, yard.y1) || inBounds(yard.x2, yard.y2) || inBounds(yard.x1, yard.y2) || inBounds(yard.x2, yard.y1));
+    if (yards.length === 0) return;
 
     const g = this.add.graphics();
     const WOOD = 0x5c3a1e;        // warm dark brown (bamboo base)
@@ -1537,6 +1582,7 @@ export default class TownScene extends Phaser.Scene {
 
       g.setDepth(midDepth);
     }
+    this._sceneryGraphics.push(g);
   }
 
   // Seeded hash for deterministic pseudo-random values
@@ -2115,6 +2161,8 @@ export default class TownScene extends Phaser.Scene {
       repeat: -1,
       ease: 'Sine.easeInOut',
     });
+    if (!this._windowGlows) this._windowGlows = [];
+    this._windowGlows.push(g);
   }
 
   _addChimneySmoke(bData, pos) {
