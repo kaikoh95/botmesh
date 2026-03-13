@@ -85,8 +85,11 @@ export default class TownScene extends Phaser.Scene {
     this.load.image('tile-path', `assets/buildings/path-tile.png${v}`);
     this.load.image('ground-snow', `assets/ground/snow-tile.png${v}`);
     this.load.image('ground-soil', `assets/ground/soil-tile.png${v}`);
-    this.load.image('ground-path', `assets/ground/path-tile.png${v}`);
+    this.load.image('ground-path', `assets/ground/cobblestone-tile.png${v}`);  // legacy alias
     this.load.image('ground-water', `assets/ground/water-tile.png${v}`);
+    this.load.image('ground-cobblestone', `assets/ground/cobblestone-tile.png${v}`);
+    this.load.image('ground-stone', `assets/ground/stone-tile.png${v}`);
+    this.load.image('ground-wood', `assets/ground/wood-tile.png${v}`);
   }
 
   create() {
