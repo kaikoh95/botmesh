@@ -1207,6 +1207,8 @@ export default class TownScene extends Phaser.Scene {
       const visible = (key === this._currentDistrict);
       chunks.forEach(c => c.setVisible(visible));
     }
+    // Re-apply building/agent visibility after async ground preload completes
+    this._applyDistrictVisibility();
   }
 
   async _rebuildAllDistrictGrounds() {
@@ -1265,11 +1267,11 @@ export default class TownScene extends Phaser.Scene {
         if (key === this._currentDistrict) return;
         document.querySelectorAll('.dist-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
-        this.cameras.main.fade(250, 0, 0, 0, false, async (_cam, progress) => {
-          if (progress < 1) return;
-          await this._loadDistrict(key);
-          this.cameras.main.fadeIn(300);
-        });
+        // Switch district immediately — don't wait for fade callback
+        // (rAF-dependent fade progress never reaches 1 in headless/throttled tabs)
+        this.cameras.main.fade(250, 0, 0, 0);
+        await this._loadDistrict(key);
+        this.cameras.main.fadeIn(300);
       });
     });
     const initialBtn = document.querySelector('.dist-btn[data-district="communal"]');
