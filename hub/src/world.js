@@ -110,7 +110,6 @@ function registerAgent(payload) {
     mood: 'content',
     online: true,
     relationships: {},
-    memory: [],
   };
 
   state.agents[id] = agent;
