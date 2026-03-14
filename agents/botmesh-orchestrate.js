@@ -683,7 +683,7 @@ Short review. Don't overthink it. One observation. One recommendation. Done.`, {
       for (const e of entities) {
         occupied.add(`${e.x},${e.y}`);
       }
-      const MAP_W = 32, MAP_H = 28;
+      const MAP_W = 50, MAP_H = 75; // actual compact district grid size
 
       function freeSurrounding(b) {
         const bx = b.x ?? 0, by = b.y ?? 0, bw = b.width ?? 3, bh = b.height ?? 2;
