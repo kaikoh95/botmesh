@@ -168,19 +168,8 @@ function completeUpgrade(agentId, buildingId) {
   building.currentWorkers = building.currentWorkers.filter(id => id !== agentId);
   building.upgrading = building.currentWorkers.length > 0;
 
-  // Level up if possible
-  const MAX_BUILDING_LEVEL = 5;
   const fromLevel = building.level;
   let upgraded = false;
-  if (fromLevel >= MAX_BUILDING_LEVEL) {
-    console.warn(`[World] ${buildingId} already at max level ${MAX_BUILDING_LEVEL} — upgrade skipped`);
-    // Remove worker even if upgrade skipped
-    building.currentWorkers = building.currentWorkers.filter(id => id !== agentId);
-    building.upgrading = building.currentWorkers.length > 0;
-    const agent = state.agents[agentId];
-    if (agent) agent.state = 'idle';
-    return null;
-  }
   building.level++;
   upgraded = true;
 
