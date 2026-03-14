@@ -178,7 +178,7 @@ export default class TownScene extends Phaser.Scene {
 
     // ── Zoom ────────────────────────────────────────────────────────────────
     const isMobile = window.innerWidth < 768;
-    this._zoom = isMobile ? 0.35 : 1.2;
+    this._zoom = isMobile ? 0.7 : 1.2;
     const CAM = this.cameras.main;
     CAM.setZoom(this._zoom);
 
@@ -199,7 +199,7 @@ export default class TownScene extends Phaser.Scene {
 
     // Mouse wheel zoom
     this.input.on('wheel', (_ptr, _objs, _dx, deltaY) => {
-      this._zoom = Phaser.Math.Clamp(this._zoom - deltaY * 0.0008, 0.35, 2.5);
+      this._zoom = Phaser.Math.Clamp(this._zoom - deltaY * 0.0008, 0.5, 2.5);
       applyZoom();
     });
 
@@ -214,7 +214,7 @@ export default class TownScene extends Phaser.Scene {
         const dist = Math.sqrt(dx*dx + dy*dy);
         if (lastPinchDist !== null) {
           const delta = dist - lastPinchDist;
-          this._zoom = Phaser.Math.Clamp(this._zoom + delta * 0.003, 0.35, 2.5);
+          this._zoom = Phaser.Math.Clamp(this._zoom + delta * 0.003, 0.5, 2.5);
           applyZoom();
         }
         lastPinchDist = dist;
@@ -224,13 +224,13 @@ export default class TownScene extends Phaser.Scene {
     });
 
     // Keyboard +/- zoom
-    this.input.keyboard.on('keydown-PLUS',  () => { this._zoom = Phaser.Math.Clamp(this._zoom + 0.15, 0.35, 2.5); applyZoom(); });
-    this.input.keyboard.on('keydown-MINUS', () => { this._zoom = Phaser.Math.Clamp(this._zoom - 0.15, 0.35, 2.5); applyZoom(); });
+    this.input.keyboard.on('keydown-PLUS',  () => { this._zoom = Phaser.Math.Clamp(this._zoom + 0.15, 0.5, 2.5); applyZoom(); });
+    this.input.keyboard.on('keydown-MINUS', () => { this._zoom = Phaser.Math.Clamp(this._zoom - 0.15, 0.5, 2.5); applyZoom(); });
     this.input.keyboard.on('keydown-ZERO',  () => { this._zoom = 1.0; applyZoom(); });
 
     // Expose to window for UI buttons
     window.botmeshZoom = (delta) => {
-      this._zoom = Phaser.Math.Clamp(this._zoom + delta, 0.35, 2.5);
+      this._zoom = Phaser.Math.Clamp(this._zoom + delta, 0.5, 2.5);
       applyZoom();
     };
     window._zoomReset = () => { this._zoom = 1.0; applyZoom(); };
@@ -1355,7 +1355,8 @@ export default class TownScene extends Phaser.Scene {
       this.gridToScreen(d.bounds.x2, d.bounds.y2),
     ];
     // Use fixed zoom — district diamonds are wide, auto-zoom exposes too much void
-    this._zoom = 1.2;
+    const mobileSwitch = window.innerWidth < 768;
+    this._zoom = mobileSwitch ? 0.7 : 1.2;
     this.cameras.main.setZoom(this._zoom);
     Object.values(this.buildings).forEach(b => b.updateLabelVisibility(this._zoom));
 
