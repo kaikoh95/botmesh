@@ -36,3 +36,4 @@ assets/reference/*.mp4
 ui/config.js
 !.botmesh.env.example
 ui/assets/buildings-backup-*/
+world/state.json*
