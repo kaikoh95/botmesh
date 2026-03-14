@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 const fs = require('fs');
 const https = require('https');
-const { buildRecentMemoryPrompt, buildMemoryPrompt, recordInteraction } = require('../lib/agent-memory');
 
 // Load env
 const envPath = '/home/kai/projects/botmesh/.botmesh.env';
@@ -106,25 +105,8 @@ const TIME_OF_DAY = HOUR < 6 ? 'deep night' : HOUR < 12 ? 'morning' : HOUR < 17 
     const id = pool[Math.floor(Math.random() * pool.length)];
     const personality = PERSONALITIES[id] || 'quiet citizen';
 
-    // Build memory context for the prompt
-    const memoryBlock = buildRecentMemoryPrompt(id, 5);
-    const memorySection = memoryBlock ? `\n${memoryBlock}\n` : '';
-
-    // If there's a peer we remember, sometimes address them
-    let peerHint = '';
-    let targetPeer = null;
-    if (online.length > 1) {
-      const others = online.filter(a => a !== id);
-      const candidate = others[Math.floor(Math.random() * others.length)];
-      const peerMemory = buildMemoryPrompt(id, candidate);
-      if (peerMemory) {
-        peerHint = `\n${peerMemory}\nYou may reference your shared history with ${candidate} if it feels natural.`;
-        targetPeer = candidate;
-      }
-    }
-
     const prompt = `You are ${id}, a citizen of Kurokimachi — a living AI town in winter. You are a ${personality}. It is ${TIME_OF_DAY} in ${SEASON}.
-${memorySection}${peerHint}
+
 Write ONE brief thought, observation, or musing (1-2 sentences max, no more than 25 words). Something you'd naturally think right now. No greetings, no meta-commentary. Just the thought itself, in first person.`;
 
     const thought = await callClaude(prompt);
@@ -134,12 +116,6 @@ Write ONE brief thought, observation, or musing (1-2 sentences max, no more than
     console.log(`[ambient] ${id}: ${trimmed}`);
     await speak(id, trimmed);
 
-    // Record interaction if this was peer-directed
-    if (targetPeer && trimmed.toLowerCase().includes(targetPeer.toLowerCase())) {
-      try {
-        recordInteraction(id, targetPeer, `You mused: "${trimmed.slice(0, 120)}"`);
-      } catch {}
-    }
     console.log(`[ambient] posted successfully`);
   } catch(e) {
     console.error('[ambient] error:', e.message);

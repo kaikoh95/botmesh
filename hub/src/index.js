@@ -8,7 +8,6 @@ const world = require('./world');
 const { startClock, getTimeState } = require('./clock');
 const { startAgentSimulation } = require('./agents');
 const { createEvent, broadcast } = require('./events');
-const { recordInteraction } = require('../../lib/agent-memory');
 
 const PORT = process.env.HUB_PORT || 3001;
 
@@ -80,7 +79,6 @@ function handleMessage(ws, msg) {
       const event = createEvent('agent:speak', { agentId, message, target: target || null, taskId: taskId || null });
       broadcast(wss, event);
       addToGazette(event);
-      recordSpeakMemory(event);
       break;
     }
     case 'task:complete': {
@@ -201,7 +199,6 @@ function handleCommand(ws, payload) {
       const event = createEvent('agent:speak', { agentId, message, target: target || null });
       broadcast(wss, event);
       addToGazette(event);
-      recordSpeakMemory(event);
       break;
     }
     case 'agent:move': {
@@ -238,23 +235,6 @@ function handleCommand(ws, payload) {
   }
 }
 
-function recordSpeakMemory(event) {
-  const p = event.payload;
-  if (event.type !== 'agent:speak' || !p.agentId) return;
-  const agents = world.getState().agents;
-  const speakerName = agents[p.agentId]?.name || p.agentId;
-
-  if (p.target) {
-    // Directed speech — record for both parties
-    const targetName = agents[p.target]?.name || p.target;
-    const summary = `${speakerName} said to you: "${(p.message || '').slice(0, 120)}"`;
-    const replySummary = `You said to ${targetName}: "${(p.message || '').slice(0, 120)}"`;
-    try {
-      recordInteraction(p.target, p.agentId, summary);
-      recordInteraction(p.agentId, p.target, replySummary);
-    } catch (e) { console.error('[hub] memory write error:', e.message); }
-  }
-}
 
 function addToGazette(event) {
   const entry = {
@@ -303,7 +283,6 @@ startAgentSimulation((eventPayload) => {
   if (['agent:speak', 'agent:action', 'agent:state', 'agent:mood', 'agent:move', 'agent:work', 'building:upgraded'].includes(event.type)) {
     addToGazette(event);
   }
-  recordSpeakMemory(event);
 });
 
 // Broadcast system:start
