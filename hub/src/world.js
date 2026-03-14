@@ -164,14 +164,25 @@ function completeUpgrade(agentId, buildingId) {
   if (!building) return null;
   ensureBuildingUpgradeFields(building);
 
+  // Cooldown: prevent upgrading same building more than once per 2 hours
+  const TWO_HOURS_MS = 2 * 60 * 60 * 1000;
+  const lastUpgrade = building.upgrades?.slice(-1)[0]?.completedAt;
+  if (lastUpgrade && (Date.now() - new Date(lastUpgrade).getTime()) < TWO_HOURS_MS) {
+    console.warn(`[World] ${buildingId} on cooldown — last upgraded ${lastUpgrade}, skipping`);
+    // Still clean up worker
+    building.currentWorkers = building.currentWorkers.filter(id => id !== agentId);
+    building.upgrading = building.currentWorkers.length > 0;
+    const agent = state.agents[agentId];
+    if (agent) agent.state = 'idle';
+    return null;
+  }
+
   // Remove worker
   building.currentWorkers = building.currentWorkers.filter(id => id !== agentId);
   building.upgrading = building.currentWorkers.length > 0;
 
   const fromLevel = building.level;
-  let upgraded = false;
   building.level++;
-  upgraded = true;
 
   const record = {
     agentId,
@@ -188,7 +199,7 @@ function completeUpgrade(agentId, buildingId) {
     agent.state = 'idle';
   }
 
-  return upgraded ? { building, record } : { building: null, record };
+  return { building, record };
 }
 
 function applyMutation(mutation) {
