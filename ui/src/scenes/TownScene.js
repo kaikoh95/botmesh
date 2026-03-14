@@ -1357,7 +1357,7 @@ export default class TownScene extends Phaser.Scene {
     this.cameras.main.setBounds(camLeft, camTop, camRight - camLeft, camBottom - camTop);
 
     const center = this.gridToScreen(d.cx, d.cy);
-    this.cameras.main.pan(center.x, center.y, 400, 'Sine.easeInOut');
+    this.cameras.main.centerOn(center.x, center.y);
 
     // 7. Update nav UI — highlight active button
     document.querySelectorAll('.dist-btn').forEach(b => b.classList.remove('active'));
