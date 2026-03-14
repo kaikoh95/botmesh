@@ -129,7 +129,7 @@ export default class TownScene extends Phaser.Scene {
     this._preloadAllDistrictGrounds();
 
     // Draw scenery for communal district (shrink bounds to avoid terrain edge bleed)
-    const INNER_MARGIN = 3;
+    const INNER_MARGIN = 5;
     const communalBounds = DISTRICTS.communal.bounds;
     const innerCommunal = {
       x1: communalBounds.x1 + INNER_MARGIN,
@@ -1323,7 +1323,7 @@ export default class TownScene extends Phaser.Scene {
     });
 
     // 4. Re-scatter life entities within this district's inner bounds
-    const INNER_MARGIN = 3;
+    const INNER_MARGIN = 5;
     const innerBounds = {
       x1: d.bounds.x1 + INNER_MARGIN,
       y1: d.bounds.y1 + INNER_MARGIN,
@@ -1359,14 +1359,14 @@ export default class TownScene extends Phaser.Scene {
     const vw = this.cameras.main.width;
     const vh = this.cameras.main.height;
     const targetZoom = Math.min(vw * 0.85 / distW, vh * 0.85 / distH);
-    this._zoom = Math.max(0.8, Math.min(2.5, targetZoom));
+    this._zoom = Math.max(1.0, Math.min(2.5, targetZoom));
     this.cameras.main.setZoom(this._zoom);
     Object.values(this.buildings).forEach(b => b.updateLabelVisibility(this._zoom));
 
-    const camLeft   = Math.min(...corners.map(c => c.x)) - 50;
-    const camRight  = Math.max(...corners.map(c => c.x)) + 50;
-    const camTop    = Math.min(...corners.map(c => c.y)) - 50;
-    const camBottom = Math.max(...corners.map(c => c.y)) + 50;
+    const camLeft   = Math.min(...corners.map(c => c.x)) - 0;
+    const camRight  = Math.max(...corners.map(c => c.x)) + 0;
+    const camTop    = Math.min(...corners.map(c => c.y)) - 0;
+    const camBottom = Math.max(...corners.map(c => c.y)) + 0;
     this.cameras.main.setBounds(camLeft, camTop, camRight - camLeft, camBottom - camTop);
 
     const center = this.gridToScreen(d.cx, d.cy);
