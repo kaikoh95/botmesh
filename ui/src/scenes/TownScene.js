@@ -128,23 +128,30 @@ export default class TownScene extends Phaser.Scene {
     this._groundGeneration = 0; // guards against async ground rebuild races
     this._preloadAllDistrictGrounds();
 
-    // Draw scenery for communal district
+    // Draw scenery for communal district (shrink bounds to avoid terrain edge bleed)
+    const INNER_MARGIN = 3;
     const communalBounds = DISTRICTS.communal.bounds;
-    this._drawWater(communalBounds);
-    this._drawTrees(communalBounds);
-    this._drawFences(communalBounds);
-    this._drawPathLanterns(communalBounds);
-    this._drawSnowDrifts(communalBounds);
-    this._drawPlazaDetail(communalBounds);
-    this._drawMarketScenery(communalBounds);
-    this._drawCivicScenery(communalBounds);
+    const innerCommunal = {
+      x1: communalBounds.x1 + INNER_MARGIN,
+      y1: communalBounds.y1 + INNER_MARGIN,
+      x2: communalBounds.x2 - INNER_MARGIN,
+      y2: communalBounds.y2 - INNER_MARGIN,
+    };
+    this._drawWater(innerCommunal);
+    this._drawTrees(innerCommunal);
+    this._drawFences(innerCommunal);
+    this._drawPathLanterns(innerCommunal);
+    this._drawSnowDrifts(innerCommunal);
+    this._drawPlazaDetail(innerCommunal);
+    this._drawMarketScenery(innerCommunal);
+    this._drawCivicScenery(innerCommunal);
 
     // Async: read world dimensions from state API and resize if needed
     this._fetchWorldDims();
 
     // World life — flora, fauna, ambient (scattered per-district on load)
     this.worldLife = new WorldLife(this);
-    this.worldLife.scatter(DISTRICTS.communal.bounds, 1);
+    this.worldLife.scatter(innerCommunal, 1);
 
     // Path tile registry — populated from world entities on state:sync
     this.pathTiles = new Set();
@@ -1315,23 +1322,29 @@ export default class TownScene extends Phaser.Scene {
       }
     });
 
-    // 4. Re-scatter life entities within this district's bounds
+    // 4. Re-scatter life entities within this district's inner bounds
+    const INNER_MARGIN = 3;
+    const innerBounds = {
+      x1: d.bounds.x1 + INNER_MARGIN,
+      y1: d.bounds.y1 + INNER_MARGIN,
+      x2: d.bounds.x2 - INNER_MARGIN,
+      y2: d.bounds.y2 - INNER_MARGIN,
+    };
     const lifeAgentCount = Object.keys(this.agents).length || 1;
-    if (this.worldLife) this.worldLife.scatter(d.bounds, lifeAgentCount);
+    if (this.worldLife) this.worldLife.scatter(innerBounds, lifeAgentCount);
 
     // 5. Redraw scenery for this district (lightweight Graphics calls)
     (this._sceneryGraphics || []).forEach(g => g.destroy && g.destroy());
     this._sceneryGraphics = [];
-    const db = d.bounds;
-    this._drawWater(db);
-    this._drawTrees(db);
-    this._drawFences(db);
-    this._drawPathLanterns(db);
-    this._drawSnowDrifts(db);
+    this._drawWater(innerBounds);
+    this._drawTrees(innerBounds);
+    this._drawFences(innerBounds);
+    this._drawPathLanterns(innerBounds);
+    this._drawSnowDrifts(innerBounds);
     if (key === 'communal') {
-      this._drawPlazaDetail(db);
-      this._drawMarketScenery(db);
-      this._drawCivicScenery(db);
+      this._drawPlazaDetail(innerBounds);
+      this._drawMarketScenery(innerBounds);
+      this._drawCivicScenery(innerBounds);
     }
 
     // 6. Zoom-to-fit district, then set camera bounds + pan to center
@@ -1350,10 +1363,10 @@ export default class TownScene extends Phaser.Scene {
     this.cameras.main.setZoom(this._zoom);
     Object.values(this.buildings).forEach(b => b.updateLabelVisibility(this._zoom));
 
-    const camLeft   = Math.min(...corners.map(c => c.x)) - 200;
-    const camRight  = Math.max(...corners.map(c => c.x)) + 200;
-    const camTop    = Math.min(...corners.map(c => c.y)) - 200;
-    const camBottom = Math.max(...corners.map(c => c.y)) + 200;
+    const camLeft   = Math.min(...corners.map(c => c.x)) - 50;
+    const camRight  = Math.max(...corners.map(c => c.x)) + 50;
+    const camTop    = Math.min(...corners.map(c => c.y)) - 50;
+    const camBottom = Math.max(...corners.map(c => c.y)) + 50;
     this.cameras.main.setBounds(camLeft, camTop, camRight - camLeft, camBottom - camTop);
 
     const center = this.gridToScreen(d.cx, d.cy);
@@ -1997,10 +2010,12 @@ export default class TownScene extends Phaser.Scene {
       }
     });
 
-    // Re-scatter life within current district bounds
+    // Re-scatter life within current district inner bounds
     if (this.worldLife) {
       const lifeCount = Object.keys(this.agents).length || 1;
-      this.worldLife.scatter(DISTRICTS[this._currentDistrict].bounds, lifeCount);
+      const _m = 3;
+      const db = DISTRICTS[this._currentDistrict].bounds;
+      this.worldLife.scatter({ x1: db.x1 + _m, y1: db.y1 + _m, x2: db.x2 - _m, y2: db.y2 - _m }, lifeCount);
     }
   }
 
@@ -2053,10 +2068,12 @@ export default class TownScene extends Phaser.Scene {
     const agent = new Agent(this, agentData, pos.x, pos.y);
     this.agents[agentData.id] = agent;
 
-    // Re-scatter world life within current district with updated agent count
+    // Re-scatter world life within current district inner bounds
     const agentCount = Object.keys(this.agents).length;
     if (this.worldLife && this._currentDistrict) {
-      this.worldLife.scatter(DISTRICTS[this._currentDistrict].bounds, agentCount);
+      const _m = 3;
+      const db = DISTRICTS[this._currentDistrict].bounds;
+      this.worldLife.scatter({ x1: db.x1 + _m, y1: db.y1 + _m, x2: db.x2 - _m, y2: db.y2 - _m }, agentCount);
     }
 
     // Enable click → dispatch to HTML panel (no Phaser input coordinate issues)

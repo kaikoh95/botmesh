@@ -184,9 +184,9 @@ export default class Building {
     const wallH = this._getWallH();
     const roofColor = this._getRoofColor();
 
-    // Building shadow
+    // Building shadow — ground-level ellipse at base
     g.fillStyle(0x000000, 0.15);
-    g.fillRect(-w / 2 + 4, -wallH + 4, w, h + wallH);
+    g.fillEllipse(0, 0, w * 0.9, h * 0.6);
 
     // Left wall
     g.fillStyle(darken(color, 40), 1);
