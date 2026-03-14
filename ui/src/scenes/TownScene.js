@@ -178,7 +178,7 @@ export default class TownScene extends Phaser.Scene {
 
     // ── Zoom ────────────────────────────────────────────────────────────────
     const isMobile = window.innerWidth < 768;
-    this._zoom = isMobile ? 0.35 : 0.9;
+    this._zoom = isMobile ? 0.35 : 1.2;
     const CAM = this.cameras.main;
     CAM.setZoom(this._zoom);
 
