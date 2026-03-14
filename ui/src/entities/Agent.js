@@ -169,7 +169,7 @@ export default class Agent {
       delay: 3000,
       loop: true,
       callback: () => {
-        if (!this.online) return;
+        if (!this.online || !this.container.visible) return;
         // Tiny white puff rising from head area
         const g = this.scene.add.graphics();
         g.fillStyle(0xc8dde8, 0.25);

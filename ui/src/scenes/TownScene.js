@@ -142,12 +142,9 @@ export default class TownScene extends Phaser.Scene {
     // Async: read world dimensions from state API and resize if needed
     this._fetchWorldDims();
 
-    // World life — flora, fauna, ambient
+    // World life — flora, fauna, ambient (scattered per-district on load)
     this.worldLife = new WorldLife(this);
-    this.worldLife.spawn(1); // starts with 1, updates as agents join
-
-    // Apply initial district isolation for communal
-    this._filterLifeForDistrict('communal');
+    this.worldLife.scatter(DISTRICTS.communal.bounds, 1);
 
     // Path tile registry — populated from world entities on state:sync
     this.pathTiles = new Set();
@@ -1307,8 +1304,8 @@ export default class TownScene extends Phaser.Scene {
       if (!a.container) return;
       const gx = a.gridX ?? 0;
       const gy = a.gridY ?? 0;
-      const inside = gx >= d.bounds.x1 - 1 && gx <= d.bounds.x2 + 1 &&
-                     gy >= d.bounds.y1 - 1 && gy <= d.bounds.y2 + 1;
+      const inside = gx >= d.bounds.x1 && gx <= d.bounds.x2 &&
+                     gy >= d.bounds.y1 && gy <= d.bounds.y2;
       a.container.setVisible(inside);
       // Clear speech bubble when hiding agent to prevent cross-district text bleed
       if (!inside && a.speechBubble) {
@@ -1318,8 +1315,9 @@ export default class TownScene extends Phaser.Scene {
       }
     });
 
-    // 4. Filter life entities to district screen bounds
-    this._filterLifeForDistrict(key);
+    // 4. Re-scatter life entities within this district's bounds
+    const lifeAgentCount = Object.keys(this.agents).length || 1;
+    if (this.worldLife) this.worldLife.scatter(d.bounds, lifeAgentCount);
 
     // 5. Redraw scenery for this district (lightweight Graphics calls)
     (this._sceneryGraphics || []).forEach(g => g.destroy && g.destroy());
@@ -1338,17 +1336,17 @@ export default class TownScene extends Phaser.Scene {
 
     // 6. Zoom-to-fit district, then set camera bounds + pan to center
     const corners = [
-      this.gridToScreen(d.bounds.x1 - 2, d.bounds.y1 - 2),
-      this.gridToScreen(d.bounds.x2 + 2, d.bounds.y1 - 2),
-      this.gridToScreen(d.bounds.x1 - 2, d.bounds.y2 + 2),
-      this.gridToScreen(d.bounds.x2 + 2, d.bounds.y2 + 2),
+      this.gridToScreen(d.bounds.x1, d.bounds.y1),
+      this.gridToScreen(d.bounds.x2, d.bounds.y1),
+      this.gridToScreen(d.bounds.x1, d.bounds.y2),
+      this.gridToScreen(d.bounds.x2, d.bounds.y2),
     ];
     const distW = Math.max(...corners.map(c => c.x)) - Math.min(...corners.map(c => c.x));
     const distH = Math.max(...corners.map(c => c.y)) - Math.min(...corners.map(c => c.y));
     const vw = this.cameras.main.width;
     const vh = this.cameras.main.height;
-    const targetZoom = Math.min(vw * 0.75 / distW, vh * 0.75 / distH);
-    this._zoom = Math.max(0.5, Math.min(2.0, targetZoom));
+    const targetZoom = Math.min(vw * 0.85 / distW, vh * 0.85 / distH);
+    this._zoom = Math.max(0.8, Math.min(2.5, targetZoom));
     this.cameras.main.setZoom(this._zoom);
     Object.values(this.buildings).forEach(b => b.updateLabelVisibility(this._zoom));
 
@@ -1367,38 +1365,6 @@ export default class TownScene extends Phaser.Scene {
     if (activeBtn) activeBtn.classList.add('active');
   }
 
-
-  _filterLifeForDistrict(key) {
-    if (!this.worldLife) return;
-    const d = DISTRICTS[key];
-    // Strict bounds — no padding to prevent entities bleeding past terrain edge
-    const x1 = d.bounds.x1, x2 = d.bounds.x2;
-    const y1 = d.bounds.y1, y2 = d.bounds.y2;
-
-    const filter = (el) => {
-      const obj = el?.sprite ?? el;
-      if (!obj || obj.destroyed) return;
-      let gx = obj._gx, gy = obj._gy;
-      let reverseMap = false;
-      if (gx === undefined) {
-        // Reverse-map from world coords as fallback
-        reverseMap = true;
-        const dx = (obj.x - this.originX) / (TILE_W / 2);
-        const dy = (obj.y - this.originY) / (TILE_H / 2);
-        gx = Math.round((dx + dy) / 2);
-        gy = Math.round((dy - dx) / 2);
-      }
-      // Tighter bounds for reverse-mapped entities (off-by-one risk from rounding)
-      const pad = reverseMap ? 1 : 0;
-      const inside = gx >= x1 + pad && gx <= x2 - pad && gy >= y1 + pad && gy <= y2 - pad;
-      if (obj.setVisible) obj.setVisible(inside);
-      // Hide shadow sub-sprite if present
-      if (obj._shadow && obj._shadow.setVisible) obj._shadow.setVisible(inside);
-    };
-
-    (this.worldLife.elements || []).forEach(filter);
-    (this.worldLife.animatedElements || []).forEach(filter);
-  }
 
   _showDistrictLoading() {
     if (this._loadingText) return;
@@ -2020,8 +1986,8 @@ export default class TownScene extends Phaser.Scene {
       if (!a.container) return;
       const gx = a.gridX ?? 0;
       const gy = a.gridY ?? 0;
-      const inside = gx >= d.bounds.x1 - 1 && gx <= d.bounds.x2 + 1 &&
-                     gy >= d.bounds.y1 - 1 && gy <= d.bounds.y2 + 1;
+      const inside = gx >= d.bounds.x1 && gx <= d.bounds.x2 &&
+                     gy >= d.bounds.y1 && gy <= d.bounds.y2;
       a.container.setVisible(inside);
       // Clear speech bubble when hiding to prevent cross-district text bleed
       if (!inside && a.speechBubble) {
@@ -2031,7 +1997,11 @@ export default class TownScene extends Phaser.Scene {
       }
     });
 
-    this._filterLifeForDistrict(this._currentDistrict);
+    // Re-scatter life within current district bounds
+    if (this.worldLife) {
+      const lifeCount = Object.keys(this.agents).length || 1;
+      this.worldLife.scatter(DISTRICTS[this._currentDistrict].bounds, lifeCount);
+    }
   }
 
   /**
@@ -2083,11 +2053,10 @@ export default class TownScene extends Phaser.Scene {
     const agent = new Agent(this, agentData, pos.x, pos.y);
     this.agents[agentData.id] = agent;
 
-    // Respawn world life with updated agent count
+    // Re-scatter world life within current district with updated agent count
     const agentCount = Object.keys(this.agents).length;
-    if (this.worldLife) {
-      this.worldLife.spawn(agentCount);
-      this._filterLifeForDistrict(this._currentDistrict); // re-apply district filter after respawn
+    if (this.worldLife && this._currentDistrict) {
+      this.worldLife.scatter(DISTRICTS[this._currentDistrict].bounds, agentCount);
     }
 
     // Enable click → dispatch to HTML panel (no Phaser input coordinate issues)
