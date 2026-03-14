@@ -1211,7 +1211,15 @@ export default class TownScene extends Phaser.Scene {
     this._applyDistrictVisibility();
   }
 
-  async _rebuildAllDistrictGrounds() {
+  _rebuildAllDistrictGrounds() {
+    // Debounce: rapid successive calls (fetchWorldDims, state:sync, computeWalkways)
+    // were aborting each other via the generation guard, leaving districts like 'east'
+    // without ground chunks. Collapse into a single rebuild after triggers settle.
+    clearTimeout(this._rebuildDebounceTimer);
+    this._rebuildDebounceTimer = setTimeout(() => this._doRebuildAllDistrictGrounds(), 200);
+  }
+
+  async _doRebuildAllDistrictGrounds() {
     const gen = ++this._groundGeneration;
     // Destroy all existing ground chunks
     (this._groundChunks || []).forEach(rt => rt.destroy());
@@ -1328,13 +1336,22 @@ export default class TownScene extends Phaser.Scene {
       this._drawCivicScenery(db);
     }
 
-    // 6. Set camera bounds to district area + pan to center
+    // 6. Zoom-to-fit district, then set camera bounds + pan to center
     const corners = [
       this.gridToScreen(d.bounds.x1 - 2, d.bounds.y1 - 2),
       this.gridToScreen(d.bounds.x2 + 2, d.bounds.y1 - 2),
       this.gridToScreen(d.bounds.x1 - 2, d.bounds.y2 + 2),
       this.gridToScreen(d.bounds.x2 + 2, d.bounds.y2 + 2),
     ];
+    const distW = Math.max(...corners.map(c => c.x)) - Math.min(...corners.map(c => c.x));
+    const distH = Math.max(...corners.map(c => c.y)) - Math.min(...corners.map(c => c.y));
+    const vw = this.cameras.main.width;
+    const vh = this.cameras.main.height;
+    const targetZoom = Math.min(vw * 0.75 / distW, vh * 0.75 / distH);
+    this._zoom = Math.max(0.5, Math.min(2.0, targetZoom));
+    this.cameras.main.setZoom(this._zoom);
+    Object.values(this.buildings).forEach(b => b.updateLabelVisibility(this._zoom));
+
     const camLeft   = Math.min(...corners.map(c => c.x)) - 200;
     const camRight  = Math.max(...corners.map(c => c.x)) + 200;
     const camTop    = Math.min(...corners.map(c => c.y)) - 200;
@@ -1362,14 +1379,18 @@ export default class TownScene extends Phaser.Scene {
       const obj = el?.sprite ?? el;
       if (!obj || obj.destroyed) return;
       let gx = obj._gx, gy = obj._gy;
+      let reverseMap = false;
       if (gx === undefined) {
         // Reverse-map from world coords as fallback
+        reverseMap = true;
         const dx = (obj.x - this.originX) / (TILE_W / 2);
         const dy = (obj.y - this.originY) / (TILE_H / 2);
         gx = Math.round((dx + dy) / 2);
         gy = Math.round((dy - dx) / 2);
       }
-      const inside = gx >= x1 && gx <= x2 && gy >= y1 && gy <= y2;
+      // Tighter bounds for reverse-mapped entities (off-by-one risk from rounding)
+      const pad = reverseMap ? 1 : 0;
+      const inside = gx >= x1 + pad && gx <= x2 - pad && gy >= y1 + pad && gy <= y2 - pad;
       if (obj.setVisible) obj.setVisible(inside);
       // Hide shadow sub-sprite if present
       if (obj._shadow && obj._shadow.setVisible) obj._shadow.setVisible(inside);
