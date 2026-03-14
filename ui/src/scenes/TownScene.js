@@ -178,13 +178,34 @@ export default class TownScene extends Phaser.Scene {
 
     // ── Zoom ────────────────────────────────────────────────────────────────
     const isMobile = window.innerWidth < 768;
+    this._zoomMin = isMobile ? 0.7 : 0.5;
     this._zoom = isMobile ? 0.7 : 1.2;
     const CAM = this.cameras.main;
     CAM.setZoom(this._zoom);
 
     // Centre camera on communal district (town heart) on all devices
     {
-      const center = this.gridToScreen(DISTRICTS.communal.cx, DISTRICTS.communal.cy);
+      const d = DISTRICTS.communal;
+      const corners = [
+        this.gridToScreen(d.bounds.x1, d.bounds.y1),
+        this.gridToScreen(d.bounds.x2, d.bounds.y1),
+        this.gridToScreen(d.bounds.x1, d.bounds.y2),
+        this.gridToScreen(d.bounds.x2, d.bounds.y2),
+      ];
+      const camLeft   = Math.min(...corners.map(c => c.x));
+      const camRight  = Math.max(...corners.map(c => c.x));
+      let   camTop    = Math.min(...corners.map(c => c.y));
+      let   camBottom = Math.max(...corners.map(c => c.y));
+      // Ensure bounds height covers the full viewport in world-space so no void is visible
+      const naturalH = camBottom - camTop;
+      const minH = CAM.height / this._zoom;
+      if (minH > naturalH) {
+        const expand = (minH - naturalH) / 2;
+        camTop -= expand;
+        camBottom += expand;
+      }
+      CAM.setBounds(camLeft, camTop, camRight - camLeft, camBottom - camTop);
+      const center = this.gridToScreen(d.cx, d.cy);
       CAM.centerOn(center.x, center.y);
     }
 
@@ -199,7 +220,7 @@ export default class TownScene extends Phaser.Scene {
 
     // Mouse wheel zoom
     this.input.on('wheel', (_ptr, _objs, _dx, deltaY) => {
-      this._zoom = Phaser.Math.Clamp(this._zoom - deltaY * 0.0008, 0.5, 2.5);
+      this._zoom = Phaser.Math.Clamp(this._zoom - deltaY * 0.0008, this._zoomMin, 2.5);
       applyZoom();
     });
 
@@ -214,7 +235,7 @@ export default class TownScene extends Phaser.Scene {
         const dist = Math.sqrt(dx*dx + dy*dy);
         if (lastPinchDist !== null) {
           const delta = dist - lastPinchDist;
-          this._zoom = Phaser.Math.Clamp(this._zoom + delta * 0.003, 0.5, 2.5);
+          this._zoom = Phaser.Math.Clamp(this._zoom + delta * 0.003, this._zoomMin, 2.5);
           applyZoom();
         }
         lastPinchDist = dist;
@@ -224,13 +245,13 @@ export default class TownScene extends Phaser.Scene {
     });
 
     // Keyboard +/- zoom
-    this.input.keyboard.on('keydown-PLUS',  () => { this._zoom = Phaser.Math.Clamp(this._zoom + 0.15, 0.5, 2.5); applyZoom(); });
-    this.input.keyboard.on('keydown-MINUS', () => { this._zoom = Phaser.Math.Clamp(this._zoom - 0.15, 0.5, 2.5); applyZoom(); });
+    this.input.keyboard.on('keydown-PLUS',  () => { this._zoom = Phaser.Math.Clamp(this._zoom + 0.15, this._zoomMin, 2.5); applyZoom(); });
+    this.input.keyboard.on('keydown-MINUS', () => { this._zoom = Phaser.Math.Clamp(this._zoom - 0.15, this._zoomMin, 2.5); applyZoom(); });
     this.input.keyboard.on('keydown-ZERO',  () => { this._zoom = 1.0; applyZoom(); });
 
     // Expose to window for UI buttons
     window.botmeshZoom = (delta) => {
-      this._zoom = Phaser.Math.Clamp(this._zoom + delta, 0.5, 2.5);
+      this._zoom = Phaser.Math.Clamp(this._zoom + delta, this._zoomMin, 2.5);
       applyZoom();
     };
     window._zoomReset = () => { this._zoom = 1.0; applyZoom(); };
@@ -1360,10 +1381,18 @@ export default class TownScene extends Phaser.Scene {
     this.cameras.main.setZoom(this._zoom);
     Object.values(this.buildings).forEach(b => b.updateLabelVisibility(this._zoom));
 
-    const camLeft   = Math.min(...corners.map(c => c.x)) - 0;
-    const camRight  = Math.max(...corners.map(c => c.x)) + 0;
-    const camTop    = Math.min(...corners.map(c => c.y)) - 0;
-    const camBottom = Math.max(...corners.map(c => c.y)) + 0;
+    const camLeft   = Math.min(...corners.map(c => c.x));
+    const camRight  = Math.max(...corners.map(c => c.x));
+    let   camTop    = Math.min(...corners.map(c => c.y));
+    let   camBottom = Math.max(...corners.map(c => c.y)) - 40;
+    // Ensure bounds height covers the full viewport in world-space so no void is visible
+    const naturalH = camBottom - camTop;
+    const minH = this.cameras.main.height / this._zoom;
+    if (minH > naturalH) {
+      const expand = (minH - naturalH) / 2;
+      camTop -= expand;
+      camBottom += expand;
+    }
     this.cameras.main.setBounds(camLeft, camTop, camRight - camLeft, camBottom - camTop);
 
     const center = this.gridToScreen(d.cx, d.cy);
