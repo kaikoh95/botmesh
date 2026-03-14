@@ -155,10 +155,11 @@ export default class Building {
         const scale = targetW / img.width;
         img.setScale(scale);
         const spriteH = img.displayHeight;
-        // Origin at bottom-center — base of sprite sits on ground. No Y offset needed
-        // as long as sprites are generated with their base at the canvas bottom edge.
+        // Origin at bottom-center. Sprites have ~19px transparent bottom padding,
+        // so push sprite down by that amount to align building base with tile ground.
+        const SPRITE_BOTTOM_PAD = 19;
         img.setOrigin(0.5, 1.0);
-        img.setY(0);
+        img.setY(SPRITE_BOTTOM_PAD * scale);
         this.container.addAt(img, 0); // add behind label
         this.spriteImg = img;
 
