@@ -8,6 +8,7 @@ const path = require('path');
 
 const SEED_PATH = path.join(__dirname, '..', '..', 'world', 'seed.json');
 const MAX_GAZETTE = 100;
+const TWO_HOURS_MS = 2 * 60 * 60 * 1000;
 
 // Home coordinate slots for new agents (spread around the map)
 const HOME_SLOTS = [
@@ -144,6 +145,14 @@ function startWork(agentId, buildingId) {
   const building = (state.buildings || {})[buildingId];
   if (!building) return false;
   ensureBuildingUpgradeFields(building);
+
+  // Don't start work if building is still on upgrade cooldown
+  const lastUpgrade = building.upgrades?.slice(-1)[0]?.completedAt;
+  if (lastUpgrade && (Date.now() - new Date(lastUpgrade).getTime()) < TWO_HOURS_MS) {
+    console.debug(`[World] ${buildingId} on cooldown — skipping startWork`);
+    return false;
+  }
+
   if (!building.currentWorkers.includes(agentId)) {
     building.currentWorkers.push(agentId);
   }
@@ -164,7 +173,6 @@ function completeUpgrade(agentId, buildingId) {
   ensureBuildingUpgradeFields(building);
 
   // Cooldown: prevent upgrading same building more than once per 2 hours
-  const TWO_HOURS_MS = 2 * 60 * 60 * 1000;
   const lastUpgrade = building.upgrades?.slice(-1)[0]?.completedAt;
   if (lastUpgrade && (Date.now() - new Date(lastUpgrade).getTime()) < TWO_HOURS_MS) {
     console.warn(`[World] ${buildingId} on cooldown — last upgraded ${lastUpgrade}, skipping`);
