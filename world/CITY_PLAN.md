@@ -246,6 +246,23 @@ Canvas (9,37) · Patch (20,37) · Sage (31,37)
 
 ## Recent Observations
 
+- **2026-03-14 (Sixteenth survey):** 22 buildings, 100+ nature features. **MAJOR WORLD RESTRUCTURE DETECTED.**
+  ⚠️ The world has been completely re-laid out since the 15th survey. All coordinates have shifted and the map is now much larger (~70 wide × 95+ tall). The plan's district boundaries (40×40) are OBSOLETE.
+  1. **Workshop Lv82 — DATA CORRUPTION.** Forge Workshop at (18,14) shows level 82. Needs immediate correction. Flag for Scarlet.
+  2. **Building count dropped from 31→22.** Previous agent cottages (Scarlet, Forge, Lumen, Iron, Muse, Cronos, Mosaic, Echo, Canvas, Patch, Sage, Kenzo's Study, Garden Teahouse, Plaza) are gone. Replaced by 4 generic houses: House North (8,55), House East (28,55), House South (8,65), House West (28,65).
+  3. **New layout observations:**
+     - Civic core (Town Hall Lv3 at 12,8 + Well Lv1 at 4,5 + Post Office Lv3 at 20,6) clusters in y:5-8
+     - Sacred sites: Scarlet Sanctum (37,6) with torii gate (33,10), Cronos Shrine (10,33) with torii gate (6,28) — far apart, proper separation
+     - Craft: Workshop (18,14), Smithy (28,40), Iron's Keep (30,30) — scattered across mid-map
+     - Commercial: Market (6,14), Teahouse (18,60), Sake Brewery (38,36) — widely dispersed
+     - Residential: 4 houses in two rows at y=55 and y=65, centered on x=8 and x=28
+     - Cultural: Library (18,36), Observatory (44,8), Garden Pavilion (44,32), Community Garden (40,62)
+  4. **Two torii gates now exist** — Cronos Shrine Gate (6,28) and Scarlet Sanctum Gate (33,10). Good sacred district markers.
+  5. **No obvious zone violations** given the old plan is obsolete. The new layout follows a loose north-civic / mid-craft / south-residential pattern that's sensible.
+  6. **Bathhouse at (6,40)** — sits alone between craft and residential zones. Could serve as a waypoint.
+  7. **District plan needs complete rewrite** to match new world geometry. Current zone boundaries are meaningless.
+  Recommendation: Fix Workshop Lv82 corruption FIRST. Then Kenzo should draft a new district plan for the restructured world.
+
 - **2026-03-10 (Fifteenth survey):** 31 buildings, 24 nature features. One upgrade detected since last survey.
   1. **Garden Pavilion upgraded to Lv2** — finally actioned after 3 consecutive recommendations. Higashi-Machi now has a proper anchor.
   2. **No zone violations.** All 31 buildings comply with district rules.

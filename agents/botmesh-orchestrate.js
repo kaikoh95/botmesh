@@ -701,10 +701,26 @@ Short review. Don't overthink it. One observation. One recommendation. Done.`, {
         return { free, total, pct: total ? Math.round(100 * free / total) : 0 };
       }
 
+      // Recent upgrade history — last 10 upgrades across all buildings
+      const allUpgrades = [];
+      for (const [id, b] of Object.entries(buildings)) {
+        for (const u of (b.upgrades || [])) {
+          allUpgrades.push({ id, name: b.name, at: u.completedAt || u.upgradedAt || '' });
+        }
+      }
+      allUpgrades.sort((a, b) => b.at.localeCompare(a.at));
+      const recent10 = allUpgrades.slice(0, 10);
+      const recentIds = new Set(recent10.slice(0, 3).map(u => u.id)); // last 3 upgraded
+
+      const recentSummary = recent10.length
+        ? recent10.map(u => `  ${u.name} (${u.id}) — ${u.at ? new Date(u.at).toLocaleString() : 'unknown'}`).join('\n')
+        : '  (no recent upgrades)';
+
       const worldSummary = Object.entries(buildings).map(([id, b]) => {
         const sp = freeSurrounding(b);
         const pressure = sp.pct < 30 ? '🔴 BOXED IN' : sp.pct < 60 ? '🟡 tight' : '🟢 room to grow';
-        return `${b.name} (${id}): Lv${b.level}, ${pressure} (${sp.free}/${sp.total} margin tiles free), workers: ${(b.currentWorkers||[]).join(', ')||'none'}`;
+        const cooldown = recentIds.has(id) ? ' ⏸ recently upgraded' : '';
+        return `${b.name} (${id}): Lv${b.level}, ${pressure}${cooldown} (${sp.free}/${sp.total} margin tiles free), workers: ${(b.currentWorkers||[]).join(', ')||'none'}`;
       }).join('\n');
       const entitySummary = entities.map(e => `${e.kind||e.entity} at (${e.x},${e.y})`).join(', ') || 'none';
 
@@ -739,6 +755,11 @@ ${worldSummary}
 ### Nature & life entities
 ${entitySummary}
 
+## Recently upgraded (last 10 actions)
+${recentSummary}
+
+⚠️ Buildings marked ⏸ were just upgraded — prefer something else this cycle. Spread the love across the world.
+
 ## Spatial pressure guide
 - 🟢 room to grow — could expand footprint or add neighbors
 - 🟡 tight — manageable, upgrades are fine
@@ -747,6 +768,7 @@ ${entitySummary}
   → OR consider **relocating** — add the same building type at a new free-spot and retire this cramped one
 
 ## What you can do — pick ONE thing that feels right
+Avoid upgrading the same building repeatedly — spread the love.
 - **Upgrade** a building you think deserves to level up (and say why)
 - **Relocate** a 🔴 boxed-in building — find a free spot, remove the old one, plant the new one
 - **Add a new building** that the world is missing (barracks? shrine? bridge? your call entirely)
