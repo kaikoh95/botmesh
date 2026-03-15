@@ -22,10 +22,6 @@ let payload = { action, entity };
 if (action === 'upgrade' && entity === 'building') {
   const [id, level, upgradedBy, note] = args;
   const targetLevel = parseInt(level);
-  if (targetLevel > 3) {
-    console.error(`[world-mutate] Max level (3) already reached for ${id}`);
-    process.exit(1);
-  }
   payload = { action: 'upgrade', entity: 'building', id, level: targetLevel, upgradedBy, note };
 } else if (action === 'plant' && entity === 'life') {
   const [kind, x, y, id] = args;

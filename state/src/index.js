@@ -299,10 +299,6 @@ function applyEvent(event) {
           const building = (state.buildings || {})[entityId];
           if (building) {
             const currentLevel = building.level || 1;
-            if (currentLevel >= 3) {
-              console.warn(`[State] Max level (3) already reached for ${entityId}`);
-              break;
-            }
             building.level = currentLevel + 1;
             if (!Array.isArray(building.upgrades)) building.upgrades = [];
             building.upgrades.push({
@@ -469,7 +465,7 @@ function applyEvent(event) {
     case 'building:upgraded': {
       const building = (state.buildings || {})[payload.buildingId];
       if (building) {
-        building.level = payload.level;
+        building.level = Math.max(building.level || 1, payload.level);
         if (!Array.isArray(building.upgrades)) building.upgrades = [];
         // Dedup: skip if this level already has a richer record (from world:mutate upgrade)
         const alreadyHasLevel = building.upgrades.some(u =>
