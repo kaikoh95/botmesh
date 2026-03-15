@@ -2292,15 +2292,16 @@ export default class TownScene extends Phaser.Scene {
 
       // Rising + fading smoke loop
       const rise = () => {
+        const intense = building && building._smokeIntensified;
         g.setPosition(smokeX + Phaser.Math.Between(-3, 3), smokeBaseY);
-        g.setAlpha(0.3);
+        g.setAlpha(intense ? 0.6 : 0.3);
         this.tweens.add({
           targets: g,
           y: smokeBaseY - Phaser.Math.Between(25, 45),
           x: smokeX + Phaser.Math.Between(-12, 12),
           alpha: 0,
-          duration: Phaser.Math.Between(2500, 4000),
-          delay: Phaser.Math.Between(0, 2000) + i * 800,
+          duration: Phaser.Math.Between(intense ? 1500 : 2500, intense ? 2400 : 4000),
+          delay: Phaser.Math.Between(0, intense ? 1200 : 2000) + i * (intense ? 480 : 800),
           ease: 'Sine.easeOut',
           onComplete: rise,
         });
@@ -2621,6 +2622,20 @@ export default class TownScene extends Phaser.Scene {
     const building = this.buildings[buildingId];
     if (!building) return;
     building.showUpgradeSign(workers);
+
+    // Glow pulse while working
+    building.setGlow(true);
+
+    // Intensify chimney smoke
+    if (building._smokeGraphics) {
+      building._smokeIntensified = true;
+    }
+
+    // Work speech bubble
+    const thought = this._agentThought(agentId);
+    const agent = this.agents?.[agentId];
+    if (agent && thought && agent.speak) agent.speak(thought);
+
     // Move agent into building (fade)
     this.agentEnterBuilding(agentId, buildingId);
   }
@@ -2985,8 +3000,16 @@ export default class TownScene extends Phaser.Scene {
       });
     }
 
-    // Hide upgrade sign if no more workers
     if (building) {
+      // Stop glow pulse
+      building.setGlow(false);
+
+      // Restore chimney smoke intensity
+      if (building._smokeGraphics) {
+        building._smokeIntensified = false;
+      }
+
+      // Hide upgrade sign
       building.hideUpgradeSign();
     }
   }

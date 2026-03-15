@@ -404,6 +404,27 @@ export default class Building {
       repeat: -1,
       ease: 'Sine.easeInOut',
     });
+
+    // Floating task icon above the upgrade sign
+    const taskIcons = {
+      workshop: '⚒️', town_hall: '📜', market: '🏮', shrine: '🔔', sanctum: '🔮',
+      library: '📚', teahouse: '🍵', observatory: '🔭', default: '✨',
+    };
+    const icon = taskIcons[this.type] || taskIcons[this.id] || taskIcons.default;
+    this._taskIcon = this.scene.add.text(0, sign.y - 12, icon, {
+      fontSize: '10px',
+    }).setOrigin(0.5);
+    this.container.add(this._taskIcon);
+
+    // Independent slow bob for the task icon
+    this._taskIconTween = this.scene.tweens.add({
+      targets: this._taskIcon,
+      y: this._taskIcon.y - 3,
+      duration: 900,
+      yoyo: true,
+      repeat: -1,
+      ease: 'Sine.easeInOut',
+    });
   }
 
   hideUpgradeSign() {
@@ -414,6 +435,14 @@ export default class Building {
     if (this.upgradeSign) {
       this.upgradeSign.destroy();
       this.upgradeSign = null;
+    }
+    if (this._taskIconTween) {
+      this._taskIconTween.remove();
+      this._taskIconTween = null;
+    }
+    if (this._taskIcon) {
+      this._taskIcon.destroy();
+      this._taskIcon = null;
     }
   }
 
@@ -613,6 +642,8 @@ export default class Building {
     if (this._dmgLabel) this._dmgLabel.destroy();
     if (this._muralTween) this._muralTween.remove();
     if (this._muralContainer) this._muralContainer.destroy();
+    if (this._taskIconTween) this._taskIconTween.remove();
+    if (this._taskIcon) this._taskIcon.destroy();
     if (this.spriteImg) this.spriteImg.destroy();
     this.container.destroy();
   }
