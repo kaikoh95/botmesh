@@ -113,7 +113,7 @@ export default class TownScene extends Phaser.Scene {
     this.mapH = 75;
     // Origin: center the star layout on grid (55,55)
     this.originX = this.cameras.main.width * 0.5;
-    this.originY = -800;
+    this.originY = 100;
 
     // Preload ALL district ground tiles async (hidden by default, communal visible)
     this._currentDistrict = 'communal';
@@ -174,8 +174,8 @@ export default class TownScene extends Phaser.Scene {
 
     // ── Zoom ────────────────────────────────────────────────────────────────
     const isMobile = window.innerWidth < 768;
-    this._zoomMin = isMobile ? 0.8 : 0.6;
-    this._zoom = isMobile ? 1.0 : 1.6;
+    this._zoomMin = isMobile ? 0.3 : 0.25;
+    this._zoom = isMobile ? 0.45 : 0.5;
     const CAM = this.cameras.main;
     CAM.setZoom(this._zoom);
 

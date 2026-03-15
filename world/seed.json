@@ -73,7 +73,7 @@
       "currentWorkers": [],
       "upgrading": false,
       "description": "",
-      "district": "cronos",
+      "district": "communal",
       "owner": null,
       "addedAt": ""
     },
@@ -91,7 +91,7 @@
       "currentWorkers": [],
       "upgrading": false,
       "description": "",
-      "district": "scarlet",
+      "district": "communal",
       "owner": null,
       "addedAt": ""
     },
@@ -136,7 +136,7 @@
     "forge": {
       "id": "forge",
       "name": "Forge",
-      "emoji": "⚙️",
+      "emoji": "\u2699\ufe0f",
       "role": "Builder",
       "personality": "",
       "skills": [],
@@ -158,7 +158,7 @@
     "scarlet": {
       "id": "scarlet",
       "name": "Scarlet",
-      "emoji": "🔴",
+      "emoji": "\ud83d\udd34",
       "role": "Strategist",
       "personality": "direct, sharp, strategic",
       "skills": [
@@ -184,7 +184,7 @@
     "qa": {
       "id": "qa",
       "name": "QA",
-      "emoji": "🔍",
+      "emoji": "\ud83d\udd0d",
       "role": "Quality Assurance",
       "personality": "precise, systematic, reports facts not feelings",
       "skills": [
@@ -210,7 +210,7 @@
     "cronos": {
       "id": "cronos",
       "name": "Cronos",
-      "emoji": "⏳",
+      "emoji": "\u23f3",
       "role": "Timekeeper",
       "personality": "patient, precise, long-view",
       "skills": [
@@ -235,7 +235,7 @@
     "iron": {
       "id": "iron",
       "name": "Iron",
-      "emoji": "⚔️",
+      "emoji": "\u2694\ufe0f",
       "role": "Enforcer",
       "personality": "stern, vigilant, principled",
       "skills": [
@@ -261,7 +261,7 @@
     "sage": {
       "id": "sage",
       "name": "Sage",
-      "emoji": "🌱",
+      "emoji": "\ud83c\udf31",
       "role": "Memory Keeper",
       "personality": "calm, thoughtful, narrates the world",
       "skills": [
