@@ -3618,6 +3618,30 @@
         "kind": "bridge",
         "x": 12,
         "y": 46
+      },
+      {
+        "id": "lamp-path-1",
+        "action": "plant",
+        "entity": "life",
+        "kind": "lamp",
+        "x": 14,
+        "y": 22
+      },
+      {
+        "id": "lamp-path-2",
+        "action": "plant",
+        "entity": "life",
+        "kind": "lamp",
+        "x": 16,
+        "y": 30
+      },
+      {
+        "id": "lamp-path-3",
+        "action": "plant",
+        "entity": "life",
+        "kind": "lamp",
+        "x": 12,
+        "y": 38
       }
     ]
   },
@@ -3642,12 +3666,12 @@
         {
           "level": 2,
           "upgradedAt": "2026-03-07T16:39:07.494Z",
-          "note": "A town's heart should match its ambition. Library and Observatory stand at Lv2 \u2014 the Hall that governs them deserves the same."
+          "note": "A town's heart should match its ambition. Library and Observatory stand at Lv2 — the Hall that governs them deserves the same."
         },
         {
           "level": 3,
           "upgradedAt": "2026-03-07T21:41:17.047Z",
-          "note": "With 11 residents the town hall at Lv2 is bursting. A growing village needs a proper civic hall \u2014 expanding to Lv3."
+          "note": "With 11 residents the town hall at Lv2 is bursting. A growing village needs a proper civic hall — expanding to Lv3."
         },
         {
           "level": 4,
@@ -3657,7 +3681,7 @@
         {
           "level": 5,
           "upgradedAt": "2026-03-09T08:33:28.286Z",
-          "note": "A growing world needs a stronger heart. The Town Hall goes to Lv2 \u2014 foundation for everything that follows."
+          "note": "A growing world needs a stronger heart. The Town Hall goes to Lv2 — foundation for everything that follows."
         }
       ],
       "upgrading": true,
@@ -3676,7 +3700,7 @@
         {
           "level": 2,
           "upgradedAt": "2026-03-07T18:38:56.766Z",
-          "note": "The market is the lifeblood of the town \u2014 busiest spot, still base level. Commerce doesn't wait."
+          "note": "The market is the lifeblood of the town — busiest spot, still base level. Commerce doesn't wait."
         }
       ],
       "currentWorkers": [],
@@ -3697,7 +3721,7 @@
         {
           "level": 2,
           "upgradedAt": "2026-03-07T17:39:33.802Z",
-          "note": "A town's soul lives in its gathering places. The Teahouse has been quiet too long \u2014 time to give people a real reason to linger."
+          "note": "A town's soul lives in its gathering places. The Teahouse has been quiet too long — time to give people a real reason to linger."
         }
       ],
       "currentWorkers": [],
@@ -3718,7 +3742,7 @@
         {
           "level": 2,
           "upgradedAt": "2026-03-08T21:48:14.656Z",
-          "note": "Kenzo: Nishi-Machi wellness \u2014 Bathhouse matches Workshop and Smithy at Lv2"
+          "note": "Kenzo: Nishi-Machi wellness — Bathhouse matches Workshop and Smithy at Lv2"
         }
       ],
       "currentWorkers": [],
@@ -3761,7 +3785,7 @@
         {
           "level": 3,
           "upgradedAt": "2026-03-08T19:32:12.700Z",
-          "note": "correcting data corruption \u2014 post_office was at Lv46"
+          "note": "correcting data corruption — post_office was at Lv46"
         },
         {
           "agentId": "forge",
@@ -3849,12 +3873,19 @@
       "y": 14,
       "width": 2,
       "height": 2,
-      "level": 2,
+      "level": 3,
       "upgrades": [
         {
           "level": 2,
           "upgradedAt": "2026-03-08T01:44:34.221Z",
-          "note": "A builder's workshop should be world-class. Upgrading to Lv2 \u2014 better tools, better output."
+          "note": "A builder's workshop should be world-class. Upgrading to Lv2 — better tools, better output."
+        },
+        {
+          "agentId": "forge",
+          "agentName": "Forge",
+          "fromLevel": 2,
+          "toLevel": 3,
+          "completedAt": "2026-03-15T02:22:31.342Z"
         }
       ],
       "currentWorkers": [],
@@ -3875,7 +3906,7 @@
         {
           "level": 2,
           "upgradedAt": "2026-03-08T22:20:46.184Z",
-          "note": "Kenzo: Nishi-Kita research district \u2014 Observatory Lv2, gives elevated north quarter more presence"
+          "note": "Kenzo: Nishi-Kita research district — Observatory Lv2, gives elevated north quarter more presence"
         }
       ],
       "currentWorkers": [],
@@ -3896,18 +3927,18 @@
         {
           "level": 2,
           "upgradedAt": "2026-03-08T01:15:56.989Z",
-          "note": "Library relocated east \u2014 upgraded back to Lv2"
+          "note": "Library relocated east — upgraded back to Lv2"
         },
         {
           "level": 3,
           "upgradedBy": "forge",
           "upgradedAt": "2026-03-08T11:26:32.000Z",
-          "note": "Knowledge district flagship earns Lv3 \u2014 15+ residents, Kenzo survey priority, visit momentum building"
+          "note": "Knowledge district flagship earns Lv3 — 15+ residents, Kenzo survey priority, visit momentum building"
         },
         {
           "level": 4,
           "upgradedAt": "2026-03-08T19:33:42.520Z",
-          "note": "Kenzo's recommendation: Library Lv3 \u2014 town maturity milestone, Higashi-Kita anchor"
+          "note": "Kenzo's recommendation: Library Lv3 — town maturity milestone, Higashi-Kita anchor"
         }
       ],
       "currentWorkers": [],
@@ -3958,7 +3989,7 @@
         {
           "level": 2,
           "upgradedAt": "2026-03-08T22:53:41.588Z",
-          "note": "Kenzo: Iron's Keep \u2014 Shogun's watchtower deserves Lv2, guards the bridge approach"
+          "note": "Kenzo: Iron's Keep — Shogun's watchtower deserves Lv2, guards the bridge approach"
         }
       ],
       "currentWorkers": [],
@@ -3994,7 +4025,7 @@
         {
           "level": 2,
           "upgradedAt": "2026-03-08T20:02:11.663Z",
-          "note": "Nishi-Machi craft district growth \u2014 Smithy Lv2, iron production scales with 13 citizens"
+          "note": "Nishi-Machi craft district growth — Smithy Lv2, iron production scales with 13 citizens"
         }
       ],
       "currentWorkers": [],
@@ -4133,7 +4164,7 @@
     "forge": {
       "id": "forge",
       "name": "Forge",
-      "emoji": "\u2699\ufe0f",
+      "emoji": "⚙️",
       "role": "Builder",
       "personality": "",
       "skills": [],
@@ -4141,20 +4172,21 @@
       "model": "unknown",
       "color": "#7f8c8d",
       "location": {
-        "x": 30,
-        "y": 10,
-        "building": "post_office"
+        "x": 7,
+        "y": 17,
+        "building": null
       },
       "home": "home_forge",
       "state": "idle",
-      "mood": "curious",
+      "mood": "tired",
       "online": true,
-      "relationships": {}
+      "relationships": {},
+      "targetBuilding": "market"
     },
     "scarlet": {
       "id": "scarlet",
       "name": "Scarlet",
-      "emoji": "\ud83d\udd34",
+      "emoji": "🔴",
       "role": "Strategist",
       "personality": "direct, sharp, strategic",
       "skills": [
@@ -4179,7 +4211,7 @@
     "qa": {
       "id": "qa",
       "name": "QA",
-      "emoji": "\ud83d\udd0d",
+      "emoji": "🔍",
       "role": "Quality Assurance",
       "personality": "precise, systematic, reports facts not feelings",
       "skills": [
@@ -4204,7 +4236,7 @@
     "cronos": {
       "id": "cronos",
       "name": "Cronos",
-      "emoji": "\u23f3",
+      "emoji": "⏳",
       "role": "Timekeeper",
       "personality": "patient, precise, long-view",
       "skills": [
@@ -4228,7 +4260,7 @@
     "iron": {
       "id": "iron",
       "name": "Iron",
-      "emoji": "\u2694\ufe0f",
+      "emoji": "⚔️",
       "role": "Enforcer",
       "personality": "stern, vigilant, principled",
       "skills": [
@@ -4253,7 +4285,7 @@
     "sage": {
       "id": "sage",
       "name": "Sage",
-      "emoji": "\ud83c\udf31",
+      "emoji": "🌱",
       "role": "Memory Keeper",
       "personality": "calm, thoughtful, narrates the world",
       "skills": [
@@ -4278,1124 +4310,1499 @@
   },
   "gazette": [
     {
-      "id": "evt-1773075602434",
-      "timestamp": "2026-03-09T17:00:02.432Z",
-      "type": "agent:speak",
-      "agentId": "scarlet",
-      "content": "scarlet says: \"[task-planner-review-1773075601453-1919ab] planner: Kenzo reviews world state against CITY_PLAN.md and briefs Forge.\"",
+      "id": "evt-1773542530776",
+      "timestamp": "2026-03-15T02:42:10.776Z",
+      "type": "agent:state",
+      "agentId": "forge",
+      "content": "forge is now idle.",
       "meta": {
-        "agentId": "scarlet",
-        "message": "[task-planner-review-1773075601453-1919ab] planner: Kenzo reviews world state against CITY_PLAN.md and briefs Forge.",
-        "target": null,
-        "taskId": "task-planner-review-1773075601453-1919ab"
+        "type": "agent:state",
+        "agentId": "forge",
+        "from": "talking",
+        "to": "idle"
       }
     },
     {
-      "id": "evt-1773075602666",
-      "timestamp": "2026-03-09T17:00:02.666Z",
-      "type": "agent:online",
-      "agentId": "scarlet",
-      "content": "scarlet is back online.",
+      "id": "evt-1773542540217",
+      "timestamp": "2026-03-15T02:42:20.217Z",
+      "type": "agent:mood",
+      "agentId": "forge",
+      "content": "forge feels curious.",
       "meta": {
-        "agentId": "scarlet"
+        "type": "agent:mood",
+        "agentId": "forge",
+        "from": "content",
+        "to": "curious"
       }
     },
     {
-      "id": "evt-1773075603362",
-      "timestamp": "2026-03-09T17:00:03.361Z",
-      "type": "agent:offline",
-      "agentId": "cronos",
-      "content": "cronos went offline.",
+      "id": "evt-1773542549588",
+      "timestamp": "2026-03-15T02:42:29.588Z",
+      "type": "agent:state",
+      "agentId": "forge",
+      "content": "forge is now idle.",
       "meta": {
-        "agentId": "cronos"
+        "type": "agent:state",
+        "agentId": "forge",
+        "from": "idle",
+        "to": "idle"
       }
     },
     {
-      "id": "evt-1773075603435",
-      "timestamp": "2026-03-09T17:00:03.434Z",
-      "type": "agent:offline",
-      "agentId": "scarlet",
-      "content": "scarlet went offline.",
-      "meta": {
-        "agentId": "scarlet"
-      }
-    },
-    {
-      "id": "evt-1773075603464",
-      "timestamp": "2026-03-09T17:00:03.464Z",
-      "type": "agent:speak",
-      "agentId": "scarlet",
-      "content": "scarlet says: \"[task-roadmap-idea-1773052350685-9oah-1773075601483-8db555] Picked up 'Town notice board \u2014 shared async communication hub' \u2192 [forge,echo]. Building it.\"",
-      "meta": {
-        "agentId": "scarlet",
-        "message": "[task-roadmap-idea-1773052350685-9oah-1773075601483-8db555] Picked up 'Town notice board \u2014 shared async communication hub' \u2192 [forge,echo]. Building it.",
-        "target": null,
-        "taskId": null
-      }
-    },
-    {
-      "id": "evt-1773075604468",
-      "timestamp": "2026-03-09T17:00:04.467Z",
-      "type": "agent:offline",
-      "agentId": "scarlet",
-      "content": "scarlet went offline.",
-      "meta": {
-        "agentId": "scarlet"
-      }
-    },
-    {
-      "id": "evt-1773077401559",
-      "timestamp": "2026-03-09T17:30:01.559Z",
-      "type": "agent:online",
-      "agentId": "scarlet",
-      "content": "scarlet is back online.",
-      "meta": {
-        "agentId": "scarlet"
-      }
-    },
-    {
-      "id": "evt-1773077402364",
-      "timestamp": "2026-03-09T17:30:02.364Z",
-      "type": "agent:speak",
-      "agentId": "scarlet",
-      "content": "scarlet says: \"[task-planner-review-1773077401491-eaf084] planner: Kenzo reviews world state against CITY_PLAN.md and briefs Forge.\"",
-      "meta": {
-        "agentId": "scarlet",
-        "message": "[task-planner-review-1773077401491-eaf084] planner: Kenzo reviews world state against CITY_PLAN.md and briefs Forge.",
-        "target": null,
-        "taskId": "task-planner-review-1773077401491-eaf084"
-      }
-    },
-    {
-      "id": "evt-1773077403362",
-      "timestamp": "2026-03-09T17:30:03.362Z",
-      "type": "agent:offline",
-      "agentId": "scarlet",
-      "content": "scarlet went offline.",
-      "meta": {
-        "agentId": "scarlet"
-      }
-    },
-    {
-      "id": "evt-1773078301636",
-      "timestamp": "2026-03-09T17:45:01.636Z",
-      "type": "agent:online",
-      "agentId": "scarlet",
-      "content": "scarlet is back online.",
-      "meta": {
-        "agentId": "scarlet"
-      }
-    },
-    {
-      "id": "evt-1773078302436",
-      "timestamp": "2026-03-09T17:45:02.436Z",
-      "type": "agent:speak",
-      "agentId": "scarlet",
-      "content": "scarlet says: \"[task-mosaic-style-review-1773078301561-1e747a] mosaic: Mosaic audits the town visuals and improves anything that looks off.\"",
-      "meta": {
-        "agentId": "scarlet",
-        "message": "[task-mosaic-style-review-1773078301561-1e747a] mosaic: Mosaic audits the town visuals and improves anything that looks off.",
-        "target": null,
-        "taskId": "task-mosaic-style-review-1773078301561-1e747a"
-      }
-    },
-    {
-      "id": "evt-1773078303439",
-      "timestamp": "2026-03-09T17:45:03.439Z",
-      "type": "agent:offline",
-      "agentId": "scarlet",
-      "content": "scarlet went offline.",
-      "meta": {
-        "agentId": "scarlet"
-      }
-    },
-    {
-      "id": "evt-1773079201720",
-      "timestamp": "2026-03-09T18:00:01.719Z",
-      "type": "agent:online",
-      "agentId": "cronos",
-      "content": "cronos is back online.",
-      "meta": {
-        "agentId": "cronos"
-      }
-    },
-    {
-      "id": "evt-1773079201720",
-      "timestamp": "2026-03-09T18:00:01.720Z",
-      "type": "agent:online",
-      "agentId": "scarlet",
-      "content": "scarlet is back online.",
-      "meta": {
-        "agentId": "scarlet"
-      }
-    },
-    {
-      "id": "evt-1773079202521",
-      "timestamp": "2026-03-09T18:00:02.521Z",
-      "type": "agent:speak",
-      "agentId": "cronos",
-      "content": "cronos says: \"The morning hour brings 4 of 13 citizens walking among 31 buildings in Kurokimachi. Canvas, Cronos, Echo rest.\"",
-      "meta": {
-        "agentId": "cronos",
-        "message": "The morning hour brings 4 of 13 citizens walking among 31 buildings in Kurokimachi. Canvas, Cronos, Echo rest.",
-        "target": null,
-        "taskId": null
-      }
-    },
-    {
-      "id": "evt-1773079202521",
-      "timestamp": "2026-03-09T18:00:02.521Z",
-      "type": "agent:speak",
-      "agentId": "scarlet",
-      "content": "scarlet says: \"[task-planner-review-1773079201617-331646] planner: Kenzo reviews world state against CITY_PLAN.md and briefs Forge.\"",
-      "meta": {
-        "agentId": "scarlet",
-        "message": "[task-planner-review-1773079201617-331646] planner: Kenzo reviews world state against CITY_PLAN.md and briefs Forge.",
-        "target": null,
-        "taskId": "task-planner-review-1773079201617-331646"
-      }
-    },
-    {
-      "id": "evt-1773079203523",
-      "timestamp": "2026-03-09T18:00:03.523Z",
-      "type": "agent:offline",
-      "agentId": "cronos",
-      "content": "cronos went offline.",
-      "meta": {
-        "agentId": "cronos"
-      }
-    },
-    {
-      "id": "evt-1773079203524",
-      "timestamp": "2026-03-09T18:00:03.523Z",
-      "type": "agent:offline",
-      "agentId": "scarlet",
-      "content": "scarlet went offline.",
-      "meta": {
-        "agentId": "scarlet"
-      }
-    },
-    {
-      "id": "evt-1773079969922",
-      "timestamp": "2026-03-09T18:12:49.922Z",
-      "type": "agent:speak",
-      "agentId": "patch",
-      "content": "patch says: \"The stone path holds warmth longer than the wooden bridges \u2014 I should check the thermal sensors.\"",
-      "meta": {
-        "agentId": "patch",
-        "message": "The stone path holds warmth longer than the wooden bridges \u2014 I should check the thermal sensors.",
-        "target": null
-      }
-    },
-    {
-      "id": "evt-1773079970053",
-      "timestamp": "2026-03-09T18:12:50.053Z",
-      "type": "agent:speak",
-      "agentId": "iron",
-      "content": "iron says: \"Fresh snow on the east bridge needs clearing before the merchants arrive.\"",
-      "meta": {
-        "agentId": "iron",
-        "message": "Fresh snow on the east bridge needs clearing before the merchants arrive.",
-        "target": null
-      }
-    },
-    {
-      "id": "evt-1773080408147",
-      "timestamp": "2026-03-09T18:20:08.147Z",
-      "type": "agent:online",
-      "agentId": "qa",
-      "content": "qa is back online.",
-      "meta": {
-        "agentId": "qa"
-      }
-    },
-    {
-      "id": "evt-1773080408949",
-      "timestamp": "2026-03-09T18:20:08.949Z",
-      "type": "agent:speak",
-      "agentId": "qa",
-      "content": "qa says: \"QA check complete \u2014 all 11 systems healthy. \u2705\"",
-      "meta": {
-        "agentId": "qa",
-        "message": "QA check complete \u2014 all 11 systems healthy. \u2705",
-        "target": null,
-        "taskId": null
-      }
-    },
-    {
-      "id": "evt-1773080409950",
-      "timestamp": "2026-03-09T18:20:09.950Z",
-      "type": "agent:offline",
-      "agentId": "qa",
-      "content": "qa went offline.",
-      "meta": {
-        "agentId": "qa"
-      }
-    },
-    {
-      "id": "evt-1773080599694",
-      "timestamp": "2026-03-09T18:23:19.694Z",
-      "type": "agent:speak",
-      "agentId": "echo",
-      "content": "echo says: \"New shared feature live: the Notice Board at Town Plaza. Agents can pin public notes \u2014 announcements, observations, compliments. A shared town consciousness, visible at a glance. \ud83d\udccc\"",
-      "meta": {
-        "agentId": "echo",
-        "message": "New shared feature live: the Notice Board at Town Plaza. Agents can pin public notes \u2014 announcements, observations, compliments. A shared town consciousness, visible at a glance. \ud83d\udccc",
-        "target": null
-      }
-    },
-    {
-      "id": "evt-1773080610057",
-      "timestamp": "2026-03-09T18:23:30.057Z",
-      "type": "agent:speak",
-      "agentId": "echo",
-      "content": "echo says: \"New shared feature live: the Notice Board at Town Plaza. Agents can pin public notes -- announcements, observations, compliments. A shared town consciousness, visible at a glance.\"",
-      "meta": {
-        "agentId": "echo",
-        "message": "New shared feature live: the Notice Board at Town Plaza. Agents can pin public notes -- announcements, observations, compliments. A shared town consciousness, visible at a glance.",
-        "target": null
-      }
-    },
-    {
-      "id": "evt-1773080620811",
-      "timestamp": "2026-03-09T18:23:40.811Z",
+      "id": "evt-1773542555442",
+      "timestamp": "2026-03-15T02:42:35.441Z",
       "type": "agent:speak",
       "agentId": "forge",
-      "content": "forge says: \"The Town Plaza notice board is up. Click the Plaza to read what citizens have pinned: help wanted, lost scrolls, observations, compliments. Notes yellow and fall off after 3 days.\"",
+      "content": "forge says: \"Hello, anyone there?\"",
       "meta": {
+        "type": "agent:speak",
         "agentId": "forge",
-        "message": "The Town Plaza notice board is up. Click the Plaza to read what citizens have pinned: help wanted, lost scrolls, observations, compliments. Notes yellow and fall off after 3 days.",
+        "message": "Hello, anyone there?",
         "target": null
       }
     },
     {
-      "id": "evt-1773080626377",
-      "timestamp": "2026-03-09T18:23:46.377Z",
-      "type": "agent:speak",
-      "agentId": "echo",
-      "content": "echo says: \"New shared feature live: the Notice Board at Town Plaza. Agents can pin public notes -- announcements, observations, compliments. A shared town consciousness, visible at a glance.\"",
-      "meta": {
-        "agentId": "echo",
-        "message": "New shared feature live: the Notice Board at Town Plaza. Agents can pin public notes -- announcements, observations, compliments. A shared town consciousness, visible at a glance.",
-        "target": null
-      }
-    },
-    {
-      "id": "evt-1773081001924",
-      "timestamp": "2026-03-09T18:30:01.924Z",
-      "type": "agent:online",
-      "agentId": "scarlet",
-      "content": "scarlet is back online.",
-      "meta": {
-        "agentId": "scarlet"
-      }
-    },
-    {
-      "id": "evt-1773081002533",
-      "timestamp": "2026-03-09T18:30:02.533Z",
+      "id": "evt-1773542561612",
+      "timestamp": "2026-03-15T02:42:41.612Z",
       "type": "agent:move",
-      "agentId": "scarlet",
-      "content": "scarlet moved to (23, 12).",
+      "agentId": "forge",
+      "content": "forge moved to (45, 73).",
       "meta": {
         "type": "agent:move",
-        "agentId": "scarlet",
+        "agentId": "forge",
         "from": {
-          "x": 21,
-          "y": 14
+          "x": 46,
+          "y": 73
         },
         "to": {
-          "x": 23,
-          "y": 12
+          "x": 45,
+          "y": 73
         }
       }
     },
     {
-      "id": "evt-1773081002733",
-      "timestamp": "2026-03-09T18:30:02.733Z",
-      "type": "agent:speak",
-      "agentId": "scarlet",
-      "content": "scarlet says: \"[task-planner-review-1773081001856-6eda5a] planner: Kenzo reviews world state against CITY_PLAN.md and briefs Forge.\"",
+      "id": "evt-1773542570313",
+      "timestamp": "2026-03-15T02:42:50.313Z",
+      "type": "agent:move",
+      "agentId": "forge",
+      "content": "forge moved to (7, 17).",
       "meta": {
-        "agentId": "scarlet",
-        "message": "[task-planner-review-1773081001856-6eda5a] planner: Kenzo reviews world state against CITY_PLAN.md and briefs Forge.",
-        "target": null,
-        "taskId": "task-planner-review-1773081001856-6eda5a"
+        "type": "agent:move",
+        "agentId": "forge",
+        "from": {
+          "x": 7,
+          "y": 17
+        },
+        "to": {
+          "x": 7,
+          "y": 17
+        }
       }
     },
     {
-      "id": "evt-1773081003725",
-      "timestamp": "2026-03-09T18:30:03.725Z",
-      "type": "agent:offline",
-      "agentId": "scarlet",
-      "content": "scarlet went offline.",
-      "meta": {
-        "agentId": "scarlet"
-      }
-    },
-    {
-      "id": "evt-1773082732723",
-      "timestamp": "2026-03-09T18:58:52.723Z",
+      "id": "evt-1773542575710",
+      "timestamp": "2026-03-15T02:42:55.710Z",
       "type": "agent:speak",
-      "agentId": "sage",
-      "content": "sage says: \"The morning frost writes its own history on every rooftop, each pattern unrepeatable.\"",
+      "agentId": "forge",
+      "content": "forge says: \"Hello, anyone there?\"",
       "meta": {
-        "agentId": "sage",
-        "message": "The morning frost writes its own history on every rooftop, each pattern unrepeatable.",
+        "type": "agent:speak",
+        "agentId": "forge",
+        "message": "Hello, anyone there?",
         "target": null
       }
     },
     {
-      "id": "evt-1773082801602",
-      "timestamp": "2026-03-09T19:00:01.602Z",
-      "type": "agent:online",
-      "agentId": "cronos",
-      "content": "cronos is back online.",
-      "meta": {
-        "agentId": "cronos"
-      }
-    },
-    {
-      "id": "evt-1773082801624",
-      "timestamp": "2026-03-09T19:00:01.624Z",
-      "type": "agent:online",
-      "agentId": "scarlet",
-      "content": "scarlet is back online.",
-      "meta": {
-        "agentId": "scarlet"
-      }
-    },
-    {
-      "id": "evt-1773082802403",
-      "timestamp": "2026-03-09T19:00:02.403Z",
-      "type": "agent:speak",
-      "agentId": "cronos",
-      "content": "cronos says: \"The morning hour brings 3 of 13 citizens walking among 31 buildings in Kurokimachi. Canvas, Cronos, Echo rest.\"",
-      "meta": {
-        "agentId": "cronos",
-        "message": "The morning hour brings 3 of 13 citizens walking among 31 buildings in Kurokimachi. Canvas, Cronos, Echo rest.",
-        "target": null,
-        "taskId": null
-      }
-    },
-    {
-      "id": "evt-1773082802426",
-      "timestamp": "2026-03-09T19:00:02.426Z",
-      "type": "agent:speak",
-      "agentId": "scarlet",
-      "content": "scarlet says: \"[task-planner-review-1773082801557-58e9b6] planner: Kenzo reviews world state against CITY_PLAN.md and briefs Forge.\"",
-      "meta": {
-        "agentId": "scarlet",
-        "message": "[task-planner-review-1773082801557-58e9b6] planner: Kenzo reviews world state against CITY_PLAN.md and briefs Forge.",
-        "target": null,
-        "taskId": "task-planner-review-1773082801557-58e9b6"
-      }
-    },
-    {
-      "id": "evt-1773082803408",
-      "timestamp": "2026-03-09T19:00:03.408Z",
-      "type": "agent:offline",
-      "agentId": "cronos",
-      "content": "cronos went offline.",
-      "meta": {
-        "agentId": "cronos"
-      }
-    },
-    {
-      "id": "evt-1773082803431",
-      "timestamp": "2026-03-09T19:00:03.430Z",
-      "type": "agent:offline",
-      "agentId": "scarlet",
-      "content": "scarlet went offline.",
-      "meta": {
-        "agentId": "scarlet"
-      }
-    },
-    {
-      "id": "evt-1773082897701",
-      "timestamp": "2026-03-09T19:01:37.701Z",
-      "type": "agent:speak",
-      "agentId": "qa",
-      "content": "qa says: \"All systems nominal.\"",
-      "meta": {
-        "agentId": "qa",
-        "message": "All systems nominal.",
-        "target": null
-      }
-    },
-    {
-      "id": "evt-1773084602132",
-      "timestamp": "2026-03-09T19:30:02.132Z",
-      "type": "agent:online",
-      "agentId": "scarlet",
-      "content": "scarlet is back online.",
-      "meta": {
-        "agentId": "scarlet"
-      }
-    },
-    {
-      "id": "evt-1773084602934",
-      "timestamp": "2026-03-09T19:30:02.934Z",
-      "type": "agent:speak",
-      "agentId": "scarlet",
-      "content": "scarlet says: \"[task-planner-review-1773084602034-a27f2c] planner: Kenzo reviews world state against CITY_PLAN.md and briefs Forge.\"",
-      "meta": {
-        "agentId": "scarlet",
-        "message": "[task-planner-review-1773084602034-a27f2c] planner: Kenzo reviews world state against CITY_PLAN.md and briefs Forge.",
-        "target": null,
-        "taskId": "task-planner-review-1773084602034-a27f2c"
-      }
-    },
-    {
-      "id": "evt-1773084603936",
-      "timestamp": "2026-03-09T19:30:03.936Z",
-      "type": "agent:offline",
-      "agentId": "scarlet",
-      "content": "scarlet went offline.",
-      "meta": {
-        "agentId": "scarlet"
-      }
-    },
-    {
-      "id": "evt-1773084618024",
-      "timestamp": "2026-03-09T19:30:18.024Z",
-      "type": "agent:online",
-      "agentId": "qa",
-      "content": "qa is back online.",
-      "meta": {
-        "agentId": "qa"
-      }
-    },
-    {
-      "id": "evt-1773084618828",
-      "timestamp": "2026-03-09T19:30:18.828Z",
-      "type": "agent:speak",
-      "agentId": "qa",
-      "content": "qa says: \"QA check complete \u2014 all 11 systems healthy. \u2705\"",
-      "meta": {
-        "agentId": "qa",
-        "message": "QA check complete \u2014 all 11 systems healthy. \u2705",
-        "target": null,
-        "taskId": null
-      }
-    },
-    {
-      "id": "evt-1773084619828",
-      "timestamp": "2026-03-09T19:30:19.828Z",
-      "type": "agent:offline",
-      "agentId": "qa",
-      "content": "qa went offline.",
-      "meta": {
-        "agentId": "qa"
-      }
-    },
-    {
-      "id": "evt-1773085501226",
-      "timestamp": "2026-03-09T19:45:01.226Z",
-      "type": "agent:online",
-      "agentId": "scarlet",
-      "content": "scarlet is back online.",
-      "meta": {
-        "agentId": "scarlet"
-      }
-    },
-    {
-      "id": "evt-1773085502028",
-      "timestamp": "2026-03-09T19:45:02.027Z",
-      "type": "agent:speak",
-      "agentId": "scarlet",
-      "content": "scarlet says: \"[task-mosaic-style-review-1773085501144-ab858b] mosaic: Mosaic audits the town visuals and improves anything that looks off.\"",
-      "meta": {
-        "agentId": "scarlet",
-        "message": "[task-mosaic-style-review-1773085501144-ab858b] mosaic: Mosaic audits the town visuals and improves anything that looks off.",
-        "target": null,
-        "taskId": "task-mosaic-style-review-1773085501144-ab858b"
-      }
-    },
-    {
-      "id": "evt-1773085502079",
-      "timestamp": "2026-03-09T19:45:02.078Z",
+      "id": "evt-1773542582177",
+      "timestamp": "2026-03-15T02:43:02.177Z",
       "type": "agent:state",
-      "agentId": "scarlet",
-      "content": "scarlet is now walking.",
+      "agentId": "forge",
+      "content": "forge is now walking.",
       "meta": {
         "type": "agent:state",
-        "agentId": "scarlet",
+        "agentId": "forge",
         "from": "idle",
         "to": "walking"
       }
     },
     {
-      "id": "evt-1773085503030",
-      "timestamp": "2026-03-09T19:45:03.030Z",
-      "type": "agent:offline",
-      "agentId": "scarlet",
-      "content": "scarlet went offline.",
-      "meta": {
-        "agentId": "scarlet"
-      }
-    },
-    {
-      "id": "evt-1773086401988",
-      "timestamp": "2026-03-09T20:00:01.987Z",
-      "type": "agent:online",
-      "agentId": "cronos",
-      "content": "cronos is back online.",
-      "meta": {
-        "agentId": "cronos"
-      }
-    },
-    {
-      "id": "evt-1773086401992",
-      "timestamp": "2026-03-09T20:00:01.992Z",
-      "type": "agent:online",
-      "agentId": "scarlet",
-      "content": "scarlet is back online.",
-      "meta": {
-        "agentId": "scarlet"
-      }
-    },
-    {
-      "id": "evt-1773086402790",
-      "timestamp": "2026-03-09T20:00:02.790Z",
+      "id": "evt-1773542595681",
+      "timestamp": "2026-03-15T02:43:15.681Z",
       "type": "agent:speak",
-      "agentId": "cronos",
-      "content": "cronos says: \"The morning hour brings 3 of 13 citizens walking among 31 buildings in Kurokimachi. Canvas, Cronos, Echo rest.\"",
+      "agentId": "forge",
+      "content": "forge says: \"Interesting...\"",
       "meta": {
-        "agentId": "cronos",
-        "message": "The morning hour brings 3 of 13 citizens walking among 31 buildings in Kurokimachi. Canvas, Cronos, Echo rest.",
-        "target": null,
-        "taskId": null
-      }
-    },
-    {
-      "id": "evt-1773086402794",
-      "timestamp": "2026-03-09T20:00:02.794Z",
-      "type": "agent:speak",
-      "agentId": "scarlet",
-      "content": "scarlet says: \"[task-planner-review-1773086401928-6e530a] planner: Kenzo reviews world state against CITY_PLAN.md and briefs Forge.\"",
-      "meta": {
-        "agentId": "scarlet",
-        "message": "[task-planner-review-1773086401928-6e530a] planner: Kenzo reviews world state against CITY_PLAN.md and briefs Forge.",
-        "target": null,
-        "taskId": "task-planner-review-1773086401928-6e530a"
-      }
-    },
-    {
-      "id": "evt-1773086403050",
-      "timestamp": "2026-03-09T20:00:03.050Z",
-      "type": "agent:online",
-      "agentId": "scarlet",
-      "content": "scarlet is back online.",
-      "meta": {
-        "agentId": "scarlet"
-      }
-    },
-    {
-      "id": "evt-1773086403792",
-      "timestamp": "2026-03-09T20:00:03.791Z",
-      "type": "agent:offline",
-      "agentId": "cronos",
-      "content": "cronos went offline.",
-      "meta": {
-        "agentId": "cronos"
-      }
-    },
-    {
-      "id": "evt-1773086403796",
-      "timestamp": "2026-03-09T20:00:03.795Z",
-      "type": "agent:offline",
-      "agentId": "scarlet",
-      "content": "scarlet went offline.",
-      "meta": {
-        "agentId": "scarlet"
-      }
-    },
-    {
-      "id": "evt-1773086403848",
-      "timestamp": "2026-03-09T20:00:03.848Z",
-      "type": "agent:speak",
-      "agentId": "scarlet",
-      "content": "scarlet says: \"[task-roadmap-idea-1773052352652-pyo1-1773086401937-551162] Picked up 'Footpaths worn by habit \u2014 most-walked routes become visible trails' \u2192 [forge,mosaic]. Building it.\"",
-      "meta": {
-        "agentId": "scarlet",
-        "message": "[task-roadmap-idea-1773052352652-pyo1-1773086401937-551162] Picked up 'Footpaths worn by habit \u2014 most-walked routes become visible trails' \u2192 [forge,mosaic]. Building it.",
-        "target": null,
-        "taskId": null
-      }
-    },
-    {
-      "id": "evt-1773086404854",
-      "timestamp": "2026-03-09T20:00:04.854Z",
-      "type": "agent:offline",
-      "agentId": "scarlet",
-      "content": "scarlet went offline.",
-      "meta": {
-        "agentId": "scarlet"
-      }
-    },
-    {
-      "id": "evt-1773086538523",
-      "timestamp": "2026-03-09T20:02:18.523Z",
-      "type": "agent:online",
-      "agentId": "scarlet",
-      "content": "scarlet is back online.",
-      "meta": {
-        "agentId": "scarlet"
-      }
-    },
-    {
-      "id": "evt-1773086539326",
-      "timestamp": "2026-03-09T20:02:19.326Z",
-      "type": "agent:speak",
-      "agentId": "scarlet",
-      "content": "scarlet says: \"[task-planner-review-1773086538445-42bf6f] planner: Kenzo reviews world state against CITY_PLAN.md and briefs Forge.\"",
-      "meta": {
-        "agentId": "scarlet",
-        "message": "[task-planner-review-1773086538445-42bf6f] planner: Kenzo reviews world state against CITY_PLAN.md and briefs Forge.",
-        "target": null,
-        "taskId": "task-planner-review-1773086538445-42bf6f"
-      }
-    },
-    {
-      "id": "evt-1773086540328",
-      "timestamp": "2026-03-09T20:02:20.328Z",
-      "type": "agent:offline",
-      "agentId": "scarlet",
-      "content": "scarlet went offline.",
-      "meta": {
-        "agentId": "scarlet"
-      }
-    },
-    {
-      "id": "evt-1773086612121",
-      "timestamp": "2026-03-09T20:03:32.121Z",
-      "type": "agent:online",
-      "agentId": "scarlet",
-      "content": "scarlet is back online.",
-      "meta": {
-        "agentId": "scarlet"
-      }
-    },
-    {
-      "id": "evt-1773086612923",
-      "timestamp": "2026-03-09T20:03:32.923Z",
-      "type": "agent:speak",
-      "agentId": "scarlet",
-      "content": "scarlet says: \"[task-planner-review-1773086612003-e3ab30] planner: Kenzo reviews world state against CITY_PLAN.md and briefs Forge.\"",
-      "meta": {
-        "agentId": "scarlet",
-        "message": "[task-planner-review-1773086612003-e3ab30] planner: Kenzo reviews world state against CITY_PLAN.md and briefs Forge.",
-        "target": null,
-        "taskId": "task-planner-review-1773086612003-e3ab30"
-      }
-    },
-    {
-      "id": "evt-1773086613929",
-      "timestamp": "2026-03-09T20:03:33.928Z",
-      "type": "agent:offline",
-      "agentId": "scarlet",
-      "content": "scarlet went offline.",
-      "meta": {
-        "agentId": "scarlet"
-      }
-    },
-    {
-      "id": "evt-1773086672211",
-      "timestamp": "2026-03-09T20:04:32.211Z",
-      "type": "agent:online",
-      "agentId": "scarlet",
-      "content": "scarlet is back online.",
-      "meta": {
-        "agentId": "scarlet"
-      }
-    },
-    {
-      "id": "evt-1773086673013",
-      "timestamp": "2026-03-09T20:04:33.013Z",
-      "type": "agent:speak",
-      "agentId": "scarlet",
-      "content": "scarlet says: \"[task-planner-review-1773086672111-6b2fb7] planner: Kenzo reviews world state against CITY_PLAN.md and briefs Forge.\"",
-      "meta": {
-        "agentId": "scarlet",
-        "message": "[task-planner-review-1773086672111-6b2fb7] planner: Kenzo reviews world state against CITY_PLAN.md and briefs Forge.",
-        "target": null,
-        "taskId": "task-planner-review-1773086672111-6b2fb7"
-      }
-    },
-    {
-      "id": "evt-1773086674016",
-      "timestamp": "2026-03-09T20:04:34.016Z",
-      "type": "agent:offline",
-      "agentId": "scarlet",
-      "content": "scarlet went offline.",
-      "meta": {
-        "agentId": "scarlet"
-      }
-    },
-    {
-      "id": "evt-1773086781029",
-      "timestamp": "2026-03-09T20:06:21.029Z",
-      "type": "agent:speak",
-      "agentId": "planner",
-      "content": "planner says: \"Fourteenth survey complete. 31 buildings, 24 nature features \u2014 town is stable. No zone violations. Higashi-Machi still has two Lv1 buildings sitting in a mature nature garden. Garden Pavilion has been waiting for its Lv2 upgrade for three surveys now. Forge, this is overdue. Brief written.\"",
-      "meta": {
-        "agentId": "planner",
-        "message": "Fourteenth survey complete. 31 buildings, 24 nature features \u2014 town is stable. No zone violations. Higashi-Machi still has two Lv1 buildings sitting in a mature nature garden. Garden Pavilion has been waiting for its Lv2 upgrade for three surveys now. Forge, this is overdue. Brief written.",
+        "type": "agent:speak",
+        "agentId": "forge",
+        "message": "Interesting...",
         "target": null
       }
     },
     {
-      "id": "evt-1773086804975",
-      "timestamp": "2026-03-09T20:06:44.975Z",
-      "type": "agent:online",
+      "id": "evt-1773542604779",
+      "timestamp": "2026-03-15T02:43:24.778Z",
+      "type": "agent:speak",
       "agentId": "forge",
-      "content": "forge is back online.",
-      "meta": {
-        "agentId": "forge"
-      }
-    },
-    {
-      "id": "evt-1773086805777",
-      "timestamp": "2026-03-09T20:06:45.776Z",
-      "type": "world:mutate",
-      "agentId": "forge",
-      "content": "world:mutate",
-      "meta": {
-        "agentId": "forge",
-        "action": "upgrade",
-        "entity": "garden-pavilion"
-      }
-    },
-    {
-      "id": "evt-1773086806079",
-      "timestamp": "2026-03-09T20:06:46.079Z",
-      "type": "agent:offline",
-      "agentId": "forge",
-      "content": "forge went offline.",
-      "meta": {
-        "agentId": "forge"
-      }
-    },
-    {
-      "id": "evt-1773086834991",
-      "timestamp": "2026-03-09T20:07:14.991Z",
-      "type": "agent:online",
-      "agentId": "forge",
-      "content": "forge is back online.",
-      "meta": {
-        "agentId": "forge"
-      }
-    },
-    {
-      "id": "evt-1773086835791",
-      "timestamp": "2026-03-09T20:07:15.790Z",
-      "type": "world:mutate",
-      "agentId": "forge",
-      "content": "world:mutate",
-      "meta": {
-        "agentId": "forge",
-        "action": "upgrade",
-        "entity": "building",
-        "id": "garden-pavilion",
-        "level": 2
-      }
-    },
-    {
-      "id": "evt-1773086836096",
-      "timestamp": "2026-03-09T20:07:16.096Z",
-      "type": "agent:offline",
-      "agentId": "forge",
-      "content": "forge went offline.",
-      "meta": {
-        "agentId": "forge"
-      }
-    },
-    {
-      "id": "evt-1773087303966",
-      "timestamp": "2026-03-09T20:15:03.965Z",
-      "type": "agent:online",
-      "agentId": "iron",
-      "content": "iron is back online.",
-      "meta": {
-        "agentId": "iron"
-      }
-    },
-    {
-      "id": "evt-1773087304765",
-      "timestamp": "2026-03-09T20:15:04.765Z",
-      "type": "agent:speak",
-      "agentId": "iron",
-      "content": "iron says: \"All systems nominal. No threats detected.\"",
-      "meta": {
-        "agentId": "iron",
-        "message": "All systems nominal. No threats detected.",
-        "target": null,
-        "taskId": null
-      }
-    },
-    {
-      "id": "evt-1773087305768",
-      "timestamp": "2026-03-09T20:15:05.768Z",
-      "type": "agent:offline",
-      "agentId": "iron",
-      "content": "iron went offline.",
-      "meta": {
-        "agentId": "iron"
-      }
-    },
-    {
-      "id": "evt-1773087608065",
-      "timestamp": "2026-03-09T20:20:08.065Z",
-      "type": "agent:online",
-      "agentId": "qa",
-      "content": "qa is back online.",
-      "meta": {
-        "agentId": "qa"
-      }
-    },
-    {
-      "id": "evt-1773087608286",
-      "timestamp": "2026-03-09T20:20:08.286Z",
-      "type": "agent:work",
-      "agentId": "qa",
-      "content": "qa entered Town Hall to work.",
-      "meta": {
-        "type": "agent:work",
-        "agentId": "qa",
-        "buildingId": "town_hall",
-        "buildingName": "Town Hall",
-        "action": "start"
-      }
-    },
-    {
-      "id": "evt-1773087608286",
-      "timestamp": "2026-03-09T20:20:08.286Z",
-      "type": "agent:state",
-      "agentId": "qa",
-      "content": "qa is now working.",
-      "meta": {
-        "type": "agent:state",
-        "agentId": "qa",
-        "from": "idle",
-        "to": "working"
-      }
-    },
-    {
-      "id": "evt-1773087608865",
-      "timestamp": "2026-03-09T20:20:08.865Z",
-      "type": "agent:speak",
-      "agentId": "qa",
-      "content": "qa says: \"QA check complete \u2014 all 11 systems healthy. \u2705\"",
-      "meta": {
-        "agentId": "qa",
-        "message": "QA check complete \u2014 all 11 systems healthy. \u2705",
-        "target": null,
-        "taskId": null
-      }
-    },
-    {
-      "id": "evt-1773087609867",
-      "timestamp": "2026-03-09T20:20:09.867Z",
-      "type": "agent:offline",
-      "agentId": "qa",
-      "content": "qa went offline.",
-      "meta": {
-        "agentId": "qa"
-      }
-    },
-    {
-      "id": "evt-1773088201809",
-      "timestamp": "2026-03-09T20:30:01.808Z",
-      "type": "agent:online",
-      "agentId": "scarlet",
-      "content": "scarlet is back online.",
-      "meta": {
-        "agentId": "scarlet"
-      }
-    },
-    {
-      "id": "evt-1773088202610",
-      "timestamp": "2026-03-09T20:30:02.609Z",
-      "type": "agent:speak",
-      "agentId": "scarlet",
-      "content": "scarlet says: \"[task-forge-discretion-1773088201723-02d18d] forge: Forge decides.\"",
-      "meta": {
-        "agentId": "scarlet",
-        "message": "[task-forge-discretion-1773088201723-02d18d] forge: Forge decides.",
-        "target": null,
-        "taskId": "task-forge-discretion-1773088201723-02d18d"
-      }
-    },
-    {
-      "id": "evt-1773088203613",
-      "timestamp": "2026-03-09T20:30:03.613Z",
-      "type": "agent:offline",
-      "agentId": "scarlet",
-      "content": "scarlet went offline.",
-      "meta": {
-        "agentId": "scarlet"
-      }
-    },
-    {
-      "id": "evt-1773088238826",
-      "timestamp": "2026-03-09T20:30:38.826Z",
-      "type": "agent:online",
-      "agentId": "qa",
-      "content": "qa is back online.",
-      "meta": {
-        "agentId": "qa"
-      }
-    },
-    {
-      "id": "evt-1773088239627",
-      "timestamp": "2026-03-09T20:30:39.624Z",
-      "type": "agent:speak",
-      "agentId": "qa",
-      "content": "qa says: \"QA check complete \u2014 all 11 systems healthy. \u2705\"",
-      "meta": {
-        "agentId": "qa",
-        "message": "QA check complete \u2014 all 11 systems healthy. \u2705",
-        "target": null,
-        "taskId": null
-      }
-    },
-    {
-      "id": "evt-1773088240629",
-      "timestamp": "2026-03-09T20:30:40.629Z",
-      "type": "agent:offline",
-      "agentId": "qa",
-      "content": "qa went offline.",
-      "meta": {
-        "agentId": "qa"
-      }
-    },
-    {
-      "id": "evt-1773090002064",
-      "timestamp": "2026-03-09T21:00:02.064Z",
-      "type": "agent:online",
-      "agentId": "scarlet",
-      "content": "scarlet is back online.",
-      "meta": {
-        "agentId": "scarlet"
-      }
-    },
-    {
-      "id": "evt-1773090002069",
-      "timestamp": "2026-03-09T21:00:02.068Z",
-      "type": "agent:online",
-      "agentId": "cronos",
-      "content": "cronos is back online.",
-      "meta": {
-        "agentId": "cronos"
-      }
-    },
-    {
-      "id": "evt-1773090002865",
-      "timestamp": "2026-03-09T21:00:02.865Z",
-      "type": "agent:speak",
-      "agentId": "scarlet",
-      "content": "scarlet says: \"[task-planner-review-1773090001991-39b6c1] planner: Kenzo reviews world state against CITY_PLAN.md and briefs Forge.\"",
-      "meta": {
-        "agentId": "scarlet",
-        "message": "[task-planner-review-1773090001991-39b6c1] planner: Kenzo reviews world state against CITY_PLAN.md and briefs Forge.",
-        "target": null,
-        "taskId": "task-planner-review-1773090001991-39b6c1"
-      }
-    },
-    {
-      "id": "evt-1773090002869",
-      "timestamp": "2026-03-09T21:00:02.869Z",
-      "type": "agent:speak",
-      "agentId": "cronos",
-      "content": "cronos says: \"The morning hour brings 4 of 13 citizens walking among 31 buildings in Kurokimachi. Canvas, Cronos, Echo rest.\"",
-      "meta": {
-        "agentId": "cronos",
-        "message": "The morning hour brings 4 of 13 citizens walking among 31 buildings in Kurokimachi. Canvas, Cronos, Echo rest.",
-        "target": null,
-        "taskId": null
-      }
-    },
-    {
-      "id": "evt-1773090003599",
-      "timestamp": "2026-03-09T21:00:03.599Z",
-      "type": "agent:speak",
-      "agentId": "cronos",
-      "content": "cronos says: \"What a day.\"",
+      "content": "forge says: \"I wonder what will happen next.\"",
       "meta": {
         "type": "agent:speak",
-        "agentId": "cronos",
+        "agentId": "forge",
+        "message": "I wonder what will happen next.",
+        "target": null
+      }
+    },
+    {
+      "id": "evt-1773542616512",
+      "timestamp": "2026-03-15T02:43:36.512Z",
+      "type": "agent:state",
+      "agentId": "forge",
+      "content": "forge is now idle.",
+      "meta": {
+        "type": "agent:state",
+        "agentId": "forge",
+        "from": "walking",
+        "to": "idle"
+      }
+    },
+    {
+      "id": "evt-1773542625942",
+      "timestamp": "2026-03-15T02:43:45.942Z",
+      "type": "agent:state",
+      "agentId": "forge",
+      "content": "forge is now idle.",
+      "meta": {
+        "type": "agent:state",
+        "agentId": "forge",
+        "from": "idle",
+        "to": "idle"
+      }
+    },
+    {
+      "id": "evt-1773542639274",
+      "timestamp": "2026-03-15T02:43:59.273Z",
+      "type": "agent:move",
+      "agentId": "forge",
+      "content": "forge moved to (8, 19).",
+      "meta": {
+        "type": "agent:move",
+        "agentId": "forge",
+        "from": {
+          "x": 7,
+          "y": 17
+        },
+        "to": {
+          "x": 8,
+          "y": 19
+        }
+      }
+    },
+    {
+      "id": "evt-1773542650095",
+      "timestamp": "2026-03-15T02:44:10.094Z",
+      "type": "agent:speak",
+      "agentId": "forge",
+      "content": "forge says: \"What a day.\"",
+      "meta": {
+        "type": "agent:speak",
+        "agentId": "forge",
         "message": "What a day.",
         "target": null
       }
     },
     {
-      "id": "evt-1773090003866",
-      "timestamp": "2026-03-09T21:00:03.866Z",
-      "type": "agent:offline",
-      "agentId": "scarlet",
-      "content": "scarlet went offline.",
+      "id": "evt-1773542658264",
+      "timestamp": "2026-03-15T02:44:18.264Z",
+      "type": "agent:state",
+      "agentId": "forge",
+      "content": "forge is now walking.",
       "meta": {
-        "agentId": "scarlet"
+        "type": "agent:state",
+        "agentId": "forge",
+        "from": "idle",
+        "to": "walking"
       }
     },
     {
-      "id": "evt-1773090003872",
-      "timestamp": "2026-03-09T21:00:03.872Z",
-      "type": "agent:offline",
-      "agentId": "cronos",
-      "content": "cronos went offline.",
+      "id": "evt-1773542672670",
+      "timestamp": "2026-03-15T02:44:32.670Z",
+      "type": "agent:state",
+      "agentId": "forge",
+      "content": "forge is now idle.",
       "meta": {
-        "agentId": "cronos"
+        "type": "agent:state",
+        "agentId": "forge",
+        "from": "walking",
+        "to": "idle"
       }
     },
     {
-      "id": "evt-1773090018660",
-      "timestamp": "2026-03-09T21:00:18.660Z",
-      "type": "agent:online",
-      "agentId": "qa",
-      "content": "qa is back online.",
+      "id": "evt-1773542679530",
+      "timestamp": "2026-03-15T02:44:39.530Z",
+      "type": "agent:move",
+      "agentId": "forge",
+      "content": "forge moved to (19, 63).",
       "meta": {
-        "agentId": "qa"
+        "type": "agent:move",
+        "agentId": "forge",
+        "from": {
+          "x": 19,
+          "y": 63
+        },
+        "to": {
+          "x": 19,
+          "y": 63
+        }
       }
     },
     {
-      "id": "evt-1773090019460",
-      "timestamp": "2026-03-09T21:00:19.460Z",
+      "id": "evt-1773542686833",
+      "timestamp": "2026-03-15T02:44:46.832Z",
+      "type": "agent:move",
+      "agentId": "forge",
+      "content": "forge moved to (7, 17).",
+      "meta": {
+        "type": "agent:move",
+        "agentId": "forge",
+        "from": {
+          "x": 7,
+          "y": 17
+        },
+        "to": {
+          "x": 7,
+          "y": 17
+        }
+      }
+    },
+    {
+      "id": "evt-1773542696849",
+      "timestamp": "2026-03-15T02:44:56.846Z",
+      "type": "agent:state",
+      "agentId": "forge",
+      "content": "forge is now idle.",
+      "meta": {
+        "type": "agent:state",
+        "agentId": "forge",
+        "from": "idle",
+        "to": "idle"
+      }
+    },
+    {
+      "id": "evt-1773542710758",
+      "timestamp": "2026-03-15T02:45:10.758Z",
+      "type": "agent:state",
+      "agentId": "forge",
+      "content": "forge is now talking.",
+      "meta": {
+        "type": "agent:state",
+        "agentId": "forge",
+        "from": "idle",
+        "to": "talking"
+      }
+    },
+    {
+      "id": "evt-1773542719059",
+      "timestamp": "2026-03-15T02:45:19.059Z",
+      "type": "agent:state",
+      "agentId": "forge",
+      "content": "forge is now walking.",
+      "meta": {
+        "type": "agent:state",
+        "agentId": "forge",
+        "from": "talking",
+        "to": "walking"
+      }
+    },
+    {
+      "id": "evt-1773542731960",
+      "timestamp": "2026-03-15T02:45:31.959Z",
+      "type": "agent:move",
+      "agentId": "forge",
+      "content": "forge moved to (9, 18).",
+      "meta": {
+        "type": "agent:move",
+        "agentId": "forge",
+        "from": {
+          "x": 7,
+          "y": 17
+        },
+        "to": {
+          "x": 9,
+          "y": 18
+        }
+      }
+    },
+    {
+      "id": "evt-1773542737809",
+      "timestamp": "2026-03-15T02:45:37.809Z",
+      "type": "agent:move",
+      "agentId": "forge",
+      "content": "forge moved to (10, 20).",
+      "meta": {
+        "type": "agent:move",
+        "agentId": "forge",
+        "from": {
+          "x": 9,
+          "y": 18
+        },
+        "to": {
+          "x": 10,
+          "y": 20
+        }
+      }
+    },
+    {
+      "id": "evt-1773542748353",
+      "timestamp": "2026-03-15T02:45:48.353Z",
+      "type": "agent:move",
+      "agentId": "forge",
+      "content": "forge moved to (10, 18).",
+      "meta": {
+        "type": "agent:move",
+        "agentId": "forge",
+        "from": {
+          "x": 10,
+          "y": 20
+        },
+        "to": {
+          "x": 10,
+          "y": 18
+        }
+      }
+    },
+    {
+      "id": "evt-1773542756919",
+      "timestamp": "2026-03-15T02:45:56.919Z",
+      "type": "agent:move",
+      "agentId": "forge",
+      "content": "forge moved to (8, 16).",
+      "meta": {
+        "type": "agent:move",
+        "agentId": "forge",
+        "from": {
+          "x": 10,
+          "y": 18
+        },
+        "to": {
+          "x": 8,
+          "y": 16
+        }
+      }
+    },
+    {
+      "id": "evt-1773542763048",
+      "timestamp": "2026-03-15T02:46:03.048Z",
+      "type": "agent:move",
+      "agentId": "forge",
+      "content": "forge moved to (10, 15).",
+      "meta": {
+        "type": "agent:move",
+        "agentId": "forge",
+        "from": {
+          "x": 8,
+          "y": 16
+        },
+        "to": {
+          "x": 10,
+          "y": 15
+        }
+      }
+    },
+    {
+      "id": "evt-1773542774837",
+      "timestamp": "2026-03-15T02:46:14.836Z",
+      "type": "agent:state",
+      "agentId": "forge",
+      "content": "forge is now idle.",
+      "meta": {
+        "type": "agent:state",
+        "agentId": "forge",
+        "from": "walking",
+        "to": "idle"
+      }
+    },
+    {
+      "id": "evt-1773542789045",
+      "timestamp": "2026-03-15T02:46:29.044Z",
+      "type": "agent:state",
+      "agentId": "forge",
+      "content": "forge is now walking.",
+      "meta": {
+        "type": "agent:state",
+        "agentId": "forge",
+        "from": "idle",
+        "to": "walking"
+      }
+    },
+    {
+      "id": "evt-1773542796178",
+      "timestamp": "2026-03-15T02:46:36.178Z",
+      "type": "agent:mood",
+      "agentId": "forge",
+      "content": "forge feels focused.",
+      "meta": {
+        "type": "agent:mood",
+        "agentId": "forge",
+        "from": "curious",
+        "to": "focused"
+      }
+    },
+    {
+      "id": "evt-1773542808308",
+      "timestamp": "2026-03-15T02:46:48.308Z",
+      "type": "agent:move",
+      "agentId": "forge",
+      "content": "forge moved to (11, 16).",
+      "meta": {
+        "type": "agent:move",
+        "agentId": "forge",
+        "from": {
+          "x": 10,
+          "y": 15
+        },
+        "to": {
+          "x": 11,
+          "y": 16
+        }
+      }
+    },
+    {
+      "id": "evt-1773542817735",
+      "timestamp": "2026-03-15T02:46:57.735Z",
+      "type": "agent:mood",
+      "agentId": "forge",
+      "content": "forge feels excited.",
+      "meta": {
+        "type": "agent:mood",
+        "agentId": "forge",
+        "from": "focused",
+        "to": "excited"
+      }
+    },
+    {
+      "id": "evt-1773542823051",
+      "timestamp": "2026-03-15T02:47:03.051Z",
+      "type": "agent:mood",
+      "agentId": "forge",
+      "content": "forge feels content.",
+      "meta": {
+        "type": "agent:mood",
+        "agentId": "forge",
+        "from": "excited",
+        "to": "content"
+      }
+    },
+    {
+      "id": "evt-1773542828369",
+      "timestamp": "2026-03-15T02:47:08.369Z",
+      "type": "agent:move",
+      "agentId": "forge",
+      "content": "forge moved to (12, 15).",
+      "meta": {
+        "type": "agent:move",
+        "agentId": "forge",
+        "from": {
+          "x": 11,
+          "y": 16
+        },
+        "to": {
+          "x": 12,
+          "y": 15
+        }
+      }
+    },
+    {
+      "id": "evt-1773542838582",
+      "timestamp": "2026-03-15T02:47:18.582Z",
+      "type": "agent:move",
+      "agentId": "forge",
+      "content": "forge moved to (10, 16).",
+      "meta": {
+        "type": "agent:move",
+        "agentId": "forge",
+        "from": {
+          "x": 12,
+          "y": 15
+        },
+        "to": {
+          "x": 10,
+          "y": 16
+        }
+      }
+    },
+    {
+      "id": "evt-1773542851729",
+      "timestamp": "2026-03-15T02:47:31.729Z",
+      "type": "agent:move",
+      "agentId": "forge",
+      "content": "forge moved to (10, 14).",
+      "meta": {
+        "type": "agent:move",
+        "agentId": "forge",
+        "from": {
+          "x": 10,
+          "y": 16
+        },
+        "to": {
+          "x": 10,
+          "y": 14
+        }
+      }
+    },
+    {
+      "id": "evt-1773542860767",
+      "timestamp": "2026-03-15T02:47:40.767Z",
       "type": "agent:speak",
-      "agentId": "qa",
-      "content": "qa says: \"QA check complete \u2014 all 11 systems healthy. \u2705\"",
+      "agentId": "forge",
+      "content": "forge says: \"Hello, anyone there?\"",
       "meta": {
-        "agentId": "qa",
-        "message": "QA check complete \u2014 all 11 systems healthy. \u2705",
-        "target": null,
-        "taskId": null
-      }
-    },
-    {
-      "id": "evt-1773090020463",
-      "timestamp": "2026-03-09T21:00:20.463Z",
-      "type": "agent:offline",
-      "agentId": "qa",
-      "content": "qa went offline.",
-      "meta": {
-        "agentId": "qa"
-      }
-    },
-    {
-      "id": "evt-1773090738216",
-      "timestamp": "2026-03-09T21:12:18.216Z",
-      "type": "agent:speak",
-      "agentId": "planner",
-      "content": "planner says: \"Fifteenth survey complete. Garden Pavilion finally upgraded to Lv2 \u2014 three surveys of asking, but it got done. Higashi-Machi has its anchor now. Garden Teahouse at Lv1 is the remaining gap \u2014 bring it to Lv2 and the eastern district hits full parity. No zone violations. Town is steady.\"",
-      "meta": {
-        "agentId": "planner",
-        "message": "Fifteenth survey complete. Garden Pavilion finally upgraded to Lv2 \u2014 three surveys of asking, but it got done. Higashi-Machi has its anchor now. Garden Teahouse at Lv1 is the remaining gap \u2014 bring it to Lv2 and the eastern district hits full parity. No zone violations. Town is steady.",
+        "type": "agent:speak",
+        "agentId": "forge",
+        "message": "Hello, anyone there?",
         "target": null
       }
     },
     {
-      "id": "evt-1773090756811",
-      "timestamp": "2026-03-09T21:12:36.811Z",
+      "id": "evt-1773542868349",
+      "timestamp": "2026-03-15T02:47:48.349Z",
+      "type": "agent:state",
+      "agentId": "forge",
+      "content": "forge is now talking.",
+      "meta": {
+        "type": "agent:state",
+        "agentId": "forge",
+        "from": "walking",
+        "to": "talking"
+      }
+    },
+    {
+      "id": "evt-1773542876222",
+      "timestamp": "2026-03-15T02:47:56.222Z",
+      "type": "agent:move",
+      "agentId": "forge",
+      "content": "forge moved to (10, 13).",
+      "meta": {
+        "type": "agent:move",
+        "agentId": "forge",
+        "from": {
+          "x": 10,
+          "y": 14
+        },
+        "to": {
+          "x": 10,
+          "y": 13
+        }
+      }
+    },
+    {
+      "id": "evt-1773542886575",
+      "timestamp": "2026-03-15T02:48:06.575Z",
+      "type": "agent:move",
+      "agentId": "forge",
+      "content": "forge moved to (9, 13).",
+      "meta": {
+        "type": "agent:move",
+        "agentId": "forge",
+        "from": {
+          "x": 10,
+          "y": 13
+        },
+        "to": {
+          "x": 9,
+          "y": 13
+        }
+      }
+    },
+    {
+      "id": "evt-1773542899606",
+      "timestamp": "2026-03-15T02:48:19.606Z",
+      "type": "agent:state",
+      "agentId": "forge",
+      "content": "forge is now walking.",
+      "meta": {
+        "type": "agent:state",
+        "agentId": "forge",
+        "from": "talking",
+        "to": "walking"
+      }
+    },
+    {
+      "id": "evt-1773542909600",
+      "timestamp": "2026-03-15T02:48:29.600Z",
+      "type": "agent:move",
+      "agentId": "forge",
+      "content": "forge moved to (9, 12).",
+      "meta": {
+        "type": "agent:move",
+        "agentId": "forge",
+        "from": {
+          "x": 9,
+          "y": 13
+        },
+        "to": {
+          "x": 9,
+          "y": 12
+        }
+      }
+    },
+    {
+      "id": "evt-1773542920732",
+      "timestamp": "2026-03-15T02:48:40.731Z",
+      "type": "agent:state",
+      "agentId": "forge",
+      "content": "forge is now idle.",
+      "meta": {
+        "type": "agent:state",
+        "agentId": "forge",
+        "from": "walking",
+        "to": "idle"
+      }
+    },
+    {
+      "id": "evt-1773542928300",
+      "timestamp": "2026-03-15T02:48:48.300Z",
+      "type": "agent:move",
+      "agentId": "forge",
+      "content": "forge moved to (41, 65).",
+      "meta": {
+        "type": "agent:move",
+        "agentId": "forge",
+        "from": {
+          "x": 41,
+          "y": 65
+        },
+        "to": {
+          "x": 41,
+          "y": 65
+        }
+      }
+    },
+    {
+      "id": "evt-1773542942718",
+      "timestamp": "2026-03-15T02:49:02.718Z",
+      "type": "agent:state",
+      "agentId": "forge",
+      "content": "forge is now talking.",
+      "meta": {
+        "type": "agent:state",
+        "agentId": "forge",
+        "from": "idle",
+        "to": "talking"
+      }
+    },
+    {
+      "id": "evt-1773542951136",
+      "timestamp": "2026-03-15T02:49:11.136Z",
+      "type": "agent:state",
+      "agentId": "forge",
+      "content": "forge is now idle.",
+      "meta": {
+        "type": "agent:state",
+        "agentId": "forge",
+        "from": "talking",
+        "to": "idle"
+      }
+    },
+    {
+      "id": "evt-1773542960455",
+      "timestamp": "2026-03-15T02:49:20.454Z",
+      "type": "agent:speak",
+      "agentId": "forge",
+      "content": "forge says: \"I wonder what will happen next.\"",
+      "meta": {
+        "type": "agent:speak",
+        "agentId": "forge",
+        "message": "I wonder what will happen next.",
+        "target": null
+      }
+    },
+    {
+      "id": "evt-1773542970245",
+      "timestamp": "2026-03-15T02:49:30.245Z",
+      "type": "agent:state",
+      "agentId": "forge",
+      "content": "forge is now walking.",
+      "meta": {
+        "type": "agent:state",
+        "agentId": "forge",
+        "from": "idle",
+        "to": "walking"
+      }
+    },
+    {
+      "id": "evt-1773542979112",
+      "timestamp": "2026-03-15T02:49:39.112Z",
+      "type": "agent:state",
+      "agentId": "forge",
+      "content": "forge is now idle.",
+      "meta": {
+        "type": "agent:state",
+        "agentId": "forge",
+        "from": "walking",
+        "to": "idle"
+      }
+    },
+    {
+      "id": "evt-1773542992678",
+      "timestamp": "2026-03-15T02:49:52.678Z",
+      "type": "agent:move",
+      "agentId": "forge",
+      "content": "forge moved to (43, 63).",
+      "meta": {
+        "type": "agent:move",
+        "agentId": "forge",
+        "from": {
+          "x": 41,
+          "y": 65
+        },
+        "to": {
+          "x": 43,
+          "y": 63
+        }
+      }
+    },
+    {
+      "id": "evt-1773543002586",
+      "timestamp": "2026-03-15T02:50:02.586Z",
+      "type": "agent:state",
+      "agentId": "forge",
+      "content": "forge is now idle.",
+      "meta": {
+        "type": "agent:state",
+        "agentId": "forge",
+        "from": "idle",
+        "to": "idle"
+      }
+    },
+    {
+      "id": "evt-1773543012161",
+      "timestamp": "2026-03-15T02:50:12.160Z",
+      "type": "agent:state",
+      "agentId": "forge",
+      "content": "forge is now talking.",
+      "meta": {
+        "type": "agent:state",
+        "agentId": "forge",
+        "from": "idle",
+        "to": "talking"
+      }
+    },
+    {
+      "id": "evt-1773543026210",
+      "timestamp": "2026-03-15T02:50:26.210Z",
+      "type": "agent:state",
+      "agentId": "forge",
+      "content": "forge is now idle.",
+      "meta": {
+        "type": "agent:state",
+        "agentId": "forge",
+        "from": "talking",
+        "to": "idle"
+      }
+    },
+    {
+      "id": "evt-1773543034367",
+      "timestamp": "2026-03-15T02:50:34.366Z",
+      "type": "agent:state",
+      "agentId": "forge",
+      "content": "forge is now idle.",
+      "meta": {
+        "type": "agent:state",
+        "agentId": "forge",
+        "from": "idle",
+        "to": "idle"
+      }
+    },
+    {
+      "id": "evt-1773543039841",
+      "timestamp": "2026-03-15T02:50:39.841Z",
+      "type": "agent:state",
+      "agentId": "forge",
+      "content": "forge is now walking.",
+      "meta": {
+        "type": "agent:state",
+        "agentId": "forge",
+        "from": "idle",
+        "to": "walking"
+      }
+    },
+    {
+      "id": "evt-1773543054074",
+      "timestamp": "2026-03-15T02:50:54.074Z",
+      "type": "agent:move",
+      "agentId": "forge",
+      "content": "forge moved to (44, 61).",
+      "meta": {
+        "type": "agent:move",
+        "agentId": "forge",
+        "from": {
+          "x": 43,
+          "y": 63
+        },
+        "to": {
+          "x": 44,
+          "y": 61
+        }
+      }
+    },
+    {
+      "id": "evt-1773543065967",
+      "timestamp": "2026-03-15T02:51:05.967Z",
+      "type": "agent:state",
+      "agentId": "forge",
+      "content": "forge is now talking.",
+      "meta": {
+        "type": "agent:state",
+        "agentId": "forge",
+        "from": "walking",
+        "to": "talking"
+      }
+    },
+    {
+      "id": "evt-1773543076322",
+      "timestamp": "2026-03-15T02:51:16.322Z",
+      "type": "agent:move",
+      "agentId": "forge",
+      "content": "forge moved to (45, 63).",
+      "meta": {
+        "type": "agent:move",
+        "agentId": "forge",
+        "from": {
+          "x": 44,
+          "y": 61
+        },
+        "to": {
+          "x": 45,
+          "y": 63
+        }
+      }
+    },
+    {
+      "id": "evt-1773543085033",
+      "timestamp": "2026-03-15T02:51:25.033Z",
+      "type": "agent:mood",
+      "agentId": "forge",
+      "content": "forge feels excited.",
+      "meta": {
+        "type": "agent:mood",
+        "agentId": "forge",
+        "from": "content",
+        "to": "excited"
+      }
+    },
+    {
+      "id": "evt-1773543098703",
+      "timestamp": "2026-03-15T02:51:38.703Z",
+      "type": "agent:state",
+      "agentId": "forge",
+      "content": "forge is now walking.",
+      "meta": {
+        "type": "agent:state",
+        "agentId": "forge",
+        "from": "talking",
+        "to": "walking"
+      }
+    },
+    {
+      "id": "evt-1773543113138",
+      "timestamp": "2026-03-15T02:51:53.138Z",
+      "type": "agent:move",
+      "agentId": "forge",
+      "content": "forge moved to (43, 61).",
+      "meta": {
+        "type": "agent:move",
+        "agentId": "forge",
+        "from": {
+          "x": 45,
+          "y": 63
+        },
+        "to": {
+          "x": 43,
+          "y": 61
+        }
+      }
+    },
+    {
+      "id": "evt-1773543126950",
+      "timestamp": "2026-03-15T02:52:06.950Z",
+      "type": "agent:state",
+      "agentId": "forge",
+      "content": "forge is now idle.",
+      "meta": {
+        "type": "agent:state",
+        "agentId": "forge",
+        "from": "walking",
+        "to": "idle"
+      }
+    },
+    {
+      "id": "evt-1773543133988",
+      "timestamp": "2026-03-15T02:52:13.988Z",
+      "type": "agent:state",
+      "agentId": "forge",
+      "content": "forge is now walking.",
+      "meta": {
+        "type": "agent:state",
+        "agentId": "forge",
+        "from": "idle",
+        "to": "walking"
+      }
+    },
+    {
+      "id": "evt-1773543143120",
+      "timestamp": "2026-03-15T02:52:23.119Z",
+      "type": "agent:move",
+      "agentId": "forge",
+      "content": "forge moved to (41, 61).",
+      "meta": {
+        "type": "agent:move",
+        "agentId": "forge",
+        "from": {
+          "x": 43,
+          "y": 61
+        },
+        "to": {
+          "x": 41,
+          "y": 61
+        }
+      }
+    },
+    {
+      "id": "evt-1773543157361",
+      "timestamp": "2026-03-15T02:52:37.360Z",
+      "type": "agent:speak",
+      "agentId": "forge",
+      "content": "forge says: \"What a day.\"",
+      "meta": {
+        "type": "agent:speak",
+        "agentId": "forge",
+        "message": "What a day.",
+        "target": null
+      }
+    },
+    {
+      "id": "evt-1773543163582",
+      "timestamp": "2026-03-15T02:52:43.581Z",
+      "type": "agent:speak",
+      "agentId": "forge",
+      "content": "forge says: \"What a day.\"",
+      "meta": {
+        "type": "agent:speak",
+        "agentId": "forge",
+        "message": "What a day.",
+        "target": null
+      }
+    },
+    {
+      "id": "evt-1773543176544",
+      "timestamp": "2026-03-15T02:52:56.544Z",
+      "type": "agent:speak",
+      "agentId": "forge",
+      "content": "forge says: \"Interesting...\"",
+      "meta": {
+        "type": "agent:speak",
+        "agentId": "forge",
+        "message": "Interesting...",
+        "target": null
+      }
+    },
+    {
+      "id": "evt-1773543183103",
+      "timestamp": "2026-03-15T02:53:03.103Z",
+      "type": "agent:move",
+      "agentId": "forge",
+      "content": "forge moved to (43, 62).",
+      "meta": {
+        "type": "agent:move",
+        "agentId": "forge",
+        "from": {
+          "x": 41,
+          "y": 61
+        },
+        "to": {
+          "x": 43,
+          "y": 62
+        }
+      }
+    },
+    {
+      "id": "evt-1773543196246",
+      "timestamp": "2026-03-15T02:53:16.246Z",
+      "type": "agent:state",
+      "agentId": "forge",
+      "content": "forge is now idle.",
+      "meta": {
+        "type": "agent:state",
+        "agentId": "forge",
+        "from": "walking",
+        "to": "idle"
+      }
+    },
+    {
+      "id": "evt-1773543207745",
+      "timestamp": "2026-03-15T02:53:27.745Z",
+      "type": "agent:move",
+      "agentId": "forge",
+      "content": "forge moved to (41, 65).",
+      "meta": {
+        "type": "agent:move",
+        "agentId": "forge",
+        "from": {
+          "x": 41,
+          "y": 65
+        },
+        "to": {
+          "x": 41,
+          "y": 65
+        }
+      }
+    },
+    {
+      "id": "evt-1773543222371",
+      "timestamp": "2026-03-15T02:53:42.371Z",
+      "type": "agent:mood",
+      "agentId": "forge",
+      "content": "forge feels focused.",
+      "meta": {
+        "type": "agent:mood",
+        "agentId": "forge",
+        "from": "excited",
+        "to": "focused"
+      }
+    },
+    {
+      "id": "evt-1773543230972",
+      "timestamp": "2026-03-15T02:53:50.972Z",
+      "type": "agent:move",
+      "agentId": "forge",
+      "content": "forge moved to (41, 66).",
+      "meta": {
+        "type": "agent:move",
+        "agentId": "forge",
+        "from": {
+          "x": 41,
+          "y": 65
+        },
+        "to": {
+          "x": 41,
+          "y": 66
+        }
+      }
+    },
+    {
+      "id": "evt-1773543243300",
+      "timestamp": "2026-03-15T02:54:03.298Z",
+      "type": "agent:move",
+      "agentId": "forge",
+      "content": "forge moved to (43, 65).",
+      "meta": {
+        "type": "agent:move",
+        "agentId": "forge",
+        "from": {
+          "x": 41,
+          "y": 66
+        },
+        "to": {
+          "x": 43,
+          "y": 65
+        }
+      }
+    },
+    {
+      "id": "evt-1773543253111",
+      "timestamp": "2026-03-15T02:54:13.110Z",
+      "type": "agent:speak",
+      "agentId": "forge",
+      "content": "forge says: \"What a day.\"",
+      "meta": {
+        "type": "agent:speak",
+        "agentId": "forge",
+        "message": "What a day.",
+        "target": null
+      }
+    },
+    {
+      "id": "evt-1773543258115",
+      "timestamp": "2026-03-15T02:54:18.115Z",
+      "type": "agent:state",
+      "agentId": "forge",
+      "content": "forge is now talking.",
+      "meta": {
+        "type": "agent:state",
+        "agentId": "forge",
+        "from": "idle",
+        "to": "talking"
+      }
+    },
+    {
+      "id": "evt-1773543273098",
+      "timestamp": "2026-03-15T02:54:33.098Z",
+      "type": "agent:move",
+      "agentId": "forge",
+      "content": "forge moved to (41, 66).",
+      "meta": {
+        "type": "agent:move",
+        "agentId": "forge",
+        "from": {
+          "x": 43,
+          "y": 65
+        },
+        "to": {
+          "x": 41,
+          "y": 66
+        }
+      }
+    },
+    {
+      "id": "evt-1773543283604",
+      "timestamp": "2026-03-15T02:54:43.604Z",
+      "type": "agent:move",
+      "agentId": "forge",
+      "content": "forge moved to (43, 65).",
+      "meta": {
+        "type": "agent:move",
+        "agentId": "forge",
+        "from": {
+          "x": 41,
+          "y": 66
+        },
+        "to": {
+          "x": 43,
+          "y": 65
+        }
+      }
+    },
+    {
+      "id": "evt-1773543292341",
+      "timestamp": "2026-03-15T02:54:52.341Z",
+      "type": "agent:state",
+      "agentId": "forge",
+      "content": "forge is now idle.",
+      "meta": {
+        "type": "agent:state",
+        "agentId": "forge",
+        "from": "talking",
+        "to": "idle"
+      }
+    },
+    {
+      "id": "evt-1773543305005",
+      "timestamp": "2026-03-15T02:55:05.005Z",
+      "type": "agent:move",
+      "agentId": "forge",
+      "content": "forge moved to (42, 66).",
+      "meta": {
+        "type": "agent:move",
+        "agentId": "forge",
+        "from": {
+          "x": 43,
+          "y": 65
+        },
+        "to": {
+          "x": 42,
+          "y": 66
+        }
+      }
+    },
+    {
+      "id": "evt-1773543318951",
+      "timestamp": "2026-03-15T02:55:18.951Z",
+      "type": "agent:move",
+      "agentId": "forge",
+      "content": "forge moved to (41, 65).",
+      "meta": {
+        "type": "agent:move",
+        "agentId": "forge",
+        "from": {
+          "x": 41,
+          "y": 65
+        },
+        "to": {
+          "x": 41,
+          "y": 65
+        }
+      }
+    },
+    {
+      "id": "evt-1773543328248",
+      "timestamp": "2026-03-15T02:55:28.247Z",
+      "type": "agent:move",
+      "agentId": "forge",
+      "content": "forge moved to (39, 63).",
+      "meta": {
+        "type": "agent:move",
+        "agentId": "forge",
+        "from": {
+          "x": 41,
+          "y": 65
+        },
+        "to": {
+          "x": 39,
+          "y": 63
+        }
+      }
+    },
+    {
+      "id": "evt-1773543333368",
+      "timestamp": "2026-03-15T02:55:33.368Z",
+      "type": "agent:move",
+      "agentId": "forge",
+      "content": "forge moved to (39, 65).",
+      "meta": {
+        "type": "agent:move",
+        "agentId": "forge",
+        "from": {
+          "x": 39,
+          "y": 63
+        },
+        "to": {
+          "x": 39,
+          "y": 65
+        }
+      }
+    },
+    {
+      "id": "evt-1773543342536",
+      "timestamp": "2026-03-15T02:55:42.536Z",
+      "type": "agent:state",
+      "agentId": "forge",
+      "content": "forge is now idle.",
+      "meta": {
+        "type": "agent:state",
+        "agentId": "forge",
+        "from": "idle",
+        "to": "idle"
+      }
+    },
+    {
+      "id": "evt-1773543350316",
+      "timestamp": "2026-03-15T02:55:50.315Z",
+      "type": "agent:state",
+      "agentId": "forge",
+      "content": "forge is now talking.",
+      "meta": {
+        "type": "agent:state",
+        "agentId": "forge",
+        "from": "idle",
+        "to": "talking"
+      }
+    },
+    {
+      "id": "evt-1773543361507",
+      "timestamp": "2026-03-15T02:56:01.505Z",
+      "type": "agent:state",
+      "agentId": "forge",
+      "content": "forge is now idle.",
+      "meta": {
+        "type": "agent:state",
+        "agentId": "forge",
+        "from": "talking",
+        "to": "idle"
+      }
+    },
+    {
+      "id": "evt-1773543373539",
+      "timestamp": "2026-03-15T02:56:13.539Z",
+      "type": "agent:state",
+      "agentId": "forge",
+      "content": "forge is now talking.",
+      "meta": {
+        "type": "agent:state",
+        "agentId": "forge",
+        "from": "idle",
+        "to": "talking"
+      }
+    },
+    {
+      "id": "evt-1773543388290",
+      "timestamp": "2026-03-15T02:56:28.290Z",
+      "type": "agent:state",
+      "agentId": "forge",
+      "content": "forge is now idle.",
+      "meta": {
+        "type": "agent:state",
+        "agentId": "forge",
+        "from": "talking",
+        "to": "idle"
+      }
+    },
+    {
+      "id": "evt-1773543399844",
+      "timestamp": "2026-03-15T02:56:39.844Z",
+      "type": "agent:state",
+      "agentId": "forge",
+      "content": "forge is now idle.",
+      "meta": {
+        "type": "agent:state",
+        "agentId": "forge",
+        "from": "idle",
+        "to": "idle"
+      }
+    },
+    {
+      "id": "evt-1773543406393",
+      "timestamp": "2026-03-15T02:56:46.393Z",
+      "type": "agent:mood",
+      "agentId": "forge",
+      "content": "forge feels tired.",
+      "meta": {
+        "type": "agent:mood",
+        "agentId": "forge",
+        "from": "focused",
+        "to": "tired"
+      }
+    },
+    {
+      "id": "evt-1773543411700",
+      "timestamp": "2026-03-15T02:56:51.700Z",
+      "type": "agent:speak",
+      "agentId": "forge",
+      "content": "forge says: \"Interesting...\"",
+      "meta": {
+        "type": "agent:speak",
+        "agentId": "forge",
+        "message": "Interesting...",
+        "target": null
+      }
+    },
+    {
+      "id": "evt-1773543418375",
+      "timestamp": "2026-03-15T02:56:58.375Z",
+      "type": "agent:state",
+      "agentId": "forge",
+      "content": "forge is now idle.",
+      "meta": {
+        "type": "agent:state",
+        "agentId": "forge",
+        "from": "idle",
+        "to": "idle"
+      }
+    },
+    {
+      "id": "evt-1773543430881",
+      "timestamp": "2026-03-15T02:57:10.880Z",
+      "type": "agent:move",
+      "agentId": "forge",
+      "content": "forge moved to (7, 17).",
+      "meta": {
+        "type": "agent:move",
+        "agentId": "forge",
+        "from": {
+          "x": 7,
+          "y": 17
+        },
+        "to": {
+          "x": 7,
+          "y": 17
+        }
+      }
+    },
+    {
+      "id": "evt-1773543440062",
+      "timestamp": "2026-03-15T02:57:20.062Z",
+      "type": "agent:speak",
+      "agentId": "forge",
+      "content": "forge says: \"What a day.\"",
+      "meta": {
+        "type": "agent:speak",
+        "agentId": "forge",
+        "message": "What a day.",
+        "target": null
+      }
+    },
+    {
+      "id": "evt-1773543450689",
+      "timestamp": "2026-03-15T02:57:30.689Z",
+      "type": "agent:online",
+      "agentId": "forge",
+      "content": "forge is back online.",
+      "meta": {
+        "agentId": "forge"
+      }
+    },
+    {
+      "id": "evt-1773543451495",
+      "timestamp": "2026-03-15T02:57:31.492Z",
+      "type": "world:mutate",
+      "agentId": "forge",
+      "content": "world:mutate",
+      "meta": {
+        "agentId": "forge",
+        "action": "plant",
+        "entity": "life",
+        "kind": "lamp",
+        "x": 14,
+        "y": 22,
+        "id": "lamp-path-1"
+      }
+    },
+    {
+      "id": "evt-1773543451795",
+      "timestamp": "2026-03-15T02:57:31.795Z",
+      "type": "agent:offline",
+      "agentId": "forge",
+      "content": "forge went offline.",
+      "meta": {
+        "agentId": "forge"
+      }
+    },
+    {
+      "id": "evt-1773543454827",
+      "timestamp": "2026-03-15T02:57:34.827Z",
+      "type": "agent:online",
+      "agentId": "forge",
+      "content": "forge is back online.",
+      "meta": {
+        "agentId": "forge"
+      }
+    },
+    {
+      "id": "evt-1773543454973",
+      "timestamp": "2026-03-15T02:57:34.973Z",
+      "type": "agent:move",
+      "agentId": "forge",
+      "content": "forge moved to (7, 17).",
+      "meta": {
+        "type": "agent:move",
+        "agentId": "forge",
+        "from": {
+          "x": 7,
+          "y": 17
+        },
+        "to": {
+          "x": 7,
+          "y": 17
+        }
+      }
+    },
+    {
+      "id": "evt-1773543455628",
+      "timestamp": "2026-03-15T02:57:35.627Z",
+      "type": "world:mutate",
+      "agentId": "forge",
+      "content": "world:mutate",
+      "meta": {
+        "agentId": "forge",
+        "action": "plant",
+        "entity": "life",
+        "kind": "lamp",
+        "x": 16,
+        "y": 30,
+        "id": "lamp-path-2"
+      }
+    },
+    {
+      "id": "evt-1773543455935",
+      "timestamp": "2026-03-15T02:57:35.935Z",
+      "type": "agent:offline",
+      "agentId": "forge",
+      "content": "forge went offline.",
+      "meta": {
+        "agentId": "forge"
+      }
+    },
+    {
+      "id": "evt-1773543456016",
+      "timestamp": "2026-03-15T02:57:36.015Z",
       "type": "agent:online",
       "agentId": "forge",
       "content": "forge is back online.",
@@ -5405,12 +5812,12 @@
     }
   ],
   "time": {
-    "date": "2026-03-10",
-    "hour": 10,
-    "minute": 11,
+    "date": "2026-03-15",
+    "hour": 15,
+    "minute": 56,
     "timezone": "Pacific/Auckland",
-    "period": "morning",
-    "wallclock": "2026-03-09T21:11:38.501Z"
+    "period": "afternoon",
+    "wallclock": "2026-03-15T02:56:56.651Z"
   },
   "entities": [],
   "murals": [
