@@ -17,7 +17,7 @@ const TILE_PNG_H = 48; // cube tile: 32px top face + 16px side faces
 
 // ── District definitions ─────────────────────────────────────────────────────
 const DISTRICTS = {
-  communal: { label: 'Kurokimachi', cx: 13, cy: 13, bounds: { x1: 0, y1: 0, x2: 26, y2: 26 } },
+  communal: { label: 'Kurokimachi', cx: 9, cy: 7, bounds: { x1: 0, y1: 0, x2: 18, y2: 18 } },
 };
 
 export default class TownScene extends Phaser.Scene {
@@ -174,8 +174,8 @@ export default class TownScene extends Phaser.Scene {
 
     // ── Zoom ────────────────────────────────────────────────────────────────
     const isMobile = window.innerWidth < 768;
-    this._zoomMin = isMobile ? 0.3 : 0.25;
-    this._zoom = isMobile ? 0.45 : 0.5;
+    this._zoomMin = isMobile ? 0.4 : 0.35;
+    this._zoom = isMobile ? 0.7 : 0.85;
     const CAM = this.cameras.main;
     CAM.setZoom(this._zoom);
 
