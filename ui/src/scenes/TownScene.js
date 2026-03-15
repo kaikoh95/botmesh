@@ -1093,8 +1093,19 @@ export default class TownScene extends Phaser.Scene {
 
     // Chunked RenderTextures for snow/cobblestone tiles within district bounds
     const hasCobble = this.textures.exists('ground-cobblestone');
-    const isRoad = (x, y) => (y === 24 || y === 25) || (y === 49 || y === 50) || (x === 24 || x === 25);
-    const isMarket = (x, y) => x >= 6 && x <= 22 && y >= 12 && y <= 18;
+    // 18x18 compact map road system — X-shaped cross + short arms to each building
+    const isRoad = (x, y) => {
+      // Central N-S spine (x=9), E-W spine (y=9) — single tile wide
+      if (x === 9 && y >= 3 && y <= 15) return true;  // N-S spine
+      if (y === 9 && x >= 3 && x <= 15) return true;  // E-W spine
+      // Short arms branching off spine to each corner building entrance
+      if (x >= 3 && x <= 9 && y === 4) return true;   // NW arm to shrine (2,2)
+      if (x >= 9 && x <= 15 && y === 4) return true;  // NE arm to sanctum (13,2)
+      if (x >= 3 && x <= 9 && y === 14) return true;  // SW arm to market (2,13)
+      if (x >= 9 && x <= 15 && y === 14) return true; // SE arm to workshop (13,13)
+      return false;
+    };
+    const isMarket = (x, y) => false;
 
     const colCount = Math.ceil(totalW / CHUNK_PX);
     const rowCount = Math.ceil(totalH / CHUNK_PX);
@@ -1162,8 +1173,16 @@ export default class TownScene extends Phaser.Scene {
 
     // Chunked RenderTextures + async yield
     const hasCobble = this.textures.exists('ground-cobblestone');
-    const isRoad = (x, y) => (y === 24 || y === 25) || (y === 49 || y === 50) || (x === 24 || x === 25);
-    const isMarket = (x, y) => x >= 6 && x <= 22 && y >= 12 && y <= 18;
+    const isRoad = (x, y) => {
+      if (x === 9 && y >= 3 && y <= 15) return true;
+      if (y === 9 && x >= 3 && x <= 15) return true;
+      if (x >= 3 && x <= 9 && y === 4) return true;
+      if (x >= 9 && x <= 15 && y === 4) return true;
+      if (x >= 3 && x <= 9 && y === 14) return true;
+      if (x >= 9 && x <= 15 && y === 14) return true;
+      return false;
+    };
+    const isMarket = (x, y) => false;
 
     const colCount = Math.ceil(totalW / CHUNK_PX);
     const rowCount = Math.ceil(totalH / CHUNK_PX);
