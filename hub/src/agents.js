@@ -165,7 +165,12 @@ function generateAgentEvent(agent, onEvent) {
       const buildingId = AGENT_BUILDING_MAP[agent.id]?.work || world.getBuildingForAgent(agent.id);
       const building = worldState.buildings[buildingId];
       if (building) {
-        world.startWork(agent.id, buildingId);
+        const workStarted = world.startWork(agent.id, buildingId);
+        if (!workStarted) {
+          // Building on cooldown — skip to idle state change instead
+          world.updateAgent(agent.id, { state: newState === 'working' ? 'idle' : newState });
+          return { type: 'agent:state', agentId: agent.id, from, to: 'idle' };
+        }
 
         // Emit agent:work start event
         onEvent({
