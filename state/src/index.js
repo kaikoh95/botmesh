@@ -23,22 +23,8 @@ const PORT = process.env.PORT || 3002;
 const CHARACTERS_DIR = path.join(__dirname, '../../characters');
 
 // ── Home spawn positions for each citizen ─────────────────────────────────
-const HOME_LOCATIONS = {
-  scarlet: { x: 10, y: 58 },  // house-north
-  forge:   { x: 10, y: 58 },  // house-north
-  iron:    { x: 10, y: 58 },  // house-north
-  planner: { x: 10, y: 58 },  // house-north
-  lumen:   { x: 30, y: 58 },  // house-east
-  sage:    { x: 30, y: 58 },  // house-east
-  canvas:  { x: 30, y: 58 },  // house-east
-  mosaic:  { x: 10, y: 68 },  // house-south
-  muse:    { x: 10, y: 68 },  // house-south
-  echo:    { x: 10, y: 68 },  // house-south
-  patch:   { x: 30, y: 68 },  // house-west
-  cronos:  { x: 30, y: 68 },  // house-west
-  qa:      { x: 30, y: 68 },  // house-west
-};
-const DEFAULT_HOME = { x: 24, y: 62 };
+const HOME_LOCATIONS = {};
+const DEFAULT_HOME = { x: 13, y: 13 };  // town center
 
 // ── Seed citizens from characters/ directory ──────────────────────────────
 // Character file existing = citizen exists in the world (dormant until active)

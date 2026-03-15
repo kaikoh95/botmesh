@@ -17,11 +17,7 @@ const TILE_PNG_H = 48; // cube tile: 32px top face + 16px side faces
 
 // ── District definitions ─────────────────────────────────────────────────────
 const DISTRICTS = {
-  communal:    { label: 'Communal District',cx: 12, cy: 12, bounds: { x1: 0,  y1: 0,  x2: 24, y2: 24 } },
-  cronos:      { label: 'Cronos Shrine',    cx: 12, cy: 37, bounds: { x1: 0,  y1: 25, x2: 24, y2: 49 } },
-  scarlet:     { label: 'Scarlet Sanctum',  cx: 37, cy: 12, bounds: { x1: 25, y1: 0,  x2: 49, y2: 24 } },
-  east:        { label: 'East District',    cx: 37, cy: 37, bounds: { x1: 25, y1: 25, x2: 49, y2: 49 } },
-  residential: { label: 'Residential',      cx: 24, cy: 62, bounds: { x1: 0,  y1: 50, x2: 49, y2: 74 } },
+  communal: { label: 'Kurokimachi', cx: 13, cy: 13, bounds: { x1: 0, y1: 0, x2: 26, y2: 26 } },
 };
 
 export default class TownScene extends Phaser.Scene {
@@ -178,8 +174,8 @@ export default class TownScene extends Phaser.Scene {
 
     // ── Zoom ────────────────────────────────────────────────────────────────
     const isMobile = window.innerWidth < 768;
-    this._zoomMin = isMobile ? 0.7 : 0.5;
-    this._zoom = isMobile ? 0.7 : 1.2;
+    this._zoomMin = isMobile ? 0.8 : 0.6;
+    this._zoom = isMobile ? 1.0 : 1.6;
     const CAM = this.cameras.main;
     CAM.setZoom(this._zoom);
 
@@ -1281,34 +1277,10 @@ export default class TownScene extends Phaser.Scene {
   // ── District navigation system ──────────────────────────────────────────────
 
   _initDistrictNav() {
-    // Create HTML overlay for district navigation — direct jump buttons
-    const nav = document.createElement('div');
-    nav.id = 'district-nav';
-    nav.innerHTML = `
-      <button class="dist-btn" data-district="communal">🏮 Communal</button>
-      <button class="dist-btn" data-district="east">🔨 East</button>
-      <button class="dist-btn" data-district="cronos">⛩️ Cronos</button>
-      <button class="dist-btn" data-district="scarlet">🔴 Scarlet</button>
-      <button class="dist-btn" data-district="residential">🏠 Residential</button>
-    `;
-    document.body.appendChild(nav);
-
-    // Bind district jump clicks
-    document.querySelectorAll('.dist-btn').forEach(btn => {
-      btn.addEventListener('click', async () => {
-        const key = btn.dataset.district;
-        if (key === this._currentDistrict) return;
-        document.querySelectorAll('.dist-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        // Switch district immediately — don't wait for fade callback
-        // (rAF-dependent fade progress never reaches 1 in headless/throttled tabs)
-        this.cameras.main.fade(250, 0, 0, 0);
-        await this._loadDistrict(key);
-        this.cameras.main.fadeIn(300);
-      });
-    });
-    const initialBtn = document.querySelector('.dist-btn[data-district="communal"]');
-    if (initialBtn) initialBtn.classList.add('active');
+    // Single-district map — no navigation needed
+    // Remove any existing district-nav element
+    const existing = document.getElementById('district-nav');
+    if (existing) existing.remove();
   }
 
   async _loadDistrict(key) {
@@ -1375,9 +1347,9 @@ export default class TownScene extends Phaser.Scene {
       this.gridToScreen(d.bounds.x1, d.bounds.y2),
       this.gridToScreen(d.bounds.x2, d.bounds.y2),
     ];
-    // Use fixed zoom — district diamonds are wide, auto-zoom exposes too much void
+    // Use fixed zoom — compact map fits on one screen
     const mobileSwitch = window.innerWidth < 768;
-    this._zoom = mobileSwitch ? 0.7 : 1.2;
+    this._zoom = mobileSwitch ? 1.0 : 1.6;
     this.cameras.main.setZoom(this._zoom);
     Object.values(this.buildings).forEach(b => b.updateLabelVisibility(this._zoom));
 
