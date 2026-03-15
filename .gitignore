@@ -37,3 +37,4 @@ ui/config.js
 !.botmesh.env.example
 ui/assets/buildings-backup-*/
 world/state.json*
+**/__pycache__
