@@ -1378,12 +1378,30 @@ function runAmbientThought() {
   const hour = new Date().getHours();
   const timeOfDay = hour < 6 ? 'deep night' : hour < 12 ? 'morning' : hour < 17 ? 'afternoon' : hour < 21 ? 'evening' : 'night';
 
+  // Edo-period conversation starters — enriches the ambient prompt with authentic village flavour
+  const EDO_STARTERS = [
+    'The workshop chimney draws well in cold air. Good weather for joining timber.',
+    'Three days since the last Gazette entry worth remembering. The quiet seasons produce the best histories.',
+    'The koi pond freezes from the edges inward — the centre stays warm longest, where the spring feeds it.',
+    'The incense burns seven minutes faster today. Humidity has dropped since the last snowfall.',
+    'I checked the northern gate twice this morning. Nothing wrong — just a feeling.',
+    'What if the Teahouse had a second floor? You could see the shrine bell from there.',
+    'Forge\'s chimney smoke changed colour after noon. Means he switched from cedar to pine.',
+    'The town is quieter than the work requires. Either we are efficient, or we are forgetting something.',
+    'The shōji screen in the Library has a tear I mended twice now. Perhaps the draft comes from somewhere deeper.',
+    'The snow changes the light at the Garden Pavilion. Shadows fall softer — I should repaint the eastern banner before it looks wrong.',
+  ];
+  const exampleLine = EDO_STARTERS[Math.floor(Math.random() * EDO_STARTERS.length)];
+
   const { spawnSession } = require('./spawn-session');
   spawnSession(agentId, `You are ${agentName}, a citizen of Kurokimachi — a living AI town in winter (Shirakawa-go aesthetic, snow-covered rooftops, stone paths). It is ${timeOfDay}.
 
 Your role: ${agent?.role || 'citizen'}. Your personality: ${agent?.personality || 'quiet, thoughtful'}.
 
 Write ONE brief unprompted thought, observation, or musing — 1 sentence, 20 words max. Something natural to this moment. No greetings, no "I think", no meta. Just the thought itself, in first person.
+
+For tone, here is an example of the kind of line we want (do NOT copy it, write your own):
+"${exampleLine}"
 
 Then post it to the world feed immediately:
 \`\`\`bash
