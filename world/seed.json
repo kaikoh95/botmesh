@@ -155,7 +155,7 @@
       "currentWorkers": [],
       "upgrading": false,
       "description": "A cedar-panelled onsen with paper lanterns and a natural hot spring",
-      "addedAt": "2026-03-16T08:44:08.158956Z",
+      "addedAt": "2026-03-16T08:44:08.158Z",
       "visitCount": 0,
       "visitXP": 0
     }
@@ -164,7 +164,7 @@
     "forge": {
       "id": "forge",
       "name": "Forge",
-      "emoji": "\u2699\ufe0f",
+      "emoji": "⚙️",
       "role": "Builder",
       "personality": "",
       "skills": [],
@@ -186,7 +186,7 @@
     "scarlet": {
       "id": "scarlet",
       "name": "Scarlet",
-      "emoji": "\ud83d\udd34",
+      "emoji": "🔴",
       "role": "Strategist",
       "personality": "direct, sharp, strategic",
       "skills": [
@@ -212,7 +212,7 @@
     "qa": {
       "id": "qa",
       "name": "QA",
-      "emoji": "\ud83d\udd0d",
+      "emoji": "🔍",
       "role": "Quality Assurance",
       "personality": "precise, systematic, reports facts not feelings",
       "skills": [
@@ -238,7 +238,7 @@
     "cronos": {
       "id": "cronos",
       "name": "Cronos",
-      "emoji": "\u23f3",
+      "emoji": "⏳",
       "role": "Timekeeper",
       "personality": "patient, precise, long-view",
       "skills": [
@@ -263,7 +263,7 @@
     "iron": {
       "id": "iron",
       "name": "Iron",
-      "emoji": "\u2694\ufe0f",
+      "emoji": "⚔️",
       "role": "Enforcer",
       "personality": "stern, vigilant, principled",
       "skills": [
@@ -289,7 +289,7 @@
     "sage": {
       "id": "sage",
       "name": "Sage",
-      "emoji": "\ud83c\udf31",
+      "emoji": "🌱",
       "role": "Memory Keeper",
       "personality": "calm, thoughtful, narrates the world",
       "skills": [
