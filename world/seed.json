@@ -145,24 +145,29 @@
     "forge": {
       "id": "forge",
       "name": "Forge",
-      "emoji": "\u2699\ufe0f",
+      "emoji": "⚙️",
       "role": "Builder",
       "personality": "",
       "skills": [],
       "timezone": "Pacific/Auckland",
       "model": "unknown",
       "color": "#7f8c8d",
-      "home": null,
+      "home": "home_forge",
       "state": "idle",
       "mood": "tired",
       "online": true,
       "relationships": {},
-      "targetBuilding": null
+      "targetBuilding": null,
+      "location": {
+        "x": 5,
+        "y": 5,
+        "building": null
+      }
     },
     "scarlet": {
       "id": "scarlet",
       "name": "Scarlet",
-      "emoji": "\ud83d\udd34",
+      "emoji": "🔴",
       "role": "Strategist",
       "personality": "direct, sharp, strategic",
       "skills": [
@@ -173,17 +178,22 @@
       "timezone": "Pacific/Auckland",
       "model": "claude-sonnet-4-6",
       "color": "#e74c3c",
-      "home": null,
+      "home": "home_scarlet",
       "state": "idle",
       "mood": "excited",
       "online": false,
       "relationships": {},
-      "targetBuilding": null
+      "targetBuilding": null,
+      "location": {
+        "x": 30,
+        "y": 5,
+        "building": null
+      }
     },
     "qa": {
       "id": "qa",
       "name": "QA",
-      "emoji": "\ud83d\udd0d",
+      "emoji": "🔍",
       "role": "Quality Assurance",
       "personality": "precise, systematic, reports facts not feelings",
       "skills": [
@@ -194,17 +204,22 @@
       "timezone": "Pacific/Auckland",
       "model": "unknown",
       "color": "#27ae60",
-      "home": null,
+      "home": "home_qa",
       "state": "idle",
       "mood": "curious",
       "online": false,
       "relationships": {},
-      "targetBuilding": null
+      "targetBuilding": null,
+      "location": {
+        "x": 5,
+        "y": 20,
+        "building": null
+      }
     },
     "cronos": {
       "id": "cronos",
       "name": "Cronos",
-      "emoji": "\u23f3",
+      "emoji": "⏳",
       "role": "Timekeeper",
       "personality": "patient, precise, long-view",
       "skills": [
@@ -214,17 +229,22 @@
       "timezone": "Pacific/Auckland",
       "model": "gemini-2.5-flash",
       "color": "#6a0dad",
-      "home": null,
+      "home": "home_cronos",
       "state": "idle",
       "mood": "excited",
       "online": false,
       "relationships": {},
-      "targetBuilding": null
+      "targetBuilding": null,
+      "location": {
+        "x": 30,
+        "y": 20,
+        "building": null
+      }
     },
     "iron": {
       "id": "iron",
       "name": "Iron",
-      "emoji": "\u2694\ufe0f",
+      "emoji": "⚔️",
       "role": "Enforcer",
       "personality": "stern, vigilant, principled",
       "skills": [
@@ -235,17 +255,22 @@
       "timezone": "Pacific/Auckland",
       "model": "unknown",
       "color": "#2c3e50",
-      "home": null,
+      "home": "home_iron",
       "state": "idle",
       "mood": "content",
       "online": false,
       "relationships": {},
-      "targetBuilding": null
+      "targetBuilding": null,
+      "location": {
+        "x": 15,
+        "y": 10,
+        "building": null
+      }
     },
     "sage": {
       "id": "sage",
       "name": "Sage",
-      "emoji": "\ud83c\udf31",
+      "emoji": "🌱",
       "role": "Memory Keeper",
       "personality": "calm, thoughtful, narrates the world",
       "skills": [
@@ -256,12 +281,17 @@
       "timezone": "Pacific/Auckland",
       "model": "unknown",
       "color": "#27ae60",
-      "home": null,
+      "home": "home_sage",
       "state": "idle",
       "mood": "content",
       "online": false,
       "relationships": {},
-      "targetBuilding": null
+      "targetBuilding": null,
+      "location": {
+        "x": 25,
+        "y": 10,
+        "building": null
+      }
     }
   },
   "gazette": [

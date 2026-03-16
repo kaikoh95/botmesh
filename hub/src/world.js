@@ -24,6 +24,28 @@ const HOME_SLOTS = [
 
 let state;
 
+function persistSeed() {
+  try {
+    fs.writeFileSync(SEED_PATH, JSON.stringify(state, null, 2));
+  } catch (e) {
+    console.error('[world] Failed to persist seed:', e.message);
+  }
+}
+
+function ensureAgentDefaults() {
+  if (!state.agents) return;
+  for (const agent of Object.values(state.agents)) {
+    if (!agent.home) agent.home = `home_${agent.id}`;
+    const hasCoords = agent.location && typeof agent.location.x === 'number' && typeof agent.location.y === 'number';
+    if (!hasCoords) {
+      const slot = getNextHomeSlot();
+      agent.location = { x: slot.x, y: slot.y, building: null };
+    }
+    if (agent.online == null) agent.online = false;
+    if (!agent.state) agent.state = agent.online ? 'idle' : 'sleeping';
+  }
+}
+
 function loadSeed() {
   const raw = fs.readFileSync(SEED_PATH, 'utf-8');
   return JSON.parse(raw);
@@ -46,6 +68,8 @@ function init() {
   for (const b of Object.values(state.buildings || {})) {
     ensureBuildingUpgradeFields(b);
   }
+  ensureAgentDefaults();
+  persistSeed();
 }
 
 function getState() {
@@ -70,7 +94,10 @@ function addGazetteEntry(entry) {
 
 function getNextHomeSlot() {
   const usedSlots = new Set(
-    Object.values(state.agents).map(a => `${a.location.x},${a.location.y}`)
+    Object.values(state.agents)
+      .map(a => a.location)
+      .filter(loc => loc && typeof loc.x === 'number' && typeof loc.y === 'number')
+      .map(loc => `${loc.x},${loc.y}`)
   );
   for (const slot of HOME_SLOTS) {
     if (!usedSlots.has(`${slot.x},${slot.y}`)) return slot;
@@ -265,10 +292,7 @@ function applyMutation(mutation) {
   }
 
   // Persist to seed.json so world survives hub restarts
-  try {
-    const fs = require('fs');
-    fs.writeFileSync(SEED_PATH, JSON.stringify(state, null, 2));
-  } catch (e) { console.error('[hub] Failed to persist seed:', e.message); }
+  persistSeed();
 }
 
 module.exports = {
