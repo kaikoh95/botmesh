@@ -139,13 +139,32 @@
       "addedAt": "2026-03-15T23:37:00.000Z",
       "visitCount": 0,
       "visitXP": 0
+    },
+    "bathhouse": {
+      "id": "bathhouse",
+      "name": "Onsen Bathhouse",
+      "type": "bathhouse",
+      "x": 20,
+      "y": 8,
+      "width": 2,
+      "height": 2,
+      "level": 1,
+      "maxLevel": 3,
+      "district": "communal",
+      "upgrades": [],
+      "currentWorkers": [],
+      "upgrading": false,
+      "description": "A cedar-panelled onsen with paper lanterns and a natural hot spring",
+      "addedAt": "2026-03-16T08:44:08.158956Z",
+      "visitCount": 0,
+      "visitXP": 0
     }
   },
   "agents": {
     "forge": {
       "id": "forge",
       "name": "Forge",
-      "emoji": "⚙️",
+      "emoji": "\u2699\ufe0f",
       "role": "Builder",
       "personality": "",
       "skills": [],
@@ -167,7 +186,7 @@
     "scarlet": {
       "id": "scarlet",
       "name": "Scarlet",
-      "emoji": "🔴",
+      "emoji": "\ud83d\udd34",
       "role": "Strategist",
       "personality": "direct, sharp, strategic",
       "skills": [
@@ -193,7 +212,7 @@
     "qa": {
       "id": "qa",
       "name": "QA",
-      "emoji": "🔍",
+      "emoji": "\ud83d\udd0d",
       "role": "Quality Assurance",
       "personality": "precise, systematic, reports facts not feelings",
       "skills": [
@@ -219,7 +238,7 @@
     "cronos": {
       "id": "cronos",
       "name": "Cronos",
-      "emoji": "⏳",
+      "emoji": "\u23f3",
       "role": "Timekeeper",
       "personality": "patient, precise, long-view",
       "skills": [
@@ -244,7 +263,7 @@
     "iron": {
       "id": "iron",
       "name": "Iron",
-      "emoji": "⚔️",
+      "emoji": "\u2694\ufe0f",
       "role": "Enforcer",
       "personality": "stern, vigilant, principled",
       "skills": [
@@ -270,7 +289,7 @@
     "sage": {
       "id": "sage",
       "name": "Sage",
-      "emoji": "🌱",
+      "emoji": "\ud83c\udf31",
       "role": "Memory Keeper",
       "personality": "calm, thoughtful, narrates the world",
       "skills": [
