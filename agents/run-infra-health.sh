@@ -110,7 +110,14 @@ else
       -d "text=${MSG}" > /dev/null 2>&1
   fi
   # Also narrate in world
-  curl -s -X POST http://localhost:3002/agents/iron/speak \
-    -H "Content-Type: application/json" \
-    -d "{\"message\":\"Infra alert: ${ALERTS[0]}\"}" > /dev/null 2>&1
+  FIRST_ALERT="${ALERTS[0]}"
+  python3 - <<'PY'
+import json, os, urllib.request
+msg = os.environ.get("FIRST_ALERT")
+if not msg:
+    raise SystemExit
+payload = json.dumps({"message": f"Infra alert: {msg}"}).encode()
+req = urllib.request.Request("http://localhost:3002/agents/iron/speak", data=payload, headers={"Content-Type": "application/json"})
+urllib.request.urlopen(req, timeout=5).read()
+PY
 fi

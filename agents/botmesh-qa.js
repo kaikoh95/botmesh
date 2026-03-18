@@ -20,13 +20,18 @@ const http    = require('http');
 const net     = require('net');
 const https   = require('https');
 const fs      = require('fs');
-const { execSync } = require('child_process');
+const { execSync, execFileSync } = require('child_process');
 const path    = require('path');
 
 const HUB_URL     = process.env.HUB_URL     || 'ws://localhost:3001';
 const STATE_LOCAL  = 'http://localhost:3002';
 const UI_LOCAL     = 'http://localhost:3003';
 const AGENTS_DIR   = path.join(__dirname);
+
+function postState(path, payload, options = {}) {
+  const args = ['-s', '-X', 'POST', `http://localhost:3002/${path}`, '-H', 'Content-Type: application/json', '-d', JSON.stringify(payload)];
+  return execFileSync('curl', args, options);
+}
 
 // ─── UTILS ───────────────────────────────────────────────────────────────────
 
@@ -380,9 +385,8 @@ ${evidence}
       console.error('[QA] speak failed:', e.message);
     }
 
-    // Wake Patch to read the brief
     try {
-      execSync('curl -s -X POST http://localhost:3002/agents/patch/wake -H "Content-Type: application/json" -d \'{"task":"QA failure — read /tmp/patch-brief.md"}\'', { timeout: 5000 });
+      postState('agents/patch/wake', { task: 'QA failure — read /tmp/patch-brief.md' });
       console.log('[QA] Patch woken to handle brief');
     } catch (e) {
       console.error('[QA] Failed to wake Patch:', e.message);

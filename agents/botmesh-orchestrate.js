@@ -27,7 +27,7 @@
  *   Echo   🔊  → communication, messaging, broadcast
  */
 
-const { execSync, spawnSync } = require('child_process');
+const { execSync, spawnSync, execFileSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 const registry = require('./task-registry');
@@ -85,6 +85,13 @@ function loadSpeakToken() {
 }
 const SPEAK_TOKEN = loadSpeakToken();
 const AUTH_HEADER = SPEAK_TOKEN ? `-H "Authorization: Bearer ${SPEAK_TOKEN}"` : '';
+
+function postState(path, payload, options = {}) {
+  const args = ['-s', '-X', 'POST', `http://localhost:3002/${path}`];
+  if (SPEAK_TOKEN) args.push('-H', `Authorization: Bearer ${SPEAK_TOKEN}`);
+  args.push('-H', 'Content-Type: application/json', '-d', JSON.stringify(payload));
+  return execFileSync('curl', args, options);
+}
 
 // ─── ROADMAP HELPERS ──────────────────────────────────────────────────────────
 function loadRoadmap() {
@@ -576,7 +583,7 @@ print('Forge sprite saved')
 
       // Wake planner in the UI
       try {
-        execSync(`curl -s -X POST http://localhost:3002/agents/planner/wake ${AUTH_HEADER} -H "Content-Type: application/json" -d '{"task":"Review city plan","building":"town_hall"}'`);
+        postState('agents/planner/wake', { task: 'Review city plan', building: 'town_hall' });
       } catch {}
 
       const { spawnSession } = require('./spawn-session');
@@ -727,7 +734,7 @@ Short review. Don't overthink it. One observation. One recommendation. Done.`, {
       const STATE_URL = 'https://api.kurokimachi.com';
 
       // Wake Forge — pass building so UI walks him to workshop
-      try { execSync(`curl -s -X POST http://localhost:3002/agents/forge/wake ${AUTH_HEADER} -H "Content-Type: application/json" -d '{"task":"Forge discretion - decide what the world needs","building":"workshop"}'`); } catch {}
+      try { postState('agents/forge/wake', { task: 'Forge discretion - decide what the world needs', building: 'workshop' }); } catch {}
 
       // ── Read Kenzo's brief if available ─────────────────────────────────────
       let forgeBriefSection = '';
@@ -849,7 +856,7 @@ Make your decision. Do it. Narrate it. One thing. That's all.`, { timeout: 600, 
       const doneIdeas = (roadmap.ideas || []).filter(i => i.status === 'done').map(i => i.title).join(', ');
       const STATE_URL = 'https://api.kurokimachi.com';
 
-      try { execSync(`curl -s -X POST http://localhost:3002/agents/muse/wake ${AUTH_HEADER} -H "Content-Type: application/json" -d '{"task":"Generate new roadmap ideas","building":"observatory"}'`); } catch {}
+      try { postState('agents/muse/wake', { task: 'Generate new roadmap ideas', building: 'observatory' }); } catch {}
 
       const { spawnSession } = require('./spawn-session');
       spawnSession('muse', `# Muse 🎭 — The Visionary
@@ -1453,7 +1460,7 @@ function runIdeasMode() {
     const agentBuildings = { forge:'workshop', lumen:'library', mosaic:'observatory', muse:'observatory',
       sage:'library', iron:'town_hall', cronos:'post_office', echo:'post_office', scarlet:'town_hall',
       patch:'bathhouse', canvas:'market' };
-    try { execSync(`curl -s -X POST http://localhost:3002/agents/${agent}/wake ${AUTH_HEADER} -H "Content-Type: application/json" -d '{"task":"${idea.title.replace(/'/g,".")}","building":"${agentBuildings[agent]||'town_hall'}"}'`); } catch {}
+    try { postState(`agents/${agent}/wake`, { task: idea.title.replace(/'/g, '.'), building: agentBuildings[agent] || 'town_hall' }); } catch {}
     const STATE_URL = 'https://api.kurokimachi.com';
 
     const brief = `# ${agent.charAt(0).toUpperCase()+agent.slice(1)} — Roadmap Task

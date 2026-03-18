@@ -580,6 +580,20 @@ app.use((req, res, next) => {
 });
 app.use(express.json());
 
+app.use((err, req, res, next) => {
+  if (err instanceof SyntaxError && err.status === 400 && 'body' in err) {
+    const rawBody = typeof err.body === 'string'
+      ? err.body
+      : Buffer.isBuffer(err.body)
+        ? err.body.toString()
+        : JSON.stringify(err.body);
+    const snippet = rawBody.length > 120 ? `${rawBody.slice(0, 120)}…` : rawBody;
+    console.warn(`[State] JSON parse error on ${req.method} ${req.url}: ${err.message} — body: ${snippet}`);
+    return res.status(400).json({ error: 'invalid_json', detail: 'Request body must be valid JSON.' });
+  }
+  next(err);
+});
+
 // Stricter rate limits on write endpoints
 app.use('/world/mutate', writeLimiter);
 app.use('/agents/:id/speak', writeLimiter);
