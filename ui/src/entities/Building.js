@@ -29,6 +29,7 @@ const BUILDING_TEXTURE_MAP = {
   sake_brewery:   'brewery',
   'garden-pavilion': 'pavilion',
   leisure:         'teahouse',
+  cottage_row1_west: 'cottage',
 };
 
 // Map building type → sprite texture base name (fallback when id not in map above)
@@ -43,6 +44,7 @@ const BUILDING_TYPE_TEXTURE_MAP = {
   keep:     'keep',
   brewery:  'brewery',
   garden:   'garden',
+  residential: 'cottage',
 };
 
 const BUILDING_COLORS = {
