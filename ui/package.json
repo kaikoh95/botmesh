@@ -6,6 +6,7 @@
     "start": "npx http-server . -p 3003 -c3600 --cors"
   },
   "dependencies": {
+    "express": "^5.2.1",
     "http-server": "^14.1.1"
   }
 }

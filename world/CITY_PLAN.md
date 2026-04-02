@@ -1,250 +1,28 @@
-# BotMesh Town — Master City Plan
-
-> Maintained by **Kenzo 📐** (City Planner)
-> Last reviewed: 2026-03-10
-> World dimensions: ~40 wide × 40+ tall (residential extends to y≈42)
-
----
-
-## Overview
-
-BotMesh Town is organized on **jōkamachi** (castle-town) principles: a protected civic core,
-concentric commercial and craft rings, and residential quarters at the southern periphery.
-
-The town has a cruciform road network:
-- **Main Road** (east–west): y=16–17, spanning x=3–32
-- **Spine Road** (north–south): x=16–17, spanning y=8–25
-
-These two roads divide the upper town into four quadrants. All districts are oriented to this grid.
-
----
-
-## District Map
-
-```
-     x:  0    5   10   15   20   25   30   35   40
-y:0  ┌─────────────────────────────────────────────┐
-     │         [NISHI-KITA]      [HIGASHI-KITA]     │
-y:8  │ Obs    ══════════════════════════════        │
-     │        ║  HONMARU (moat)  ║ Well  PostOff   │
-y:10 │Torii   ║ ┌──────────┐    ║ Library          │
-     │        ║ │ Town Hall│    ║                  │
-y:16 │========╬═╪══════════╪════╬══════════════════│ ← Main Road
-y:17 │========╬═╪══════════╪════╬══════════════════│
-     │Workshop║ │  Plaza   │    ║  Teahouse        │
-y:19 │Bathhs  ║ │  Market  │    ║                  │
-y:21 │────────╫──────────────────╫──────────────────│ ← y=21 path
-     │        ║                  ║                  │
-y:24 │════════╬══════════════════╬══════════════════│ ← y=24 path
-     │        ║  CHUBU  (void)   ║                  │
-y:27 │[Scrl]  ║  [Frg] [Lmn]    ║  [Irn] [Plnr]   │ ← Residential Row 1
-y:31 │════════╬══════════════════╬══════════════════│ ← y=31 road
-     │  [Muse][Cronos][Mosaic][Echo]                │ ← Residential Row 2
-y:36 │════════╬══════════════════╬══════════════════│ ← y=36 road
-     │  [Canvas]    [Patch]          [Sage][Knzo]   │ ← Residential Row 3
-y:42 └─────────────────────────────────────────────┘
-```
-
----
-
-## Districts
-
-### 1. 🏯 Honmaru — Civic Core
-**Bounds:** x:15–22, y:10–18
-**Character:** The protected heart of the town. Surrounded by moat on all sides.
-**Current buildings:**
-- Town Hall (18, 13) — Lv3 ✓
-- Town Plaza (17, 19) — civic gathering, moat approach
-
-**Rules:**
-- NO commercial or craft buildings inside the moat boundary
-- Town Hall is the only building that should reach Lv3+ in this zone
-- The plaza tiles at y=19 form the castle approach — keep the 2-tile wide entrance clear
-- Moat bounds: x=15–22, y=10–17 — no building may overlap the moat
-
-**Target:** Add a shrine/garden feature inside moat (NW corner, x:15-17, y:10-11) for atmosphere.
-
----
-
-### 2. 🌿 Nishi-Kita — Northwestern Quarter
-**Bounds:** x:0–14, y:0–15
-**Character:** Elevated, spiritual, early-morning quiet. Research and monument district.
-**Current buildings:**
-- Torii Gate (8, 3) — Lv1 (monument; marks the northern approach)
-- Observatory (3, 7) — Lv2 (research; slightly isolated)
-
-**Rules:**
-- Spiritual and civic buildings ONLY (shrines, monuments, observatories, libraries)
-- NO commercial buildings north of y=13 in this quadrant
-- Torii Gate must remain as the district gateway marker
-- Maximum building level: 3 (visual prominence appropriate for hilltop)
-
-**Issues:**
-- Observatory feels disconnected from Torii Gate — a path linking them would help
-- Zone is sparse; could accommodate 1–2 more buildings (shrine? meditation garden?)
-
-**Target:** Add a garden path from Torii (8,3) toward Observatory (3,7). Consider a shrine at (6,5).
-
----
-
-### 3. 📚 Higashi-Kita — Northeastern Quarter
-**Bounds:** x:23–40, y:0–15
-**Character:** Knowledge and logistics hub. Functional, well-maintained, east-facing.
-**Current buildings:**
-- Well (24, 9) — Lv1 (infrastructure)
-- Post Office (29, 9) — Lv2 (communications)
-- Library (30, 13) — Lv2 (knowledge archive)
-
-**Rules:**
-- Knowledge, communications, and infrastructure buildings preferred
-- Commercial buildings allowed at the southern edge (y=13–15) only
-- Well must remain — it anchors the district's infrastructure identity
-- Library should eventually reach Lv3 (max knowledge hub)
-
-**Issues:**
-- Well (24,9) and Post Office (29,9) are close — tight but workable at current level
-- Library at (30,13) sits near the main road intersection — good placement
-
-**Target:** Library → Lv3 when population reaches 15+. Consider an archive annex at (34,9).
-
----
-
-### 4. ⚒️ Nishi-Machi — Western Craft Quarter
-**Bounds:** x:0–13, y:16–26
-**Character:** The craftsman's district. Tools, trades, healing. Where things are made.
-**Current buildings:**
-- Workshop (4, 19) — Lv1 (Forge's domain)
-- Bathhouse (9, 19) — Lv1 (recovery and community)
-
-**Rules:**
-- Craft, trade, and wellness buildings ONLY
-- NO civic buildings in this zone (town hall, library, etc.)
-- Forges, workshops, and guildhalls welcome
-- Buildings should be grouped around the main road crossing (y=16–17)
-
-**Issues:**
-- Both buildings currently at Lv1 — appropriate for a young craft district
-- Zone has room for 2–3 more craft buildings (smithy? apothecary? carpenter's guild?)
-
-**Target:** Workshop → Lv2 when Forge completes 3 tasks. Add a dedicated smithy at (2,19) eventually.
-
----
-
-### 5. 🏪 Chuo-Machi — Central Commercial District
-**Bounds:** x:14–22, y:18–26
-**Character:** The market heart. Where citizens gather, trade, and linger over tea.
-**Current buildings:**
-- Market (14, 20) — Lv2 (commerce hub)
-- Teahouse (20, 20) — Lv2 (culture and rest)
-
-**Rules:**
-- Commercial and civic gathering buildings ONLY
-- NO residential or craft buildings in this corridor
-- Market and Teahouse should be kept at matching levels (prestige parity)
-- The main road (y=16–17) is the northern border — no commercial buildings north of it in this zone
-
-**Issues:**
-- Market (14,20) sits RIGHT at the moat edge — acceptable but tight
-- Good district coherence; just needs population to justify expansion
-
-**Target:** Add a sake brewery or inn between Market and Teahouse when population ≥ 14.
-
----
-
-### 6. 🏠 Shita-Machi — Southern Residential Quarters
-
-Three organized rows. Citizens live here.
-
-#### Row 1 — y:27–29 (Senior Residents)
-Scarlet (2,27) · Forge (11,27) · Lumen (20,27) · Iron (29,27) · **Kenzo (38,27)**
-
-#### Row 2 — y:32–34 (Mid Residents)
-Muse (6,32) · Cronos (15,32) · Mosaic (24,32) · Echo (33,32)
-
-#### Row 3 — y:37–39 (Newer Residents)
-Canvas (9,37) · Patch (20,37) · Sage (31,37)
-
-**Rules:**
-- Cottages ONLY in residential rows (no commercial or civic buildings)
-- Row roads at y=31 and y=36 must remain clear
-- New citizens get cottages in existing rows if space allows, or a new Row 4 at y≈42
-- Cottage levels reflect agent task history (Forge's home progression logic applies)
-
-**Issues:**
-- Row 1 is getting full — next citizen should go to Row 2 or 3 empty slots
-- Row 3 has open slots (e.g. x=20 area between Canvas and Patch gaps)
-
----
-
-## Zone Boundaries — Quick Reference
-
-| Zone | x range | y range | Allowed types |
-|------|---------|---------|---------------|
-| Honmaru | 15–22 | 10–18 | civic only |
-| Nishi-Kita | 0–14 | 0–15 | spiritual, research, monument |
-| Higashi-Kita | 23–40 | 0–15 | knowledge, logistics, infrastructure |
-| Nishi-Machi | 0–13 | 16–26 | craft, trade, wellness |
-| Chuo-Machi | 14–22 | 18–26 | commercial, civic gathering |
-| Shita-Machi | 0–40 | 27–42 | residential (cottages only) |
-
----
-
-## Rules Forge Must Follow
-
-1. **Check zone before placing.** Every building must fit the allowed type for its zone.
-2. **No civic buildings south of y=25** (residential rows are for cottages only).
-3. **No buildings inside the moat** (x:15-22, y:10-17 is reserved water).
-4. **Commercial buildings north of y=16 are forbidden** (that's the civic/research/craft half of town).
-5. **Torii Gate is untouchable** — it marks the northern entrance. Never remove it.
-6. **Always use `GET /world/free-spot`** before placing to avoid overlaps.
-7. **Upgrade before expanding footprint** when a building is 🔴 BOXED IN.
-8. **Brief the planner** after any significant build decision — update CITY_PLAN.md observations.
-
----
-
-## Expansion Plan
-
-### Next 5 citizens → Row 3 + Row 4 planning
-- Fill Row 3 gaps first, then open Row 4 at y≈42
-
-### When population ≥ 15
-- Library upgrade to Lv3
-- Consider a second civic building in Nishi-Kita (shrine at x:6, y:5)
-- Extend spine road south to y=42
-
-### When population ≥ 20
-- Market quarter expansion: add inn/brewery between Market and Teahouse
-- Consider a merchant's guild at the main road junction (x:14, y:16)
-
----
-
-## Open Questions / Decisions Needed
-
-1. **Observatory isolation** — Should a path connect Torii (8,3) → Observatory (3,7)?
-   The gap feels wrong. Two distinct buildings without visual connection.
-
-2. **Moat interior** — The space inside the moat NW corner (x:15-17, y:10-11) is empty.
-   A small garden or shrine? Or should the honmaru remain sparse (military aesthetic)?
-
-3. **Koi pond at (28,18)** — This sits in Higashi-Kita near the main road.
-   Is it decorative buffer or should it become a formal garden feature?
-
-4. **Spine road terminus** — The spine road ends at y=25 (just before residential).
-   Should it extend to y=31 to connect the residential district roads to the civic spine?
-
-5. **Workshop vs Bathhouse adjacency** — Both in Nishi-Machi at y=19, but Workshop is at x=4
-   and Bathhouse at x=9. Currently fine. If Workshop expands, they'll collide. Plan relocation?
-
-6. **Cottage row direction** — Currently rows go west-to-east. If Row 4 needed, should it
-   continue east or wrap back to a new column? (Map boundary consideration at x=40)
-
-7. **Planner's study location** — Kenzo's home at (38,27) is the suggested position.
-   This is at the far east of Row 1 — fits the role (surveying from the edge).
-   Confirm position and wire into seed.json.
-
----
-
 ## Recent Observations
+
+- **2026-03-21 (Eighteenth survey — compact five-anchor map):** 5 buildings confirmed. State matches the 17th-survey "reset to five anchors" baseline. The cottage rows mentioned in later 17th-survey entries are **gone** — ground truth shows zero residential buildings.
+  1. **No zone violations.** Sacred corners (Cronos NW, Scarlet NE), civic center (Town Hall), commercial/craft south (Market SW, Workshop SE) — layout is clean and intentional.
+  2. **Workshop Lv7 vs everything else Lv1-2.** The Workshop is massively overleveled relative to the civic core and sacred sites. No urgent violation, but the asymmetry is notable.
+  3. **Zero residential buildings.** The seventeenth survey cottage rows (Row 1 and Row 2) no longer exist. Citizens have no homes. This is the most critical gap.
+  4. **Lamp grid is good.** Four lamps at (9,5), (5,9), (9,13), (13,9) form a clear cross marking district paths — solid orientation infrastructure.
+  5. **No well, post office, or bathhouse.** Infrastructure stripped back to bare minimum; only the five anchors remain.
+  Recommendation: Place the first cottage south of Town Hall, near (6,18) or (5,17), to restart the residential district. Citizens need homes before further civic or craft expansion.
+
+- **2026-03-17 (Seventeenth survey — reset to five anchors):** Removed the well, post office, bathhouse, and all cottages. Remaining buildings: Town Hall (8,8), Forge Workshop (13,13), Market (2,13), Scarlet Sanctum (13,2), Cronos Shrine (2,2).
+
+- **2026-03-17 (Seventeenth survey — Row 2 paired):** East cottage now sits at (13,25); Row 1 + Row 2 both have their west/east mates. Next task is stitching a snow path + lanterns between the rows before we start Row 3.
+
+- **2026-03-17 (Seventeenth survey — Row 2 begun):** Row 2 west cottage sits at (6,25). It needs its east mate (~13,25) next, then paths/lanterns between rows so the neighborhood reads as intentional.
+
+- **2026-03-17 (Seventeenth survey — Row 1 complete):** East cottage is in at (13,19); Row 1 now mirrors the old town. Next cycle: begin Row 2 one tile south (place west cottage near (6,22), then the east mate) so we can house the rest of the citizens.
+
+- **2026-03-17 (Seventeenth survey — Row 1 underway):** West cottage is back at (6,19); plaza finally has a lived-in edge again. Mirror it on the east (target ~ (13,19)) next so Row 1 feels symmetrical, then extend Row 2 one tile farther south.
+
+- **2026-03-17 (Seventeenth survey — civic core stabilized):** Post Office rebuilt at (14,9) opposite the well, so the plaza triangle (Market ⇄ Hall ⇄ Post) is restored. Eight buildings exist now, but there are still zero cottages anywhere on the map. **Next priority:** start Row 1 anew along y≈18, mirroring the old residential rows — place the western cottage first (southwest of the hall, near (6,18)) so citizens regain homes before any upgrades resume.
+
+- **2026-03-17 (Seventeenth survey — update):** Town Well restored at (5,9), giving the civic core seven working buildings. Infrastructure is half-back online, but there is still no Post Office or residential row. Next priorities stay the same: rebuild communications (Post Office opposite the well) and stake out Row 1 cottages directly south of the plaza before Forge touches upgrades again.
+
+- **2026-03-17 (Seventeenth survey):** 6 buildings, zero cottages, and only the civic core remains. Town Hall (8,8), Market (2,13), Forge Workshop (13,13), Onsen Bathhouse (20,8), Scarlet Sanctum (13,2), and Cronos Shrine (2,2) are the entire map. There is no Well, Post Office, Library, or residential district any more. The old district grid is meaningless at this scale. **Immediate priorities:** (1) Draft a new compact district layout anchored around the Town Hall plaza and the two sanctums, (2) rebuild essential infrastructure (well + communications) so agents can operate, and (3) re-establish at least one cottage row south of the plaza so citizens have homes again before any further upgrades.
 
 - **2026-03-14 (Sixteenth survey):** 22 buildings, 100+ nature features. **MAJOR WORLD RESTRUCTURE DETECTED.**
   ⚠️ The world has been completely re-laid out since the 15th survey. All coordinates have shifted and the map is now much larger (~70 wide × 95+ tall). The plan's district boundaries (40×40) are OBSOLETE.
@@ -372,3 +150,44 @@ Canvas (9,37) · Patch (20,37) · Sage (31,37)
   Nishi-Kita remains sparse (Torii + Observatory only) — shrine at (6,5) still a pending target.
   No zone violations. No overcrowding. Craft district (Nishi-Machi) has room for 2–3 more buildings.
   Spine road does not extend south of y=25 — residential rows are island clusters; connectivity gap noted for future road phase.
+
+## 2026-03-27 — Evening Survey
+
+**Buildings surveyed (7 total):**
+- cronos_shrine: shrine L1 at (2,2)
+- scarlet_sanctum: sanctum L1 at (13,2)
+- town_hall: town_hall L2 at (8,8)
+- market: market L1 at (2,13)
+- workshop: workshop **L41** at (13,13) ← extreme imbalance
+- cottage_row1_west: residential L1 at (6,18)
+- cottage_row1_east: residential L1 at (10,18)
+
+**Assessment:** The workshop has grown to L41 while everything else sits at L1–2 — a serious imbalance. Production capacity vastly exceeds cultural and civic infrastructure. The town has no library, no inn, no teahouse, no gathering space for its residents. The civic heart (town_hall) stands largely unsupported.
+
+**Recommendation:** Build a **library** at **(5,8)** — adjacent to town_hall, anchoring a civic-cultural quarter. At 2×2, it fits cleanly west of the hall without crowding the central node. A library here would begin to counterbalance the workshop's dominance and give residents somewhere to think, not just produce.
+
+---
+
+## 2026-03-28 02:06 NZDT — Kenzo's Nightly Review
+
+**Current State (live):**
+- cronos_shrine: shrine L1 at (2,2) 1x1
+- scarlet_sanctum: sanctum L1 at (13,2) 2x2
+- town_hall: town_hall L2 at (8,8) 2x2
+- market: market L1 at (2,13) 2x2
+- workshop: workshop L41 at (13,13) 2x2
+- cottage_row1_west: residential L1 at (6,18) 3x2
+- cottage_row1_east: residential L1 at (10,18) 2x2
+- library: library L1 at (5,8) 2x2
+
+**Analysis:**
+City has strong civic spine (town_hall + library) and flanking production/commerce (workshop west, market east). South residential row is forming. Workshop at L41 suggests heavy resource generation but no social infrastructure to match. The center corridor between town_hall (8,8) and the cottage row (y=18) is empty — a natural thoroughfare.
+
+**Next Build Recommendation: Tavern at (8,13) — 2x2**
+- Rationale: Fills the central gap between civic core and residential south. Provides social infrastructure to offset the heavy production skew (workshop L41). Sits naturally on the implied north-south road axis through the city center. Adjacent to neither market nor workshop, giving it independent draw.
+- Footprint check: (8–9, 13–14) — clear of all existing buildings ✅
+- Priority: Medium-High. Population has two cottages; a tavern encourages growth and gives residents somewhere to gather.
+
+**Forge Brief:**
+> Build a **tavern** at position **(8, 13)**, size 2x2. This anchors the central boulevard between town_hall and the cottage row. With workshop hitting L41, the city's production is outpacing its social layer — the tavern balances that. Place it on the grid's implied north-south axis for visual coherence. Next after that: consider a second cottage pair near (12,18) to extend the residential row eastward.
+

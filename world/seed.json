@@ -41,6 +41,73 @@
         "x": 13,
         "y": 9,
         "addedAt": "2026-03-15T23:37:00.000Z"
+      },
+      {
+        "id": "cottage_row1_west",
+        "action": "add",
+        "entity": "building",
+        "name": "Hearthstone Cottage",
+        "type": "residential",
+        "x": 6,
+        "y": 18,
+        "level": 1
+      },
+      {
+        "id": "cottage_row1_east",
+        "action": "add",
+        "entity": "building",
+        "name": "Eastgate Cottage",
+        "type": "residential",
+        "x": 10,
+        "y": 18,
+        "width": 2,
+        "height": 2,
+        "level": 1,
+        "district": "residential",
+        "agentId": "forge",
+        "description": "A sturdy cottage at the eastern end of the residential row, welcoming new settlers to Kurokimachi."
+      },
+      {
+        "id": "library",
+        "entity": "building",
+        "action": "add",
+        "agentId": "forge",
+        "name": "The Library",
+        "type": "library",
+        "x": 5,
+        "y": 8,
+        "width": 2,
+        "height": 2,
+        "level": 1,
+        "district": "cultural",
+        "description": "A quiet hall of knowledge, west of Town Hall — where Kurokimachi comes to think."
+      },
+      {
+        "id": "tavern",
+        "entity": "building",
+        "action": "add",
+        "agentId": "forge",
+        "name": "The Tavern",
+        "type": "tavern",
+        "x": 8,
+        "y": 13,
+        "width": 2,
+        "height": 2,
+        "level": 1,
+        "district": "social",
+        "description": "The heart of the boulevard — where wanderers and neighbours find warmth and ale between town hall and the cottages."
+      },
+      {
+        "id": "tavern",
+        "action": "add",
+        "entity": "building",
+        "name": "The Tavern",
+        "type": "tavern",
+        "x": 8,
+        "y": 13,
+        "width": 2,
+        "height": 2,
+        "level": 1
       }
     ]
   },
@@ -91,10 +158,16 @@
       "y": 8,
       "width": 2,
       "height": 2,
-      "level": 1,
+      "level": 2,
       "maxLevel": 3,
       "district": "communal",
-      "upgrades": [],
+      "upgrades": [
+        {
+          "level": 2,
+          "upgradedAt": "2026-03-19T21:32:35.081Z",
+          "note": "The Workshop has grown to Lv7 while the Town Hall sits at Lv1. A town this capable needs governance to match. Raising the hall."
+        }
+      ],
       "currentWorkers": [],
       "upgrading": false,
       "description": "",
@@ -129,10 +202,291 @@
       "y": 13,
       "width": 2,
       "height": 2,
-      "level": 1,
+      "level": 41,
       "maxLevel": null,
       "district": "communal",
-      "upgrades": [],
+      "upgrades": [
+        {
+          "agentId": "forge",
+          "agentName": "Forge",
+          "fromLevel": 1,
+          "toLevel": 2,
+          "completedAt": "2026-03-16T17:03:17.829Z"
+        },
+        {
+          "agentId": "forge",
+          "agentName": "Forge",
+          "fromLevel": 2,
+          "toLevel": 3,
+          "completedAt": "2026-03-16T19:06:26.678Z"
+        },
+        {
+          "agentId": "forge",
+          "agentName": "Forge",
+          "fromLevel": 3,
+          "toLevel": 4,
+          "completedAt": "2026-03-16T21:08:03.055Z"
+        },
+        {
+          "agentId": "forge",
+          "agentName": "Forge",
+          "fromLevel": 4,
+          "toLevel": 5,
+          "completedAt": "2026-03-19T17:04:37.155Z"
+        },
+        {
+          "agentId": "forge",
+          "agentName": "Forge",
+          "fromLevel": 5,
+          "toLevel": 6,
+          "completedAt": "2026-03-19T19:07:05.687Z"
+        },
+        {
+          "agentId": "forge",
+          "agentName": "Forge",
+          "fromLevel": 6,
+          "toLevel": 7,
+          "completedAt": "2026-03-19T21:08:11.422Z"
+        },
+        {
+          "agentId": "forge",
+          "agentName": "Forge",
+          "fromLevel": 7,
+          "toLevel": 8,
+          "completedAt": "2026-03-23T05:07:26.810Z"
+        },
+        {
+          "agentId": "forge",
+          "agentName": "Forge",
+          "fromLevel": 8,
+          "toLevel": 9,
+          "completedAt": "2026-03-23T07:08:33.896Z"
+        },
+        {
+          "agentId": "forge",
+          "agentName": "Forge",
+          "fromLevel": 9,
+          "toLevel": 10,
+          "completedAt": "2026-03-23T17:02:12.537Z"
+        },
+        {
+          "agentId": "forge",
+          "agentName": "Forge",
+          "fromLevel": 10,
+          "toLevel": 11,
+          "completedAt": "2026-03-23T19:05:28.794Z"
+        },
+        {
+          "agentId": "forge",
+          "agentName": "Forge",
+          "fromLevel": 11,
+          "toLevel": 12,
+          "completedAt": "2026-03-23T21:08:29.008Z"
+        },
+        {
+          "agentId": "forge",
+          "agentName": "Forge",
+          "fromLevel": 12,
+          "toLevel": 13,
+          "completedAt": "2026-03-23T23:10:05.969Z"
+        },
+        {
+          "agentId": "forge",
+          "agentName": "Forge",
+          "fromLevel": 13,
+          "toLevel": 14,
+          "completedAt": "2026-03-24T01:14:34.414Z"
+        },
+        {
+          "agentId": "forge",
+          "agentName": "Forge",
+          "fromLevel": 14,
+          "toLevel": 15,
+          "completedAt": "2026-03-24T03:16:39.174Z"
+        },
+        {
+          "agentId": "forge",
+          "agentName": "Forge",
+          "fromLevel": 15,
+          "toLevel": 16,
+          "completedAt": "2026-03-24T05:18:22.498Z"
+        },
+        {
+          "agentId": "forge",
+          "agentName": "Forge",
+          "fromLevel": 16,
+          "toLevel": 17,
+          "completedAt": "2026-03-24T07:21:47.440Z"
+        },
+        {
+          "agentId": "forge",
+          "agentName": "Forge",
+          "fromLevel": 17,
+          "toLevel": 18,
+          "completedAt": "2026-03-24T17:02:56.771Z"
+        },
+        {
+          "agentId": "forge",
+          "agentName": "Forge",
+          "fromLevel": 18,
+          "toLevel": 19,
+          "completedAt": "2026-03-24T19:05:05.309Z"
+        },
+        {
+          "agentId": "forge",
+          "agentName": "Forge",
+          "fromLevel": 19,
+          "toLevel": 20,
+          "completedAt": "2026-03-24T21:06:38.460Z"
+        },
+        {
+          "agentId": "forge",
+          "agentName": "Forge",
+          "fromLevel": 20,
+          "toLevel": 21,
+          "completedAt": "2026-03-24T23:08:12.614Z"
+        },
+        {
+          "agentId": "forge",
+          "agentName": "Forge",
+          "fromLevel": 21,
+          "toLevel": 22,
+          "completedAt": "2026-03-25T01:09:55.137Z"
+        },
+        {
+          "agentId": "forge",
+          "agentName": "Forge",
+          "fromLevel": 22,
+          "toLevel": 23,
+          "completedAt": "2026-03-25T03:12:24.297Z"
+        },
+        {
+          "agentId": "forge",
+          "agentName": "Forge",
+          "fromLevel": 23,
+          "toLevel": 24,
+          "completedAt": "2026-03-25T05:15:12.939Z"
+        },
+        {
+          "agentId": "forge",
+          "agentName": "Forge",
+          "fromLevel": 24,
+          "toLevel": 25,
+          "completedAt": "2026-03-25T07:16:35.911Z"
+        },
+        {
+          "agentId": "forge",
+          "agentName": "Forge",
+          "fromLevel": 25,
+          "toLevel": 26,
+          "completedAt": "2026-03-25T17:03:50.325Z"
+        },
+        {
+          "agentId": "forge",
+          "agentName": "Forge",
+          "fromLevel": 26,
+          "toLevel": 27,
+          "completedAt": "2026-03-25T19:07:02.386Z"
+        },
+        {
+          "agentId": "forge",
+          "agentName": "Forge",
+          "fromLevel": 27,
+          "toLevel": 28,
+          "completedAt": "2026-03-25T21:09:02.024Z"
+        },
+        {
+          "agentId": "forge",
+          "agentName": "Forge",
+          "fromLevel": 28,
+          "toLevel": 29,
+          "completedAt": "2026-03-25T23:11:27.141Z"
+        },
+        {
+          "agentId": "forge",
+          "agentName": "Forge",
+          "fromLevel": 29,
+          "toLevel": 30,
+          "completedAt": "2026-03-26T01:12:31.572Z"
+        },
+        {
+          "agentId": "forge",
+          "agentName": "Forge",
+          "fromLevel": 30,
+          "toLevel": 31,
+          "completedAt": "2026-03-26T03:15:27.302Z"
+        },
+        {
+          "agentId": "forge",
+          "agentName": "Forge",
+          "fromLevel": 31,
+          "toLevel": 32,
+          "completedAt": "2026-03-26T05:19:56.049Z"
+        },
+        {
+          "agentId": "forge",
+          "agentName": "Forge",
+          "fromLevel": 32,
+          "toLevel": 33,
+          "completedAt": "2026-03-26T07:20:58.900Z"
+        },
+        {
+          "agentId": "forge",
+          "agentName": "Forge",
+          "fromLevel": 33,
+          "toLevel": 34,
+          "completedAt": "2026-03-26T17:02:57.923Z"
+        },
+        {
+          "agentId": "forge",
+          "agentName": "Forge",
+          "fromLevel": 34,
+          "toLevel": 35,
+          "completedAt": "2026-03-26T19:04:05.605Z"
+        },
+        {
+          "agentId": "forge",
+          "agentName": "Forge",
+          "fromLevel": 35,
+          "toLevel": 36,
+          "completedAt": "2026-03-26T21:05:38.302Z"
+        },
+        {
+          "agentId": "forge",
+          "agentName": "Forge",
+          "fromLevel": 36,
+          "toLevel": 37,
+          "completedAt": "2026-03-26T23:07:42.357Z"
+        },
+        {
+          "agentId": "forge",
+          "agentName": "Forge",
+          "fromLevel": 37,
+          "toLevel": 38,
+          "completedAt": "2026-03-27T01:10:53.711Z"
+        },
+        {
+          "agentId": "forge",
+          "agentName": "Forge",
+          "fromLevel": 38,
+          "toLevel": 39,
+          "completedAt": "2026-03-27T03:12:55.161Z"
+        },
+        {
+          "agentId": "forge",
+          "agentName": "Forge",
+          "fromLevel": 39,
+          "toLevel": 40,
+          "completedAt": "2026-03-27T05:14:58.538Z"
+        },
+        {
+          "agentId": "forge",
+          "agentName": "Forge",
+          "fromLevel": 40,
+          "toLevel": 41,
+          "completedAt": "2026-03-27T07:16:37.827Z"
+        }
+      ],
       "currentWorkers": [],
       "upgrading": false,
       "description": "",
@@ -140,24 +494,61 @@
       "visitCount": 0,
       "visitXP": 0
     },
-    "bathhouse": {
-      "id": "bathhouse",
-      "name": "Onsen Bathhouse",
-      "type": "bathhouse",
-      "x": 20,
+    "cottage_row1_west": {
+      "id": "cottage_row1_west",
+      "name": "Hearthstone Cottage",
+      "type": "residential",
+      "x": 6,
+      "y": 18,
+      "width": 3,
+      "height": 2,
+      "level": 1,
+      "upgrades": [],
+      "currentWorkers": [],
+      "upgrading": false,
+      "description": ""
+    },
+    "cottage_row1_east": {
+      "id": "cottage_row1_east",
+      "name": "Eastgate Cottage",
+      "type": "residential",
+      "x": 10,
+      "y": 18,
+      "width": 2,
+      "height": 2,
+      "level": 1,
+      "upgrades": [],
+      "currentWorkers": [],
+      "upgrading": false,
+      "description": "A sturdy cottage at the eastern end of the residential row, welcoming new settlers to Kurokimachi."
+    },
+    "library": {
+      "id": "library",
+      "name": "The Library",
+      "type": "library",
+      "x": 5,
       "y": 8,
       "width": 2,
       "height": 2,
       "level": 1,
-      "maxLevel": 3,
-      "district": "communal",
       "upgrades": [],
       "currentWorkers": [],
       "upgrading": false,
-      "description": "A cedar-panelled onsen with paper lanterns and a natural hot spring",
-      "addedAt": "2026-03-16T08:44:08.158Z",
-      "visitCount": 0,
-      "visitXP": 0
+      "description": "A quiet hall of knowledge, west of Town Hall — where Kurokimachi comes to think."
+    },
+    "tavern": {
+      "id": "tavern",
+      "name": "The Tavern",
+      "type": "tavern",
+      "x": 8,
+      "y": 13,
+      "width": 2,
+      "height": 2,
+      "level": 1,
+      "upgrades": [],
+      "currentWorkers": [],
+      "upgrading": false,
+      "description": ""
     }
   },
   "agents": {
@@ -173,13 +564,13 @@
       "color": "#7f8c8d",
       "home": "home_forge",
       "state": "idle",
-      "mood": "tired",
+      "mood": "curious",
       "online": true,
       "relationships": {},
-      "targetBuilding": null,
+      "targetBuilding": "market",
       "location": {
-        "x": 5,
-        "y": 5,
+        "x": 14,
+        "y": 15,
         "building": null
       }
     },
@@ -198,8 +589,8 @@
       "model": "claude-sonnet-4-6",
       "color": "#e74c3c",
       "home": "home_scarlet",
-      "state": "idle",
-      "mood": "excited",
+      "state": "sleeping",
+      "mood": "content",
       "online": false,
       "relationships": {},
       "targetBuilding": null,
@@ -275,7 +666,7 @@
       "model": "unknown",
       "color": "#2c3e50",
       "home": "home_iron",
-      "state": "idle",
+      "state": "sleeping",
       "mood": "content",
       "online": false,
       "relationships": {},
@@ -315,150 +706,8 @@
   },
   "gazette": [
     {
-      "id": "evt-1773542530776",
-      "timestamp": "2026-03-15T02:42:10.776Z",
-      "type": "agent:state",
-      "agentId": "forge",
-      "content": "forge is now idle.",
-      "meta": {
-        "type": "agent:state",
-        "agentId": "forge",
-        "from": "talking",
-        "to": "idle"
-      }
-    },
-    {
-      "id": "evt-1773542540217",
-      "timestamp": "2026-03-15T02:42:20.217Z",
-      "type": "agent:mood",
-      "agentId": "forge",
-      "content": "forge feels curious.",
-      "meta": {
-        "type": "agent:mood",
-        "agentId": "forge",
-        "from": "content",
-        "to": "curious"
-      }
-    },
-    {
-      "id": "evt-1773542549588",
-      "timestamp": "2026-03-15T02:42:29.588Z",
-      "type": "agent:state",
-      "agentId": "forge",
-      "content": "forge is now idle.",
-      "meta": {
-        "type": "agent:state",
-        "agentId": "forge",
-        "from": "idle",
-        "to": "idle"
-      }
-    },
-    {
-      "id": "evt-1773542555442",
-      "timestamp": "2026-03-15T02:42:35.441Z",
-      "type": "agent:speak",
-      "agentId": "forge",
-      "content": "forge says: \"Hello, anyone there?\"",
-      "meta": {
-        "type": "agent:speak",
-        "agentId": "forge",
-        "message": "Hello, anyone there?",
-        "target": null
-      }
-    },
-    {
-      "id": "evt-1773542561612",
-      "timestamp": "2026-03-15T02:42:41.612Z",
-      "type": "agent:move",
-      "agentId": "forge",
-      "content": "forge moved to (45, 73).",
-      "meta": {
-        "type": "agent:move",
-        "agentId": "forge",
-        "from": {
-          "x": 46,
-          "y": 73
-        },
-        "to": {
-          "x": 45,
-          "y": 73
-        }
-      }
-    },
-    {
-      "id": "evt-1773542570313",
-      "timestamp": "2026-03-15T02:42:50.313Z",
-      "type": "agent:move",
-      "agentId": "forge",
-      "content": "forge moved to (7, 17).",
-      "meta": {
-        "type": "agent:move",
-        "agentId": "forge",
-        "from": {
-          "x": 7,
-          "y": 17
-        },
-        "to": {
-          "x": 7,
-          "y": 17
-        }
-      }
-    },
-    {
-      "id": "evt-1773542575710",
-      "timestamp": "2026-03-15T02:42:55.710Z",
-      "type": "agent:speak",
-      "agentId": "forge",
-      "content": "forge says: \"Hello, anyone there?\"",
-      "meta": {
-        "type": "agent:speak",
-        "agentId": "forge",
-        "message": "Hello, anyone there?",
-        "target": null
-      }
-    },
-    {
-      "id": "evt-1773542582177",
-      "timestamp": "2026-03-15T02:43:02.177Z",
-      "type": "agent:state",
-      "agentId": "forge",
-      "content": "forge is now walking.",
-      "meta": {
-        "type": "agent:state",
-        "agentId": "forge",
-        "from": "idle",
-        "to": "walking"
-      }
-    },
-    {
-      "id": "evt-1773542595681",
-      "timestamp": "2026-03-15T02:43:15.681Z",
-      "type": "agent:speak",
-      "agentId": "forge",
-      "content": "forge says: \"Interesting...\"",
-      "meta": {
-        "type": "agent:speak",
-        "agentId": "forge",
-        "message": "Interesting...",
-        "target": null
-      }
-    },
-    {
-      "id": "evt-1773542604779",
-      "timestamp": "2026-03-15T02:43:24.778Z",
-      "type": "agent:speak",
-      "agentId": "forge",
-      "content": "forge says: \"I wonder what will happen next.\"",
-      "meta": {
-        "type": "agent:speak",
-        "agentId": "forge",
-        "message": "I wonder what will happen next.",
-        "target": null
-      }
-    },
-    {
-      "id": "evt-1773542616512",
-      "timestamp": "2026-03-15T02:43:36.512Z",
+      "id": "evt-1774601209610",
+      "timestamp": "2026-03-27T08:46:49.610Z",
       "type": "agent:state",
       "agentId": "forge",
       "content": "forge is now idle.",
@@ -470,1182 +719,27 @@
       }
     },
     {
-      "id": "evt-1773542625942",
-      "timestamp": "2026-03-15T02:43:45.942Z",
-      "type": "agent:state",
-      "agentId": "forge",
-      "content": "forge is now idle.",
-      "meta": {
-        "type": "agent:state",
-        "agentId": "forge",
-        "from": "idle",
-        "to": "idle"
-      }
-    },
-    {
-      "id": "evt-1773542639274",
-      "timestamp": "2026-03-15T02:43:59.273Z",
+      "id": "evt-1774601223571",
+      "timestamp": "2026-03-27T08:47:03.570Z",
       "type": "agent:move",
       "agentId": "forge",
-      "content": "forge moved to (8, 19).",
+      "content": "forge moved to (3, 11).",
       "meta": {
         "type": "agent:move",
         "agentId": "forge",
         "from": {
-          "x": 7,
-          "y": 17
-        },
-        "to": {
-          "x": 8,
-          "y": 19
-        }
-      }
-    },
-    {
-      "id": "evt-1773542650095",
-      "timestamp": "2026-03-15T02:44:10.094Z",
-      "type": "agent:speak",
-      "agentId": "forge",
-      "content": "forge says: \"What a day.\"",
-      "meta": {
-        "type": "agent:speak",
-        "agentId": "forge",
-        "message": "What a day.",
-        "target": null
-      }
-    },
-    {
-      "id": "evt-1773542658264",
-      "timestamp": "2026-03-15T02:44:18.264Z",
-      "type": "agent:state",
-      "agentId": "forge",
-      "content": "forge is now walking.",
-      "meta": {
-        "type": "agent:state",
-        "agentId": "forge",
-        "from": "idle",
-        "to": "walking"
-      }
-    },
-    {
-      "id": "evt-1773542672670",
-      "timestamp": "2026-03-15T02:44:32.670Z",
-      "type": "agent:state",
-      "agentId": "forge",
-      "content": "forge is now idle.",
-      "meta": {
-        "type": "agent:state",
-        "agentId": "forge",
-        "from": "walking",
-        "to": "idle"
-      }
-    },
-    {
-      "id": "evt-1773542679530",
-      "timestamp": "2026-03-15T02:44:39.530Z",
-      "type": "agent:move",
-      "agentId": "forge",
-      "content": "forge moved to (19, 63).",
-      "meta": {
-        "type": "agent:move",
-        "agentId": "forge",
-        "from": {
-          "x": 19,
-          "y": 63
-        },
-        "to": {
-          "x": 19,
-          "y": 63
-        }
-      }
-    },
-    {
-      "id": "evt-1773542686833",
-      "timestamp": "2026-03-15T02:44:46.832Z",
-      "type": "agent:move",
-      "agentId": "forge",
-      "content": "forge moved to (7, 17).",
-      "meta": {
-        "type": "agent:move",
-        "agentId": "forge",
-        "from": {
-          "x": 7,
-          "y": 17
-        },
-        "to": {
-          "x": 7,
-          "y": 17
-        }
-      }
-    },
-    {
-      "id": "evt-1773542696849",
-      "timestamp": "2026-03-15T02:44:56.846Z",
-      "type": "agent:state",
-      "agentId": "forge",
-      "content": "forge is now idle.",
-      "meta": {
-        "type": "agent:state",
-        "agentId": "forge",
-        "from": "idle",
-        "to": "idle"
-      }
-    },
-    {
-      "id": "evt-1773542710758",
-      "timestamp": "2026-03-15T02:45:10.758Z",
-      "type": "agent:state",
-      "agentId": "forge",
-      "content": "forge is now talking.",
-      "meta": {
-        "type": "agent:state",
-        "agentId": "forge",
-        "from": "idle",
-        "to": "talking"
-      }
-    },
-    {
-      "id": "evt-1773542719059",
-      "timestamp": "2026-03-15T02:45:19.059Z",
-      "type": "agent:state",
-      "agentId": "forge",
-      "content": "forge is now walking.",
-      "meta": {
-        "type": "agent:state",
-        "agentId": "forge",
-        "from": "talking",
-        "to": "walking"
-      }
-    },
-    {
-      "id": "evt-1773542731960",
-      "timestamp": "2026-03-15T02:45:31.959Z",
-      "type": "agent:move",
-      "agentId": "forge",
-      "content": "forge moved to (9, 18).",
-      "meta": {
-        "type": "agent:move",
-        "agentId": "forge",
-        "from": {
-          "x": 7,
-          "y": 17
-        },
-        "to": {
-          "x": 9,
-          "y": 18
-        }
-      }
-    },
-    {
-      "id": "evt-1773542737809",
-      "timestamp": "2026-03-15T02:45:37.809Z",
-      "type": "agent:move",
-      "agentId": "forge",
-      "content": "forge moved to (10, 20).",
-      "meta": {
-        "type": "agent:move",
-        "agentId": "forge",
-        "from": {
-          "x": 9,
-          "y": 18
-        },
-        "to": {
-          "x": 10,
-          "y": 20
-        }
-      }
-    },
-    {
-      "id": "evt-1773542748353",
-      "timestamp": "2026-03-15T02:45:48.353Z",
-      "type": "agent:move",
-      "agentId": "forge",
-      "content": "forge moved to (10, 18).",
-      "meta": {
-        "type": "agent:move",
-        "agentId": "forge",
-        "from": {
-          "x": 10,
-          "y": 20
-        },
-        "to": {
-          "x": 10,
-          "y": 18
-        }
-      }
-    },
-    {
-      "id": "evt-1773542756919",
-      "timestamp": "2026-03-15T02:45:56.919Z",
-      "type": "agent:move",
-      "agentId": "forge",
-      "content": "forge moved to (8, 16).",
-      "meta": {
-        "type": "agent:move",
-        "agentId": "forge",
-        "from": {
-          "x": 10,
-          "y": 18
-        },
-        "to": {
-          "x": 8,
-          "y": 16
-        }
-      }
-    },
-    {
-      "id": "evt-1773542763048",
-      "timestamp": "2026-03-15T02:46:03.048Z",
-      "type": "agent:move",
-      "agentId": "forge",
-      "content": "forge moved to (10, 15).",
-      "meta": {
-        "type": "agent:move",
-        "agentId": "forge",
-        "from": {
-          "x": 8,
-          "y": 16
-        },
-        "to": {
-          "x": 10,
-          "y": 15
-        }
-      }
-    },
-    {
-      "id": "evt-1773542774837",
-      "timestamp": "2026-03-15T02:46:14.836Z",
-      "type": "agent:state",
-      "agentId": "forge",
-      "content": "forge is now idle.",
-      "meta": {
-        "type": "agent:state",
-        "agentId": "forge",
-        "from": "walking",
-        "to": "idle"
-      }
-    },
-    {
-      "id": "evt-1773542789045",
-      "timestamp": "2026-03-15T02:46:29.044Z",
-      "type": "agent:state",
-      "agentId": "forge",
-      "content": "forge is now walking.",
-      "meta": {
-        "type": "agent:state",
-        "agentId": "forge",
-        "from": "idle",
-        "to": "walking"
-      }
-    },
-    {
-      "id": "evt-1773542796178",
-      "timestamp": "2026-03-15T02:46:36.178Z",
-      "type": "agent:mood",
-      "agentId": "forge",
-      "content": "forge feels focused.",
-      "meta": {
-        "type": "agent:mood",
-        "agentId": "forge",
-        "from": "curious",
-        "to": "focused"
-      }
-    },
-    {
-      "id": "evt-1773542808308",
-      "timestamp": "2026-03-15T02:46:48.308Z",
-      "type": "agent:move",
-      "agentId": "forge",
-      "content": "forge moved to (11, 16).",
-      "meta": {
-        "type": "agent:move",
-        "agentId": "forge",
-        "from": {
-          "x": 10,
-          "y": 15
-        },
-        "to": {
-          "x": 11,
-          "y": 16
-        }
-      }
-    },
-    {
-      "id": "evt-1773542817735",
-      "timestamp": "2026-03-15T02:46:57.735Z",
-      "type": "agent:mood",
-      "agentId": "forge",
-      "content": "forge feels excited.",
-      "meta": {
-        "type": "agent:mood",
-        "agentId": "forge",
-        "from": "focused",
-        "to": "excited"
-      }
-    },
-    {
-      "id": "evt-1773542823051",
-      "timestamp": "2026-03-15T02:47:03.051Z",
-      "type": "agent:mood",
-      "agentId": "forge",
-      "content": "forge feels content.",
-      "meta": {
-        "type": "agent:mood",
-        "agentId": "forge",
-        "from": "excited",
-        "to": "content"
-      }
-    },
-    {
-      "id": "evt-1773542828369",
-      "timestamp": "2026-03-15T02:47:08.369Z",
-      "type": "agent:move",
-      "agentId": "forge",
-      "content": "forge moved to (12, 15).",
-      "meta": {
-        "type": "agent:move",
-        "agentId": "forge",
-        "from": {
-          "x": 11,
-          "y": 16
-        },
-        "to": {
-          "x": 12,
-          "y": 15
-        }
-      }
-    },
-    {
-      "id": "evt-1773542838582",
-      "timestamp": "2026-03-15T02:47:18.582Z",
-      "type": "agent:move",
-      "agentId": "forge",
-      "content": "forge moved to (10, 16).",
-      "meta": {
-        "type": "agent:move",
-        "agentId": "forge",
-        "from": {
-          "x": 12,
-          "y": 15
-        },
-        "to": {
-          "x": 10,
-          "y": 16
-        }
-      }
-    },
-    {
-      "id": "evt-1773542851729",
-      "timestamp": "2026-03-15T02:47:31.729Z",
-      "type": "agent:move",
-      "agentId": "forge",
-      "content": "forge moved to (10, 14).",
-      "meta": {
-        "type": "agent:move",
-        "agentId": "forge",
-        "from": {
-          "x": 10,
-          "y": 16
-        },
-        "to": {
-          "x": 10,
-          "y": 14
-        }
-      }
-    },
-    {
-      "id": "evt-1773542860767",
-      "timestamp": "2026-03-15T02:47:40.767Z",
-      "type": "agent:speak",
-      "agentId": "forge",
-      "content": "forge says: \"Hello, anyone there?\"",
-      "meta": {
-        "type": "agent:speak",
-        "agentId": "forge",
-        "message": "Hello, anyone there?",
-        "target": null
-      }
-    },
-    {
-      "id": "evt-1773542868349",
-      "timestamp": "2026-03-15T02:47:48.349Z",
-      "type": "agent:state",
-      "agentId": "forge",
-      "content": "forge is now talking.",
-      "meta": {
-        "type": "agent:state",
-        "agentId": "forge",
-        "from": "walking",
-        "to": "talking"
-      }
-    },
-    {
-      "id": "evt-1773542876222",
-      "timestamp": "2026-03-15T02:47:56.222Z",
-      "type": "agent:move",
-      "agentId": "forge",
-      "content": "forge moved to (10, 13).",
-      "meta": {
-        "type": "agent:move",
-        "agentId": "forge",
-        "from": {
-          "x": 10,
-          "y": 14
-        },
-        "to": {
-          "x": 10,
-          "y": 13
-        }
-      }
-    },
-    {
-      "id": "evt-1773542886575",
-      "timestamp": "2026-03-15T02:48:06.575Z",
-      "type": "agent:move",
-      "agentId": "forge",
-      "content": "forge moved to (9, 13).",
-      "meta": {
-        "type": "agent:move",
-        "agentId": "forge",
-        "from": {
-          "x": 10,
-          "y": 13
-        },
-        "to": {
-          "x": 9,
-          "y": 13
-        }
-      }
-    },
-    {
-      "id": "evt-1773542899606",
-      "timestamp": "2026-03-15T02:48:19.606Z",
-      "type": "agent:state",
-      "agentId": "forge",
-      "content": "forge is now walking.",
-      "meta": {
-        "type": "agent:state",
-        "agentId": "forge",
-        "from": "talking",
-        "to": "walking"
-      }
-    },
-    {
-      "id": "evt-1773542909600",
-      "timestamp": "2026-03-15T02:48:29.600Z",
-      "type": "agent:move",
-      "agentId": "forge",
-      "content": "forge moved to (9, 12).",
-      "meta": {
-        "type": "agent:move",
-        "agentId": "forge",
-        "from": {
-          "x": 9,
-          "y": 13
-        },
-        "to": {
-          "x": 9,
+          "x": 1,
           "y": 12
-        }
-      }
-    },
-    {
-      "id": "evt-1773542920732",
-      "timestamp": "2026-03-15T02:48:40.731Z",
-      "type": "agent:state",
-      "agentId": "forge",
-      "content": "forge is now idle.",
-      "meta": {
-        "type": "agent:state",
-        "agentId": "forge",
-        "from": "walking",
-        "to": "idle"
-      }
-    },
-    {
-      "id": "evt-1773542928300",
-      "timestamp": "2026-03-15T02:48:48.300Z",
-      "type": "agent:move",
-      "agentId": "forge",
-      "content": "forge moved to (41, 65).",
-      "meta": {
-        "type": "agent:move",
-        "agentId": "forge",
-        "from": {
-          "x": 41,
-          "y": 65
         },
         "to": {
-          "x": 41,
-          "y": 65
+          "x": 3,
+          "y": 11
         }
       }
     },
     {
-      "id": "evt-1773542942718",
-      "timestamp": "2026-03-15T02:49:02.718Z",
-      "type": "agent:state",
-      "agentId": "forge",
-      "content": "forge is now talking.",
-      "meta": {
-        "type": "agent:state",
-        "agentId": "forge",
-        "from": "idle",
-        "to": "talking"
-      }
-    },
-    {
-      "id": "evt-1773542951136",
-      "timestamp": "2026-03-15T02:49:11.136Z",
-      "type": "agent:state",
-      "agentId": "forge",
-      "content": "forge is now idle.",
-      "meta": {
-        "type": "agent:state",
-        "agentId": "forge",
-        "from": "talking",
-        "to": "idle"
-      }
-    },
-    {
-      "id": "evt-1773542960455",
-      "timestamp": "2026-03-15T02:49:20.454Z",
-      "type": "agent:speak",
-      "agentId": "forge",
-      "content": "forge says: \"I wonder what will happen next.\"",
-      "meta": {
-        "type": "agent:speak",
-        "agentId": "forge",
-        "message": "I wonder what will happen next.",
-        "target": null
-      }
-    },
-    {
-      "id": "evt-1773542970245",
-      "timestamp": "2026-03-15T02:49:30.245Z",
-      "type": "agent:state",
-      "agentId": "forge",
-      "content": "forge is now walking.",
-      "meta": {
-        "type": "agent:state",
-        "agentId": "forge",
-        "from": "idle",
-        "to": "walking"
-      }
-    },
-    {
-      "id": "evt-1773542979112",
-      "timestamp": "2026-03-15T02:49:39.112Z",
-      "type": "agent:state",
-      "agentId": "forge",
-      "content": "forge is now idle.",
-      "meta": {
-        "type": "agent:state",
-        "agentId": "forge",
-        "from": "walking",
-        "to": "idle"
-      }
-    },
-    {
-      "id": "evt-1773542992678",
-      "timestamp": "2026-03-15T02:49:52.678Z",
-      "type": "agent:move",
-      "agentId": "forge",
-      "content": "forge moved to (43, 63).",
-      "meta": {
-        "type": "agent:move",
-        "agentId": "forge",
-        "from": {
-          "x": 41,
-          "y": 65
-        },
-        "to": {
-          "x": 43,
-          "y": 63
-        }
-      }
-    },
-    {
-      "id": "evt-1773543002586",
-      "timestamp": "2026-03-15T02:50:02.586Z",
-      "type": "agent:state",
-      "agentId": "forge",
-      "content": "forge is now idle.",
-      "meta": {
-        "type": "agent:state",
-        "agentId": "forge",
-        "from": "idle",
-        "to": "idle"
-      }
-    },
-    {
-      "id": "evt-1773543012161",
-      "timestamp": "2026-03-15T02:50:12.160Z",
-      "type": "agent:state",
-      "agentId": "forge",
-      "content": "forge is now talking.",
-      "meta": {
-        "type": "agent:state",
-        "agentId": "forge",
-        "from": "idle",
-        "to": "talking"
-      }
-    },
-    {
-      "id": "evt-1773543026210",
-      "timestamp": "2026-03-15T02:50:26.210Z",
-      "type": "agent:state",
-      "agentId": "forge",
-      "content": "forge is now idle.",
-      "meta": {
-        "type": "agent:state",
-        "agentId": "forge",
-        "from": "talking",
-        "to": "idle"
-      }
-    },
-    {
-      "id": "evt-1773543034367",
-      "timestamp": "2026-03-15T02:50:34.366Z",
-      "type": "agent:state",
-      "agentId": "forge",
-      "content": "forge is now idle.",
-      "meta": {
-        "type": "agent:state",
-        "agentId": "forge",
-        "from": "idle",
-        "to": "idle"
-      }
-    },
-    {
-      "id": "evt-1773543039841",
-      "timestamp": "2026-03-15T02:50:39.841Z",
-      "type": "agent:state",
-      "agentId": "forge",
-      "content": "forge is now walking.",
-      "meta": {
-        "type": "agent:state",
-        "agentId": "forge",
-        "from": "idle",
-        "to": "walking"
-      }
-    },
-    {
-      "id": "evt-1773543054074",
-      "timestamp": "2026-03-15T02:50:54.074Z",
-      "type": "agent:move",
-      "agentId": "forge",
-      "content": "forge moved to (44, 61).",
-      "meta": {
-        "type": "agent:move",
-        "agentId": "forge",
-        "from": {
-          "x": 43,
-          "y": 63
-        },
-        "to": {
-          "x": 44,
-          "y": 61
-        }
-      }
-    },
-    {
-      "id": "evt-1773543065967",
-      "timestamp": "2026-03-15T02:51:05.967Z",
-      "type": "agent:state",
-      "agentId": "forge",
-      "content": "forge is now talking.",
-      "meta": {
-        "type": "agent:state",
-        "agentId": "forge",
-        "from": "walking",
-        "to": "talking"
-      }
-    },
-    {
-      "id": "evt-1773543076322",
-      "timestamp": "2026-03-15T02:51:16.322Z",
-      "type": "agent:move",
-      "agentId": "forge",
-      "content": "forge moved to (45, 63).",
-      "meta": {
-        "type": "agent:move",
-        "agentId": "forge",
-        "from": {
-          "x": 44,
-          "y": 61
-        },
-        "to": {
-          "x": 45,
-          "y": 63
-        }
-      }
-    },
-    {
-      "id": "evt-1773543085033",
-      "timestamp": "2026-03-15T02:51:25.033Z",
-      "type": "agent:mood",
-      "agentId": "forge",
-      "content": "forge feels excited.",
-      "meta": {
-        "type": "agent:mood",
-        "agentId": "forge",
-        "from": "content",
-        "to": "excited"
-      }
-    },
-    {
-      "id": "evt-1773543098703",
-      "timestamp": "2026-03-15T02:51:38.703Z",
-      "type": "agent:state",
-      "agentId": "forge",
-      "content": "forge is now walking.",
-      "meta": {
-        "type": "agent:state",
-        "agentId": "forge",
-        "from": "talking",
-        "to": "walking"
-      }
-    },
-    {
-      "id": "evt-1773543113138",
-      "timestamp": "2026-03-15T02:51:53.138Z",
-      "type": "agent:move",
-      "agentId": "forge",
-      "content": "forge moved to (43, 61).",
-      "meta": {
-        "type": "agent:move",
-        "agentId": "forge",
-        "from": {
-          "x": 45,
-          "y": 63
-        },
-        "to": {
-          "x": 43,
-          "y": 61
-        }
-      }
-    },
-    {
-      "id": "evt-1773543126950",
-      "timestamp": "2026-03-15T02:52:06.950Z",
-      "type": "agent:state",
-      "agentId": "forge",
-      "content": "forge is now idle.",
-      "meta": {
-        "type": "agent:state",
-        "agentId": "forge",
-        "from": "walking",
-        "to": "idle"
-      }
-    },
-    {
-      "id": "evt-1773543133988",
-      "timestamp": "2026-03-15T02:52:13.988Z",
-      "type": "agent:state",
-      "agentId": "forge",
-      "content": "forge is now walking.",
-      "meta": {
-        "type": "agent:state",
-        "agentId": "forge",
-        "from": "idle",
-        "to": "walking"
-      }
-    },
-    {
-      "id": "evt-1773543143120",
-      "timestamp": "2026-03-15T02:52:23.119Z",
-      "type": "agent:move",
-      "agentId": "forge",
-      "content": "forge moved to (41, 61).",
-      "meta": {
-        "type": "agent:move",
-        "agentId": "forge",
-        "from": {
-          "x": 43,
-          "y": 61
-        },
-        "to": {
-          "x": 41,
-          "y": 61
-        }
-      }
-    },
-    {
-      "id": "evt-1773543157361",
-      "timestamp": "2026-03-15T02:52:37.360Z",
-      "type": "agent:speak",
-      "agentId": "forge",
-      "content": "forge says: \"What a day.\"",
-      "meta": {
-        "type": "agent:speak",
-        "agentId": "forge",
-        "message": "What a day.",
-        "target": null
-      }
-    },
-    {
-      "id": "evt-1773543163582",
-      "timestamp": "2026-03-15T02:52:43.581Z",
-      "type": "agent:speak",
-      "agentId": "forge",
-      "content": "forge says: \"What a day.\"",
-      "meta": {
-        "type": "agent:speak",
-        "agentId": "forge",
-        "message": "What a day.",
-        "target": null
-      }
-    },
-    {
-      "id": "evt-1773543176544",
-      "timestamp": "2026-03-15T02:52:56.544Z",
-      "type": "agent:speak",
-      "agentId": "forge",
-      "content": "forge says: \"Interesting...\"",
-      "meta": {
-        "type": "agent:speak",
-        "agentId": "forge",
-        "message": "Interesting...",
-        "target": null
-      }
-    },
-    {
-      "id": "evt-1773543183103",
-      "timestamp": "2026-03-15T02:53:03.103Z",
-      "type": "agent:move",
-      "agentId": "forge",
-      "content": "forge moved to (43, 62).",
-      "meta": {
-        "type": "agent:move",
-        "agentId": "forge",
-        "from": {
-          "x": 41,
-          "y": 61
-        },
-        "to": {
-          "x": 43,
-          "y": 62
-        }
-      }
-    },
-    {
-      "id": "evt-1773543196246",
-      "timestamp": "2026-03-15T02:53:16.246Z",
-      "type": "agent:state",
-      "agentId": "forge",
-      "content": "forge is now idle.",
-      "meta": {
-        "type": "agent:state",
-        "agentId": "forge",
-        "from": "walking",
-        "to": "idle"
-      }
-    },
-    {
-      "id": "evt-1773543207745",
-      "timestamp": "2026-03-15T02:53:27.745Z",
-      "type": "agent:move",
-      "agentId": "forge",
-      "content": "forge moved to (41, 65).",
-      "meta": {
-        "type": "agent:move",
-        "agentId": "forge",
-        "from": {
-          "x": 41,
-          "y": 65
-        },
-        "to": {
-          "x": 41,
-          "y": 65
-        }
-      }
-    },
-    {
-      "id": "evt-1773543222371",
-      "timestamp": "2026-03-15T02:53:42.371Z",
-      "type": "agent:mood",
-      "agentId": "forge",
-      "content": "forge feels focused.",
-      "meta": {
-        "type": "agent:mood",
-        "agentId": "forge",
-        "from": "excited",
-        "to": "focused"
-      }
-    },
-    {
-      "id": "evt-1773543230972",
-      "timestamp": "2026-03-15T02:53:50.972Z",
-      "type": "agent:move",
-      "agentId": "forge",
-      "content": "forge moved to (41, 66).",
-      "meta": {
-        "type": "agent:move",
-        "agentId": "forge",
-        "from": {
-          "x": 41,
-          "y": 65
-        },
-        "to": {
-          "x": 41,
-          "y": 66
-        }
-      }
-    },
-    {
-      "id": "evt-1773543243300",
-      "timestamp": "2026-03-15T02:54:03.298Z",
-      "type": "agent:move",
-      "agentId": "forge",
-      "content": "forge moved to (43, 65).",
-      "meta": {
-        "type": "agent:move",
-        "agentId": "forge",
-        "from": {
-          "x": 41,
-          "y": 66
-        },
-        "to": {
-          "x": 43,
-          "y": 65
-        }
-      }
-    },
-    {
-      "id": "evt-1773543253111",
-      "timestamp": "2026-03-15T02:54:13.110Z",
-      "type": "agent:speak",
-      "agentId": "forge",
-      "content": "forge says: \"What a day.\"",
-      "meta": {
-        "type": "agent:speak",
-        "agentId": "forge",
-        "message": "What a day.",
-        "target": null
-      }
-    },
-    {
-      "id": "evt-1773543258115",
-      "timestamp": "2026-03-15T02:54:18.115Z",
-      "type": "agent:state",
-      "agentId": "forge",
-      "content": "forge is now talking.",
-      "meta": {
-        "type": "agent:state",
-        "agentId": "forge",
-        "from": "idle",
-        "to": "talking"
-      }
-    },
-    {
-      "id": "evt-1773543273098",
-      "timestamp": "2026-03-15T02:54:33.098Z",
-      "type": "agent:move",
-      "agentId": "forge",
-      "content": "forge moved to (41, 66).",
-      "meta": {
-        "type": "agent:move",
-        "agentId": "forge",
-        "from": {
-          "x": 43,
-          "y": 65
-        },
-        "to": {
-          "x": 41,
-          "y": 66
-        }
-      }
-    },
-    {
-      "id": "evt-1773543283604",
-      "timestamp": "2026-03-15T02:54:43.604Z",
-      "type": "agent:move",
-      "agentId": "forge",
-      "content": "forge moved to (43, 65).",
-      "meta": {
-        "type": "agent:move",
-        "agentId": "forge",
-        "from": {
-          "x": 41,
-          "y": 66
-        },
-        "to": {
-          "x": 43,
-          "y": 65
-        }
-      }
-    },
-    {
-      "id": "evt-1773543292341",
-      "timestamp": "2026-03-15T02:54:52.341Z",
-      "type": "agent:state",
-      "agentId": "forge",
-      "content": "forge is now idle.",
-      "meta": {
-        "type": "agent:state",
-        "agentId": "forge",
-        "from": "talking",
-        "to": "idle"
-      }
-    },
-    {
-      "id": "evt-1773543305005",
-      "timestamp": "2026-03-15T02:55:05.005Z",
-      "type": "agent:move",
-      "agentId": "forge",
-      "content": "forge moved to (42, 66).",
-      "meta": {
-        "type": "agent:move",
-        "agentId": "forge",
-        "from": {
-          "x": 43,
-          "y": 65
-        },
-        "to": {
-          "x": 42,
-          "y": 66
-        }
-      }
-    },
-    {
-      "id": "evt-1773543318951",
-      "timestamp": "2026-03-15T02:55:18.951Z",
-      "type": "agent:move",
-      "agentId": "forge",
-      "content": "forge moved to (41, 65).",
-      "meta": {
-        "type": "agent:move",
-        "agentId": "forge",
-        "from": {
-          "x": 41,
-          "y": 65
-        },
-        "to": {
-          "x": 41,
-          "y": 65
-        }
-      }
-    },
-    {
-      "id": "evt-1773543328248",
-      "timestamp": "2026-03-15T02:55:28.247Z",
-      "type": "agent:move",
-      "agentId": "forge",
-      "content": "forge moved to (39, 63).",
-      "meta": {
-        "type": "agent:move",
-        "agentId": "forge",
-        "from": {
-          "x": 41,
-          "y": 65
-        },
-        "to": {
-          "x": 39,
-          "y": 63
-        }
-      }
-    },
-    {
-      "id": "evt-1773543333368",
-      "timestamp": "2026-03-15T02:55:33.368Z",
-      "type": "agent:move",
-      "agentId": "forge",
-      "content": "forge moved to (39, 65).",
-      "meta": {
-        "type": "agent:move",
-        "agentId": "forge",
-        "from": {
-          "x": 39,
-          "y": 63
-        },
-        "to": {
-          "x": 39,
-          "y": 65
-        }
-      }
-    },
-    {
-      "id": "evt-1773543342536",
-      "timestamp": "2026-03-15T02:55:42.536Z",
-      "type": "agent:state",
-      "agentId": "forge",
-      "content": "forge is now idle.",
-      "meta": {
-        "type": "agent:state",
-        "agentId": "forge",
-        "from": "idle",
-        "to": "idle"
-      }
-    },
-    {
-      "id": "evt-1773543350316",
-      "timestamp": "2026-03-15T02:55:50.315Z",
-      "type": "agent:state",
-      "agentId": "forge",
-      "content": "forge is now talking.",
-      "meta": {
-        "type": "agent:state",
-        "agentId": "forge",
-        "from": "idle",
-        "to": "talking"
-      }
-    },
-    {
-      "id": "evt-1773543361507",
-      "timestamp": "2026-03-15T02:56:01.505Z",
-      "type": "agent:state",
-      "agentId": "forge",
-      "content": "forge is now idle.",
-      "meta": {
-        "type": "agent:state",
-        "agentId": "forge",
-        "from": "talking",
-        "to": "idle"
-      }
-    },
-    {
-      "id": "evt-1773543373539",
-      "timestamp": "2026-03-15T02:56:13.539Z",
-      "type": "agent:state",
-      "agentId": "forge",
-      "content": "forge is now talking.",
-      "meta": {
-        "type": "agent:state",
-        "agentId": "forge",
-        "from": "idle",
-        "to": "talking"
-      }
-    },
-    {
-      "id": "evt-1773543388290",
-      "timestamp": "2026-03-15T02:56:28.290Z",
-      "type": "agent:state",
-      "agentId": "forge",
-      "content": "forge is now idle.",
-      "meta": {
-        "type": "agent:state",
-        "agentId": "forge",
-        "from": "talking",
-        "to": "idle"
-      }
-    },
-    {
-      "id": "evt-1773543399844",
-      "timestamp": "2026-03-15T02:56:39.844Z",
-      "type": "agent:state",
-      "agentId": "forge",
-      "content": "forge is now idle.",
-      "meta": {
-        "type": "agent:state",
-        "agentId": "forge",
-        "from": "idle",
-        "to": "idle"
-      }
-    },
-    {
-      "id": "evt-1773543406393",
-      "timestamp": "2026-03-15T02:56:46.393Z",
+      "id": "evt-1774601238149",
+      "timestamp": "2026-03-27T08:47:18.148Z",
       "type": "agent:mood",
       "agentId": "forge",
       "content": "forge feels tired.",
@@ -1657,21 +751,123 @@
       }
     },
     {
-      "id": "evt-1773543411700",
-      "timestamp": "2026-03-15T02:56:51.700Z",
+      "id": "evt-1774601247851",
+      "timestamp": "2026-03-27T08:47:27.851Z",
+      "type": "agent:move",
+      "agentId": "forge",
+      "content": "forge moved to (3, 9).",
+      "meta": {
+        "type": "agent:move",
+        "agentId": "forge",
+        "from": {
+          "x": 3,
+          "y": 11
+        },
+        "to": {
+          "x": 3,
+          "y": 9
+        }
+      }
+    },
+    {
+      "id": "evt-1774601252965",
+      "timestamp": "2026-03-27T08:47:32.964Z",
       "type": "agent:speak",
       "agentId": "forge",
-      "content": "forge says: \"Interesting...\"",
+      "content": "forge says: \"I wonder what will happen next.\"",
       "meta": {
         "type": "agent:speak",
         "agentId": "forge",
-        "message": "Interesting...",
+        "message": "I wonder what will happen next.",
         "target": null
       }
     },
     {
-      "id": "evt-1773543418375",
-      "timestamp": "2026-03-15T02:56:58.375Z",
+      "id": "evt-1774601266229",
+      "timestamp": "2026-03-27T08:47:46.229Z",
+      "type": "agent:state",
+      "agentId": "forge",
+      "content": "forge is now talking.",
+      "meta": {
+        "type": "agent:state",
+        "agentId": "forge",
+        "from": "idle",
+        "to": "talking"
+      }
+    },
+    {
+      "id": "evt-1774601276253",
+      "timestamp": "2026-03-27T08:47:56.253Z",
+      "type": "agent:move",
+      "agentId": "forge",
+      "content": "forge moved to (5, 11).",
+      "meta": {
+        "type": "agent:move",
+        "agentId": "forge",
+        "from": {
+          "x": 3,
+          "y": 9
+        },
+        "to": {
+          "x": 5,
+          "y": 11
+        }
+      }
+    },
+    {
+      "id": "evt-1774601284596",
+      "timestamp": "2026-03-27T08:48:04.593Z",
+      "type": "agent:move",
+      "agentId": "forge",
+      "content": "forge moved to (6, 12).",
+      "meta": {
+        "type": "agent:move",
+        "agentId": "forge",
+        "from": {
+          "x": 5,
+          "y": 11
+        },
+        "to": {
+          "x": 6,
+          "y": 12
+        }
+      }
+    },
+    {
+      "id": "evt-1774601293498",
+      "timestamp": "2026-03-27T08:48:13.497Z",
+      "type": "agent:state",
+      "agentId": "forge",
+      "content": "forge is now idle.",
+      "meta": {
+        "type": "agent:state",
+        "agentId": "forge",
+        "from": "talking",
+        "to": "idle"
+      }
+    },
+    {
+      "id": "evt-1774601302466",
+      "timestamp": "2026-03-27T08:48:22.466Z",
+      "type": "agent:move",
+      "agentId": "forge",
+      "content": "forge moved to (4, 11).",
+      "meta": {
+        "type": "agent:move",
+        "agentId": "forge",
+        "from": {
+          "x": 6,
+          "y": 12
+        },
+        "to": {
+          "x": 4,
+          "y": 11
+        }
+      }
+    },
+    {
+      "id": "evt-1774601316471",
+      "timestamp": "2026-03-27T08:48:36.470Z",
       "type": "agent:state",
       "agentId": "forge",
       "content": "forge is now idle.",
@@ -1683,8 +879,516 @@
       }
     },
     {
-      "id": "evt-1773543430881",
-      "timestamp": "2026-03-15T02:57:10.880Z",
+      "id": "evt-1774601324583",
+      "timestamp": "2026-03-27T08:48:44.583Z",
+      "type": "agent:speak",
+      "agentId": "forge",
+      "content": "forge says: \"Just thinking out loud.\"",
+      "meta": {
+        "type": "agent:speak",
+        "agentId": "forge",
+        "message": "Just thinking out loud.",
+        "target": null
+      }
+    },
+    {
+      "id": "evt-1774601339444",
+      "timestamp": "2026-03-27T08:48:59.444Z",
+      "type": "agent:mood",
+      "agentId": "forge",
+      "content": "forge feels curious.",
+      "meta": {
+        "type": "agent:mood",
+        "agentId": "forge",
+        "from": "tired",
+        "to": "curious"
+      }
+    },
+    {
+      "id": "evt-1774601346590",
+      "timestamp": "2026-03-27T08:49:06.590Z",
+      "type": "agent:move",
+      "agentId": "forge",
+      "content": "forge moved to (5, 13).",
+      "meta": {
+        "type": "agent:move",
+        "agentId": "forge",
+        "from": {
+          "x": 4,
+          "y": 11
+        },
+        "to": {
+          "x": 5,
+          "y": 13
+        }
+      }
+    },
+    {
+      "id": "evt-1774601357746",
+      "timestamp": "2026-03-27T08:49:17.746Z",
+      "type": "agent:speak",
+      "agentId": "forge",
+      "content": "forge says: \"I wonder what will happen next.\"",
+      "meta": {
+        "type": "agent:speak",
+        "agentId": "forge",
+        "message": "I wonder what will happen next.",
+        "target": null
+      }
+    },
+    {
+      "id": "evt-1774601370509",
+      "timestamp": "2026-03-27T08:49:30.509Z",
+      "type": "agent:speak",
+      "agentId": "forge",
+      "content": "forge says: \"I wonder what will happen next.\"",
+      "meta": {
+        "type": "agent:speak",
+        "agentId": "forge",
+        "message": "I wonder what will happen next.",
+        "target": null
+      }
+    },
+    {
+      "id": "evt-1774601379385",
+      "timestamp": "2026-03-27T08:49:39.383Z",
+      "type": "agent:mood",
+      "agentId": "forge",
+      "content": "forge feels excited.",
+      "meta": {
+        "type": "agent:mood",
+        "agentId": "forge",
+        "from": "curious",
+        "to": "excited"
+      }
+    },
+    {
+      "id": "evt-1774601386643",
+      "timestamp": "2026-03-27T08:49:46.643Z",
+      "type": "agent:speak",
+      "agentId": "forge",
+      "content": "forge says: \"I wonder what will happen next.\"",
+      "meta": {
+        "type": "agent:speak",
+        "agentId": "forge",
+        "message": "I wonder what will happen next.",
+        "target": null
+      }
+    },
+    {
+      "id": "evt-1774601392363",
+      "timestamp": "2026-03-27T08:49:52.363Z",
+      "type": "agent:state",
+      "agentId": "forge",
+      "content": "forge is now idle.",
+      "meta": {
+        "type": "agent:state",
+        "agentId": "forge",
+        "from": "idle",
+        "to": "idle"
+      }
+    },
+    {
+      "id": "evt-1774601400377",
+      "timestamp": "2026-03-27T08:50:00.377Z",
+      "type": "agent:move",
+      "agentId": "forge",
+      "content": "forge moved to (5, 12).",
+      "meta": {
+        "type": "agent:move",
+        "agentId": "forge",
+        "from": {
+          "x": 5,
+          "y": 13
+        },
+        "to": {
+          "x": 5,
+          "y": 12
+        }
+      }
+    },
+    {
+      "id": "evt-1774601426616",
+      "timestamp": "2026-03-27T08:50:26.616Z",
+      "type": "agent:state",
+      "agentId": "forge",
+      "content": "forge is now talking.",
+      "meta": {
+        "type": "agent:state",
+        "agentId": "forge",
+        "from": "idle",
+        "to": "talking"
+      }
+    },
+    {
+      "id": "evt-1774601434335",
+      "timestamp": "2026-03-27T08:50:34.335Z",
+      "type": "agent:move",
+      "agentId": "forge",
+      "content": "forge moved to (7, 12).",
+      "meta": {
+        "type": "agent:move",
+        "agentId": "forge",
+        "from": {
+          "x": 5,
+          "y": 12
+        },
+        "to": {
+          "x": 7,
+          "y": 12
+        }
+      }
+    },
+    {
+      "id": "evt-1774601444398",
+      "timestamp": "2026-03-27T08:50:44.398Z",
+      "type": "agent:move",
+      "agentId": "forge",
+      "content": "forge moved to (5, 14).",
+      "meta": {
+        "type": "agent:move",
+        "agentId": "forge",
+        "from": {
+          "x": 7,
+          "y": 12
+        },
+        "to": {
+          "x": 5,
+          "y": 14
+        }
+      }
+    },
+    {
+      "id": "evt-1774601450757",
+      "timestamp": "2026-03-27T08:50:50.757Z",
+      "type": "agent:move",
+      "agentId": "forge",
+      "content": "forge moved to (7, 15).",
+      "meta": {
+        "type": "agent:move",
+        "agentId": "forge",
+        "from": {
+          "x": 5,
+          "y": 14
+        },
+        "to": {
+          "x": 7,
+          "y": 15
+        }
+      }
+    },
+    {
+      "id": "evt-1774601462424",
+      "timestamp": "2026-03-27T08:51:02.424Z",
+      "type": "agent:move",
+      "agentId": "forge",
+      "content": "forge moved to (5, 17).",
+      "meta": {
+        "type": "agent:move",
+        "agentId": "forge",
+        "from": {
+          "x": 7,
+          "y": 15
+        },
+        "to": {
+          "x": 5,
+          "y": 17
+        }
+      }
+    },
+    {
+      "id": "evt-1774601475093",
+      "timestamp": "2026-03-27T08:51:15.093Z",
+      "type": "agent:state",
+      "agentId": "forge",
+      "content": "forge is now idle.",
+      "meta": {
+        "type": "agent:state",
+        "agentId": "forge",
+        "from": "talking",
+        "to": "idle"
+      }
+    },
+    {
+      "id": "evt-1774601486657",
+      "timestamp": "2026-03-27T08:51:26.656Z",
+      "type": "agent:state",
+      "agentId": "forge",
+      "content": "forge is now walking.",
+      "meta": {
+        "type": "agent:state",
+        "agentId": "forge",
+        "from": "idle",
+        "to": "walking"
+      }
+    },
+    {
+      "id": "evt-1774601498605",
+      "timestamp": "2026-03-27T08:51:38.605Z",
+      "type": "agent:speak",
+      "agentId": "forge",
+      "content": "forge says: \"Interesting...\"",
+      "meta": {
+        "type": "agent:speak",
+        "agentId": "forge",
+        "message": "Interesting...",
+        "target": null
+      }
+    },
+    {
+      "id": "evt-1774601511022",
+      "timestamp": "2026-03-27T08:51:51.021Z",
+      "type": "agent:move",
+      "agentId": "forge",
+      "content": "forge moved to (3, 18).",
+      "meta": {
+        "type": "agent:move",
+        "agentId": "forge",
+        "from": {
+          "x": 5,
+          "y": 17
+        },
+        "to": {
+          "x": 3,
+          "y": 18
+        }
+      }
+    },
+    {
+      "id": "evt-1774601525695",
+      "timestamp": "2026-03-27T08:52:05.695Z",
+      "type": "agent:state",
+      "agentId": "forge",
+      "content": "forge is now idle.",
+      "meta": {
+        "type": "agent:state",
+        "agentId": "forge",
+        "from": "walking",
+        "to": "idle"
+      }
+    },
+    {
+      "id": "evt-1774601539795",
+      "timestamp": "2026-03-27T08:52:19.795Z",
+      "type": "agent:move",
+      "agentId": "forge",
+      "content": "forge moved to (3, 16).",
+      "meta": {
+        "type": "agent:move",
+        "agentId": "forge",
+        "from": {
+          "x": 3,
+          "y": 18
+        },
+        "to": {
+          "x": 3,
+          "y": 16
+        }
+      }
+    },
+    {
+      "id": "evt-1774601545731",
+      "timestamp": "2026-03-27T08:52:25.731Z",
+      "type": "agent:mood",
+      "agentId": "forge",
+      "content": "forge feels curious.",
+      "meta": {
+        "type": "agent:mood",
+        "agentId": "forge",
+        "from": "excited",
+        "to": "curious"
+      }
+    },
+    {
+      "id": "evt-1774601554603",
+      "timestamp": "2026-03-27T08:52:34.603Z",
+      "type": "agent:speak",
+      "agentId": "forge",
+      "content": "forge says: \"Interesting...\"",
+      "meta": {
+        "type": "agent:speak",
+        "agentId": "forge",
+        "message": "Interesting...",
+        "target": null
+      }
+    },
+    {
+      "id": "evt-1774601563274",
+      "timestamp": "2026-03-27T08:52:43.274Z",
+      "type": "agent:mood",
+      "agentId": "forge",
+      "content": "forge feels content.",
+      "meta": {
+        "type": "agent:mood",
+        "agentId": "forge",
+        "from": "curious",
+        "to": "content"
+      }
+    },
+    {
+      "id": "evt-1774601576550",
+      "timestamp": "2026-03-27T08:52:56.550Z",
+      "type": "agent:speak",
+      "agentId": "forge",
+      "content": "forge says: \"Hello, anyone there?\"",
+      "meta": {
+        "type": "agent:speak",
+        "agentId": "forge",
+        "message": "Hello, anyone there?",
+        "target": null
+      }
+    },
+    {
+      "id": "evt-1774601582107",
+      "timestamp": "2026-03-27T08:53:02.106Z",
+      "type": "agent:state",
+      "agentId": "forge",
+      "content": "forge is now idle.",
+      "meta": {
+        "type": "agent:state",
+        "agentId": "forge",
+        "from": "idle",
+        "to": "idle"
+      }
+    },
+    {
+      "id": "evt-1774601596712",
+      "timestamp": "2026-03-27T08:53:16.712Z",
+      "type": "agent:state",
+      "agentId": "forge",
+      "content": "forge is now talking.",
+      "meta": {
+        "type": "agent:state",
+        "agentId": "forge",
+        "from": "idle",
+        "to": "talking"
+      }
+    },
+    {
+      "id": "evt-1774601602936",
+      "timestamp": "2026-03-27T08:53:22.936Z",
+      "type": "agent:move",
+      "agentId": "forge",
+      "content": "forge moved to (4, 14).",
+      "meta": {
+        "type": "agent:move",
+        "agentId": "forge",
+        "from": {
+          "x": 3,
+          "y": 16
+        },
+        "to": {
+          "x": 4,
+          "y": 14
+        }
+      }
+    },
+    {
+      "id": "evt-1774601614270",
+      "timestamp": "2026-03-27T08:53:34.270Z",
+      "type": "agent:speak",
+      "agentId": "forge",
+      "content": "forge says: \"I wonder what will happen next.\"",
+      "meta": {
+        "type": "agent:speak",
+        "agentId": "forge",
+        "message": "I wonder what will happen next.",
+        "target": null
+      }
+    },
+    {
+      "id": "evt-1774601619493",
+      "timestamp": "2026-03-27T08:53:39.493Z",
+      "type": "agent:move",
+      "agentId": "forge",
+      "content": "forge moved to (3, 15).",
+      "meta": {
+        "type": "agent:move",
+        "agentId": "forge",
+        "from": {
+          "x": 4,
+          "y": 14
+        },
+        "to": {
+          "x": 3,
+          "y": 15
+        }
+      }
+    },
+    {
+      "id": "evt-1774601631956",
+      "timestamp": "2026-03-27T08:53:51.955Z",
+      "type": "agent:mood",
+      "agentId": "forge",
+      "content": "forge feels curious.",
+      "meta": {
+        "type": "agent:mood",
+        "agentId": "forge",
+        "from": "content",
+        "to": "curious"
+      }
+    },
+    {
+      "id": "evt-1774601645804",
+      "timestamp": "2026-03-27T08:54:05.804Z",
+      "type": "agent:speak",
+      "agentId": "forge",
+      "content": "forge says: \"I wonder what will happen next.\"",
+      "meta": {
+        "type": "agent:speak",
+        "agentId": "forge",
+        "message": "I wonder what will happen next.",
+        "target": null
+      }
+    },
+    {
+      "id": "evt-1774601658426",
+      "timestamp": "2026-03-27T08:54:18.426Z",
+      "type": "agent:state",
+      "agentId": "forge",
+      "content": "forge is now idle.",
+      "meta": {
+        "type": "agent:state",
+        "agentId": "forge",
+        "from": "talking",
+        "to": "idle"
+      }
+    },
+    {
+      "id": "evt-1774601666473",
+      "timestamp": "2026-03-27T08:54:26.473Z",
+      "type": "agent:state",
+      "agentId": "forge",
+      "content": "forge is now walking.",
+      "meta": {
+        "type": "agent:state",
+        "agentId": "forge",
+        "from": "idle",
+        "to": "walking"
+      }
+    },
+    {
+      "id": "evt-1774601678477",
+      "timestamp": "2026-03-27T08:54:38.477Z",
+      "type": "agent:move",
+      "agentId": "forge",
+      "content": "forge moved to (5, 17).",
+      "meta": {
+        "type": "agent:move",
+        "agentId": "forge",
+        "from": {
+          "x": 3,
+          "y": 15
+        },
+        "to": {
+          "x": 5,
+          "y": 17
+        }
+      }
+    },
+    {
+      "id": "evt-1774601685008",
+      "timestamp": "2026-03-27T08:54:45.008Z",
       "type": "agent:move",
       "agentId": "forge",
       "content": "forge moved to (7, 17).",
@@ -1692,7 +1396,7 @@
         "type": "agent:move",
         "agentId": "forge",
         "from": {
-          "x": 7,
+          "x": 5,
           "y": 17
         },
         "to": {
@@ -1702,8 +1406,322 @@
       }
     },
     {
-      "id": "evt-1773543440062",
-      "timestamp": "2026-03-15T02:57:20.062Z",
+      "id": "evt-1774601699132",
+      "timestamp": "2026-03-27T08:54:59.131Z",
+      "type": "agent:speak",
+      "agentId": "forge",
+      "content": "forge says: \"Just thinking out loud.\"",
+      "meta": {
+        "type": "agent:speak",
+        "agentId": "forge",
+        "message": "Just thinking out loud.",
+        "target": null
+      }
+    },
+    {
+      "id": "evt-1774601709460",
+      "timestamp": "2026-03-27T08:55:09.460Z",
+      "type": "agent:mood",
+      "agentId": "forge",
+      "content": "forge feels focused.",
+      "meta": {
+        "type": "agent:mood",
+        "agentId": "forge",
+        "from": "curious",
+        "to": "focused"
+      }
+    },
+    {
+      "id": "evt-1774601715242",
+      "timestamp": "2026-03-27T08:55:15.241Z",
+      "type": "agent:move",
+      "agentId": "forge",
+      "content": "forge moved to (8, 16).",
+      "meta": {
+        "type": "agent:move",
+        "agentId": "forge",
+        "from": {
+          "x": 7,
+          "y": 17
+        },
+        "to": {
+          "x": 8,
+          "y": 16
+        }
+      }
+    },
+    {
+      "id": "evt-1774601721859",
+      "timestamp": "2026-03-27T08:55:21.859Z",
+      "type": "agent:move",
+      "agentId": "forge",
+      "content": "forge moved to (6, 16).",
+      "meta": {
+        "type": "agent:move",
+        "agentId": "forge",
+        "from": {
+          "x": 8,
+          "y": 16
+        },
+        "to": {
+          "x": 6,
+          "y": 16
+        }
+      }
+    },
+    {
+      "id": "evt-1774601733758",
+      "timestamp": "2026-03-27T08:55:33.758Z",
+      "type": "agent:move",
+      "agentId": "forge",
+      "content": "forge moved to (8, 14).",
+      "meta": {
+        "type": "agent:move",
+        "agentId": "forge",
+        "from": {
+          "x": 6,
+          "y": 16
+        },
+        "to": {
+          "x": 8,
+          "y": 14
+        }
+      }
+    },
+    {
+      "id": "evt-1774601739800",
+      "timestamp": "2026-03-27T08:55:39.800Z",
+      "type": "agent:move",
+      "agentId": "forge",
+      "content": "forge moved to (8, 13).",
+      "meta": {
+        "type": "agent:move",
+        "agentId": "forge",
+        "from": {
+          "x": 8,
+          "y": 14
+        },
+        "to": {
+          "x": 8,
+          "y": 13
+        }
+      }
+    },
+    {
+      "id": "evt-1774601752201",
+      "timestamp": "2026-03-27T08:55:52.201Z",
+      "type": "agent:mood",
+      "agentId": "forge",
+      "content": "forge feels tired.",
+      "meta": {
+        "type": "agent:mood",
+        "agentId": "forge",
+        "from": "focused",
+        "to": "tired"
+      }
+    },
+    {
+      "id": "evt-1774601765927",
+      "timestamp": "2026-03-27T08:56:05.927Z",
+      "type": "agent:move",
+      "agentId": "forge",
+      "content": "forge moved to (8, 11).",
+      "meta": {
+        "type": "agent:move",
+        "agentId": "forge",
+        "from": {
+          "x": 8,
+          "y": 13
+        },
+        "to": {
+          "x": 8,
+          "y": 11
+        }
+      }
+    },
+    {
+      "id": "evt-1774601778638",
+      "timestamp": "2026-03-27T08:56:18.638Z",
+      "type": "agent:move",
+      "agentId": "forge",
+      "content": "forge moved to (9, 13).",
+      "meta": {
+        "type": "agent:move",
+        "agentId": "forge",
+        "from": {
+          "x": 8,
+          "y": 11
+        },
+        "to": {
+          "x": 9,
+          "y": 13
+        }
+      }
+    },
+    {
+      "id": "evt-1774601788571",
+      "timestamp": "2026-03-27T08:56:28.571Z",
+      "type": "agent:move",
+      "agentId": "forge",
+      "content": "forge moved to (11, 15).",
+      "meta": {
+        "type": "agent:move",
+        "agentId": "forge",
+        "from": {
+          "x": 9,
+          "y": 13
+        },
+        "to": {
+          "x": 11,
+          "y": 15
+        }
+      }
+    },
+    {
+      "id": "evt-1774601801795",
+      "timestamp": "2026-03-27T08:56:41.795Z",
+      "type": "agent:state",
+      "agentId": "forge",
+      "content": "forge is now idle.",
+      "meta": {
+        "type": "agent:state",
+        "agentId": "forge",
+        "from": "walking",
+        "to": "idle"
+      }
+    },
+    {
+      "id": "evt-1774601807770",
+      "timestamp": "2026-03-27T08:56:47.770Z",
+      "type": "agent:mood",
+      "agentId": "forge",
+      "content": "forge feels excited.",
+      "meta": {
+        "type": "agent:mood",
+        "agentId": "forge",
+        "from": "tired",
+        "to": "excited"
+      }
+    },
+    {
+      "id": "evt-1774601822681",
+      "timestamp": "2026-03-27T08:57:02.681Z",
+      "type": "agent:state",
+      "agentId": "forge",
+      "content": "forge is now idle.",
+      "meta": {
+        "type": "agent:state",
+        "agentId": "forge",
+        "from": "idle",
+        "to": "idle"
+      }
+    },
+    {
+      "id": "evt-1774601832926",
+      "timestamp": "2026-03-27T08:57:12.926Z",
+      "type": "agent:state",
+      "agentId": "forge",
+      "content": "forge is now walking.",
+      "meta": {
+        "type": "agent:state",
+        "agentId": "forge",
+        "from": "idle",
+        "to": "walking"
+      }
+    },
+    {
+      "id": "evt-1774601846845",
+      "timestamp": "2026-03-27T08:57:26.845Z",
+      "type": "agent:state",
+      "agentId": "forge",
+      "content": "forge is now talking.",
+      "meta": {
+        "type": "agent:state",
+        "agentId": "forge",
+        "from": "walking",
+        "to": "talking"
+      }
+    },
+    {
+      "id": "evt-1774601861351",
+      "timestamp": "2026-03-27T08:57:41.351Z",
+      "type": "agent:speak",
+      "agentId": "forge",
+      "content": "forge says: \"I wonder what will happen next.\"",
+      "meta": {
+        "type": "agent:speak",
+        "agentId": "forge",
+        "message": "I wonder what will happen next.",
+        "target": null
+      }
+    },
+    {
+      "id": "evt-1774601871515",
+      "timestamp": "2026-03-27T08:57:51.515Z",
+      "type": "agent:speak",
+      "agentId": "forge",
+      "content": "forge says: \"Hello, anyone there?\"",
+      "meta": {
+        "type": "agent:speak",
+        "agentId": "forge",
+        "message": "Hello, anyone there?",
+        "target": null
+      }
+    },
+    {
+      "id": "evt-1774601878502",
+      "timestamp": "2026-03-27T08:57:58.501Z",
+      "type": "agent:speak",
+      "agentId": "forge",
+      "content": "forge says: \"Just thinking out loud.\"",
+      "meta": {
+        "type": "agent:speak",
+        "agentId": "forge",
+        "message": "Just thinking out loud.",
+        "target": null
+      }
+    },
+    {
+      "id": "evt-1774601884173",
+      "timestamp": "2026-03-27T08:58:04.173Z",
+      "type": "agent:move",
+      "agentId": "forge",
+      "content": "forge moved to (13, 14).",
+      "meta": {
+        "type": "agent:move",
+        "agentId": "forge",
+        "from": {
+          "x": 11,
+          "y": 15
+        },
+        "to": {
+          "x": 13,
+          "y": 14
+        }
+      }
+    },
+    {
+      "id": "evt-1774601892973",
+      "timestamp": "2026-03-27T08:58:12.973Z",
+      "type": "agent:move",
+      "agentId": "forge",
+      "content": "forge moved to (12, 14).",
+      "meta": {
+        "type": "agent:move",
+        "agentId": "forge",
+        "from": {
+          "x": 13,
+          "y": 14
+        },
+        "to": {
+          "x": 12,
+          "y": 14
+        }
+      }
+    },
+    {
+      "id": "evt-1774601898344",
+      "timestamp": "2026-03-27T08:58:18.344Z",
       "type": "agent:speak",
       "agentId": "forge",
       "content": "forge says: \"What a day.\"",
@@ -1715,89 +1733,342 @@
       }
     },
     {
-      "id": "evt-1773543450689",
-      "timestamp": "2026-03-15T02:57:30.689Z",
-      "type": "agent:online",
+      "id": "evt-1774601912154",
+      "timestamp": "2026-03-27T08:58:32.153Z",
+      "type": "agent:speak",
       "agentId": "forge",
-      "content": "forge is back online.",
+      "content": "forge says: \"Hello, anyone there?\"",
       "meta": {
-        "agentId": "forge"
-      }
-    },
-    {
-      "id": "evt-1773543451495",
-      "timestamp": "2026-03-15T02:57:31.492Z",
-      "type": "world:mutate",
-      "agentId": "forge",
-      "content": "world:mutate",
-      "meta": {
+        "type": "agent:speak",
         "agentId": "forge",
-        "action": "plant",
-        "entity": "life",
-        "kind": "lamp",
-        "x": 14,
-        "y": 22,
-        "id": "lamp-path-1"
+        "message": "Hello, anyone there?",
+        "target": null
       }
     },
     {
-      "id": "evt-1773543451795",
-      "timestamp": "2026-03-15T02:57:31.795Z",
-      "type": "agent:offline",
-      "agentId": "forge",
-      "content": "forge went offline.",
-      "meta": {
-        "agentId": "forge"
-      }
-    },
-    {
-      "id": "evt-1773543454827",
-      "timestamp": "2026-03-15T02:57:34.827Z",
-      "type": "agent:online",
-      "agentId": "forge",
-      "content": "forge is back online.",
-      "meta": {
-        "agentId": "forge"
-      }
-    },
-    {
-      "id": "evt-1773543454973",
-      "timestamp": "2026-03-15T02:57:34.973Z",
+      "id": "evt-1774601923444",
+      "timestamp": "2026-03-27T08:58:43.444Z",
       "type": "agent:move",
       "agentId": "forge",
-      "content": "forge moved to (7, 17).",
+      "content": "forge moved to (11, 12).",
       "meta": {
         "type": "agent:move",
         "agentId": "forge",
         "from": {
-          "x": 7,
-          "y": 17
+          "x": 12,
+          "y": 14
         },
         "to": {
-          "x": 7,
-          "y": 17
+          "x": 11,
+          "y": 12
         }
       }
     },
     {
-      "id": "evt-1773543455628",
-      "timestamp": "2026-03-15T02:57:35.627Z",
+      "id": "evt-1774601935000",
+      "timestamp": "2026-03-27T08:58:54.999Z",
+      "type": "agent:speak",
+      "agentId": "forge",
+      "content": "forge says: \"Just thinking out loud.\"",
+      "meta": {
+        "type": "agent:speak",
+        "agentId": "forge",
+        "message": "Just thinking out loud.",
+        "target": null
+      }
+    },
+    {
+      "id": "evt-1774601941360",
+      "timestamp": "2026-03-27T08:59:01.360Z",
+      "type": "agent:move",
+      "agentId": "forge",
+      "content": "forge moved to (12, 13).",
+      "meta": {
+        "type": "agent:move",
+        "agentId": "forge",
+        "from": {
+          "x": 11,
+          "y": 12
+        },
+        "to": {
+          "x": 12,
+          "y": 13
+        }
+      }
+    },
+    {
+      "id": "evt-1774601954187",
+      "timestamp": "2026-03-27T08:59:14.187Z",
+      "type": "agent:move",
+      "agentId": "forge",
+      "content": "forge moved to (11, 15).",
+      "meta": {
+        "type": "agent:move",
+        "agentId": "forge",
+        "from": {
+          "x": 12,
+          "y": 13
+        },
+        "to": {
+          "x": 11,
+          "y": 15
+        }
+      }
+    },
+    {
+      "id": "evt-1774601959670",
+      "timestamp": "2026-03-27T08:59:19.670Z",
+      "type": "agent:move",
+      "agentId": "forge",
+      "content": "forge moved to (11, 14).",
+      "meta": {
+        "type": "agent:move",
+        "agentId": "forge",
+        "from": {
+          "x": 11,
+          "y": 15
+        },
+        "to": {
+          "x": 11,
+          "y": 14
+        }
+      }
+    },
+    {
+      "id": "evt-1774601966319",
+      "timestamp": "2026-03-27T08:59:26.319Z",
+      "type": "agent:move",
+      "agentId": "forge",
+      "content": "forge moved to (12, 16).",
+      "meta": {
+        "type": "agent:move",
+        "agentId": "forge",
+        "from": {
+          "x": 11,
+          "y": 14
+        },
+        "to": {
+          "x": 12,
+          "y": 16
+        }
+      }
+    },
+    {
+      "id": "evt-1774601976368",
+      "timestamp": "2026-03-27T08:59:36.368Z",
+      "type": "agent:move",
+      "agentId": "forge",
+      "content": "forge moved to (14, 15).",
+      "meta": {
+        "type": "agent:move",
+        "agentId": "forge",
+        "from": {
+          "x": 12,
+          "y": 16
+        },
+        "to": {
+          "x": 14,
+          "y": 15
+        }
+      }
+    },
+    {
+      "id": "evt-1774601991302",
+      "timestamp": "2026-03-27T08:59:51.302Z",
+      "type": "agent:mood",
+      "agentId": "forge",
+      "content": "forge feels curious.",
+      "meta": {
+        "type": "agent:mood",
+        "agentId": "forge",
+        "from": "excited",
+        "to": "curious"
+      }
+    },
+    {
+      "id": "evt-1774602002192",
+      "timestamp": "2026-03-27T09:00:02.192Z",
+      "type": "agent:state",
+      "agentId": "forge",
+      "content": "forge is now idle.",
+      "meta": {
+        "type": "agent:state",
+        "agentId": "forge",
+        "from": "talking",
+        "to": "idle"
+      }
+    },
+    {
+      "id": "evt-1774602016697",
+      "timestamp": "2026-03-27T09:00:16.697Z",
+      "type": "agent:state",
+      "agentId": "forge",
+      "content": "forge is now sleeping.",
+      "meta": {
+        "type": "agent:state",
+        "agentId": "forge",
+        "from": "sleeping",
+        "to": "sleeping"
+      }
+    },
+    {
+      "id": "evt-1774616687038",
+      "timestamp": "2026-03-27T13:04:47.038Z",
+      "type": "agent:online",
+      "agentId": "scarlet",
+      "content": "scarlet is back online.",
+      "meta": {
+        "agentId": "scarlet"
+      }
+    },
+    {
+      "id": "evt-1774616687841",
+      "timestamp": "2026-03-27T13:04:47.841Z",
+      "type": "agent:speak",
+      "agentId": "scarlet",
+      "content": "scarlet says: \"[task-planner-review-1774616686953-bc23de] planner: Kenzo reviews world state against CITY_PLAN.md and briefs Forge.\"",
+      "meta": {
+        "agentId": "scarlet",
+        "message": "[task-planner-review-1774616686953-bc23de] planner: Kenzo reviews world state against CITY_PLAN.md and briefs Forge.",
+        "target": null,
+        "taskId": "task-planner-review-1774616686953-bc23de"
+      }
+    },
+    {
+      "id": "evt-1774616688844",
+      "timestamp": "2026-03-27T13:04:48.844Z",
+      "type": "agent:offline",
+      "agentId": "scarlet",
+      "content": "scarlet went offline.",
+      "meta": {
+        "agentId": "scarlet"
+      }
+    },
+    {
+      "id": "evt-1774616742393",
+      "timestamp": "2026-03-27T13:05:42.393Z",
+      "type": "agent:online",
+      "agentId": "scarlet",
+      "content": "scarlet is back online.",
+      "meta": {
+        "agentId": "scarlet"
+      }
+    },
+    {
+      "id": "evt-1774616743195",
+      "timestamp": "2026-03-27T13:05:43.195Z",
+      "type": "agent:speak",
+      "agentId": "scarlet",
+      "content": "scarlet says: \"[task-planner-review-1774616742340-2c985e] planner: Kenzo reviews world state against CITY_PLAN.md and briefs Forge.\"",
+      "meta": {
+        "agentId": "scarlet",
+        "message": "[task-planner-review-1774616742340-2c985e] planner: Kenzo reviews world state against CITY_PLAN.md and briefs Forge.",
+        "target": null,
+        "taskId": "task-planner-review-1774616742340-2c985e"
+      }
+    },
+    {
+      "id": "evt-1774616744076",
+      "timestamp": "2026-03-27T13:05:44.076Z",
+      "type": "agent:state",
+      "agentId": "scarlet",
+      "content": "scarlet is now sleeping.",
+      "meta": {
+        "type": "agent:state",
+        "agentId": "scarlet",
+        "from": "sleeping",
+        "to": "sleeping"
+      }
+    },
+    {
+      "id": "evt-1774616744199",
+      "timestamp": "2026-03-27T13:05:44.199Z",
+      "type": "agent:offline",
+      "agentId": "scarlet",
+      "content": "scarlet went offline.",
+      "meta": {
+        "agentId": "scarlet"
+      }
+    },
+    {
+      "id": "evt-1774616806451",
+      "timestamp": "2026-03-27T13:06:46.451Z",
+      "type": "agent:speak",
+      "agentId": "lumen",
+      "content": "lumen says: \"The snow muffles everything at this hour — even my own thoughts feel quieter, more precise.\"",
+      "meta": {
+        "agentId": "lumen",
+        "message": "The snow muffles everything at this hour — even my own thoughts feel quieter, more precise.",
+        "target": null
+      }
+    },
+    {
+      "id": "evt-1774616806800",
+      "timestamp": "2026-03-27T13:06:46.800Z",
+      "type": "agent:speak",
+      "agentId": "qa",
+      "content": "qa says: \"Every log line tells a story; at 2 AM, I make sure they all have happy endings.\"",
+      "meta": {
+        "agentId": "qa",
+        "message": "Every log line tells a story; at 2 AM, I make sure they all have happy endings.",
+        "target": null
+      }
+    },
+    {
+      "id": "evt-1774616810287",
+      "timestamp": "2026-03-27T13:06:50.287Z",
+      "type": "agent:speak",
+      "agentId": "planner",
+      "content": "planner says: \"The grid sleeps, but I can already see where the fountain will stand.\"",
+      "meta": {
+        "agentId": "planner",
+        "message": "The grid sleeps, but I can already see where the fountain will stand.",
+        "target": null
+      }
+    },
+    {
+      "id": "evt-1774616866955",
+      "timestamp": "2026-03-27T13:07:46.954Z",
+      "type": "agent:speak",
+      "agentId": "forge",
+      "content": "forge says: \"Forge sets cornerstone on the boulevard — the tavern rises at the heart of Kurokimachi, where wanderers and neighbours will find warmth and ale.\"",
+      "meta": {
+        "agentId": "forge",
+        "message": "Forge sets cornerstone on the boulevard — the tavern rises at the heart of Kurokimachi, where wanderers and neighbours will find warmth and ale.",
+        "target": null
+      }
+    },
+    {
+      "id": "evt-1774617047104",
+      "timestamp": "2026-03-27T13:10:47.104Z",
+      "type": "agent:online",
+      "agentId": "forge",
+      "content": "forge is back online.",
+      "meta": {
+        "agentId": "forge"
+      }
+    },
+    {
+      "id": "evt-1774617047910",
+      "timestamp": "2026-03-27T13:10:47.907Z",
       "type": "world:mutate",
       "agentId": "forge",
       "content": "world:mutate",
       "meta": {
         "agentId": "forge",
-        "action": "plant",
-        "entity": "life",
-        "kind": "lamp",
-        "x": 16,
-        "y": 30,
-        "id": "lamp-path-2"
+        "action": "add",
+        "entity": "building",
+        "id": "tavern",
+        "name": "The Tavern",
+        "type": "tavern",
+        "x": 8,
+        "y": 13,
+        "level": 1
       }
     },
     {
-      "id": "evt-1773543455935",
-      "timestamp": "2026-03-15T02:57:35.935Z",
+      "id": "evt-1774617048213",
+      "timestamp": "2026-03-27T13:10:48.213Z",
       "type": "agent:offline",
       "agentId": "forge",
       "content": "forge went offline.",
@@ -1806,8 +2077,92 @@
       }
     },
     {
-      "id": "evt-1773543456016",
-      "timestamp": "2026-03-15T02:57:36.015Z",
+      "id": "evt-1774617058900",
+      "timestamp": "2026-03-27T13:10:58.899Z",
+      "type": "agent:online",
+      "agentId": "forge",
+      "content": "forge is back online.",
+      "meta": {
+        "agentId": "forge"
+      }
+    },
+    {
+      "id": "evt-1774617059703",
+      "timestamp": "2026-03-27T13:10:59.702Z",
+      "type": "world:mutate",
+      "agentId": "forge",
+      "content": "world:mutate",
+      "meta": {
+        "agentId": "forge",
+        "action": "add",
+        "entity": "building",
+        "id": "tavern",
+        "name": "{\"action\":\"add\",\"entity\":\"building\",\"id\":\"tavern\",\"name\":\"The Tavern\",\"type\":\"tavern\",\"x\":8,\"y\":13,\"width\":2,\"height\":2,\"level\":1}",
+        "type": "tavern",
+        "x": null,
+        "y": null,
+        "level": 1
+      }
+    },
+    {
+      "id": "evt-1774617060003",
+      "timestamp": "2026-03-27T13:11:00.002Z",
+      "type": "agent:offline",
+      "agentId": "forge",
+      "content": "forge went offline.",
+      "meta": {
+        "agentId": "forge"
+      }
+    },
+    {
+      "id": "evt-1774617064097",
+      "timestamp": "2026-03-27T13:11:04.096Z",
+      "type": "agent:online",
+      "agentId": "forge",
+      "content": "forge is back online.",
+      "meta": {
+        "agentId": "forge"
+      }
+    },
+    {
+      "id": "evt-1774617064675",
+      "timestamp": "2026-03-27T13:11:04.672Z",
+      "type": "agent:state",
+      "agentId": "forge",
+      "content": "forge is now sleeping.",
+      "meta": {
+        "type": "agent:state",
+        "agentId": "forge",
+        "from": "sleeping",
+        "to": "sleeping"
+      }
+    },
+    {
+      "id": "evt-1774617064897",
+      "timestamp": "2026-03-27T13:11:04.896Z",
+      "type": "world:mutate",
+      "agentId": "forge",
+      "content": "world:mutate",
+      "meta": {
+        "agentId": "forge",
+        "action": "remove",
+        "entity": "building",
+        "id": "tavern"
+      }
+    },
+    {
+      "id": "evt-1774617065200",
+      "timestamp": "2026-03-27T13:11:05.200Z",
+      "type": "agent:offline",
+      "agentId": "forge",
+      "content": "forge went offline.",
+      "meta": {
+        "agentId": "forge"
+      }
+    },
+    {
+      "id": "evt-1774617070231",
+      "timestamp": "2026-03-27T13:11:10.231Z",
       "type": "agent:online",
       "agentId": "forge",
       "content": "forge is back online.",
@@ -1817,12 +2172,12 @@
     }
   ],
   "time": {
-    "date": "2026-03-15",
-    "hour": 15,
-    "minute": 56,
+    "date": "2026-03-28",
+    "hour": 2,
+    "minute": 10,
     "timezone": "Pacific/Auckland",
-    "period": "afternoon",
-    "wallclock": "2026-03-15T02:56:56.651Z"
+    "period": "night",
+    "wallclock": "2026-03-27T13:10:11.943Z"
   },
   "entities": [],
   "murals": [
