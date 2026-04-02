@@ -30,6 +30,7 @@ const BUILDING_TEXTURE_MAP = {
   'garden-pavilion': 'pavilion',
   leisure:         'teahouse',
   cottage_row1_west: 'cottage',
+  cottage_row1_east: 'residential',
   tavern:            'tavern',
 };
 
